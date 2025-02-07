@@ -159,7 +159,7 @@ index 23b342cc31c7e72ade0e1ccad86a9ccf34380f13..249cb7326c8e4012dcffdb6bbb7bfc1f
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 5979893976ab8c59a17e306cd91c9a4f5cd3738e..4f0ea00cd601c62926220400c8e3597815dc4d15 100644
+index f259701b82caef0a64659c69737f12b2f8d4c30a..0cf1fb6b7be70f1aeb6f664d86d2c695a2b16d8b 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -5967,4 +5967,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

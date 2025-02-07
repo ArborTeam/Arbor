@@ -5,7 +5,6 @@ Subject: [PATCH] Raytracing tracker experiment
 
 Based on the framework of EntityCulling(((((((
 
-
 diff --git a/src/main/java/com/logisticscraft/occlusionculling/DataProvider.java b/src/main/java/com/logisticscraft/occlusionculling/DataProvider.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..5ab4600554e8dcb2a2ddc22dd1c1015c89ba5b82

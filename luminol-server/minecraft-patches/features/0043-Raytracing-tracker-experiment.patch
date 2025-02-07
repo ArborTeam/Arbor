@@ -5,7 +5,6 @@ Subject: [PATCH] Raytracing tracker experiment
 
 Based on the framework of EntityCulling(((((((
 
-
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
 index 7eff847790394aecd058e7a61905da86163b4c6e..9099457f55a2829297ac1db8a69a98ff717d9a86 100644
 --- a/net/minecraft/server/level/ChunkMap.java
@@ -20,7 +19,7 @@ index 7eff847790394aecd058e7a61905da86163b4c6e..9099457f55a2829297ac1db8a69a98ff
                      double rangeY = level.paperConfig().entities.trackingRangeY.get(this.entity, -1);
                      if (rangeY != -1) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 6f9cfd8c72853d9cb30c9731a96e7f1e8f0644c4..b1ded501047f75d2e7af775bf8866fd6a5400a91 100644
+index c14f766f1bea5c3c94d124da09d7bf9dfbfb1966..40c0bb7dbdd0e58ca9d3fb242774fd1fc3dc3a6c 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -136,7 +136,7 @@ import net.minecraft.world.scores.ScoreHolder;

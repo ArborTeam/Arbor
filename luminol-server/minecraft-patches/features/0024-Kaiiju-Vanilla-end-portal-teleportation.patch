@@ -5,7 +5,7 @@ Subject: [PATCH] Kaiiju Vanilla end portal teleportation
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index d6af2839f6ad51f2a29a4e4a141778a2e93145d5..f259701b82caef0a64659c69737f12b2f8d4c30a 100644
+index d6d429817dac95badcb1d67e370cd37cef43fd48..367acbbe2eb377796ab97a13fa165a6b573803d5 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -110,6 +110,7 @@ import net.minecraft.world.level.block.Rotation;

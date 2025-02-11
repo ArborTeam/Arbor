@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <wangxyper@163.com>
+Date: Tue, 11 Feb 2025 13:34:47 +0800
+Subject: [PATCH] Fix uncorrected death check of folia
+
+
+diff --git a/net/minecraft/world/inventory/AbstractContainerMenu.java b/net/minecraft/world/inventory/AbstractContainerMenu.java
+index 50af953a4698a3c6e16b840fab764dd733b3fbc9..a9c058238819f3631d94ac306185e909821caf35 100644
+--- a/net/minecraft/world/inventory/AbstractContainerMenu.java
++++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
+@@ -679,7 +679,7 @@ public abstract class AbstractContainerMenu {
+     }
+ 
+     private static void dropOrPlaceInInventory(Player player, ItemStack stack) {
+-        boolean flag = player.isRemoved() && player.getRemovalReason() != Entity.RemovalReason.CHANGED_DIMENSION;
++        boolean flag = !player.isAlive(); //player.isRemoved() && player.getRemovalReason() != Entity.RemovalReason.CHANGED_DIMENSION; // Luminol - Fix uncorrected death check of folia
+         boolean flag1 = player instanceof ServerPlayer serverPlayer && serverPlayer.hasDisconnected();
+         if (flag || flag1) {
+             player.drop(stack, false);

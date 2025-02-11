@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <wangxyper@163.com>
+Date: Sun, 12 Jan 2025 10:53:41 +0800
+Subject: [PATCH] Teleport async if entity was moving to another region at once
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index bd1919a2d273f56dd77000032365ea134c05ce66..2157bc506a76173af78d8cb2ae52dad0c0c195a6 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -1099,6 +1099,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+     }
+     // Paper end - detailed watchdog information
+ 
++    //Luminol start - Fix large pos moving
++    private volatile boolean preventMoving = false;
++    //Luminol end
++
+     public void move(MoverType type, Vec3 movement) {
+         final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
+         // Paper start - detailed watchdog information
+@@ -1109,6 +1113,32 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+             this.moveStartZ = this.getZ();
+             this.moveVector = movement;
+         }
++        //Luminol start - Fix high position moving
++        if (me.earthme.luminol.config.modules.fixes.FoliaEntityMovingFixConfig.enabled && ca.spottedleaf.moonrise.common.util.TickThread.isTickThread()){ //Except the threads because it may be called by the chunk system worker thread
++            var finalPosition = movement.add(this.position);
++            if (this.preventMoving || Double.isNaN(finalPosition.x) || Double.isNaN(finalPosition.y) || Double.isNaN(finalPosition.z)){
++                return;
++            }
++
++            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(((ServerLevel) this.level),finalPosition)){
++                this.preventMoving = true;
++                this.teleportAsync(
++                        (ServerLevel) this.level(),
++                        finalPosition,
++                        this.getYRot(), this.getXRot(),
++                        null, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN,
++                        Entity.TELEPORT_FLAG_LOAD_CHUNK | Entity.TELEPORT_FLAG_TELEPORT_PASSENGERS,
++                        result -> {
++                            this.preventMoving = false;
++                        }
++                );
++                if (me.earthme.luminol.config.modules.fixes.FoliaEntityMovingFixConfig.warnOnDetected){
++                    MinecraftServer.LOGGER.warn("Entity {} with entityId {} has tried moving to another region!",this.type.getCategory().getName(),this.getId());
++                }
++                return;
++            }
++        }
++        //Luminol end
+         try {
+         // Paper end - detailed watchdog information
+         if (this.noPhysics) {

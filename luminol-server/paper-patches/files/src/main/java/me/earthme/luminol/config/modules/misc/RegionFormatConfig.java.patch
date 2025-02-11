@@ -1,0 +1,62 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/config/modules/misc/RegionFormatConfig.java
+@@ -1,0 +_,59 @@
++package me.earthme.luminol.config.modules.misc;
++
++import abomination.LinearRegionFile;
++import com.electronwill.nightconfig.core.file.CommentedFileConfig;
++import me.earthme.luminol.config.*;
++import me.earthme.luminol.utils.EnumRegionFormat;
++import net.minecraft.server.MinecraftServer;
++
++public class RegionFormatConfig implements IConfigModule {
++    @HotReloadUnsupported
++    @ConfigInfo(baseName = "format")
++    public static String format = "MCA";
++    @HotReloadUnsupported
++    @ConfigInfo(baseName = "linear_compression_level")
++    public static int linearCompressionLevel = 1;
++    @HotReloadUnsupported
++    @ConfigInfo(baseName = "linear_io_thread_count")
++    public static int linearIoThreadCount = 6;
++    @HotReloadUnsupported
++    @ConfigInfo(baseName = "linear_io_flush_delay_ms")
++    public static int linearIoFlushDelayMs = 100;
++    @HotReloadUnsupported
++    @ConfigInfo(baseName = "linear_use_virtual_thread")
++    public static boolean linearUseVirtualThread = true;
++
++    @DoNotLoad
++    public static EnumRegionFormat regionFormat;
++
++    @Override
++    public EnumConfigCategory getCategory() {
++        return EnumConfigCategory.MISC;
++    }
++
++    @Override
++    public String getBaseName() {
++        return "region_format";
++    }
++
++    @Override
++    public void onLoaded(CommentedFileConfig configInstance) {
++        regionFormat = EnumRegionFormat.fromString(format.toUpperCase());
++
++        if (regionFormat == null) {
++            throw new RuntimeException("Invalid region format: " + format);
++        }
++
++        if (regionFormat == EnumRegionFormat.LINEAR_V2) {
++            if (RegionFormatConfig.linearCompressionLevel > 23 || RegionFormatConfig.linearCompressionLevel < 1) {
++                MinecraftServer.LOGGER.error("Linear region compression level should be between 1 and 22 in config: {}", RegionFormatConfig.linearCompressionLevel);
++                MinecraftServer.LOGGER.error("Falling back to compression level 1.");
++                RegionFormatConfig.linearCompressionLevel = 1;
++            }
++
++            LinearRegionFile.SAVE_DELAY_MS = linearIoFlushDelayMs;
++            LinearRegionFile.SAVE_THREAD_MAX_COUNT = linearIoThreadCount;
++            LinearRegionFile.USE_VIRTUAL_THREAD = linearUseVirtualThread;
++        }
++    }
++}

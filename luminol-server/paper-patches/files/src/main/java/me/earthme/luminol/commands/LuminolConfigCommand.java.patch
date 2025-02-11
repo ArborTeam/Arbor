@@ -1,0 +1,73 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/commands/LuminolConfigCommand.java
+@@ -1,0 +_,70 @@
++package me.earthme.luminol.commands;
++
++import me.earthme.luminol.config.LuminolConfig;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.format.TextColor;
++import org.bukkit.Location;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++import java.util.ArrayList;
++import java.util.List;
++
++public class LuminolConfigCommand extends Command {
++    public LuminolConfigCommand(){
++        super("luminolconfig");
++        this.setPermission("luminol.commands.luminolconfig");
++        this.setDescription("Manage config file");
++        this.setUsage("/luminolconfig");
++    }
++
++    @Override
++    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args, @Nullable Location location) throws IllegalArgumentException {
++        final List<String> result = new ArrayList<>();
++
++        if (args.length == 1){
++            result.add("reload");
++        }
++
++        return result;
++    }
++
++    @Override
++    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
++        if (!this.testPermission(sender)){
++            sender.sendMessage(Component
++                    .text("No permission to execute this command!")
++                    .color(TextColor.color(255,0,0))
++            );
++        }
++
++        if (args.length < 1){
++            sender.sendMessage(
++                    Component
++                            .text("Wrong use!\n")
++                            .color(TextColor.color(255,0,0))
++            );
++            return true;
++        }
++
++        switch (args[0]){
++            case "reload" -> {
++                LuminolConfig.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
++                        Component
++                                .text("Reloaded config file!")
++                                .color(TextColor.color(0,255,0))
++                ));
++            }
++
++            default -> sender.sendMessage(
++                    Component
++                            .text("Unknown action!\n")
++                            .color(TextColor.color(255,0,0))
++            );
++        }
++
++        return true;
++    }
++}

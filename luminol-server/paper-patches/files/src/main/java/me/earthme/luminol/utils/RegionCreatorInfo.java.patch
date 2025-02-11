@@ -1,0 +1,10 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/utils/RegionCreatorInfo.java
+@@ -1,0 +_,7 @@
++package me.earthme.luminol.utils;
++
++import net.minecraft.world.level.chunk.storage.RegionStorageInfo;
++
++import java.nio.file.Path;
++
++public record RegionCreatorInfo (RegionStorageInfo info, Path filePath, Path folder, boolean sync) {}

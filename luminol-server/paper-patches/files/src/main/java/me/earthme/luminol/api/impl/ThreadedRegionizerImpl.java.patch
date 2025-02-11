@@ -1,0 +1,56 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/api/impl/ThreadedRegionizerImpl.java
+@@ -1,0 +_,53 @@
++package me.earthme.luminol.api.impl;
++
++import io.papermc.paper.threadedregions.TickRegions;
++import me.earthme.luminol.api.ThreadedRegion;
++import me.earthme.luminol.api.ThreadedRegionizer;
++import net.minecraft.server.level.ServerLevel;
++
++import java.util.ArrayList;
++import java.util.Collection;
++import java.util.List;
++
++public class ThreadedRegionizerImpl implements ThreadedRegionizer {
++    private final ServerLevel internal;
++
++    public ThreadedRegionizerImpl(ServerLevel internal) {
++        this.internal = internal;
++    }
++
++    @Override
++    public Collection<ThreadedRegion> getAllRegions() {
++        final List<ThreadedRegion> ret = new ArrayList<>();
++
++        this.internal.regioniser.computeForAllRegions(region -> {
++            final ThreadedRegion wrapped = new ThreadedRegionImpl(region);
++
++            ret.add(wrapped);
++        });
++
++        return ret;
++    }
++
++    @Override
++    public ThreadedRegion getAtSynchronized(int chunkX, int chunkZ) {
++        final io.papermc.paper.threadedregions.ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> got = this.internal.regioniser.getRegionAtSynchronised(chunkX, chunkZ);
++
++        if (got == null) {
++            return null;
++        }
++
++        return new ThreadedRegionImpl(got);
++    }
++
++    @Override
++    public ThreadedRegion getAtUnSynchronized(int chunkX, int chunkZ) {
++        final io.papermc.paper.threadedregions.ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> got = this.internal.regioniser.getRegionAtUnsynchronised(chunkX, chunkZ);
++
++        if (got == null) {
++            return null;
++        }
++
++        return new ThreadedRegionImpl(got);
++    }
++}

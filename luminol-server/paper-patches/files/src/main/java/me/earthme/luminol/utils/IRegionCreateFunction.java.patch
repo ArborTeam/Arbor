@@ -1,0 +1,12 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/utils/IRegionCreateFunction.java
+@@ -1,0 +_,9 @@
++package me.earthme.luminol.utils;
++
++import abomination.IRegionFile;
++
++import java.io.IOException;
++
++public interface IRegionCreateFunction {
++    IRegionFile create(RegionCreatorInfo info) throws IOException;
++}

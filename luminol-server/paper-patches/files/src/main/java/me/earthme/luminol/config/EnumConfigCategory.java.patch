@@ -1,0 +1,22 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/config/EnumConfigCategory.java
+@@ -1,0 +_,19 @@
++package me.earthme.luminol.config;
++
++public enum EnumConfigCategory {
++    OPTIMIZATIONS("optimizations"),
++    FIXES("fixes"),
++    MISC("misc"),
++    GAMEPLAY("gameplay"),
++    EXPERIMENT("experiment");
++
++    private final String baseKeyName;
++
++    EnumConfigCategory(String baseKeyName) {
++        this.baseKeyName = baseKeyName;
++    }
++
++    public String getBaseKeyName() {
++        return this.baseKeyName;
++    }
++}

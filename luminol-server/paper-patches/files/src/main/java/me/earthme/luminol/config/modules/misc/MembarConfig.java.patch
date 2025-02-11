@@ -1,0 +1,53 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/config/modules/misc/MembarConfig.java
+@@ -1,0 +_,50 @@
++package me.earthme.luminol.config.modules.misc;
++
++import com.electronwill.nightconfig.core.file.CommentedFileConfig;
++import me.earthme.luminol.commands.MembarCommand;
++import me.earthme.luminol.config.ConfigInfo;
++import me.earthme.luminol.config.DoNotLoad;
++import me.earthme.luminol.config.EnumConfigCategory;
++import me.earthme.luminol.config.IConfigModule;
++import me.earthme.luminol.functions.GlobalServerMemoryBar;
++import org.bukkit.Bukkit;
++
++import java.util.List;
++
++public class MembarConfig implements IConfigModule {
++    @ConfigInfo(baseName = "enabled")
++    public static boolean memoryBarEnabled = false;
++    @ConfigInfo(baseName = "format")
++    public static String memBarFormat = "<gray>Memory usage <yellow>:</yellow> <used>MB<yellow>/</yellow><available>MB";
++    @ConfigInfo(baseName = "memory_color_list")
++    public static List<String> memColors = List.of("GREEN","YELLOW","RED","PURPLE");
++    @ConfigInfo(baseName = "update_interval_ticks")
++    public static int updateInterval = 15;
++
++    @DoNotLoad
++    private static boolean inited = false;
++
++    @Override
++    public EnumConfigCategory getCategory() {
++        return EnumConfigCategory.MISC;
++    }
++
++    @Override
++    public String getBaseName() {
++        return "membar";
++    }
++
++    @Override
++    public void onLoaded(CommentedFileConfig configInstance){
++        if (memoryBarEnabled){
++            GlobalServerMemoryBar.init();
++        }else{
++            GlobalServerMemoryBar.cancelBarUpdateTask();
++        }
++
++        if (!inited){
++            Bukkit.getCommandMap().register("membar","luminol",new MembarCommand("membar"));
++            inited = true;
++        }
++    }
++}

@@ -1,0 +1,20 @@
+--- /dev/null
++++ b/src/main/java/dev/tr7zw/entityculling/versionless/access/Cullable.java
+@@ -1,0 +_,17 @@
++package dev.tr7zw.entityculling.versionless.access;
++
++public interface Cullable {
++
++    public void setTimeout();
++
++    public boolean isForcedVisible();
++
++    public void setCulled(boolean value);
++
++    public boolean isCulled();
++
++    public void setOutOfCamera(boolean value);
++
++    public boolean isOutOfCamera();
++
++}

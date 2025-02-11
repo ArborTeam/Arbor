@@ -1,0 +1,20 @@
+--- /dev/null
++++ b/src/main/java/com/logisticscraft/occlusionculling/cache/OcclusionCache.java
+@@ -1,0 +_,17 @@
++package com.logisticscraft.occlusionculling.cache;
++
++public interface OcclusionCache {
++
++    void resetCache();
++
++    void setVisible(int x, int y, int z);
++
++    void setHidden(int x, int y, int z);
++
++    int getState(int x, int y, int z);
++
++    void setLastHidden();
++
++    void setLastVisible();
++
++}

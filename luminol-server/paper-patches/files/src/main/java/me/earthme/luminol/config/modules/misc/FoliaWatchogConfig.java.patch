@@ -1,0 +1,23 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/config/modules/misc/FoliaWatchogConfig.java
+@@ -1,0 +_,20 @@
++package me.earthme.luminol.config.modules.misc;
++
++import me.earthme.luminol.config.ConfigInfo;
++import me.earthme.luminol.config.EnumConfigCategory;
++import me.earthme.luminol.config.IConfigModule;
++
++public class FoliaWatchogConfig implements IConfigModule {
++    @ConfigInfo(baseName = "tick_region_time_out_ms")
++    public static int tickRegionTimeOutMs = 5000;
++
++    @Override
++    public EnumConfigCategory getCategory() {
++        return EnumConfigCategory.MISC;
++    }
++
++    @Override
++    public String getBaseName() {
++        return "folia_watchdog";
++    }
++}

@@ -1,0 +1,25 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/config/modules/optimizations/ProjectileChunkReduceConfig.java
+@@ -1,0 +_,22 @@
++package me.earthme.luminol.config.modules.optimizations;
++
++import me.earthme.luminol.config.ConfigInfo;
++import me.earthme.luminol.config.EnumConfigCategory;
++import me.earthme.luminol.config.IConfigModule;
++
++public class ProjectileChunkReduceConfig implements IConfigModule {
++    @ConfigInfo(baseName = "max-loads-per-tick")
++    public static int maxProjectileLoadsPerTick;
++    @ConfigInfo(baseName = "max-loads-per-projectile")
++    public static int maxProjectileLoadsPerProjectile;
++
++    @Override
++    public EnumConfigCategory getCategory() {
++        return EnumConfigCategory.OPTIMIZATIONS;
++    }
++
++    @Override
++    public String getBaseName() {
++        return "projectile";
++    }
++}

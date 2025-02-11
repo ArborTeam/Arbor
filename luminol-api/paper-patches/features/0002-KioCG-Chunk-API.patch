@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
-Date: Wed, 29 Jan 2025 09:50:53 +0800
+Date: Tue, 11 Feb 2025 09:16:49 +0800
 Subject: [PATCH] KioCG Chunk API
 
 
@@ -16,13 +16,13 @@ index d434277342b2db19f98e032d3a316b27d728b840..e188353ad193f6203533790ae52fafc0
 +    long getChunkHotAvg(); // KioCG
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index dd043851687283f48af899d069d732425c794afd..ac5b7d030cbe3aae908fb2a0130cdf04d4924c18 100644
+index 0081dd53b6a81ce7892e58d61f9f8a6718e30775..28fbd8df491a4c562de7530e88706e9c88460483 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -3928,4 +3928,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -3902,4 +3902,6 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @return the result of this method, holding leftovers and spawned items.
       */
-     @NotNull PlayerGiveResult give(@NotNull Collection<@NotNull ItemStack> items, boolean dropIfFull);
+     PlayerGiveResult give(Collection<ItemStack> items, boolean dropIfFull);
 +
 +    long getNearbyChunkHot(); // KioCG
  }

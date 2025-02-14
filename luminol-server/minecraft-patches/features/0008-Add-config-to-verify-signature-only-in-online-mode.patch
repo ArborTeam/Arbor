@@ -18,7 +18,7 @@ index 41a9cc693183e96c83837692e93b177a521d6789..f4a2d1a2d467808b9cb75fc32765ddc2
          } else {
              return new ProfilePublicKey(data);
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index 6a7e5a642e2eaf7d5dffadb81738f7385a38c0af..f16500a50904aade3d984b908b11b8edd9c05ba1 100644
+index 30b97cdcd495490ef65c2ab9dfc39a39c93002ca..1baed35051e9f0f5331bc8ae62a9a8848c3ee322 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -215,7 +215,7 @@ public class TripWireHookBlock extends Block {

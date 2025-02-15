@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/optimizations/SIMDConfig.java
-@@ -1,0 +_,53 @@
+@@ -1,0 +_,50 @@
 +package me.earthme.luminol.config.modules.optimizations;
 +
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
@@ -37,15 +37,12 @@
 +        // Attempt to detect vectorization
 +        try {
 +            SIMDDetection.isEnabled = SIMDDetection.canEnable(LOGGER);
-+            SIMDDetection.versionLimited = SIMDDetection.getJavaVersion() < 17;
 +        } catch (NoClassDefFoundError | Exception ignored) {
 +            ignored.printStackTrace();
 +        }
 +
 +        if (SIMDDetection.isEnabled) {
 +            LOGGER.info("SIMD operations detected as functional. Will replace some operations with faster versions.");
-+        } else if (SIMDDetection.versionLimited) {
-+            LOGGER.warn("Will not enable SIMD! These optimizations are only safely supported on Java 17+.");
 +        } else {
 +            LOGGER.warn("SIMD operations are available for your server, but are not configured!");
 +            LOGGER.warn("To enable additional optimizations, add \"--add-modules=jdk.incubator.vector\" to your startup flags, BEFORE the \"-jar\".");

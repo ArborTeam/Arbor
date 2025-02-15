@@ -186,10 +186,10 @@ index 0000000000000000000000000000000000000000..ecde4462b08d701b8bff9f26902f1775
 +    RegionStats getRegionStats();
 +}
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 8784842d14bbbe7dbde181e86782a0955be66924..f998f6f0d3017767aa4dde45a7e8aea5dd36fe99 100644
+index 2729f71ac5525b7669fb7cc8719a75e5ce8d1dfc..9020f0781b399484e2acf0ad139b0b364e1c7a8f 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
-@@ -4407,4 +4407,8 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
+@@ -4409,4 +4409,8 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
              }
          }
      }

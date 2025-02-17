@@ -80,10 +80,10 @@ index 8f348d140ab98e23ee0debe4bacac51fee49c35e..c6490516215ad94323174de81771f258
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
          SkullBlockEntity.clear();
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index d34ad333b6ea3855a24a58fcd80ccf19b2bbf41c..ca31ac5324bc4cbe4c11661d27f088b967309691 100644
+index 9cbd692680c66331ae8e1544ee8d2a7317262d01..7f4a4280b47bd87b08bd81cae22e5f6cba175ff3 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1338,6 +1338,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1339,6 +1339,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          final int timerId = isActive ? entity.getType().tickTimerId : entity.getType().inactiveTickTimerId;
          final ca.spottedleaf.leafprofiler.RegionizedProfiler.Handle profiler = io.papermc.paper.threadedregions.TickRegionScheduler.getProfiler();
          profiler.startTimer(timerId);
@@ -92,7 +92,7 @@ index d34ad333b6ea3855a24a58fcd80ccf19b2bbf41c..ca31ac5324bc4cbe4c11661d27f088b9
          try {
          // Folia end - profiler
          if (isActive) { // Paper - EAR 2
-@@ -1355,6 +1357,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1356,6 +1358,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          } else {entity.inactiveTick();} // Paper - EAR 2
          profilerFiller.pop();
          } finally { profiler.stopTimer(timerId); } // Folia - profiler
@@ -100,7 +100,7 @@ index d34ad333b6ea3855a24a58fcd80ccf19b2bbf41c..ca31ac5324bc4cbe4c11661d27f088b9
  
          for (Entity entity1 : entity.getPassengers()) {
              this.tickPassenger(entity, entity1, isActive); // Paper - EAR 2
-@@ -1374,6 +1377,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1375,6 +1378,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              final int timerId = isActive ? passengerEntity.getType().tickTimerId : passengerEntity.getType().inactiveTickTimerId;
              final ca.spottedleaf.leafprofiler.RegionizedProfiler.Handle profiler = io.papermc.paper.threadedregions.TickRegionScheduler.getProfiler();
              profiler.startTimer(timerId);
@@ -109,7 +109,7 @@ index d34ad333b6ea3855a24a58fcd80ccf19b2bbf41c..ca31ac5324bc4cbe4c11661d27f088b9
              try {
              // Folia end - profiler
              passengerEntity.setOldPosAndRot();
-@@ -1407,6 +1412,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1409,6 +1414,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                  this.tickPassenger(passengerEntity, entity, isActive); // Paper - EAR 2
              }
              } finally { profiler.stopTimer(timerId); } // Folia - profiler
@@ -185,10 +185,10 @@ index 23b342cc31c7e72ade0e1ccad86a9ccf34380f13..249cb7326c8e4012dcffdb6bbb7bfc1f
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index aaf047edd0d732601c5bd9f771f51da72913fffa..bd1919a2d273f56dd77000032365ea134c05ce66 100644
+index 26637b397b06c14445740a733d378a38a85e1875..0a7d6172d42f4b0395aa448b1c1d9fb8eaa4bf7a 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -5916,4 +5916,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -5919,4 +5919,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return ((ServerLevel) this.level).isPositionEntityTicking(this.blockPosition());
      }
      // Paper end - Expose entity id counter
@@ -260,10 +260,10 @@ index 6655d06e2011e20e7346dfe57527795269094d8a..48aa6fcb5c16fdbb4ae902cbb72c6b8e
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 7635b16cf82577a4822a5057aa5319d4c23e2168..0e020dfebe06dce4c19beb10c961ea9e8a35a415 100644
+index d15304ec04bf22674ccd0b106f5d9ba7e609f5d0..bb51d52a3d9590e7925c5f08bf5a80e8aefa89e9 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -1544,6 +1544,13 @@ public abstract class Player extends LivingEntity {
+@@ -1546,6 +1546,13 @@ public abstract class Player extends LivingEntity {
          return true;
      }
  

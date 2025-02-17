@@ -19,10 +19,10 @@ index 7eff847790394aecd058e7a61905da86163b4c6e..9099457f55a2829297ac1db8a69a98ff
                      double rangeY = level.paperConfig().entities.trackingRangeY.get(this.entity, -1);
                      if (rangeY != -1) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 3aee378b03db39dd49a7afe5e762e0639ba17b26..a8a1f1d11bd6a1ed70291dc7fe60f3428c331601 100644
+index 59a2ee35a60c833516f59076650c6fd1e86b6be9..dc5651d0fb47a8f43b9c6ff4b5a427d0f095f7a8 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -136,7 +136,7 @@ import net.minecraft.world.scores.ScoreHolder;
+@@ -135,7 +135,7 @@ import net.minecraft.world.scores.ScoreHolder;
  import net.minecraft.world.scores.Team;
  import org.slf4j.Logger;
  
@@ -31,7 +31,7 @@ index 3aee378b03db39dd49a7afe5e762e0639ba17b26..a8a1f1d11bd6a1ed70291dc7fe60f342
  
      // CraftBukkit start
      private static final int CURRENT_LEVEL = 2;
-@@ -6050,4 +6050,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6047,4 +6047,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      // Paper end - Expose entity id counter
  
      public boolean shouldTickHot() { return this.tickCount > 20 * 10 && this.isAlive(); } // KioCG
@@ -93,7 +93,7 @@ index d9cc1d7e56c37d5ce92544edc10e89dbc89dd15d..39e7689be243b9c99b507d665f659135
      public EntityType(
          EntityType.EntityFactory<T> factory,
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 0e020dfebe06dce4c19beb10c961ea9e8a35a415..49f927c20b84e47ed2b0e57beecb3aa746448f5a 100644
+index bb51d52a3d9590e7925c5f08bf5a80e8aefa89e9..8a04f655e249d5e3bdcf88fbe87f5f986c3c0df2 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -210,6 +210,25 @@ public abstract class Player extends LivingEntity {
@@ -149,7 +149,7 @@ index 0e020dfebe06dce4c19beb10c961ea9e8a35a415..49f927c20b84e47ed2b0e57beecb3aa7
          this.noPhysics = this.isSpectator();
          if (this.isSpectator() || this.isPassenger()) {
              this.setOnGround(false);
-@@ -1502,6 +1541,7 @@ public abstract class Player extends LivingEntity {
+@@ -1504,6 +1543,7 @@ public abstract class Player extends LivingEntity {
          if (this.containerMenu != null && this.hasContainerOpen()) {
              this.doCloseContainer();
          }

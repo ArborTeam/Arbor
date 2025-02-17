@@ -5,10 +5,10 @@ Subject: [PATCH] Teleport async if entity was moving to another region at once
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index bd1919a2d273f56dd77000032365ea134c05ce66..2157bc506a76173af78d8cb2ae52dad0c0c195a6 100644
+index 0a7d6172d42f4b0395aa448b1c1d9fb8eaa4bf7a..b5a535cbcf592ef210981334128365ff5bc68e92 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1099,6 +1099,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1100,6 +1100,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
      // Paper end - detailed watchdog information
  
@@ -19,7 +19,7 @@ index bd1919a2d273f56dd77000032365ea134c05ce66..2157bc506a76173af78d8cb2ae52dad0
      public void move(MoverType type, Vec3 movement) {
          final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
          // Paper start - detailed watchdog information
-@@ -1109,6 +1113,32 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1110,6 +1114,32 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.moveStartZ = this.getZ();
              this.moveVector = movement;
          }

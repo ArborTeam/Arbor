@@ -5,10 +5,10 @@ Subject: [PATCH] Tick regions api
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index d9bca225cb9c88e978fdbebbb0b361d160acbaa3..4a5989fd7964beaa4e9a1b7f52799dc416f4b132 100644
+index 82d26889661a944e057be0c450fb5a296122ea8e..4f320a91fb8abe21cbb7b01fdc34330def5b2448 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -2544,4 +2544,11 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -2517,4 +2517,11 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          return this.adventure$pointers;
      }
      // Paper end

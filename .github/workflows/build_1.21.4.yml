@@ -31,6 +31,7 @@ jobs:
       - name: CreateJar
         run: ./gradlew createMojmapPaperclipJar
       - name: Publish to repo
+        if: github.event_name != 'pull_request'
         continue-on-error: true
         run: |
           export MAVEN_REPO_USER=${{ secrets.MAVEN_REPO_USER }}
@@ -42,9 +43,10 @@ jobs:
           name: "${{ env.project_id_b }} CI Artifacts"
           path: "luminol-server/build/libs/*.jar"
       - name: SetENV
+        if: github.event_name != 'pull_request'
         run: sh scripts/SetENV.sh
       - name: Create Release
-        if: "!contains(github.event.commits[0].message, '[release skip]')"
+        if: github.event_name != 'pull_request'
         uses: ncipollo/release-action@v1.14.0
         with:
           tag: ${{ env.tag }}

@@ -1,0 +1,26 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/config/modules/misc/ContainerExpansionConfig.java
+@@ -1,0 +_,23 @@
++package me.earthme.luminol.config.modules.misc;
++
++import me.earthme.luminol.config.ConfigInfo;
++import me.earthme.luminol.config.EnumConfigCategory;
++import me.earthme.luminol.config.IConfigModule;
++
++public class ContainerExpansionConfig implements IConfigModule {
++    @ConfigInfo(baseName = "barrel_rows")
++    public static int barrelRows = 3;
++
++    @ConfigInfo(baseName = "enderchest_rows")
++    public static int enderchestRows = 3;
++
++    @Override
++    public EnumConfigCategory getCategory() {
++        return EnumConfigCategory.MISC;
++    }
++
++    @Override
++    public String getBaseName() {
++        return "container_expansion";
++    }
++}

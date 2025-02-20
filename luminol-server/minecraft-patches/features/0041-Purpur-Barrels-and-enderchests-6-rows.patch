@@ -1,0 +1,172 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Suisuroru <qwertyuiop14077@qq.com>
+Date: Thu, 20 Feb 2025 01:00:28 +0800
+Subject: [PATCH] Purpur-Barrels-and-enderchests-6-rows
+
+
+diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
+index 548f7a2b0b020ff7fff27396942cc0bc9e755afe..b977d0b2c754c227b667ce9fdd3ebb934db8e974 100644
+--- a/net/minecraft/server/players/PlayerList.java
++++ b/net/minecraft/server/players/PlayerList.java
+@@ -1103,6 +1103,10 @@ public abstract class PlayerList {
+         player.getBukkitEntity().recalculatePermissions(); // CraftBukkit
+         this.server.getCommands().sendCommands(player);
+         } // Paper - Add sendOpLevel API
++
++        // Purpur start - Barrels and enderchests 6 rows
++        player.enderChestSlotCount = me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.enderchestRows < 7 && me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.enderchestRows > 0 ? 9 * me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.enderchestRows : 27;
++        // Purpur end - Barrels and enderchests 6 rows
+     }
+ 
+     public boolean isWhiteListed(GameProfile profile) {
+diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
+index ad34d0e1ab16fb269b3cec2842bfc2f2c29b452e..40b91234fd2e4f4f134d309590ea6b605f764e83 100644
+--- a/net/minecraft/world/entity/player/Player.java
++++ b/net/minecraft/world/entity/player/Player.java
+@@ -200,6 +200,7 @@ public abstract class Player extends LivingEntity {
+     private int currentImpulseContextResetGraceTime;
+     public boolean affectsSpawning = true; // Paper - Affects Spawning API
+     public net.kyori.adventure.util.TriState flyingFallDamage = net.kyori.adventure.util.TriState.NOT_SET; // Paper - flying fall damage
++    public int enderChestSlotCount = -1; // Purpur - Barrels and enderchests 6 rows
+ 
+     // CraftBukkit start
+     public boolean fauxSleeping;
+diff --git a/net/minecraft/world/inventory/ChestMenu.java b/net/minecraft/world/inventory/ChestMenu.java
+index 280169afbd637eeb67ddf7eaeb4eecd464a128d5..461705345dd897c8304c884272531af836f8854f 100644
+--- a/net/minecraft/world/inventory/ChestMenu.java
++++ b/net/minecraft/world/inventory/ChestMenu.java
+@@ -66,10 +66,30 @@ public class ChestMenu extends AbstractContainerMenu {
+         return new ChestMenu(MenuType.GENERIC_9x6, containerId, playerInventory, 6);
+     }
+ 
++    // Purpur start - Barrels and enderchests 6 rows
++    public static ChestMenu oneRow(int syncId, Inventory playerInventory, Container inventory) {
++        return new ChestMenu(MenuType.GENERIC_9x1, syncId, playerInventory, inventory, 1);
++        }
++
++    public static ChestMenu twoRows(int syncId, Inventory playerInventory, Container inventory) {
++        return new ChestMenu(MenuType.GENERIC_9x2, syncId, playerInventory, inventory, 2);
++        }
++    // Purpur end - Barrels and enderchests 6 rows
++
+     public static ChestMenu threeRows(int containerId, Inventory playerInventory, Container container) {
+         return new ChestMenu(MenuType.GENERIC_9x3, containerId, playerInventory, container, 3);
+     }
+ 
++    // Purpur start - Barrels and enderchests 6 rows
++    public static ChestMenu fourRows(int syncId, Inventory playerInventory, Container inventory) {
++        return new ChestMenu(MenuType.GENERIC_9x4, syncId, playerInventory, inventory, 4);
++    }
++
++    public static ChestMenu fiveRows(int syncId, Inventory playerInventory, Container inventory) {
++        return new ChestMenu(MenuType.GENERIC_9x5, syncId, playerInventory, inventory, 5);
++    }
++    // Purpur end - Barrels and enderchests 6 rows
++
+     public static ChestMenu sixRows(int containerId, Inventory playerInventory, Container container) {
+         return new ChestMenu(MenuType.GENERIC_9x6, containerId, playerInventory, container, 6);
+     }
+diff --git a/net/minecraft/world/inventory/PlayerEnderChestContainer.java b/net/minecraft/world/inventory/PlayerEnderChestContainer.java
+index a6a359bab2a727f4631b633a8bb370dd40decc75..5fab998cdec92a2bd965e6b48cc6189b195dc86d 100644
+--- a/net/minecraft/world/inventory/PlayerEnderChestContainer.java
++++ b/net/minecraft/world/inventory/PlayerEnderChestContainer.java
+@@ -25,11 +25,18 @@ public class PlayerEnderChestContainer extends SimpleContainer {
+     }
+ 
+     public PlayerEnderChestContainer(Player owner) {
+-        super(27);
++        super(me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.enderchestRows < 7 && me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.enderchestRows > 0 ? 9 * me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.enderchestRows : 27);
+         this.owner = owner;
+         // CraftBukkit end
+     }
+ 
++    // Purpur start - Barrels and enderchests 6 rows
++        @Override
++    public int getContainerSize() {
++        return owner.enderChestSlotCount < 0 ? super.getContainerSize() : owner.enderChestSlotCount;
++    }
++    // Purpur end - Barrels and enderchests 6 rows
++
+     public void setActiveChest(EnderChestBlockEntity enderChestBlockEntity) {
+         this.activeChest = enderChestBlockEntity;
+     }
+diff --git a/net/minecraft/world/level/block/EnderChestBlock.java b/net/minecraft/world/level/block/EnderChestBlock.java
+index f5533960708bdbaf2eacefbc7c7c3123b7d26502..bf9801f1370c8d5e6ca459207b221ef2e92dac9e 100644
+--- a/net/minecraft/world/level/block/EnderChestBlock.java
++++ b/net/minecraft/world/level/block/EnderChestBlock.java
+@@ -85,8 +85,14 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
+                 enderChestInventory.setActiveChest(enderChestBlockEntity); // Needs to happen before ChestMenu.threeRows as it is required for opening animations
+                 if (level instanceof ServerLevel serverLevel && player.openMenu(
+                     new SimpleMenuProvider(
+-                        (containerId, playerInventory, player1) -> ChestMenu.threeRows(containerId, playerInventory, enderChestInventory), CONTAINER_TITLE
+-                    )
++                            (containerId, playerInventory, player1) -> switch (me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.enderchestRows) {
++                    case 6 -> ChestMenu.sixRows(containerId, playerInventory, enderChestInventory);
++                    case 5 -> ChestMenu.fiveRows(containerId, playerInventory, enderChestInventory);
++                    case 4 -> ChestMenu.fourRows(containerId, playerInventory, enderChestInventory);
++                    case 2 -> ChestMenu.twoRows(containerId, playerInventory, enderChestInventory);
++                    case 1 -> ChestMenu.oneRow(containerId, playerInventory, enderChestInventory);
++                    default -> ChestMenu.threeRows(containerId, playerInventory, enderChestInventory);
++                }, CONTAINER_TITLE) // Purpur - Barrels and enderchests 6 rows
+                 ).isPresent()) {
+                 // Paper end - Fix InventoryOpenEvent cancellation - moved up;
+                     player.awardStat(Stats.OPEN_ENDERCHEST);
+diff --git a/net/minecraft/world/level/block/entity/BarrelBlockEntity.java b/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
+index 0f808855f58281578c2758513787f0f7330c9291..5b6ee21c21686dad86717b87c0033149cefad142 100644
+--- a/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
+@@ -55,7 +55,17 @@ public class BarrelBlockEntity extends RandomizableContainerBlockEntity {
+         this.maxStack = i;
+     }
+     // CraftBukkit end
+-    private NonNullList<ItemStack> items = NonNullList.withSize(27, ItemStack.EMPTY);
++    // Purpur start - Barrels and enderchests 6 rows
++    private NonNullList<ItemStack> items = NonNullList.withSize(switch (me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.barrelRows) {
++        case 6 -> 54;
++        case 5 -> 45;
++        case 4 -> 36;
++        case 2 -> 18;
++        case 1 -> 9;
++        default -> 27;
++        }, ItemStack.EMPTY);
++    // Purpur end - Barrels and enderchests 6 rows
++
+     public final ContainerOpenersCounter openersCounter = new ContainerOpenersCounter() {
+         @Override
+         protected void onOpen(Level level, BlockPos pos, BlockState state) {
+@@ -107,7 +117,16 @@ public class BarrelBlockEntity extends RandomizableContainerBlockEntity {
+ 
+     @Override
+     public int getContainerSize() {
+-        return 27;
++        // Purpur start - Barrels and enderchests 6 rows
++        return switch (me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.barrelRows) {
++            case 6 -> 54;
++            case 5 -> 45;
++            case 4 -> 36;
++            case 2 -> 18;
++            case 1 -> 9;
++            default -> 27;
++        };
++    // Purpur end - Barrels and enderchests 6 rows
+     }
+ 
+     @Override
+@@ -127,7 +146,16 @@ public class BarrelBlockEntity extends RandomizableContainerBlockEntity {
+ 
+     @Override
+     protected AbstractContainerMenu createMenu(int id, Inventory player) {
+-        return ChestMenu.threeRows(id, player, this);
++        // Purpur start - Barrels and enderchests 6 rows
++        return switch (me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.barrelRows) {
++            case 6 -> ChestMenu.sixRows(id, player, this);
++            case 5 -> ChestMenu.fiveRows(id, player, this);
++            case 4 -> ChestMenu.fourRows(id, player, this);
++            case 2 -> ChestMenu.twoRows(id, player, this);
++            case 1 -> ChestMenu.oneRow(id, player, this);
++            default -> ChestMenu.threeRows(id, player, this);
++        };
++        // Purpur end - Barrels and enderchests 6 rows
+     }
+ 
+     @Override

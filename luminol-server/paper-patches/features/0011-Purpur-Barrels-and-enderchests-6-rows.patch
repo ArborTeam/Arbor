@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Suisuroru <qwertyuiop14077@qq.com>
+Date: Thu, 20 Feb 2025 01:00:29 +0800
+Subject: [PATCH] Purpur-Barrels-and-enderchests-6-rows
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
+index 1ce328bed5cf3d087a3f7dc9236153381d758493..20f2b9945eaa58e05b417d9cca7c30dd0496cf72 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
+@@ -145,9 +145,26 @@ public class CraftContainer extends AbstractContainerMenu {
+             case PLAYER:
+             case CHEST:
+             case ENDER_CHEST:
+-            case BARREL:
+-                this.delegate = new ChestMenu(net.minecraft.world.inventory.MenuType.GENERIC_9x3, windowId, bottom, top, top.getContainerSize() / 9);
++                // Purpur start - Barrels and enderchests 6 rows
++                this.delegate = new ChestMenu(switch (me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.enderchestRows) {
++                    case 6 -> net.minecraft.world.inventory.MenuType.GENERIC_9x6;
++                    case 5 -> net.minecraft.world.inventory.MenuType.GENERIC_9x5;
++                    case 4 -> net.minecraft.world.inventory.MenuType.GENERIC_9x4;
++                    case 2 -> net.minecraft.world.inventory.MenuType.GENERIC_9x2;
++                    case 1 -> net.minecraft.world.inventory.MenuType.GENERIC_9x1;
++                    default -> net.minecraft.world.inventory.MenuType.GENERIC_9x3;
++                }, windowId, bottom, top, top.getContainerSize() / 9);
+                 break;
++            case BARREL:
++                this.delegate = new ChestMenu(switch (me.earthme.luminol.config.modules.misc.ContainerExpansionConfig.barrelRows) {
++                    case 6 -> net.minecraft.world.inventory.MenuType.GENERIC_9x6;
++                    case 5 -> net.minecraft.world.inventory.MenuType.GENERIC_9x5;
++                    case 4 -> net.minecraft.world.inventory.MenuType.GENERIC_9x4;
++                    case 2 -> net.minecraft.world.inventory.MenuType.GENERIC_9x2;
++                    case 1 -> net.minecraft.world.inventory.MenuType.GENERIC_9x1;
++                    default -> net.minecraft.world.inventory.MenuType.GENERIC_9x3;
++                    }, windowId, bottom, top, top.getContainerSize() / 9);
++                // Purpur end - Barrels and enderchests 6 rows
+             case DISPENSER:
+             case DROPPER:
+                 this.delegate = new DispenserMenu(windowId, bottom, top);
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
+index c6159c70f7a37b9bffe268b91905ce848d1d2927..1ae08daecb7f072e0afaae327bad64e43c3ae027 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
+@@ -84,7 +84,7 @@ public class CraftInventory implements Inventory {
+ 
+     @Override
+     public void setContents(ItemStack[] items) {
+-        Preconditions.checkArgument(items.length <= this.getSize(), "Invalid inventory size (%s); expected %s or less", items.length, this.getSize());
++    // Preconditions.checkArgument(items.length <= this.getSize(), "Invalid inventory size (%s); expected %s or less", items.length, this.getSize()); // Purpur - Barrels and enderchests 6 rows
+ 
+         for (int i = 0; i < this.getSize(); i++) {
+             if (i >= items.length) {

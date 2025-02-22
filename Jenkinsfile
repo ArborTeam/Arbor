@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        jdk 'jdk23'
-    }
-
     stages {
         stage('Configure git') {
             steps {

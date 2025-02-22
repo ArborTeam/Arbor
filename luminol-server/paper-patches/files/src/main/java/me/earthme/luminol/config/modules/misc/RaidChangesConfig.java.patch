@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/RaidChangesConfig.java
-@@ -1,0 +_,23 @@
+@@ -1,0 +_,31 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import me.earthme.luminol.config.ConfigInfo;
@@ -8,10 +8,18 @@
 +import me.earthme.luminol.config.IConfigModule;
 +
 +public class RaidChangesConfig implements IConfigModule {
-+    @ConfigInfo(baseName = "allow-bad-omen-trigger-raid")
++    @ConfigInfo(baseName = "allow-bad-omen-trigger-raid", comments =
++            """
++                    Allow players with ominous signs to\s
++                    skip a 30 second cooldown and trigger\s
++                    attacks directly""")
 +    public static boolean trigger = false;
 +
-+    @ConfigInfo(baseName = "give-bad-omen-when-kill-patrol-leader")
++    @ConfigInfo(baseName = "give-bad-omen-when-kill-patrol-leader", comments =
++            """
++                    Enable players to obtain an ominous\s
++                    omen effect when killing the patrol\s
++                    team captain""")
 +    public static boolean effect = false;;
 +
 +    @Override

@@ -80,7 +80,7 @@ index 8f348d140ab98e23ee0debe4bacac51fee49c35e..c6490516215ad94323174de81771f258
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
          SkullBlockEntity.clear();
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 9cbd692680c66331ae8e1544ee8d2a7317262d01..7f4a4280b47bd87b08bd81cae22e5f6cba175ff3 100644
+index 7fb6cfe0484a4cc1e30fd8e344de307a0c734b68..f2d0d8c7577ea5d798b6a2cf8fd6282cead9de94 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1339,6 +1339,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -260,7 +260,7 @@ index 6655d06e2011e20e7346dfe57527795269094d8a..48aa6fcb5c16fdbb4ae902cbb72c6b8e
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index d15304ec04bf22674ccd0b106f5d9ba7e609f5d0..bb51d52a3d9590e7925c5f08bf5a80e8aefa89e9 100644
+index e70919757dee4b02384ded3551c8f580d289584a..ae049c5c3593525b991d865fec695c00ad408a59 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -1546,6 +1546,13 @@ public abstract class Player extends LivingEntity {

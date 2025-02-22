@@ -10,9 +10,8 @@ build
 /luminol-api/build.gradle.kts
 /folia-server/build.gradle.kts
 /folia-server/src/minecraft
-/paper-server
 /folia-api/build.gradle.kts
+/paper-server
 /paper-api
-/paper-api-generator
 
 .idea/

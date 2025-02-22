@@ -93,7 +93,7 @@ index d9cc1d7e56c37d5ce92544edc10e89dbc89dd15d..39e7689be243b9c99b507d665f659135
      public EntityType(
          EntityType.EntityFactory<T> factory,
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index bb51d52a3d9590e7925c5f08bf5a80e8aefa89e9..8a04f655e249d5e3bdcf88fbe87f5f986c3c0df2 100644
+index ae049c5c3593525b991d865fec695c00ad408a59..ad34d0e1ab16fb269b3cec2842bfc2f2c29b452e 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -210,6 +210,25 @@ public abstract class Player extends LivingEntity {

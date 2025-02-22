@@ -19,7 +19,7 @@ index 7eff847790394aecd058e7a61905da86163b4c6e..9099457f55a2829297ac1db8a69a98ff
                      double rangeY = level.paperConfig().entities.trackingRangeY.get(this.entity, -1);
                      if (rangeY != -1) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 59a2ee35a60c833516f59076650c6fd1e86b6be9..dc5651d0fb47a8f43b9c6ff4b5a427d0f095f7a8 100644
+index f26cdc00180f72bea271877b9ef814daf9850916..647510b9fae49b5a4113a35be9909babf54acfcf 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -135,7 +135,7 @@ import net.minecraft.world.scores.ScoreHolder;
@@ -31,7 +31,7 @@ index 59a2ee35a60c833516f59076650c6fd1e86b6be9..dc5651d0fb47a8f43b9c6ff4b5a427d0
  
      // CraftBukkit start
      private static final int CURRENT_LEVEL = 2;
-@@ -6047,4 +6047,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6055,4 +6055,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      // Paper end - Expose entity id counter
  
      public boolean shouldTickHot() { return this.tickCount > 20 * 10 && this.isAlive(); } // KioCG

@@ -11,7 +11,7 @@
 +    @ConfigInfo(baseName = "enabled", comments =
 +            """
 +                    The POIManager of folia has something which has not been patched\s
-+                     for regionized ticking and these would trigger the async catcher\s
++                    for regionized ticking and these would trigger the async catcher\s
 +                    and make the server crash.If you would like to prevent it and didn't\s
 +                    mind the side effect(currently unknown), you can enable this""")
 +    public static boolean enabled = false;

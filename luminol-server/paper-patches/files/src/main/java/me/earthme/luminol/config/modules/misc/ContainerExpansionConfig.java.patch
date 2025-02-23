@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/ContainerExpansionConfig.java
-@@ -1,0 +_,23 @@
+@@ -1,0 +_,27 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import me.earthme.luminol.config.ConfigInfo;
@@ -8,10 +8,14 @@
 +import me.earthme.luminol.config.IConfigModule;
 +
 +public class ContainerExpansionConfig implements IConfigModule {
-+    @ConfigInfo(baseName = "barrel_rows")
++    @ConfigInfo(baseName = "barrel_rows", comments =
++            """
++                    range: 1~6\s""")
 +    public static int barrelRows = 3;
 +
-+    @ConfigInfo(baseName = "enderchest_rows")
++    @ConfigInfo(baseName = "enderchest_rows", comments =
++            """
++                    range: 1~6\s""")
 +    public static int enderchestRows = 3;
 +
 +    @Override

@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+Date: Mon, 24 Feb 2025 06:00:00 -0800
+Subject: [PATCH] Configurable tripwire dupe
+
+
+diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
+index 9aace993c6c18f1a50610e4766225485984b8167..07ffe289b9556b45a9ef7db5357d85b14fe23feb 100644
+--- a/net/minecraft/world/level/block/TripWireHookBlock.java
++++ b/net/minecraft/world/level/block/TripWireHookBlock.java
+@@ -215,7 +215,7 @@ public class TripWireHookBlock extends Block {
+                     BlockState blockState2 = blockStates[i2];
+                     if (blockState2 != null) {
+                         BlockState blockState3 = level.getBlockState(blockPos1);
+-                        if (blockState3.is(Blocks.TRIPWIRE) || blockState3.is(Blocks.TRIPWIRE_HOOK)) {
++                        if (me.earthme.luminol.config.modules.misc.AllowTripwireDupe.enabled || blockState3.is(Blocks.TRIPWIRE) || blockState3.is(Blocks.TRIPWIRE_HOOK)) {
+                             if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !blockState3.is(Blocks.TRIPWIRE)) level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, Boolean.valueOf(flag2)), 3); // Paper - prevent tripwire from updating
+                         }
+                     }

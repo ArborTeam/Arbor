@@ -67,8 +67,8 @@
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -200,26 +_,33 @@
-     implementation("me.lucko:spark-paper:1.10.119-SNAPSHOT")
+@@ -201,26 +_,33 @@
+     implementation("me.lucko:spark-paper:1.10.119-20241121.092015-1")
  }
  
 +// Pufferfish Start
@@ -84,7 +84,7 @@
          val mcVersion = rootProject.providers.gradleProperty("mcVersion").get()
          val build = System.getenv("BUILD_NUMBER") ?: null
 -        val buildTime = if (build != null) Instant.now() else Instant.EPOCH
-+        val buildTime = Instant.now() // We don't have ci yet
++        val buildTime = Instant.now() // Always use current as build time
          val gitHash = git.exec(providers, "rev-parse", "--short=7", "HEAD").get().trim()
          val implementationVersion = "$mcVersion-${build ?: "DEV"}-$gitHash"
          val date = git.exec(providers, "show", "-s", "--format=%ci", gitHash).get().trim()
@@ -107,10 +107,11 @@
              "Build-Number" to (build ?: ""),
              "Build-Time" to buildTime.toString(),
              "Git-Branch" to gitBranch,
-@@ -350,3 +_,9 @@
+@@ -351,3 +_,10 @@
      classpath(tasks.createReobfPaperclipJar.flatMap { it.outputZip })
      mainClass.set(null as String?)
  }
++
 +// Pufferfish Start
 +tasks.withType<JavaCompile> {
 +    val compilerArgs = options.compilerArgs

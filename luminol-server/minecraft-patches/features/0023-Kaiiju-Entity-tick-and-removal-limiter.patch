@@ -17,7 +17,7 @@ index c6e487a4c14e6b82533881d01f32349b9ae28728..2c747cb8a724cd25c9d724908f92b320
      // block ticking
      private final ObjectLinkedOpenHashSet<BlockEventData> blockEvents = new ObjectLinkedOpenHashSet<>();
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index f2d0d8c7577ea5d798b6a2cf8fd6282cead9de94..c768279df8551498a61d29630f4374f1054a2d8b 100644
+index 7defcd15c44601bfd2f7f55046038693264defee..5a87825606047f058df8de84bf933d216b5878b0 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -808,6 +808,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

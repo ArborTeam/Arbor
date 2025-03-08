@@ -5,7 +5,7 @@ Subject: [PATCH] Petal Reduce sensor work
 
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index af7dbb0f2df0ec42c2c16bc58ba16b6c65d3ebcb..53e78475e721a05e9757235d0849eae3878007cd 100644
+index 94a7b95f41c2954561f9c3cb0f61210c0c058f1d..dbe0fc0c46f66c61a2f286d521302719b28917c1 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -866,11 +866,11 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab

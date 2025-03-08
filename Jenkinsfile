@@ -5,8 +5,8 @@ pipeline {
         stage('Configure git') {
             steps {
                 script {
-                    sh 'git config user.name "luminolmc"'
-                    sh 'git config user.email "luminolmc@noreply.github.com"'
+                    sh 'git config --global user.name "luminolmc"'
+                    sh 'git config --global user.email "luminolmc@noreply.github.com"'
                 }
             }
         }

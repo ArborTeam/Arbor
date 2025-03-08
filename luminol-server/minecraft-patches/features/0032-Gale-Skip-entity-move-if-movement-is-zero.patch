@@ -5,7 +5,7 @@ Subject: [PATCH] Gale Skip entity move if movement is zero
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 35e413b7b2f8465946b2cc8651560c6899898458..59dd6ecc3b79b1d6c13eda7b71d6dbbf4ffc1dfe 100644
+index 46460af3ebd76d7475aa7a7cbe55203a40f1c323..72934a95991d25152e93c9b70e9992254d0daf23 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1104,7 +1104,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

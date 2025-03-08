@@ -19,7 +19,7 @@ index 7eff847790394aecd058e7a61905da86163b4c6e..9099457f55a2829297ac1db8a69a98ff
                      double rangeY = level.paperConfig().entities.trackingRangeY.get(this.entity, -1);
                      if (rangeY != -1) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index f26cdc00180f72bea271877b9ef814daf9850916..647510b9fae49b5a4113a35be9909babf54acfcf 100644
+index b99b5830a3e5bdbb781c7bcb8544b2e57415b5f5..a570499366ff238c869de60be3aeed0459b73db8 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -135,7 +135,7 @@ import net.minecraft.world.scores.ScoreHolder;

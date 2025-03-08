@@ -1,0 +1,53 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sat, 8 Mar 2025 09:56:15 +0800
+Subject: [PATCH] Add experiment config for entity to clean memory value which
+ is not belong to current tickregion
+
+
+diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
+index 65b2b3ece213d901cdd585093e2fafcd2ef4a7cd..d61fba01feecce3610cd390f490d3097c5db19c4 100644
+--- a/net/minecraft/world/entity/ai/Brain.java
++++ b/net/minecraft/world/entity/ai/Brain.java
+@@ -399,7 +399,7 @@ public class Brain<E extends LivingEntity> {
+     }
+ 
+     public void tick(ServerLevel level, E entity) {
+-        this.forgetOutdatedMemories();
++        this.forgetOutdatedMemories(entity); // Luminol - Add config to force clean entity memory that don't belong to current tick region
+         this.tickSensors(level, entity);
+         this.startEachNonRunningBehavior(level, entity);
+         this.tickEachRunningBehavior(level, entity);
+@@ -411,10 +411,31 @@ public class Brain<E extends LivingEntity> {
+         }
+     }
+ 
+-    private void forgetOutdatedMemories() {
++    private void forgetOutdatedMemories(E owner) { // Luminol - Add config to force clean entity memory that don't belong to current tick region
+         for (Entry<MemoryModuleType<?>, Optional<? extends ExpirableValue<?>>> entry : this.memories.entrySet()) {
+             if (entry.getValue().isPresent()) {
+                 ExpirableValue<?> expirableValue = (ExpirableValue<?>)entry.getValue().get();
++                // Luminol start - Add config to force clean entity memory that don't belong to current tick region
++                final Object value = expirableValue.getValue();
++                final net.minecraft.world.level.Level ownerLevel = owner.level();
++
++                // type: entity
++                if (me.earthme.luminol.config.modules.experiment.ForceCleanupEntityBrainMemoryConfig.enabledForEntity && value instanceof LivingEntity entity) {
++                    if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
++                        this.eraseMemory(entry.getKey());
++                        continue;
++                    }
++                }
++
++                // type: block_pos
++                if (me.earthme.luminol.config.modules.experiment.ForceCleanupEntityBrainMemoryConfig.enabledForBlockPos && value instanceof net.minecraft.core.BlockPos blockPos) {
++                    if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(ownerLevel, blockPos)) {
++                        this.eraseMemory(entry.getKey());
++                        continue;
++                    }
++                }
++                // Luminol end
++
+                 if (expirableValue.hasExpired()) {
+                     this.eraseMemory(entry.getKey());
+                 }

@@ -145,7 +145,7 @@ index 3ad00cc095588574218ca6d729ead119403202e0..ccf1914b4f48ecc0f4fe980510f42d54
              );
          });
 diff --git a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-index 61887e6b052bca715c90dff5d9cd657e0b3f6a78..4f18340a99b141e15f74595282155bbd9632fb86 100644
+index 95e2dff6782bf7767ecb1a23e618862919ea71aa..386c38273e21ba6b48f9fad67fddc39255138e14 100644
 --- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 @@ -193,6 +193,18 @@ public class TheEndGatewayBlockEntity extends TheEndPortalBlockEntity {

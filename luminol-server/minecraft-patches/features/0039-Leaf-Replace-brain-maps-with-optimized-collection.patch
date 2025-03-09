@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sat, 8 Mar 2025 21:20:11 +0800
+Subject: [PATCH] Leaf Replace brain maps with optimized collection
+
+
+diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
+index d61fba01feecce3610cd390f490d3097c5db19c4..67b71145e4feb4835a79a6007b04511a2c3b938a 100644
+--- a/net/minecraft/world/entity/ai/Brain.java
++++ b/net/minecraft/world/entity/ai/Brain.java
+@@ -45,14 +45,14 @@ public class Brain<E extends LivingEntity> {
+     static final Logger LOGGER = LogUtils.getLogger();
+     private final Supplier<Codec<Brain<E>>> codec;
+     private static final int SCHEDULE_UPDATE_DELAY = 20;
+-    private final Map<MemoryModuleType<?>, Optional<? extends ExpirableValue<?>>> memories = Maps.newHashMap();
+-    private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = Maps.newLinkedHashMap();
++    private final Map<MemoryModuleType<?>, Optional<? extends ExpirableValue<?>>> memories = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(); // Leaf - Replace brain maps with optimized collection
++    private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>(); // Leaf - Replace brain maps with optimized collection
+     private final Map<Integer, Map<Activity, Set<BehaviorControl<? super E>>>> availableBehaviorsByPriority = Maps.newTreeMap();
+     private Schedule schedule = Schedule.EMPTY;
+-    private final Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryStatus>>> activityRequirements = Maps.newHashMap();
+-    private final Map<Activity, Set<MemoryModuleType<?>>> activityMemoriesToEraseWhenStopped = Maps.newHashMap();
+-    private Set<Activity> coreActivities = Sets.newHashSet();
+-    private final Set<Activity> activeActivities = Sets.newHashSet();
++    private final Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryStatus>>> activityRequirements = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(); // Leaf - Replace brain maps with optimized collection
++    private final Map<Activity, Set<MemoryModuleType<?>>> activityMemoriesToEraseWhenStopped = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(); // Leaf - Replace brain maps with optimized collection
++    private Set<Activity> coreActivities = new it.unimi.dsi.fastutil.objects.ObjectOpenHashSet<>(); // Leaf - Replace brain maps with optimized collection
++    private final Set<Activity> activeActivities = new it.unimi.dsi.fastutil.objects.ObjectOpenHashSet<>(); // Leaf - Replace brain maps with optimized collection
+     private Activity defaultActivity = Activity.IDLE;
+     private long lastScheduleUpdate = -9999L;
+ 

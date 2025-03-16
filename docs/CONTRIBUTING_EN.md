@@ -12,9 +12,9 @@ And if you can follow the rules below, we can complete the review faster.
 We regularly merge existing PRs.  
 If there are some small problems, we'll help you solve them by editing your PR.
 
-But, if your PR is from a organization, we can NOT edit your PR, so we must merge your PR manually.
+But, if your PR is from an organization, we can NOT edit your PR, so we must merge your PR manually.
 
-So, don't use orgnization accounts for fork!
+So, don't use organization accounts for fork!
 
 See also [This issue](https://github.com/isaacs/github/issues/1681), and then you'll know why we can't edit PRs from organizations.
 
@@ -45,7 +45,7 @@ BTW, `luminol-api` and `luminol-server` and are not normal git repositories.
 
 - Before applying patches, the base will point to unmodified source code.
 - Every commit after the base is a patch.
-- Only commits after the last commit of Paper will be considered Luminol' patches.
+- Only commits after the last commit of Paper will be considered as Luminol patches.
 
 ## Adding new patches
 

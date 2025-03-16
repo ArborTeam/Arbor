@@ -55,7 +55,7 @@ It's very easy to add patches by following the steps below:
 2. Add these changes to the local git repository (For example, `git add .`)
 3. Commit these changes using `git commit -m <Commit Message>` (PS: do not commit new-created files)
 4. Run Gradle's task `rebuildAllServerPatches` to convert your commits to a new patch
-5. Run Gradle's task `fixupPaperApiFilePatches` to generate new-crated files to new patches (PS: do not commit again before you run this task)
+5. Run Gradle's task `fixupPaperApiFilePatches` to generate newly created files to new patches (PS: do not commit again before you run this task)
 6. Push your patches to your repository
 
 After pushing, you can open a PR to submit your patches.
@@ -69,5 +69,5 @@ You can modify an existing patch by following the steps below:
     - If you want to edit the commit message, replace `--fixup` with `--squash`.
 3. Run `git rebase -i --autosquash base` to rebase automatically, then just type `:q` to close the confirm page
 4. Run Gradle's task `rebuildAllServerPatches` to modify existing patches 
-5. Run Gradle's task `fixupPaperApiFilePatches` to regenerate luminol-crated files to patches (PS: do not commit again before you run this task)
+5. Run Gradle's task `fixupPaperApiFilePatches` to regenerate luminol-created files to patches (PS: do not commit again before you run this task)
 6. Push and PR again

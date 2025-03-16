@@ -1,0 +1,23 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/config/modules/experiment/CommandDataConfig.java
+@@ -1,0 +_,20 @@
++package me.earthme.luminol.config.modules.experiment;
++
++import me.earthme.luminol.config.ConfigInfo;
++import me.earthme.luminol.config.EnumConfigCategory;
++import me.earthme.luminol.config.IConfigModule;
++
++public class CommandDataConfig implements IConfigModule {
++    @ConfigInfo(baseName = "enable")
++    public static boolean enabled = false;
++
++    @Override
++    public EnumConfigCategory getCategory() {
++        return EnumConfigCategory.EXPERIMENT;
++    }
++
++    @Override
++    public String getBaseName() {
++        return "force_the_data_command_to_be_enabled";
++    }
++}

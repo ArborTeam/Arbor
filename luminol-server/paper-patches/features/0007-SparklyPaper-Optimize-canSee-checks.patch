@@ -5,7 +5,7 @@ Subject: [PATCH] SparklyPaper Optimize canSee checks
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 3e4e0dcdd4e2808aef8dd41f159a358f47450f40..450350e66ae42f234bfd3016da1434e3194259e2 100644
+index 7cb95021f547c94eae7cef0bf5b2d8dff0a04937..b80795605a61cb0d7aa9fa7eec960d9a13d8c030 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -214,7 +214,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

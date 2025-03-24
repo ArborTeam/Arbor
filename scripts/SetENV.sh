@@ -11,13 +11,10 @@ grdversion=$(prop version)
 preVersion=$(prop preVersion)
 release_tag="$mcversion-$commitid"
 jarName="$project_id-$mcversion-paperclip.jar"
-jarName_bundler="$project_id-$mcversion-bundler.jar"
 jarName_dir="luminol-server/build/libs/$jarName"
-jarName_bundler_dir="luminol-server/build/libs/$jarName_bundler"
 make_latest=$([ $preVersion = "true" ] && echo "false" || echo "true")
 
 mv luminol-server/build/libs/$project_id-paperclip-$grdversion-mojmap.jar $jarName_dir
-mv luminol-server/build/libs/$project_id-bundler-$grdversion-mojmap.jar $jarName_bundler_dir
 
 echo "project_id=$project_id" >> $GITHUB_ENV
 echo "project_id_b=$project_id_b" >> $GITHUB_ENV
@@ -28,5 +25,4 @@ echo "pre=$preVersion" >> $GITHUB_ENV
 echo "tag=$release_tag" >> $GITHUB_ENV
 echo "jar=$jarName" >> $GITHUB_ENV
 echo "jar_dir=$jarName_dir" >> $GITHUB_ENV
-echo "jar_dir_bundler=$jarName_bundler_dir" >> $GITHUB_ENV
 echo "make_latest=$make_latest" >> $GITHUB_ENV

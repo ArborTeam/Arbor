@@ -41,7 +41,7 @@ jobs:
         uses: "actions/upload-artifact@v4"
         with:
           name: "${{ env.project_id_b }} CI Artifacts"
-          path: "luminol-server/build/libs/*.jar"
+          path: "luminol-server/build/libs/*-paperclip.jar"
       - name: SetENV
         if: github.event_name != 'pull_request'
         run: sh scripts/SetENV.sh
@@ -58,7 +58,6 @@ jobs:
             ${{ env.commit_msg }}
           artifacts: |
             ${{ env.jar_dir }}
-            ${{ env.jar_dir_bundler }}
           generateReleaseNotes: true
           prerelease: ${{ env.pre }}
           makeLatest: ${{ env.make_latest }}

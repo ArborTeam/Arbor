@@ -1,0 +1,105 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Fri, 11 Apr 2025 16:53:57 +0800
+Subject: [PATCH] Leaves-Revert-raid-changes
+
+
+diff --git a/net/minecraft/world/effect/BadOmenMobEffect.java b/net/minecraft/world/effect/BadOmenMobEffect.java
+index 80f17f33f670018240c854df589cf90cdeab6e70..8672757a4d5fb5c247599782fece6b8d7d6ec921 100644
+--- a/net/minecraft/world/effect/BadOmenMobEffect.java
++++ b/net/minecraft/world/effect/BadOmenMobEffect.java
+@@ -22,6 +22,11 @@ class BadOmenMobEffect extends MobEffect {
+             && !serverPlayer.isSpectator()
+             && level.getDifficulty() != Difficulty.PEACEFUL
+             && level.isVillage(serverPlayer.blockPosition())) {
++            // Leaves start - Revert raid changes
++            if (me.earthme.luminol.config.modules.misc.RaidChangesConfig.trigger) {
++                return level.getRaids().createOrExtendRaid(serverPlayer, serverPlayer.blockPosition()) == null;
++            }
++            // Leaves end - Revert raid changes
+             Raid raidAt = level.getRaidAt(serverPlayer.blockPosition());
+             if (raidAt == null || raidAt.getRaidOmenLevel() < raidAt.getMaxRaidOmenLevel()) {
+                 serverPlayer.addEffect(new MobEffectInstance(MobEffects.RAID_OMEN, 600, amplifier));
+diff --git a/net/minecraft/world/entity/raid/Raid.java b/net/minecraft/world/entity/raid/Raid.java
+index 2f45befbb50645f1bfb5961ad725f3670ff0d592..84c6eb2c27510938f590f6c6baa5a94c4c08c4ad 100644
+--- a/net/minecraft/world/entity/raid/Raid.java
++++ b/net/minecraft/world/entity/raid/Raid.java
+@@ -674,7 +674,7 @@ public class Raid {
+             int i2 = this.center.getX() + Mth.floor(Mth.cos(f2) * 32.0F * f) + this.level.random.nextInt(3) * Mth.floor(f);
+             int i3 = this.center.getZ() + Mth.floor(Mth.sin(f2) * 32.0F * f) + this.level.random.nextInt(3) * Mth.floor(f);
+             int height = this.level.getHeight(Heightmap.Types.WORLD_SURFACE, i2, i3);
+-            if (Mth.abs(height - this.center.getY()) <= 96) {
++            if (me.earthme.luminol.config.modules.misc.RaidChangesConfig.height_check || Mth.abs(height - this.center.getY()) <= 96) { // Disable height check
+                 mutableBlockPos.set(i2, height, i3);
+                 if (!this.level.isVillage(mutableBlockPos) || i <= 7) {
+                     int i4 = 10;
+diff --git a/net/minecraft/world/entity/raid/Raider.java b/net/minecraft/world/entity/raid/Raider.java
+index 7c385baae81b9a987c0e1e4deb017884600331bc..a0d86c3cc86da734a3cd10d554aaecb5c0b82e59 100644
+--- a/net/minecraft/world/entity/raid/Raider.java
++++ b/net/minecraft/world/entity/raid/Raider.java
+@@ -125,6 +125,43 @@ public abstract class Raider extends PatrollingMonster {
+ 
+                 currentRaid.removeFromRaid(this, false);
+             }
++
++            // Leaves start - Revert raid changes
++            if (this.level() instanceof ServerLevel serverLevel) {
++                if (me.earthme.luminol.config.modules.misc.RaidChangesConfig.effect && !this.hasRaid()) {
++                    ItemStack itemstack = this.getItemBySlot(EquipmentSlot.HEAD);
++                    net.minecraft.world.entity.player.Player entityhuman = null;
++                    if (entity instanceof net.minecraft.world.entity.player.Player player) {
++                        entityhuman = player;
++                    } else if (entity instanceof net.minecraft.world.entity.animal.Wolf wolf) {
++                        LivingEntity entityliving = wolf.getOwner();
++                        if (wolf.isTame() && entityliving instanceof net.minecraft.world.entity.player.Player player) {
++                            entityhuman = player;
++                        }
++                    }
++
++                    if (entityhuman != null && !itemstack.isEmpty() && this.isCaptain()) {
++                        net.minecraft.world.effect.MobEffectInstance mobeffect = entityhuman.getEffect(net.minecraft.world.effect.MobEffects.BAD_OMEN);
++                        int i = 1;
++
++                        if (mobeffect != null) {
++                            i += mobeffect.getAmplifier();
++                            entityhuman.removeEffectNoUpdate(net.minecraft.world.effect.MobEffects.BAD_OMEN);
++                            } else {
++                            --i;
++                        }
++
++                        i = net.minecraft.util.Mth.clamp(i, 0, 4);
++                        net.minecraft.world.effect.MobEffectInstance mobeffect1 = new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.BAD_OMEN, me.earthme.luminol.config.modules.misc.RaidChangesConfig.infinite ? net.minecraft.world.effect.MobEffectInstance.INFINITE_DURATION : 120000, i, false, false, true);
++
++                        if (!serverLevel.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_DISABLE_RAIDS)) {
++                            entityhuman.addEffect(mobeffect1, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.PATROL_CAPTAIN); // CraftBukkit
++                        }
++                        this.setPatrolLeader(false);
++                    }
++                }
++            }
++            // Leaves end - Revert raid changes
+         }
+ 
+         super.die(cause);
+diff --git a/net/minecraft/world/item/component/OminousBottleAmplifier.java b/net/minecraft/world/item/component/OminousBottleAmplifier.java
+index 318f24d67be4daf6993ba547da0540be9c221a75..9a6820fce3977419fd81d802720c318ac15d07c4 100644
+--- a/net/minecraft/world/item/component/OminousBottleAmplifier.java
++++ b/net/minecraft/world/item/component/OminousBottleAmplifier.java
+@@ -28,7 +28,7 @@ public record OminousBottleAmplifier(int value) implements ConsumableListener, T
+ 
+     @Override
+     public void onConsume(Level level, LivingEntity entity, ItemStack stack, Consumable consumable) {
+-        entity.addEffect(new MobEffectInstance(MobEffects.BAD_OMEN, 120000, this.value, false, false, true)); // Paper - properly resend entities - diff on change for below
++        entity.addEffect(new MobEffectInstance(MobEffects.BAD_OMEN, me.earthme.luminol.config.modules.misc.RaidChangesConfig.infinite ? net.minecraft.world.effect.MobEffectInstance.INFINITE_DURATION : 120000, this.value, false, false, true)); // Paper - properly resend entities - diff on change for below
+     }
+ 
+     // Paper start - properly resend entities - collect packets for bundle
+@@ -40,7 +40,7 @@ public record OminousBottleAmplifier(int value) implements ConsumableListener, T
+ 
+     @Override
+     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag) {
+-        List<MobEffectInstance> list = List.of(new MobEffectInstance(MobEffects.BAD_OMEN, 120000, this.value, false, false, true));
++        List<MobEffectInstance> list = List.of(new MobEffectInstance(MobEffects.BAD_OMEN, me.earthme.luminol.config.modules.misc.RaidChangesConfig.infinite ? net.minecraft.world.effect.MobEffectInstance.INFINITE_DURATION : 120000, this.value, false, false, true));
+         PotionContents.addPotionTooltip(list, tooltipAdder, 1.0F, context.tickRate());
+     }
+ }

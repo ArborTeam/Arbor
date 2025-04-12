@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/RaidChangesConfig.java
-@@ -1,0 +_,31 @@
+@@ -1,0 +_,41 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import me.earthme.luminol.config.ConfigInfo;
@@ -11,7 +11,7 @@
 +    @ConfigInfo(baseName = "allow-bad-omen-trigger-raid", comments =
 +            """
 +                    Allow players with ominous signs to\s
-+                    skip a 30 second cooldown and trigger\s
++                    skip a 30-second cooldown and trigger\s
 +                    attacks directly""")
 +    public static boolean trigger = false;
 +
@@ -20,7 +20,17 @@
 +                    Enable players to obtain an ominous\s
 +                    omen effect when killing the patrol\s
 +                    team captain""")
-+    public static boolean effect = false;;
++    public static boolean effect = false;
++
++    @ConfigInfo(baseName = "bad-omen-infinite", comments =
++            """
++                    Enable bad omen effect infinite time.""")
++    public static boolean infinite = false;
++
++    @ConfigInfo(baseName = "skip-height-check", comments =
++            """
++                    disable y <= 96 check.""")
++    public static boolean height_check = false;
 +
 +    @Override
 +    public EnumConfigCategory getCategory() {

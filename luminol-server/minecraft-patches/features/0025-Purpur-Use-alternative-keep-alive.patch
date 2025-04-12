@@ -5,7 +5,7 @@ Subject: [PATCH] Purpur Use alternative keep alive
 
 
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 6eca15223b92aedac74233db886e2c1248750e2c..7507f32b5f0f7fbbf35eeaaf03bf9d99694c1683 100644
+index 79fe336adf35f4f007461ed050e6301764fe7fc3..a5b805b98cf138eabfb06f4ff202462be60c2995 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -41,6 +41,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -33,7 +33,7 @@ index 6eca15223b92aedac74233db886e2c1248750e2c..7507f32b5f0f7fbbf35eeaaf03bf9d99
          if (this.keepAlivePending && packet.getId() == this.keepAliveChallenge) {
              int i = (int)(Util.getMillis() - this.keepAliveTime);
              this.latency = (this.latency * 3 + i) / 4;
-@@ -250,7 +261,22 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -254,7 +265,22 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          // Paper start - give clients a longer time to respond to pings as per pre 1.12.2 timings
          // This should effectively place the keepalive handling back to "as it was" before 1.12.2
          final long elapsedTime = millis - this.keepAliveTime;
@@ -57,7 +57,7 @@ index 6eca15223b92aedac74233db886e2c1248750e2c..7507f32b5f0f7fbbf35eeaaf03bf9d99
              if (this.keepAlivePending) {
                  if (!this.processedDisconnect && elapsedTime >= KEEPALIVE_LIMIT) { // check keepalive limit, don't fire if already disconnected
                      this.disconnect(TIMEOUT_DISCONNECTION_MESSAGE, org.bukkit.event.player.PlayerKickEvent.Cause.TIMEOUT); // Paper - kick event cause
-@@ -263,6 +289,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -267,6 +293,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
                  this.send(new ClientboundKeepAlivePacket(this.keepAliveChallenge));
              }
          }

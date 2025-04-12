@@ -5,10 +5,10 @@ Subject: [PATCH] Fix uncorrected death check of folia
 
 
 diff --git a/net/minecraft/world/inventory/AbstractContainerMenu.java b/net/minecraft/world/inventory/AbstractContainerMenu.java
-index 50af953a4698a3c6e16b840fab764dd733b3fbc9..a9c058238819f3631d94ac306185e909821caf35 100644
+index acca8c51d2030c675c157b10d0bbc6af631afe61..d0b688e69979c5e7b8267ac96bd71bcd33444c41 100644
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
-@@ -679,7 +679,7 @@ public abstract class AbstractContainerMenu {
+@@ -689,7 +689,7 @@ public abstract class AbstractContainerMenu {
      }
  
      private static void dropOrPlaceInInventory(Player player, ItemStack stack) {

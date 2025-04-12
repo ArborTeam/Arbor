@@ -118,10 +118,10 @@ index f2d2ddfd964bff914e41c0b4150fe1aad7866ebf..7defcd15c44601bfd2f7f55046038693
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 423534a1ff02bd0d0f9baacfe2428f45c7d9acb9..9fd3fe181df2ce6dbe695f6463d3940ac4c01167 100644
+index dbf9231b1f01576906b90a3ddf0bf2cbbeb4590a..b17ace9118c94a756fa2901621c6b2b9bd9e5764 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -393,7 +393,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -400,7 +400,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      public com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent playerNaturallySpawnedEvent; // Paper - PlayerNaturallySpawnCreaturesEvent
      public @Nullable String clientBrandName = null; // Paper - Brand support
      public org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - Add API for quit reason; there are a lot of changes to do if we change all methods leading to the event
@@ -132,7 +132,7 @@ index 423534a1ff02bd0d0f9baacfe2428f45c7d9acb9..9fd3fe181df2ce6dbe695f6463d3940a
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
      private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();
-@@ -1006,8 +1008,35 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1013,8 +1015,35 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.trackEnteredOrExitedLavaOnVehicle();
          this.updatePlayerAttributes();
          this.advancements.flushDirty(this);

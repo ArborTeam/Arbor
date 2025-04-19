@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sat, 19 Apr 2025 20:38:20 +0800
+Subject: [PATCH] Fully removed player teleport event and entity teleport event
+ call
+
+
+diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index a107d9ee24d0e39ce3e3e09bf27af1ea4ae35b96..e786177f9e36c1dfb0cdcfc641ab2e36d42f2451 100644
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -1764,7 +1764,7 @@ public class ServerGamePacketListenerImpl
+             final io.papermc.paper.entity.TeleportFlag.Relative flag = org.bukkit.craftbukkit.entity.CraftPlayer.deltaRelativeToAPI(relativeArgument);
+             if (flag != null) relativeFlags.add(flag);
+         }
+-        PlayerTeleportEvent event = new PlayerTeleportEvent(player, from.clone(), to.clone(), cause, java.util.Set.copyOf(relativeFlags));
++        /*PlayerTeleportEvent event = new PlayerTeleportEvent(player, from.clone(), to.clone(), cause, java.util.Set.copyOf(relativeFlags)); // Luminol - Fully remove EntityTeleportEvent and PlayerTeleportEvent
+         // Paper end - Teleport API
+         this.cserver.getPluginManager().callEvent(event);
+ 
+@@ -1773,9 +1773,10 @@ public class ServerGamePacketListenerImpl
+             to = event.isCancelled() ? event.getFrom() : event.getTo();
+             posMoveRotation = new PositionMoveRotation(CraftLocation.toVec3D(to), Vec3.ZERO, to.getYaw(), to.getPitch());
+         }
++        */ // Luminol - Fully remove EntityTeleportEvent and PlayerTeleportEvent
+ 
+         this.internalTeleport(posMoveRotation, relatives);
+-        return !event.isCancelled(); // CraftBukkit - Return event status
++        return true; //!event.isCancelled(); // CraftBukkit - Return event status // Luminol - Fully remove EntityTeleportEvent and PlayerTeleportEvent
+     }
+ 
+     public void teleport(Location dest) {
+diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
+index 6258b008ad3e00d41e9f3014572d6f7a06b1847c..1981f8e9e158ba7874dd3c9bde127654d56170ce 100644
+--- a/net/minecraft/world/entity/LivingEntity.java
++++ b/net/minecraft/world/entity/LivingEntity.java
+@@ -4226,7 +4226,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+                 this.setPos(x1, y1, z1);
+ 
+                 if (flag) {
+-                    if (!(this instanceof ServerPlayer)) {
++                    if (!(this instanceof ServerPlayer) && false) { // Luminol - Fully remove EntityTeleportEvent and PlayerTeleportEvent
+                         EntityTeleportEvent teleport = new EntityTeleportEvent(this.getBukkitEntity(), new Location(this.level().getWorld(), x1, y1, z1), new Location(this.level().getWorld(), x, d, z));
+                         this.level().getCraftServer().getPluginManager().callEvent(teleport);
+                         if (!teleport.isCancelled() && teleport.getTo() != null) { // Paper

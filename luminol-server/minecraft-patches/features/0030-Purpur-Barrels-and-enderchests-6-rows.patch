@@ -5,7 +5,7 @@ Subject: [PATCH] Purpur-Barrels-and-enderchests-6-rows
 
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 27478c973dc2e9ea2495f5b27127ef085bc5cdf3..9777a5b7ba9916e426ba87d6ee7cd56f0e43c195 100644
+index 751b011701d6ae373099226ea63ffbafcd24ce6a..e5e946462da9e56344428139768075b7bd228ec0 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -1103,6 +1103,10 @@ public abstract class PlayerList {
@@ -20,7 +20,7 @@ index 27478c973dc2e9ea2495f5b27127ef085bc5cdf3..9777a5b7ba9916e426ba87d6ee7cd56f
  
      public boolean isWhiteListed(GameProfile profile) {
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index ad34d0e1ab16fb269b3cec2842bfc2f2c29b452e..40b91234fd2e4f4f134d309590ea6b605f764e83 100644
+index ae049c5c3593525b991d865fec695c00ad408a59..c6252a245e9701f69db1fe167f6590095237553a 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -200,6 +200,7 @@ public abstract class Player extends LivingEntity {

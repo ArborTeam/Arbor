@@ -93,10 +93,10 @@ index d9cc1d7e56c37d5ce92544edc10e89dbc89dd15d..39e7689be243b9c99b507d665f659135
      public EntityType(
          EntityType.EntityFactory<T> factory,
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index ae049c5c3593525b991d865fec695c00ad408a59..ad34d0e1ab16fb269b3cec2842bfc2f2c29b452e 100644
+index c6252a245e9701f69db1fe167f6590095237553a..40b91234fd2e4f4f134d309590ea6b605f764e83 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -210,6 +210,25 @@ public abstract class Player extends LivingEntity {
+@@ -211,6 +211,25 @@ public abstract class Player extends LivingEntity {
          return (org.bukkit.craftbukkit.entity.CraftHumanEntity) super.getBukkitEntity();
      }
      // CraftBukkit end
@@ -122,7 +122,7 @@ index ae049c5c3593525b991d865fec695c00ad408a59..ad34d0e1ab16fb269b3cec2842bfc2f2
  
      public Player(Level level, BlockPos pos, float yRot, GameProfile gameProfile) {
          super(EntityType.PLAYER, level);
-@@ -262,6 +281,26 @@ public abstract class Player extends LivingEntity {
+@@ -263,6 +282,26 @@ public abstract class Player extends LivingEntity {
  
      @Override
      public void tick() {
@@ -149,7 +149,7 @@ index ae049c5c3593525b991d865fec695c00ad408a59..ad34d0e1ab16fb269b3cec2842bfc2f2
          this.noPhysics = this.isSpectator();
          if (this.isSpectator() || this.isPassenger()) {
              this.setOnGround(false);
-@@ -1504,6 +1543,7 @@ public abstract class Player extends LivingEntity {
+@@ -1505,6 +1544,7 @@ public abstract class Player extends LivingEntity {
          if (this.containerMenu != null && this.hasContainerOpen()) {
              this.doCloseContainer();
          }

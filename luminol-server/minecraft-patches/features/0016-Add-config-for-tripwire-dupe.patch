@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Mon, 24 Feb 2025 06:00:00 -0800
-Subject: [PATCH] Configurable tripwire dupe
+Subject: [PATCH] Add config for tripwire dupe
 
 
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java

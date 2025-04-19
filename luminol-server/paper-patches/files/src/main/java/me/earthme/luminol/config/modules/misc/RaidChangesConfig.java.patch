@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/RaidChangesConfig.java
-@@ -1,0 +_,44 @@
+@@ -1,0 +_,45 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import me.earthme.luminol.config.ConfigInfo;
@@ -32,7 +32,8 @@
 +
 +    @ConfigInfo(baseName = "skip-self-raid-check", comments =
 +            """
-+                    Disable raid self check""")
++                    Disable raid self check\s
++                    --- this config is not old version's function""")
 +    public static boolean self_check = false;
 +
 +    @Override

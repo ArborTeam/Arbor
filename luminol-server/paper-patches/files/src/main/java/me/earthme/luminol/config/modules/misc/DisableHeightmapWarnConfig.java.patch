@@ -1,0 +1,25 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/config/modules/misc/DisableHeightmapWarnConfig.java
+@@ -1,0 +_,22 @@
++package me.earthme.luminol.config.modules.misc;
++
++import me.earthme.luminol.config.ConfigInfo;
++import me.earthme.luminol.config.EnumConfigCategory;
++import me.earthme.luminol.config.IConfigModule;
++
++public class DisableHeightmapWarnConfig implements IConfigModule {
++    @ConfigInfo(baseName = "enabled", comments =
++            """
++                    Disable heightmap-check's warning""")
++    public static boolean enabled = false;
++
++    @Override
++    public EnumConfigCategory getCategory() {
++        return EnumConfigCategory.MISC;
++    }
++
++    @Override
++    public String getBaseName() {
++        return "heightmap_warn_disable";
++    }
++}

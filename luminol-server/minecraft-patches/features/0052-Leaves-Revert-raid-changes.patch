@@ -34,7 +34,7 @@ index 2f45befbb50645f1bfb5961ad725f3670ff0d592..84c6eb2c27510938f590f6c6baa5a94c
                  if (!this.level.isVillage(mutableBlockPos) || i <= 7) {
                      int i4 = 10;
 diff --git a/net/minecraft/world/entity/raid/Raider.java b/net/minecraft/world/entity/raid/Raider.java
-index 7c385baae81b9a987c0e1e4deb017884600331bc..a0d86c3cc86da734a3cd10d554aaecb5c0b82e59 100644
+index 7c385baae81b9a987c0e1e4deb017884600331bc..262291eaeb9bc250affeda67957588d14ec1eebc 100644
 --- a/net/minecraft/world/entity/raid/Raider.java
 +++ b/net/minecraft/world/entity/raid/Raider.java
 @@ -125,6 +125,43 @@ public abstract class Raider extends PatrollingMonster {
@@ -81,6 +81,15 @@ index 7c385baae81b9a987c0e1e4deb017884600331bc..a0d86c3cc86da734a3cd10d554aaecb5
          }
  
          super.die(cause);
+@@ -153,7 +190,7 @@ public abstract class Raider extends PatrollingMonster {
+     }
+ 
+     public boolean hasRaid() {
+-        return this.level() instanceof ServerLevel serverLevel && (this.getCurrentRaid() != null || serverLevel.getRaidAt(this.blockPosition()) != null);
++        return !me.earthme.luminol.config.modules.misc.RaidChangesConfig.self_check && (this.level() instanceof ServerLevel serverLevel && (this.getCurrentRaid() != null || serverLevel.getRaidAt(this.blockPosition()) != null)); // Leaves - Disable raid self check
+     }
+ 
+     public boolean hasActiveRaid() {
 diff --git a/net/minecraft/world/item/component/OminousBottleAmplifier.java b/net/minecraft/world/item/component/OminousBottleAmplifier.java
 index 318f24d67be4daf6993ba547da0540be9c221a75..9a6820fce3977419fd81d802720c318ac15d07c4 100644
 --- a/net/minecraft/world/item/component/OminousBottleAmplifier.java

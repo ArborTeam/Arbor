@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/RaidChangesConfig.java
-@@ -1,0 +_,39 @@
+@@ -1,0 +_,44 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import me.earthme.luminol.config.ConfigInfo;
@@ -29,6 +29,11 @@
 +            """
 +                    Disable y <= 96 check""")
 +    public static boolean height_check = false;
++
++    @ConfigInfo(baseName = "skip-self-raid-check", comments =
++            """
++                    Disable raid self check""")
++    public static boolean self_check = false;
 +
 +    @Override
 +    public EnumConfigCategory getCategory() {

@@ -21,10 +21,44 @@ index 80f17f33f670018240c854df589cf90cdeab6e70..8672757a4d5fb5c247599782fece6b8d
              if (raidAt == null || raidAt.getRaidOmenLevel() < raidAt.getMaxRaidOmenLevel()) {
                  serverPlayer.addEffect(new MobEffectInstance(MobEffects.RAID_OMEN, 600, amplifier));
 diff --git a/net/minecraft/world/entity/raid/Raid.java b/net/minecraft/world/entity/raid/Raid.java
-index 2f45befbb50645f1bfb5961ad725f3670ff0d592..84c6eb2c27510938f590f6c6baa5a94c4c08c4ad 100644
+index 2f45befbb50645f1bfb5961ad725f3670ff0d592..59cdf1e5166ae67a0dc8c7cb4028db7f1e450d46 100644
 --- a/net/minecraft/world/entity/raid/Raid.java
 +++ b/net/minecraft/world/entity/raid/Raid.java
-@@ -674,7 +674,7 @@ public class Raid {
+@@ -288,6 +288,24 @@ public class Raid {
+                     return;
+                 }
+ 
++                // Luminol Start - Raid revert
++                boolean flagForceWin = false;
++                if (me.earthme.luminol.config.modules.misc.RaidChangesConfig.revert_274911) {
++                    if (this.waveSpawnPos.isPresent() && this.center.distSqr(this.waveSpawnPos.get()) >= 12544) {
++                        while (this.hasMoreWaves()) {
++                            BlockPos blockPos = this.waveSpawnPos.orElseGet(() -> this.findRandomSpawnPos(20));
++                            if (blockPos != null) {
++                                this.started = true;
++                                this.spawnGroup(blockPos);
++                            } else {
++                                break;
++                            }
++                        }
++                        flagForceWin = true;
++                    }
++                }
++                // Luminol End - Raid revert
++
+                 if (!this.level.isVillage(this.center)) {
+                     this.moveRaidCenterToNearbyVillageSection();
+                 }
+@@ -379,7 +397,7 @@ public class Raid {
+                     }
+                 }
+ 
+-                if (this.isStarted() && !this.hasMoreWaves() && totalRaidersAlive == 0) {
++                if (flagForceWin || (this.isStarted() && !this.hasMoreWaves() && totalRaidersAlive == 0)) {
+                     if (this.postRaidTicks < 40) {
+                         this.postRaidTicks++;
+                     } else {
+@@ -674,7 +692,7 @@ public class Raid {
              int i2 = this.center.getX() + Mth.floor(Mth.cos(f2) * 32.0F * f) + this.level.random.nextInt(3) * Mth.floor(f);
              int i3 = this.center.getZ() + Mth.floor(Mth.sin(f2) * 32.0F * f) + this.level.random.nextInt(3) * Mth.floor(f);
              int height = this.level.getHeight(Heightmap.Types.WORLD_SURFACE, i2, i3);

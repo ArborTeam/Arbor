@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/RaidChangesConfig.java
-@@ -1,0 +_,45 @@
+@@ -1,0 +_,51 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import me.earthme.luminol.config.ConfigInfo;
@@ -33,8 +33,14 @@
 +    @ConfigInfo(baseName = "skip-self-raid-check", comments =
 +            """
 +                    Disable raid self check\s
-+                    --- this config is not old version's function""")
++                        --- this config is not old version's function""")
 +    public static boolean self_check = false;
++
++    @ConfigInfo(baseName = "revert-274911", comments =
++            """
++                    Revert MC-274911(hard-revert)
++                        --- maybe have some bugs""")
++    public static boolean revert_274911 = false;
 +
 +    @Override
 +    public EnumConfigCategory getCategory() {

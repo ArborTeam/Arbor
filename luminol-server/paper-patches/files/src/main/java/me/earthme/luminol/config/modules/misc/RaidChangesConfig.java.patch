@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/RaidChangesConfig.java
-@@ -1,0 +_,51 @@
+@@ -1,0 +_,52 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import me.earthme.luminol.config.ConfigInfo;
@@ -22,7 +22,8 @@
 +
 +    @ConfigInfo(baseName = "bad-omen-infinite", comments =
 +            """
-+                    Enable bad omen effect infinite time""")
++                    Enable bad omen effect infinite time
++                        --- this config is not old version's function""")
 +    public static boolean infinite = false;
 +
 +    @ConfigInfo(baseName = "skip-height-check", comments =

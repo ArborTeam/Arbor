@@ -5,7 +5,7 @@ Subject: [PATCH] Leaves Fix SculkCatalyst exp skip
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index af903ff99441e56402278dfab069a056ce54b6c3..ca610a9ed7f8bb5e92504731df9d1678e46f0c7b 100644
+index 2293c3db45e9ecce4e0d4b2f87b8e90228e44d94..658aa09aecf8d64145feedb82dc9be2a55201450 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -293,6 +293,7 @@ public abstract class LivingEntity extends Entity implements Attackable {

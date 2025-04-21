@@ -5,10 +5,10 @@ Subject: [PATCH] Add missing teleportation apis for folia
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index b17ace9118c94a756fa2901621c6b2b9bd9e5764..8a728a3af515da522cd5fab1e731bbc0607f0596 100644
+index 3bc0fc1d411d3c5e206695510ec9288ffbf8c277..c2562b8f7ca3bc815a5abe5ae00a6fe1654b002d 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1660,6 +1660,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1661,6 +1661,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      if (respawnComplete != null) {
                          respawnComplete.accept(ServerPlayer.this);
                      }

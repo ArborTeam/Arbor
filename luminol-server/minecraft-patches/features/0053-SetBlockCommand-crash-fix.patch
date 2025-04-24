@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Thu, 24 Apr 2025 20:59:52 +0800
+Subject: [PATCH] SetBlockCommand crash fix
+
+
+diff --git a/net/minecraft/server/commands/SetBlockCommand.java b/net/minecraft/server/commands/SetBlockCommand.java
+index 05b824409546ba8bacf7efdaeac106af89ff0715..ad7306b42030844d735f42865d7aea3c4d42b01b 100644
+--- a/net/minecraft/server/commands/SetBlockCommand.java
++++ b/net/minecraft/server/commands/SetBlockCommand.java
+@@ -119,6 +119,14 @@ public class SetBlockCommand {
+         // Folia start - region threading
+                 } catch (CommandSyntaxException ex) {
+                     sendMessage(source, ex);
++                // Luminol Start - Server crash fix
++                } catch (IllegalArgumentException iae) {
++                    try {
++                        throw ERROR_FAILED.create();
++                    } catch (CommandSyntaxException e) {
++                        sendMessage(source, e);
++                    }
++                // Luminol End - Server crash fix
+                 }
+             });
+         return 1;

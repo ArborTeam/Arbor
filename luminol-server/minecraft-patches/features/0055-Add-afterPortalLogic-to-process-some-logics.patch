@@ -5,7 +5,7 @@ Subject: [PATCH] Add afterPortalLogic to process some logics
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ceca76a5791e319dd7cc4048c9860b1df065b95a..29f3ad07e28e6a92813bc446650c35c4d279c3ec 100644
+index ceca76a5791e319dd7cc4048c9860b1df065b95a..065e74d29eee35e07a0d5db8850dc6f93a9729c0 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4545,6 +4545,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -21,13 +21,11 @@ index ceca76a5791e319dd7cc4048c9860b1df065b95a..29f3ad07e28e6a92813bc446650c35c4
      protected boolean portalToAsync(ServerLevel destination, BlockPos portalPos, boolean takePassengers,
                                      PortalType type, java.util.function.Consumer<Entity> teleportComplete) {
          ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread(this, "Cannot portal entity async");
-@@ -4628,6 +4634,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4628,6 +4634,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          info.postTeleportTransition().onTransition(teleported);
                      }
  
-+                    // Luminol start - TNT Nether Portal break portal fix
 +                    teleported.afterPortalLogic(); // Luminol - Add afterPortalLogic
-+                    // Luminol end - TNT Nether Portal break portal fix
 +
                      // Kaiiju start - vanilla end teleportation
                      /*if (teleportComplete != null) {

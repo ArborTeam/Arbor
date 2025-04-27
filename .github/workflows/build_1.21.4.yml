@@ -41,7 +41,7 @@ jobs:
         uses: "actions/upload-artifact@v4"
         with:
           name: "${{ env.project_id_b }} CI Artifacts"
-          path: "luminol-server/build/libs/*-paperclip.jar"
+          path: "luminol-server/build/libs/*-paperclip-*-mojmap.jar"
       - name: SetENV
         if: github.event_name != 'pull_request'
         run: sh scripts/SetENV.sh

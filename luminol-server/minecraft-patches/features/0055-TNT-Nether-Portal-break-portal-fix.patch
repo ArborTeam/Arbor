@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Sun, 27 Apr 2025 14:26:01 +0800
+Subject: [PATCH] TNT Nether Portal break portal fix
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index ceca76a5791e319dd7cc4048c9860b1df065b95a..1fa7f9f60c86606f355c7ff6405dbf7af011e50b 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -4628,6 +4628,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+                         info.postTeleportTransition().onTransition(teleported);
+                     }
+ 
++                    // Luminol start - TNT Nether Portal break portal fix
++                    if (teleported instanceof net.minecraft.world.entity.item.PrimedTnt){
++                        ((net.minecraft.world.entity.item.PrimedTnt) teleported).setUsedPortal(true);
++                    }
++                    // Luminol end - TNT Nether Portal break portal fix
++
+                     // Kaiiju start - vanilla end teleportation
+                     /*if (teleportComplete != null) {
+                         teleportComplete.accept(teleported);
+diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
+index 88570bb4aa02896545805d7721c45cf9599befea..541328d10b7475d0751185ff1fb2a98a7f43a66e 100644
+--- a/net/minecraft/world/entity/item/PrimedTnt.java
++++ b/net/minecraft/world/entity/item/PrimedTnt.java
+@@ -225,7 +225,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+         return this.entityData.get(DATA_BLOCK_STATE_ID);
+     }
+ 
+-    private void setUsedPortal(boolean usedPortal) {
++    public void setUsedPortal(boolean usedPortal) { // Luminol - TNT Nether Portal break portal fix
+         this.usedPortal = usedPortal;
+     }
+ 

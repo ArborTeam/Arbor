@@ -18,7 +18,7 @@ index 065e74d29eee35e07a0d5db8850dc6f93a9729c0..920b7a3e6def4ac0078a1e543d7c17f5
                  this.portalProcess.updateEntryPosition(pos.immutable());
                  this.portalProcess.setAsInsidePortalThisTick(true);
 diff --git a/net/minecraft/world/entity/PortalProcessor.java b/net/minecraft/world/entity/PortalProcessor.java
-index 46d989aef0eceebd98bfd93999153319de77a8a0..1dc0da588e6e87adc69465981aa476d76f6947df 100644
+index 46d989aef0eceebd98bfd93999153319de77a8a0..6e9171fa0c636439bd96401ea9e5fe80ffdc8bdd 100644
 --- a/net/minecraft/world/entity/PortalProcessor.java
 +++ b/net/minecraft/world/entity/PortalProcessor.java
 @@ -9,12 +9,14 @@ import net.minecraft.world.level.portal.TeleportTransition;
@@ -37,18 +37,20 @@ index 46d989aef0eceebd98bfd93999153319de77a8a0..1dc0da588e6e87adc69465981aa476d7
          this.insidePortalThisTick = true;
      }
  
-@@ -35,7 +37,13 @@ public class PortalProcessor {
+@@ -35,7 +37,15 @@ public class PortalProcessor {
  
      // Folia start - region threading
      public boolean portalAsync(ServerLevel sourceWorld, Entity portalTarget) {
 -        return this.portal.portalAsync(sourceWorld, portalTarget, this.entryPosition);
++        // Luminol start - Entity portal-teleport speed fix
 +        net.minecraft.world.phys.Vec3 oldSpeed = portalTarget.getDeltaMovement();
-+        portalTarget.setDeltaMovement(this.speedVec3); // Luminol - Entity portal-teleport speed fix
++        portalTarget.setDeltaMovement(this.speedVec3);
 +        boolean flag = this.portal.portalAsync(sourceWorld, portalTarget, this.entryPosition);
 +        if (!flag) {
 +            portalTarget.setDeltaMovement(oldSpeed);
 +        }
 +        return flag;
++        // Luminol end - Entity portal-teleport speed fix
      }
      // Folia end - region threading
  

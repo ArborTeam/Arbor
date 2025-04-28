@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Mon, 28 Apr 2025 11:53:13 +0800
+Subject: [PATCH] Entity portal-teleport speed fix
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 065e74d29eee35e07a0d5db8850dc6f93a9729c0..920b7a3e6def4ac0078a1e543d7c17f5d4955fc5 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -3304,7 +3304,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+             this.setPortalCooldown();
+         } else {
+             if (this.portalProcess == null || !this.portalProcess.isSamePortal(portal)) {
+-                this.portalProcess = new PortalProcessor(portal, pos.immutable());
++                this.portalProcess = new PortalProcessor(portal, pos.immutable(), this.getDeltaMovement()); // Luminol - Entity portal-teleport speed fix
+             } else if (!this.portalProcess.isInsidePortalThisTick()) {
+                 this.portalProcess.updateEntryPosition(pos.immutable());
+                 this.portalProcess.setAsInsidePortalThisTick(true);
+diff --git a/net/minecraft/world/entity/PortalProcessor.java b/net/minecraft/world/entity/PortalProcessor.java
+index 46d989aef0eceebd98bfd93999153319de77a8a0..d84f30f4568eeacddfd71cf639ed04d24b79f4a5 100644
+--- a/net/minecraft/world/entity/PortalProcessor.java
++++ b/net/minecraft/world/entity/PortalProcessor.java
+@@ -9,12 +9,14 @@ import net.minecraft.world.level.portal.TeleportTransition;
+ public class PortalProcessor {
+     private final Portal portal;
+     private BlockPos entryPosition;
++    private net.minecraft.world.phys.Vec3 speedVec3; // Luminol - Entity portal-teleport speed fix
+     private int portalTime;
+     private boolean insidePortalThisTick;
+ 
+-    public PortalProcessor(Portal portal, BlockPos entryPosition) {
++    public PortalProcessor(Portal portal, BlockPos entryPosition, net.minecraft.world.phys.Vec3 speedVec3) { // Luminol - Entity portal-teleport speed fix
+         this.portal = portal;
+         this.entryPosition = entryPosition;
++        this.speedVec3 = speedVec3; // Luminol - Entity portal-teleport speed fix
+         this.insidePortalThisTick = true;
+     }
+ 
+@@ -35,6 +37,7 @@ public class PortalProcessor {
+ 
+     // Folia start - region threading
+     public boolean portalAsync(ServerLevel sourceWorld, Entity portalTarget) {
++        portalTarget.setDeltaMovement(this.speedVec3); // Luminol - Entity portal-teleport speed fix
+         return this.portal.portalAsync(sourceWorld, portalTarget, this.entryPosition);
+     }
+     // Folia end - region threading

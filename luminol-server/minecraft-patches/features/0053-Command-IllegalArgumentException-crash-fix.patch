@@ -20,10 +20,10 @@ index 89154adfc659afa188cd771e70087e3b1a9c98b9..e622f96e6e116bf491bbea39da099e02
              }); return 0; // Folia end - region threading
          }
 diff --git a/net/minecraft/server/commands/SetBlockCommand.java b/net/minecraft/server/commands/SetBlockCommand.java
-index 05b824409546ba8bacf7efdaeac106af89ff0715..5c368a70a48260accbbb94a041f4dc9dcf90db4a 100644
+index 05b824409546ba8bacf7efdaeac106af89ff0715..55911d49c7650b344b46b2cfa9c4ae840ae433c8 100644
 --- a/net/minecraft/server/commands/SetBlockCommand.java
 +++ b/net/minecraft/server/commands/SetBlockCommand.java
-@@ -86,6 +86,21 @@ public class SetBlockCommand {
+@@ -86,6 +86,15 @@ public class SetBlockCommand {
      }
      // Folia end - region threading
  
@@ -32,20 +32,14 @@ index 05b824409546ba8bacf7efdaeac106af89ff0715..5c368a70a48260accbbb94a041f4dc9d
 +        Component hoverText = Component.translatable("command.failed")
 +                .withStyle(style -> style.withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, Component.literal(ex.getMessage()))));
 +        src.sendFailure(hoverText);
-+        org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
-+        LOGGER.error(ex.getMessage());
-+        StringBuilder stackTrace = new StringBuilder();
-+        for (StackTraceElement element : ex.getStackTrace()) {
-+            stackTrace.append(element.toString()).append("\n");
-+        }
-+        LOGGER.error(stackTrace.toString());
++        com.mojang.logging.LogUtils.getLogger().error(ex.getMessage(), ex);
 +    }
 +    // Luminol end - Server crash fix
 +
      private static int setBlock(
          CommandSourceStack source, BlockPos pos, BlockInput state, SetBlockCommand.Mode mode, @Nullable Predicate<BlockInWorld> predicate
      ) throws CommandSyntaxException {
-@@ -119,6 +134,10 @@ public class SetBlockCommand {
+@@ -119,6 +128,10 @@ public class SetBlockCommand {
          // Folia start - region threading
                  } catch (CommandSyntaxException ex) {
                      sendMessage(source, ex);

@@ -5,7 +5,7 @@ Subject: [PATCH] Entity portal-teleport speed fix
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 065e74d29eee35e07a0d5db8850dc6f93a9729c0..920b7a3e6def4ac0078a1e543d7c17f5d4955fc5 100644
+index dc0a9f39751173824d8cef569f94b459ee6e94dc..a4e5c5675dc09f598a6ae05d7aea21b48e451b21 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -3304,7 +3304,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

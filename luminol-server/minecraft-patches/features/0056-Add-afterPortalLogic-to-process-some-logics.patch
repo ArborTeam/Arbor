@@ -5,10 +5,10 @@ Subject: [PATCH] Add afterPortalLogic to process some logics
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ceca76a5791e319dd7cc4048c9860b1df065b95a..065e74d29eee35e07a0d5db8850dc6f93a9729c0 100644
+index 4a0d07a3263704a7c6e6859ddcbe767c202ed794..dc0a9f39751173824d8cef569f94b459ee6e94dc 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4545,6 +4545,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4557,6 +4557,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
      }
  
@@ -21,7 +21,7 @@ index ceca76a5791e319dd7cc4048c9860b1df065b95a..065e74d29eee35e07a0d5db8850dc6f9
      protected boolean portalToAsync(ServerLevel destination, BlockPos portalPos, boolean takePassengers,
                                      PortalType type, java.util.function.Consumer<Entity> teleportComplete) {
          ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread(this, "Cannot portal entity async");
-@@ -4628,6 +4634,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4640,6 +4646,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          info.postTeleportTransition().onTransition(teleported);
                      }
  

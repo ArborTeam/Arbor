@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Thu, 24 Apr 2025 23:11:13 +0800
+Subject: [PATCH] Fix off tickregion sync teleport
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index ceca76a5791e319dd7cc4048c9860b1df065b95a..4a0d07a3263704a7c6e6859ddcbe767c202ed794 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -4067,6 +4067,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         this.resetStoredPositions();
+     }
+ 
++    // Luminol start - Fix sync teleport issue
++    private boolean getNearByEdge(int destX, int destZ) {
++        int sizeBx = Math.min(6, (int) (this.bb.maxX - this.bb.minX) + this.level.getCraftServer().getSimulationDistance());
++        int sizeBz = Math.min(6, (int) (this.bb.maxZ - this.bb.minZ) + this.level.getCraftServer().getSimulationDistance());
++
++        return ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.level,
++                (destX >> 4) - sizeBx,
++                (destZ >> 4) - sizeBz,
++                (destX >> 4) + sizeBx,
++                (destZ >> 4) + sizeBz);
++    }
++    // Luminol end
++
+     protected final void transform(TeleportTransition telpeort) {
+         PositionMoveRotation move = PositionMoveRotation.calculateAbsolute(
+             PositionMoveRotation.of(this), PositionMoveRotation.of(telpeort), telpeort.relatives()
+@@ -4186,10 +4199,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         wrapped.callEvent();
+         // Luminol end
+ 
+-        // check for same region
+         if (destination == this.level()) {
+             Vec3 currPos = this.position();
+-            if (
++            if (this.getNearByEdge((int) pos.x, (int) pos.z) && // Luminol - Fix sync teleport issue
+                 destination.regioniser.getRegionAtUnsynchronised(
+                     ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkX(currPos), ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkZ(currPos)
+                 ) == destination.regioniser.getRegionAtUnsynchronised(

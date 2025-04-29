@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
 Date: Thu, 7 Nov 2024 21:50:47 +0100
-Subject: [PATCH] Lithium: fast util
+Subject: [PATCH] Lithium: Fast util
 
 This patch is based on the following mixins:
 * "net/caffeinemc/mods/lithium/mixin/math/fast_util/DirectionMixin.java"

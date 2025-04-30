@@ -1,0 +1,25 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/config/modules/experiment/EntityDamageSourceTraceConfig.java
+@@ -1,0 +_,22 @@
++package me.earthme.luminol.config.modules.experiment;
++
++import me.earthme.luminol.config.ConfigInfo;
++import me.earthme.luminol.config.EnumConfigCategory;
++import me.earthme.luminol.config.IConfigModule;
++
++public class EntityDamageSourceTraceConfig implements IConfigModule {
++    @ConfigInfo(baseName = "enabled", comments =
++            """
++                    Allow trace damage source cross different Region Scheduler.""")
++    public static boolean enabled = false;
++
++    @Override
++    public EnumConfigCategory getCategory() {
++        return EnumConfigCategory.EXPERIMENT;
++    }
++
++    @Override
++    public String getBaseName() {
++        return "entity-damage-source-trace";
++    }
++}

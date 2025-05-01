@@ -5,7 +5,7 @@ Subject: [PATCH] Cross Region Damage trace
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index d0853f44f1b4c88ba62a74db9e49a32709685425..aa9b426b848dcc3ce010a58ff5aff291af7a7926 100644
+index d0853f44f1b4c88ba62a74db9e49a32709685425..dfe0ebfefae40270e3732fb0dfc593fa8b5803d9 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1378,6 +1378,13 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -22,17 +22,21 @@ index d0853f44f1b4c88ba62a74db9e49a32709685425..aa9b426b848dcc3ce010a58ff5aff291
          }
  
          this.level().broadcastEntityEvent(this, (byte)3);
-@@ -1392,6 +1399,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1392,6 +1399,24 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.setClientLoaded(false);
      }
  
 +    // Luminol Start - Cross Region Damage trace
 +    private void damageTransferToAsync(LivingEntity entity, DamageSource cause) {
++        // Operations running on current entity
++        this.awardStat(Stats.ENTITY_KILLED_BY.get(entity.getType()));
++        this.createWitherRose(entity);
++
++        // the entity might be in another tickregion sometimes, so we need to schedule the task onto the entity
++        // to ensure thread safe
 +        entity.getBukkitEntity().taskScheduler.schedule((LivingEntity nmsEntity) -> {
 +            try {
-+                this.awardStat(Stats.ENTITY_KILLED_BY.get(nmsEntity.getType()));
 +                nmsEntity.awardKillScore(this, cause);
-+                this.createWitherRose(nmsEntity);
 +            } catch (Throwable ex) {
 +                LOGGER.error(ex.getMessage(), ex);
 +            }

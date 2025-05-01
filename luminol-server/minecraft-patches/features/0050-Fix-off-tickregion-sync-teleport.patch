@@ -5,18 +5,20 @@ Subject: [PATCH] Fix off tickregion sync teleport
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ceca76a5791e319dd7cc4048c9860b1df065b95a..fc7da66320bfd8701b754e607ad18370f460fd4d 100644
+index ccf1914b4f48ecc0f4fe980510f42d5415ec1daa..2ea6160492cb23e96271dfbfd3bd35fe03109d6a 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4067,6 +4067,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4067,6 +4067,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.resetStoredPositions();
      }
  
 +    // Luminol start - Fix sync teleport issue
-+    private boolean getNearByEdge(int destX, int destZ) {
++    private boolean checkNearbyTickRegions(int destX, int destZ) {
++        // Dumb end gateway search the chunks in radius of 5 chunks, so we need keep 6(5+1) by default check radius
 +        int sizeBx = Math.min(6, (int) (this.bb.maxX - this.bb.minX) + this.level.getCraftServer().getSimulationDistance());
 +        int sizeBz = Math.min(6, (int) (this.bb.maxZ - this.bb.minZ) + this.level.getCraftServer().getSimulationDistance());
 +
++        // check tick thread around these area
 +        return ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.level,
 +                (destX >> 4) - sizeBx,
 +                (destZ >> 4) - sizeBz,
@@ -28,12 +30,13 @@ index ceca76a5791e319dd7cc4048c9860b1df065b95a..fc7da66320bfd8701b754e607ad18370
      protected final void transform(TeleportTransition telpeort) {
          PositionMoveRotation move = PositionMoveRotation.calculateAbsolute(
              PositionMoveRotation.of(this), PositionMoveRotation.of(telpeort), telpeort.relatives()
-@@ -4189,7 +4202,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4189,7 +4204,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          // check for same region
          if (destination == this.level()) {
              Vec3 currPos = this.position();
 -            if (
-+            if (this.getNearByEdge((int) pos.x, (int) pos.z) && // Luminol - Fix sync teleport issue
++            // Luminol - Prevent entity sync teleported to the edge of tickregion
++            if (this.checkNearbyTickRegions((int) pos.x, (int) pos.z) && // Luminol - Fix sync teleport issue
                  destination.regioniser.getRegionAtUnsynchronised(
                      ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkX(currPos), ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkZ(currPos)
                  ) == destination.regioniser.getRegionAtUnsynchronised(

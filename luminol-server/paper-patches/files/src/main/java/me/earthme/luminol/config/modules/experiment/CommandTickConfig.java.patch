@@ -1,0 +1,25 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/config/modules/experiment/CommandTickConfig.java
+@@ -1,0 +_,22 @@
++package me.earthme.luminol.config.modules.experiment;
++
++import me.earthme.luminol.config.ConfigInfo;
++import me.earthme.luminol.config.EnumConfigCategory;
++import me.earthme.luminol.config.IConfigModule;
++
++public class CommandTickConfig implements IConfigModule {
++    @ConfigInfo(baseName = "enabled", comments =
++            """
++                    Allow to use tick command""")
++    public static boolean enabled = false;
++
++    @Override
++    public EnumConfigCategory getCategory() {
++        return EnumConfigCategory.EXPERIMENT;
++    }
++
++    @Override
++    public String getBaseName() {
++        return "enable_tick_command";
++    }
++}

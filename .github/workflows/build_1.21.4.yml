@@ -40,7 +40,7 @@ jobs:
         if: github.event_name != 'pull_request'
         continue-on-error: true
         run: |
-          ./gradlew publish -PpublishDevBundle=true
+          ./gradlew generateDevelopmentBundle publish -PpublishDevBundle=true
       - name: Upload Artifact
         uses: "actions/upload-artifact@v4"
         with:

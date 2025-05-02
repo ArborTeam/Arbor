@@ -81,11 +81,17 @@ subprojects {
 
     extensions.configure<PublishingExtension> {
         repositories {
-            maven(System.getenv("PRIVATE_MAVEN_REPO_LINK")) {
-                name = "LuminolMC-Private"
-                credentials {
-                    username = System.getenv("PRIVATE_MAVEN_REPO_USERNAME")
-                    password = System.getenv("PRIVATE_MAVEN_REPO_PASSWORD")
+            val privateMvnRepoLink = System.getenv("PRIVATE_MAVEN_REPO_LINK")
+            val privateMvnRepoUsername = System.getenv("PRIVATE_MAVEN_REPO_USERNAME")
+            val privateMvnRepoPassword = System.getenv("PRIVATE_MAVEN_REPO_PASSWORD")
+
+            if (privateMvnRepoLink != null && privateMvnRepoUsername != null && privateMvnRepoPassword != null) {
+                maven(privateMvnRepoLink) {
+                    name = "LuminolMC-Private"
+                    credentials {
+                        username = privateMvnRepoUsername
+                        password = privateMvnRepoPassword
+                    }
                 }
             }
         }

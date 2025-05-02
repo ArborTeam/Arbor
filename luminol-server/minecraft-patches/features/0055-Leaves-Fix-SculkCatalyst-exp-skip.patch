@@ -5,7 +5,7 @@ Subject: [PATCH] Leaves Fix SculkCatalyst exp skip
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 98ce0736c18cbb09704ef7ca6b67866d5736f7c7..d0853f44f1b4c88ba62a74db9e49a32709685425 100644
+index ca67950e35c7f420846337e885d95b8eabca3f37..d9ea3db817878ff56a2772ce983ff95431e1326c 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1358,7 +1358,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc

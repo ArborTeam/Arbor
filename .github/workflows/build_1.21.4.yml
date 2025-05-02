@@ -34,8 +34,9 @@ jobs:
         if: github.event_name != 'pull_request'
         continue-on-error: true
         run: |
-          export MAVEN_REPO_USER=${{ secrets.MAVEN_REPO_USER }}
-          export MAVEN_REPO_PASSWORD=${{ secrets.MAVEN_REPO_PASSWORD }}
+          export PRIVATE_MAVEN_REPO_LINK=${{ secrets.PRIVATE_MAVEN_REPO_LINK }}
+          export PRIVATE_MAVEN_REPO_PASSWORD=${{ secrets.PRIVATE_MAVEN_REPO_PASSWORD }}
+          export PRIVATE_MAVEN_REPO_USERNAME=${{ secrets.PRIVATE_MAVEN_REPO_USERNAME }}
           ./gradlew publish -PpublishDevBundle=true
       - name: Upload Artifact
         uses: "actions/upload-artifact@v4"

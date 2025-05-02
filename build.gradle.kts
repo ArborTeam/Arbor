@@ -81,12 +81,21 @@ subprojects {
 
     extensions.configure<PublishingExtension> {
         repositories {
-            /*
-            maven("https://repo.papermc.io/repository/maven-snapshots/") {
-                name = "paperSnapshots"
-                credentials(PasswordCredentials::class)
+            maven(System.getenv("PRIVATE_MAVEN_REPO_LINK")) {
+                name = "LuminolMC-Private"
+                credentials {
+                    username = System.getenv("PRIVATE_MAVEN_REPO_USERNAME")
+                    password = System.getenv("PRIVATE_MAVEN_REPO_PASSWORD")
+                }
             }
-             */
+        }
+    }
+    tasks.withType<Javadoc> {
+        options {
+            (this as StandardJavadocDocletOptions).apply {
+                addStringOption("-add-modules", "jdk.incubator.vector")
+                addStringOption("Xdoclint:none", "-quiet")
+            }
         }
     }
 }

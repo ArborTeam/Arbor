@@ -22,15 +22,16 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '22'
+      - name: Setup environment variables
+        if: github.event_name != 'pull_request'
+        run: |
+          export PRIVATE_MAVEN_REPO_LINK=${{ secrets.PRIVATE_MAVEN_REPO_LINK }}
+          export PRIVATE_MAVEN_REPO_PASSWORD=${{ secrets.PRIVATE_MAVEN_REPO_PASSWORD }}
+          export PRIVATE_MAVEN_REPO_USERNAME=${{ secrets.PRIVATE_MAVEN_REPO_USERNAME }}
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Configure Git User Details
         run: git config --global user.email "ci@luminolmc.com" && git config --global user.name "LuminolMC CI"
-      - name: Set up Environment Variables
-        run: |
-             export PRIVATE_MAVEN_REPO_LINK=${{ secrets.PRIVATE_MAVEN_REPO_LINK }}
-             export PRIVATE_MAVEN_REPO_PASSWORD=${{ secrets.PRIVATE_MAVEN_REPO_PASSWORD }
-             export PRIVATE_MAVEN_REPO_USERNAME=${{ secrets.PRIVATE_MAVEN_REPO_USERNAME }}
       - name: Apply Patches
         run: ./gradlew applyAllPatches
       - name: CreateJar
@@ -38,7 +39,8 @@ jobs:
       - name: Publish to repo
         if: github.event_name != 'pull_request'
         continue-on-error: true
-        run: ./gradlew publish -PpublishDevBundle=true
+        run: |
+          ./gradlew publish -PpublishDevBundle=true
       - name: Upload Artifact
         uses: "actions/upload-artifact@v4"
         with:

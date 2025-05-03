@@ -5,7 +5,7 @@ Subject: [PATCH] Force disable builtin spark plugin
 
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index ed00a29daccfee1d631bef27c0a3a4ae83140018..330af9f4de1c72387326816065350e71fe546efe 100644
+index 56f5568848d0f20b4d706c07dc8114594e0b5337..e62e8b9af7ad3e4454702ac86ad2b27973eba66f 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -783,8 +783,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

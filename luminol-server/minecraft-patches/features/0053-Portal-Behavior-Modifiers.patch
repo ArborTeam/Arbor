@@ -74,7 +74,7 @@ index 2ea6160492cb23e96271dfbfd3bd35fe03109d6a..36bddc5f5a05044b995e0b87f2c9105a
                      /*if (teleportComplete != null) {
                          teleportComplete.accept(teleported);
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 88570bb4aa02896545805d7721c45cf9599befea..bbf9748a36404139356db606dbb3b0cc13c66b50 100644
+index 88570bb4aa02896545805d7721c45cf9599befea..ad68417c0b17f1fabd5153ff86d5c34618be28bc 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -251,4 +251,10 @@ public class PrimedTnt extends Entity implements TraceableEntity {
@@ -86,5 +86,5 @@ index 88570bb4aa02896545805d7721c45cf9599befea..bbf9748a36404139356db606dbb3b0cc
 +    protected void afterPortalLogic() {
 +        this.setUsedPortal(true);
 +    }
-+    // Luminol start - Add afterPortalLogic
++    // Luminol end - Add afterPortalLogic
  }

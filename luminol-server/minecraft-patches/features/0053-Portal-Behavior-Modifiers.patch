@@ -5,7 +5,7 @@ Subject: [PATCH] Portal Behavior Modifiers
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index d8e1febfa14be1c0f4869ae647bd17113660432b..1dfd21fe3ac414cb7f56633e6747cd6fbea65d27 100644
+index d8e1febfa14be1c0f4869ae647bd17113660432b..9b8325a55889155766e034ff8847751ac551b2d2 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1353,7 +1353,26 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -14,24 +14,24 @@ index d8e1febfa14be1c0f4869ae647bd17113660432b..1dfd21fe3ac414cb7f56633e6747cd6f
          // Folia end - profiler
 +        // Luminol start - Entity portal-teleport speed fix
          if (isActive) { // Paper - EAR 2
-+            if (entity.flag_portal && !(entity instanceof Player) && entity.flag_compensate_ticks) { // Luminol - after portal compensate tick
++            if (!(entity instanceof Player) && entity.flag_portal && entity.flag_compensate_ticks) { // Luminol - after portal compensate tick
 +                entity.tick();
 +                entity.tick();
 +                entity.flag_compensate_ticks = false;
-+            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
-+                return;
-+            }
-+            if (entity.handlePortal()) {
-+                return;
-+            }
-+        } else if (entity.flag_portal && !entity.flag_compensate_ticks) { // Luminol - portal teleport only
-+            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
-+                return;
-+            }
-+            if (entity.handlePortal()) {
-+                return;
-+            }
-+        } else {
++                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
++                    return;
++                }
++                if (entity.handlePortal()) {
++                    return;
++                }
++            } else if (!(entity instanceof Player) && entity.flag_portal) { // Luminol - portal teleport only
++                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
++                    return;
++                }
++                if (entity.handlePortal()) {
++                    return;
++                }
++            } else {
          entity.tick();
          // Folia start - region threading
          if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {

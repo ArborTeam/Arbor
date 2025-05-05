@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Helvetica Volubi <suisuroru@blue-millennium.fun>
 Date: Tue, 29 Apr 2025 23:03:56 +0800
-Subject: [PATCH] Cross Region Damage trace
+Subject: [PATCH] Add config to enable Cross Region Damage trace
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
@@ -48,7 +48,7 @@ index d9ea3db817878ff56a2772ce983ff95431e1326c..fd4e37719baced819100f7ad2d1cf035
      private boolean shouldDropExperience(boolean eventResult, boolean forceUseEvent) {
          if (forceUseEvent) {
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 1df158d30622ea71fcc937140c682d0e994d54c1..4eddc407d04428516dc3607e4726d3ff58588c62 100644
+index 658aa09aecf8d64145feedb82dc9be2a55201450..ccb1541e5ea0acf7ec34084a041652e2139ee724 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -1181,6 +1181,29 @@ public abstract class LivingEntity extends Entity implements Attackable {

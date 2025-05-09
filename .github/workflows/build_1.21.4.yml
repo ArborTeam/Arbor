@@ -15,40 +15,47 @@ jobs:
     steps:
       - name: Checkout Git Repository
         uses: actions/checkout@v4
+        
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '22'
-      - name: Setup environment variables
-        if: github.event_name != 'pull_request'
-        run: |
-          export PRIVATE_MAVEN_REPO_LINK=${{ secrets.PRIVATE_MAVEN_REPO_LINK }}
-          export PRIVATE_MAVEN_REPO_PASSWORD=${{ secrets.PRIVATE_MAVEN_REPO_PASSWORD }}
-          export PRIVATE_MAVEN_REPO_USERNAME=${{ secrets.PRIVATE_MAVEN_REPO_USERNAME }}
+          
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+        
       - name: Configure Git User Details
         run: git config --global user.email "ci@luminolmc.com" && git config --global user.name "LuminolMC CI"
+        
       - name: Apply Patches
         run: ./gradlew applyAllPatches
+        
       - name: CreateJar
         run: ./gradlew createMojmapPaperclipJar
+        
       - name: Publish to repo
         if: github.event_name != 'pull_request'
         continue-on-error: true
         run: |
           ./gradlew generateDevelopmentBundle publish -PpublishDevBundle=true
+        env:
+          PRIVATE_MAVEN_REPO_PASSWORD: ${{ secrets.PRIVATE_MAVEN_REPO_PASSWORD }}
+          PRIVATE_MAVEN_REPO_USERNAME: ${{ secrets.PRIVATE_MAVEN_REPO_USERNAME }}
+          
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: "${{ env.project_id_b }} CI Artifacts"
           path: "luminol-server/build/libs/*-paperclip-*-mojmap.jar"
+          
       - name: SetENV
         if: github.event_name != 'pull_request'
         run: sh scripts/SetENV.sh
+        
       - name: Create Release
         if: github.event_name != 'pull_request'
         uses: ncipollo/release-action@v1

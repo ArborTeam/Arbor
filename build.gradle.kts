@@ -81,21 +81,16 @@ subprojects {
 
     extensions.configure<PublishingExtension> {
         repositories {
-            val privateMvnRepoLink = System.getenv("PRIVATE_MAVEN_REPO_LINK")
-            val privateMvnRepoUsername = System.getenv("PRIVATE_MAVEN_REPO_USERNAME")
-            val privateMvnRepoPassword = System.getenv("PRIVATE_MAVEN_REPO_PASSWORD")
-
-            if (privateMvnRepoLink != null && privateMvnRepoUsername != null && privateMvnRepoPassword != null) {
-                maven(privateMvnRepoLink) {
-                    name = "LuminolMC-Private"
-                    credentials {
-                        username = privateMvnRepoUsername
-                        password = privateMvnRepoPassword
-                    }
+            maven("https://repo.menthamc.com/repository/maven-snapshots/") {
+                name = "MenthaMC"
+                credentials(PasswordCredentials::class) {
+                    username = System.getenv("PRIVATE_MAVEN_REPO_USERNAME")
+                    password = System.getenv("PRIVATE_MAVEN_REPO_PASSWORD")
                 }
             }
         }
     }
+
     tasks.withType<Javadoc> {
         options {
             (this as StandardJavadocDocletOptions).apply {

@@ -33,7 +33,7 @@
 ```kotlin
 repositories {
     maven {
-        url = "https://maven.moliatopia.icu/repository/maven-snapshots/"
+        url = "https://repo.menthamc.com/repository/maven-public/"
     }
 }
 
@@ -47,8 +47,8 @@ dependencies {
 ```xml
 <repositories>
     <repository>
-        <id>moliatopia</id>
-        <url>https://maven.moliatopia.icu/repository/maven-snapshots/</url>
+        <id>menthamc</id>
+        <url>https://repo.menthamc.com/repository/maven-public/</url>
     </repository>
 </repositories>
 

@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Sat, 10 May 2025 19:46:16 +0800
+Subject: [PATCH] Creative Item Pick Fix
+
+
+diff --git a/net/minecraft/world/entity/item/ItemEntity.java b/net/minecraft/world/entity/item/ItemEntity.java
+index 7587130e021d494ae5013f7992b8f3c96590cbd7..17432ab5f9bb966e573e2d1177254df5c8958e48 100644
+--- a/net/minecraft/world/entity/item/ItemEntity.java
++++ b/net/minecraft/world/entity/item/ItemEntity.java
+@@ -435,7 +435,13 @@ public class ItemEntity extends Entity implements TraceableEntity {
+             Item item1 = item.getItem();
+             int count = item.getCount();
+             // CraftBukkit start - fire PlayerPickupItemEvent
+-            int canHold = entity.getInventory().canHold(item);
++            int canHold;
++            if (entity instanceof net.minecraft.server.level.ServerPlayer
++                    && ((net.minecraft.server.level.ServerPlayer) entity).gameMode.getGameModeForPlayer().equals(net.minecraft.world.level.GameType.CREATIVE)) {
++                canHold = count;
++            } else {
++                canHold = entity.getInventory().canHold(item);
++            }
+             int remaining = count - canHold;
+             boolean flyAtPlayer = false; // Paper
+ 

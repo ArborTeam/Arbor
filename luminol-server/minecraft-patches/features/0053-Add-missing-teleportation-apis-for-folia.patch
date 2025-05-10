@@ -19,10 +19,10 @@ index 10e3a54f3e7aa02a5c9986d3694c02bef07a66bf..ca67950e35c7f420846337e885d95b8e
              );
          });
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 3ad00cc095588574218ca6d729ead119403202e0..ccf1914b4f48ecc0f4fe980510f42d5415ec1daa 100644
+index 18e6e9fe39a559ae043fdafcf4e4db467144e309..2ea6160492cb23e96271dfbfd3bd35fe03109d6a 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4160,6 +4160,31 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4175,6 +4175,31 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
  
          // TODO any events that can modify go HERE
@@ -54,7 +54,7 @@ index 3ad00cc095588574218ca6d729ead119403202e0..ccf1914b4f48ecc0f4fe980510f42d54
  
          // check for same region
          if (destination == this.level()) {
-@@ -4276,7 +4301,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4292,7 +4317,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              // we just select the spawn position
              case END: {
                  if (destination.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.END) {
@@ -74,7 +74,7 @@ index 3ad00cc095588574218ca6d729ead119403202e0..ccf1914b4f48ecc0f4fe980510f42d54
                      // need to load chunks so we can create the platform
                      destination.moonrise$loadChunksAsync(
                          targetPos, 16, // load 16 blocks to be safe from block physics
-@@ -4301,7 +4337,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4317,7 +4353,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          }
                      );
                  } else {
@@ -94,7 +94,7 @@ index 3ad00cc095588574218ca6d729ead119403202e0..ccf1914b4f48ecc0f4fe980510f42d54
                      // need to load chunk for heightmap
                      destination.moonrise$loadChunksAsync(
                          spawnPos, 0,
-@@ -4356,8 +4403,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4372,8 +4419,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
                  WorldBorder destinationBorder = destination.getWorldBorder();
                  double dimensionScale = net.minecraft.world.level.dimension.DimensionType.getTeleportationScale(origin.dimensionType(), destination.dimensionType());
@@ -114,7 +114,7 @@ index 3ad00cc095588574218ca6d729ead119403202e0..ccf1914b4f48ecc0f4fe980510f42d54
                  ca.spottedleaf.concurrentutil.completable.CallbackCompletable<BlockUtil.FoundRectangle> portalFound
                      = new ca.spottedleaf.concurrentutil.completable.CallbackCompletable<>();
  
-@@ -4494,9 +4551,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4510,9 +4567,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (!this.canPortalAsync(destination, takePassengers)) {
              return false;
          }
@@ -134,7 +134,7 @@ index 3ad00cc095588574218ca6d729ead119403202e0..ccf1914b4f48ecc0f4fe980510f42d54
          // Kaiiju end
  
          Vec3 initialPosition = this.position();
-@@ -4570,6 +4636,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4586,6 +4652,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          tpComplete.accept(teleported);
                      }
                      // Kaiiju end

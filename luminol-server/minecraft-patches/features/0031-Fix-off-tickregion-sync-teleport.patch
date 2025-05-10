@@ -5,10 +5,10 @@ Subject: [PATCH] Fix off tickregion sync teleport
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ccf1914b4f48ecc0f4fe980510f42d5415ec1daa..2ea6160492cb23e96271dfbfd3bd35fe03109d6a 100644
+index 4026d465687604965f105ded21a8206fd52bd375..771744d4540fcd163efcde43c27111680b25c928 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4067,6 +4067,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4060,6 +4060,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.resetStoredPositions();
      }
  
@@ -30,7 +30,7 @@ index ccf1914b4f48ecc0f4fe980510f42d5415ec1daa..2ea6160492cb23e96271dfbfd3bd35fe
      protected final void transform(TeleportTransition telpeort) {
          PositionMoveRotation move = PositionMoveRotation.calculateAbsolute(
              PositionMoveRotation.of(this), PositionMoveRotation.of(telpeort), telpeort.relatives()
-@@ -4189,7 +4204,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4157,7 +4172,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          // check for same region
          if (destination == this.level()) {
              Vec3 currPos = this.position();

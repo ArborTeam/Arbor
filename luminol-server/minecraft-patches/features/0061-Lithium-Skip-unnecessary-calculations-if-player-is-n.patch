@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: kidofcubes <kidofcubes@gmail.com>
+From: Bacteriawa <A3167717663@hotmail.com>
 Date: Fri, 8 Nov 2024 00:22:44 +0800
 Subject: [PATCH] Lithium: Skip unnecessary calculations if player is not
  flying or swing

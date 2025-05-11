@@ -71,7 +71,7 @@ dependencies {
 当您遇到任何问题时，请向我们提问，我们将尽力解决，但请记得清楚地描述您的问题并提供足够的日志等信息。
 
 ## 贡献代码
-可[查看 Contributing](./docs/CONTRIBUTING.md)
+可查看 [Contributing](./docs/CONTRIBUTING.md)
 
 ## BStats
 ![bStats](https://bstats.org/signatures/server-implementation/Luminol.svg "bStats")

@@ -30,8 +30,8 @@ Before coding, you need these pieces of software / tools as Dev Environment.
 Luminol uses as the same patching system as Paper,  
 and has been divided into two directories for the purpose of modifying different parts of it:
 
-- `luminol-api` - Modifications to `Folia-API` / `Paper-API` / `Spigot-API` / `Bukkit`.
-- `luminol-server` - Modifications to Minecraft Official Server's source logic.
+- `luminol-api` - Modifications to `Folia-API` / `Paper-API` / `Spigot-API` / `Bukkit-API`.
+- `luminol-server` - Modifications to Minecraft Vanilla Server's source logic.
 
 The patching system is based on git, and you can learn about it at here: <https://git-scm.com/docs/gittutorial>
 
@@ -39,9 +39,22 @@ If you have forked the main repository, then you should follow the steps below:
 
 1. Clone your repository to local
 2. Run Gradle's `applyAllPatches` task in your IDE or terminal (You can run `./gradlew applyAllPatches` directly in terminal.)
-3. Enter `luminol-api` and `luminol-server` directory to carry out modifications.
+3. After performing the operation, the following directory pairs should exist in the root directory of the warehouse: `luminol-api` and `luminol-server` , `folia-api` and `folia-server` , `paper-api` and `paper-server` (Referred to `*-api` and `*-server` as below)
+4. Enter `*-api` and `*-server` directory to carry out modifications.
 
-BTW, `luminol-api` and `luminol-server` and are not normal git repositories.
+The following is the simple description of the aforementioned folders, detailed description can be referred to [here](https://github.com/Toffikk/paperweight-examples/blob/18241979c88068d5b061d95ad69c98ecb201c246/README.md):
+
+1. API part
+ - `luminol-api` : There is no valid file
+ - `folia-api` : Modifications to Folia API should be carried out in this folder
+ - `paper-api` : Modifications to Paper API/Spigot API/Bukkit API should be carried out in this folder
+
+2. Server part
+ - `luminol-server` : Modifications to Minecraft Vanilla Server's source logic should be carried out in this folder
+ - `folia-server` : There is no valid file
+ - `paper-server` : Modifications to non-vanilla server logic should be carried out in this folder
+
+BTW, `*-api` and `*-server` and are not normal git repositories.
 
 - Before applying patches, the base will point to unmodified source code.
 - Every commit after the base is a patch.
@@ -51,11 +64,11 @@ BTW, `luminol-api` and `luminol-server` and are not normal git repositories.
 
 It's very easy to add patches by following the steps below:
 
-1. Modify the code of `luminol-api` and `luminol-server`
+1. Modify the code of `*-api` and `*-server`
 2. Add these changes to the local git repository (For example, `git add .`)
 3. Commit these changes using `git commit -m <Commit Message>` (PS: do not commit new-created files)
-4. Run Gradle's task `rebuildAllServerPatches` to convert your commits to a new patch
-5. Run Gradle's task `fixupPaperApiFilePatches` to generate newly created files to new patches (PS: do not commit again before you run this task)
+4. Run Gradle's task `fixupPaperApiFilePatches` to generate newly created files to new patches (PS: do not commit again before you run this task)
+5. Run Gradle's task `rebuildAllServerPatches` to convert your commits to a new patch
 6. Push your patches to your repository
 
 After pushing, you can open a PR to submit your patches.
@@ -66,8 +79,8 @@ You can modify an existing patch by following the steps below:
 
 1. Modify code at HEAD
 2. Run `git commit -a --fixup <hash>` in your terminal to make a fix-up commit (PS: do not commit changes of luminol-created files)
-    - If you want to edit the commit message, replace `--fixup` with `--squash`.
+    - If you want to edit the commit message, replace `--fixup` with `--squash`
 3. Run `git rebase -i --autosquash base` to rebase automatically, then just type `:q` to close the confirm page
-4. Run Gradle's task `rebuildAllServerPatches` to modify existing patches 
-5. Run Gradle's task `fixupPaperApiFilePatches` to regenerate luminol-created files to patches (PS: do not commit again before you run this task)
+4. Run Gradle's task `fixupPaperApiFilePatches` to regenerate luminol-created files to patches (PS: do not commit again before you run this task)
+5. Run Gradle's task `rebuildAllServerPatches` to modify existing patches
 6. Push and PR again

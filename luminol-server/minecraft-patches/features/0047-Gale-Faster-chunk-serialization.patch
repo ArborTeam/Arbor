@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
 Date: Wed, 30 Nov 2022 21:51:16 +0100
-Subject: [PATCH] Gale: Faster chunk serialization
+Subject: [PATCH] Gale Faster chunk serialization
 
 
 diff --git a/net/minecraft/util/BitStorage.java b/net/minecraft/util/BitStorage.java

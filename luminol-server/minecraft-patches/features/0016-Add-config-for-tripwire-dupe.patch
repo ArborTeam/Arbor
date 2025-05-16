@@ -17,3 +17,63 @@ index 9aace993c6c18f1a50610e4766225485984b8167..07ffe289b9556b45a9ef7db5357d85b1
                              if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !blockState3.is(Blocks.TRIPWIRE)) level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, Boolean.valueOf(flag2)), 3); // Paper - prevent tripwire from updating
                          }
                      }
+diff --git a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
+index f96fc1391167dea48cac1caa464b9026657df89a..c7a46407f4f0915161f26e87241a806bd38145b1 100644
+--- a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
++++ b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
+@@ -27,6 +27,9 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+         // CraftBukkit end
+         BlockPos.MutableBlockPos mutableBlockPos = pos.mutable();
+ 
++        // Luminol start - prevent tripwire dupe in end platform generate
++        java.util.List<BlockPos> blockList1 = new java.util.ArrayList<>();
++        java.util.List<BlockPos> blockList2 = new java.util.ArrayList<>();
+         for (int i = -2; i <= 2; i++) {
+             for (int i1 = -2; i1 <= 2; i1++) {
+                 for (int i2 = -1; i2 < 3; i2++) {
+@@ -34,7 +37,23 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+                     Block block = i2 == -1 ? Blocks.OBSIDIAN : Blocks.AIR;
+                     // CraftBukkit start
+                     if (!blockList.getBlockState(blockPos).is(block)) {
+-                        if (dropBlocks) {
++                        boolean flag = false;
++                        if (dropBlocks && me.earthme.luminol.config.modules.misc.AllowTripwireDupe.preventPlatformBreakString) {
++                            net.minecraft.world.level.block.state.BlockState state = level.getBlockState(blockPos);
++                            if (state.is(Blocks.TRIPWIRE)) {
++                                if (state.getValue(net.minecraft.world.level.block.TripWireBlock.DISARMED)) {
++                                    flag = true;
++                                    blockList2.add(blockPos.immutable());
++                                }
++                                if (!flag) {
++                                    flag = checkString(blockList2, blockPos);
++                                }
++                            }
++                        }
++                        if (flag) {
++                            blockList1.add(blockPos.immutable());
++                        } else if (dropBlocks) {
++                        // Luminol end - prevent tripwire dupe in end platform generate
+                             blockList.destroyBlock(blockPos, true, null);
+                         }
+ 
+@@ -56,9 +75,19 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+ 
+         // SPIGOT-7856: End platform not dropping items after replacing blocks
+         if (dropBlocks) {
+-            blockList.getList().forEach((state) -> level.destroyBlock(state.getPosition(), true, null));
++            blockList.getList().forEach((state) -> level.destroyBlock(state.getPosition(), !blockList1.contains(state.getPosition()), null)); // Luminol - prevent tripwire dupe in end platform generate
+         }
+         blockList.updateList();
+         // CraftBukkit end
+     }
++
++    // Luminol start - prevent tripwire dupe in end platform generate
++    private static boolean checkString(java.util.List<BlockPos> blockList, BlockPos blockPos) {
++        for (BlockPos pos : blockList) {
++            if (pos.getY() != blockPos.getY()) continue;
++            if (pos.getX() == blockPos.getX() || pos.getZ() == blockPos.getZ()) return true;
++        }
++        return false;
++    }
++    // Luminol end - prevent tripwire dupe in end platform generate
+ }

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/AllowTripwireDupe.java
-@@ -1,0 +_,20 @@
+@@ -1,0 +_,24 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import me.earthme.luminol.config.ConfigInfo;
@@ -10,6 +10,10 @@
 +public class AllowTripwireDupe implements IConfigModule {
 +    @ConfigInfo(baseName = "enabled")
 +    public static boolean enabled = false;
++    @ConfigInfo(baseName = "prevent_platform_break_string", comments =
++            """
++                    Prevent string drop when platform generate""")
++    public static boolean preventPlatformBreakString = false;
 +
 +    @Override
 +    public EnumConfigCategory getCategory() {

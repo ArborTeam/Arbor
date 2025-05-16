@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/api/impl/ThreadedRegionImpl.java
-@@ -1,0 +_,47 @@
+@@ -1,0 +_,52 @@
 +package me.earthme.luminol.api.impl;
 +
 +import io.papermc.paper.threadedregions.ThreadedRegionizer;
@@ -46,5 +46,10 @@
 +    @Override
 +    public World getWorld() {
 +        return this.internal.regioniser.world.getWorld();
++    }
++
++    @Override
++    public long getId() {
++        return this.internal.id;
 +    }
 +}

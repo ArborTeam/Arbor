@@ -37,10 +37,10 @@ index 0000000000000000000000000000000000000000..96147cace1550d14c682258dab039758
 +}
 diff --git a/src/main/java/me/earthme/luminol/api/ThreadedRegion.java b/src/main/java/me/earthme/luminol/api/ThreadedRegion.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..38972ac3d05ccbbb134f751a8d018b9c53ad10b5
+index 0000000000000000000000000000000000000000..01dac0602b5f66f80c0adfbb779666fe0325a24f
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/api/ThreadedRegion.java
-@@ -0,0 +1,50 @@
+@@ -0,0 +1,56 @@
 +package me.earthme.luminol.api;
 +
 +import org.bukkit.Location;
@@ -90,6 +90,12 @@ index 0000000000000000000000000000000000000000..38972ac3d05ccbbb134f751a8d018b9c
 +     */
 +    @Nullable
 +    World getWorld();
++
++    /**
++     * Get the id of the tick region</br>
++     * @return The id of the tick region
++     */
++    long getId();
 +}
 diff --git a/src/main/java/me/earthme/luminol/api/ThreadedRegionizer.java b/src/main/java/me/earthme/luminol/api/ThreadedRegionizer.java
 new file mode 100644

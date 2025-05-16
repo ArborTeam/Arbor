@@ -40,7 +40,7 @@
 +            return null;
 +        }
 +
-+        return new ThreadedRegionImpl(got);
++        return got.threadedRegionAPI;
 +    }
 +
 +    @Override
@@ -51,6 +51,6 @@
 +            return null;
 +        }
 +
-+        return new ThreadedRegionImpl(got);
++        return got.threadedRegionAPI;
 +    }
 +}

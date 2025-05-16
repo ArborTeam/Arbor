@@ -27,7 +27,7 @@
 +
 +    @Override
 +    public RegionStats getRegionStats() {
-+        return new RegionStatsImpl(this.internal.getRegionStats());
++        return this.internal.getRegionStats().regionStatsAPI;
 +    }
 +
 +}

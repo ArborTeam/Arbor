@@ -39,7 +39,7 @@
 +
 +    @Override
 +    public TickRegionData getTickRegionData() {
-+        return new TickRegionDataImpl(this.internal.getData());
++        return this.internal.getData().tickRegionDataAPI;
 +    }
 +
 +    @Nullable

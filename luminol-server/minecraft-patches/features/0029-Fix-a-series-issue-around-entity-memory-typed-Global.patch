@@ -4,6 +4,7 @@ Date: Sat, 8 Mar 2025 09:55:40 +0800
 Subject: [PATCH] Fix a series issue around entity memory typed GlobalPos and
  WalkTarget
 
+Fixes the issue remained by the memory cleaning fix due to that there is a little complex relationship in these memories, and we need to manual patch them
 
 diff --git a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 index 2664d72c3b6906d0505df2e63c0e5075eba9461b..f03c3c512ea48c2a89eebae62484922d28e4f831 100644

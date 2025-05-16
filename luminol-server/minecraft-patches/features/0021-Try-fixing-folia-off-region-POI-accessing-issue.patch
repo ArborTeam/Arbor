@@ -3,6 +3,7 @@ From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 10:56:59 +0800
 Subject: [PATCH] Try fixing folia off region POI accessing issue
 
+Folia's POIManager sometimes is trying getting the POI record that doesn't belong to current tickregion which is causing some off-main-thread exceptions thrown, so we need to replace the logic with corrected one
 
 diff --git a/net/minecraft/world/entity/ai/village/poi/PoiManager.java b/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 index c10810bf00d75f459c3c6a9415c1e09f0519d50e..3adafa43367cd6648ecbccb92ba5bd509740d5a4 100644

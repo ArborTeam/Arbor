@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 10:36:31 +0800
-Subject: [PATCH] Add experiment config for command block command execution
+Subject: [PATCH] Add config for command block command execution
 
 
 diff --git a/net/minecraft/world/level/BaseCommandBlock.java b/net/minecraft/world/level/BaseCommandBlock.java

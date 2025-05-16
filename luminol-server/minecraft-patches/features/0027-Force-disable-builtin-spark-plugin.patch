@@ -3,6 +3,7 @@ From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 11:00:49 +0800
 Subject: [PATCH] Force disable builtin spark plugin
 
+The spark passed down from paper has some memory leaking issue, so we fully removed it from the code to prevent that memory leaking issue.
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
 index 56f5568848d0f20b4d706c07dc8114594e0b5337..e62e8b9af7ad3e4454702ac86ad2b27973eba66f 100644

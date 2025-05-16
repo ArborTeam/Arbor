@@ -1,7 +1,7 @@
 --- /dev/null
-+++ b/src/main/java/me/earthme/luminol/config/modules/experiment/ForceCleanupEntityBrainMemoryConfig.java
++++ b/src/main/java/me/earthme/luminol/config/modules/fixes/ForceCleanupEntityBrainMemoryConfig.java
 @@ -1,0 +_,22 @@
-+package me.earthme.luminol.config.modules.experiment;
++package me.earthme.luminol.config.modules.fixes;
 +
 +import me.earthme.luminol.config.ConfigInfo;
 +import me.earthme.luminol.config.EnumConfigCategory;

@@ -3,6 +3,9 @@ From: MrHua269 <mrhua269@gmail.com>
 Date: Sun, 9 Mar 2025 11:39:01 +0800
 Subject: [PATCH] Do not search the block out of current region
 
+Skip getting the blocks don't belong to current tickregion.
+
+notice: this bug is actually caused by another bug of the teleportAsync implementation.
 
 diff --git a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 index 61887e6b052bca715c90dff5d9cd657e0b3f6a78..95e2dff6782bf7767ecb1a23e618862919ea71aa 100644

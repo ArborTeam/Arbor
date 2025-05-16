@@ -3,9 +3,12 @@ From: MrHua269 <mrhua269@gmail.com>
 Date: Sat, 8 Mar 2025 21:20:11 +0800
 Subject: [PATCH] Leaf Replace brain maps with optimized collection
 
+Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.4/leaf-server/minecraft-patches/features/0070-Replace-brain-maps-with-optimized-collection.patch)
+Licensed under: MIT
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index d61fba01feecce3610cd390f490d3097c5db19c4..67b71145e4feb4835a79a6007b04511a2c3b938a 100644
+index 52b08be8b37117edc38dddf6d1919178b1f86271..d98eae5ee8a69a89e37751594dfff636831c8016 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
 @@ -45,14 +45,14 @@ public class Brain<E extends LivingEntity> {

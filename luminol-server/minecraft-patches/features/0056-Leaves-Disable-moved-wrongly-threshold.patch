@@ -3,6 +3,9 @@ From: adabugra <57899270+adabugra@users.noreply.github.com>
 Date: Fri, 31 Jan 2025 19:17:01 +0300
 Subject: [PATCH] Leaves Disable moved wrongly threshold
 
+Co-authored by: violetc <58360096+s-yh-china@users.noreply.github.com>
+As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/master/patches/removed/server/0099-Disable-moved-wrongly-threshold.patch)
+Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 index a107d9ee24d0e39ce3e3e09bf27af1ea4ae35b96..225045400f152a9a8f030d6fe367764b00d99b24 100644

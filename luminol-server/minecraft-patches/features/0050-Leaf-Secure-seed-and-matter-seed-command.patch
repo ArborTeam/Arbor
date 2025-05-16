@@ -3,6 +3,9 @@ From: MrHua269 <wangxyper@163.com>
 Date: Tue, 28 Jan 2025 18:56:53 +0800
 Subject: [PATCH] Leaf Secure seed and matter seed command
 
+Co-authored by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.4/leaf-server/minecraft-patches/features/0049-Matter-Secure-Seed.patch and https://github.com/Winds-Studio/Leaf/blob/ver/1.21.4/leaf-server/minecraft-patches/features/0050-Matter-Secure-Seed-command.patch)
+Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/commands/SeedCommand.java b/net/minecraft/server/commands/SeedCommand.java
 index a65affc41a4fc299bc2281f0f53f2e075633899d..f071e469468b768bd9c063d78c222b1b3e3b13bd 100644

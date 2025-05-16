@@ -4,6 +4,9 @@ Date: Sat, 8 Mar 2025 21:14:53 +0800
 Subject: [PATCH] Leaf Remove useless creating stats json bases on player name
  logic
 
+Co-authored by: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
+As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/ver/1.21.4/leaf-server/minecraft-patches/features/0043-Remove-useless-creating-stats-json-bases-on-player-n.patch)
+Licensed under: MIT
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
 index e5e946462da9e56344428139768075b7bd228ec0..9777a5b7ba9916e426ba87d6ee7cd56f0e43c195 100644

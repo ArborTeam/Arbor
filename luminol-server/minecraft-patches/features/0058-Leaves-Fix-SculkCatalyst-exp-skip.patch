@@ -3,6 +3,9 @@ From: violetc <58360096+s-yh-china@users.noreply.github.com>
 Date: Sun, 6 Apr 2025 10:42:45 +0800
 Subject: [PATCH] Leaves Fix SculkCatalyst exp skip
 
+Co-authored by: violetc <58360096+s-yh-china@users.noreply.github.com>
+As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/master/leaves-server/paper-patches/features/0016-Fix-SculkCatalyst-exp-skip.patch)
+Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
 index ca67950e35c7f420846337e885d95b8eabca3f37..d9ea3db817878ff56a2772ce983ff95431e1326c 100644

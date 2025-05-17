@@ -31,7 +31,7 @@ index 9aace993c6c18f1a50610e4766225485984b8167..419c1c7e14691a472b70ed548ecb928c
                  }
              }
 diff --git a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-index f96fc1391167dea48cac1caa464b9026657df89a..5485d02c1eff4d0dcc69cf74f4ce5e485e3a95bf 100644
+index f96fc1391167dea48cac1caa464b9026657df89a..eb869e574cee0d206684d5585c664a5f1d01ab65 100644
 --- a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 @@ -27,15 +27,43 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
@@ -87,7 +87,7 @@ index f96fc1391167dea48cac1caa464b9026657df89a..5485d02c1eff4d0dcc69cf74f4ce5e48
 -        // SPIGOT-7856: End platform not dropping items after replacing blocks
 -        if (dropBlocks) {
 -            blockList.getList().forEach((state) -> level.destroyBlock(state.getPosition(), true, null));
-+        if (flag21) {
++        if (flag21 && !me.earthme.luminol.config.modules.misc.AllowTripwireDupe.enabled) {
 +            // Luminol start - When updated replace it with newer code
 +            if (dropBlocks) {
 +                java.util.function.Consumer<? super org.bukkit.craftbukkit.block.CraftBlockState> beforeRun = state -> level.destroyBlock(state.getPosition(), !blockList1.contains(state.getPosition()), null);

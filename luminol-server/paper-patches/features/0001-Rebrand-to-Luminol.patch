@@ -63,7 +63,7 @@ index 29bd788ae8bc61c1e62a4f84b9e259931a7041ce..1676ac5e6c8369836bf719f338603fbb
          } else {
              final Optional<String> gitBranch = build.gitBranch();
 diff --git a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
-index e741201fdbea0dbbc0e42313ebd33368014c9dc4..673a81734a0903a0790f3007772642d3d9a044cc 100644
+index e741201fdbea0dbbc0e42313ebd33368014c9dc4..e3c5f4c31f084294a59830f3e764921433dd80d5 100644
 --- a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 +++ b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 @@ -31,6 +31,7 @@ public record ServerBuildInfoImpl(
@@ -91,7 +91,7 @@ index e741201fdbea0dbbc0e42313ebd33368014c9dc4..673a81734a0903a0790f3007772642d3
      @Override
      public boolean isBrandCompatible(final @NotNull Key brandId) {
 -        return brandId.equals(this.brandId);
-+        return brandId.equals(this.brandId) || brandId.equals(BRAND_PAPER_ID); // Luminol
++        return brandId.equals(this.brandId) || brandId.equals(BRAND_PAPER_ID) || brandId.equals(BRAND_FOLIA_ID); // Luminol
      }
  
      @Override

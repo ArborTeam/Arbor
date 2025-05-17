@@ -18,7 +18,7 @@ index 9aace993c6c18f1a50610e4766225485984b8167..07ffe289b9556b45a9ef7db5357d85b1
                          }
                      }
 diff --git a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-index f96fc1391167dea48cac1caa464b9026657df89a..c7a46407f4f0915161f26e87241a806bd38145b1 100644
+index f96fc1391167dea48cac1caa464b9026657df89a..016595dd37f74902f926da4c9edf1eabdfe781bc 100644
 --- a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 @@ -27,6 +27,9 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
@@ -31,13 +31,14 @@ index f96fc1391167dea48cac1caa464b9026657df89a..c7a46407f4f0915161f26e87241a806b
          for (int i = -2; i <= 2; i++) {
              for (int i1 = -2; i1 <= 2; i1++) {
                  for (int i2 = -1; i2 < 3; i2++) {
-@@ -34,7 +37,23 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+@@ -34,9 +37,22 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
                      Block block = i2 == -1 ? Blocks.OBSIDIAN : Blocks.AIR;
                      // CraftBukkit start
                      if (!blockList.getBlockState(blockPos).is(block)) {
 -                        if (dropBlocks) {
-+                        boolean flag = false;
-+                        if (dropBlocks && me.earthme.luminol.config.modules.misc.AllowTripwireDupe.preventPlatformBreakString) {
+-                            blockList.destroyBlock(blockPos, true, null);
++                        boolean flag = !dropBlocks;
++                        if (me.earthme.luminol.config.modules.misc.AllowTripwireDupe.preventPlatformBreakString && me.earthme.luminol.config.modules.misc.AllowTripwireDupe.enabled && dropBlocks) {
 +                            net.minecraft.world.level.block.state.BlockState state = level.getBlockState(blockPos);
 +                            if (state.is(Blocks.TRIPWIRE)) {
 +                                if (state.getValue(net.minecraft.world.level.block.TripWireBlock.DISARMED)) {
@@ -48,15 +49,14 @@ index f96fc1391167dea48cac1caa464b9026657df89a..c7a46407f4f0915161f26e87241a806b
 +                                    flag = checkString(blockList2, blockPos);
 +                                }
 +                            }
-+                        }
-+                        if (flag) {
-+                            blockList1.add(blockPos.immutable());
-+                        } else if (dropBlocks) {
-+                        // Luminol end - prevent tripwire dupe in end platform generate
-                             blockList.destroyBlock(blockPos, true, null);
                          }
++                        if (flag) blockList1.add(blockPos.immutable());
++                        else blockList.destroyBlock(blockPos, true, null);
++                        // Luminol end - prevent tripwire dupe in end platform generate
  
-@@ -56,9 +75,19 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+                         blockList.setBlock(blockPos, block.defaultBlockState(), 3);
+                         // CraftBukkit end
+@@ -56,9 +72,19 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
  
          // SPIGOT-7856: End platform not dropping items after replacing blocks
          if (dropBlocks) {

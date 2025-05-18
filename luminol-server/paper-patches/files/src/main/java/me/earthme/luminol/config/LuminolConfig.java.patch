@@ -1,8 +1,9 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/LuminolConfig.java
-@@ -1,0 +_,226 @@
+@@ -1,0 +_,268 @@
 +package me.earthme.luminol.config;
 +
++import com.electronwill.nightconfig.core.UnmodifiableConfig;
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 +import io.papermc.paper.threadedregions.RegionizedServer;
 +import me.earthme.luminol.commands.LuminolConfigCommand;
@@ -128,6 +129,33 @@
 +                final Object currentValue = field.get(null);
 +
 +                if (!configFileInstance.contains(fullConfigKeyName)){
++                    for (RemovedConfig removedConfig : field.getAnnotationsByType(RemovedConfig.class)) {
++                        final String oldConfigKeyName = String.join(".", removedConfig.category()) + "." + removedConfig.name();
++                        Object oldValue = configFileInstance.get(oldConfigKeyName);
++                        if (oldValue != null) {
++                            boolean success = true;
++                            if (removedConfig.transfer()) {
++                                try {
++                                    Object oldValueTransferred = ((BasicTransferLogic)removedConfig.transferLogic().getDeclaredConstructor().newInstance()).transform(oldValue);
++                                    configFileInstance.add(fullConfigKeyName, oldValueTransferred);
++                                } catch (Exception e) {
++                                    success = false;
++                                    logger.error("Failed to transfer removed config {}!", removedConfig.name());
++                                }
++                            }
++
++                            if (success) {
++                                removeConfig(oldConfigKeyName, removedConfig.category());
++                            }
++                            final String comments = configInfo.comments();
++
++                            if (!comments.isBlank()){
++                                configFileInstance.setComment(fullConfigKeyName,comments);
++                            }
++                            if (configFileInstance.get(fullConfigKeyName) != null) break;
++                        }
++                    }
++                    if (configFileInstance.get(fullConfigKeyName) != null) continue;
 +                    if (currentValue == null){
 +                        throw new UnsupportedOperationException("Config " + singleConfigModule.getBaseName() + "tried to add an null default value!");
 +                    }
@@ -145,6 +173,20 @@
 +                final Object actuallyValue = configFileInstance.get(fullConfigKeyName);
 +                field.set(null,actuallyValue);
 +            }
++        }
++    }
++
++    public static void removeConfig(String name,String[] keys) {
++        configFileInstance.remove(name);
++        if (configFileInstance.get(String.join(".", keys)) instanceof UnmodifiableConfig) {
++            removeConfig(keys);
++        }
++    }
++
++    public static void removeConfig(String[] keys) {
++        configFileInstance.remove(String.join(".", keys));
++        if (configFileInstance.get(String.join(".", Arrays.copyOfRange(keys, 1, keys.length))) instanceof UnmodifiableConfig) {
++            removeConfig(Arrays.copyOfRange(keys, 1, keys.length));
 +        }
 +    }
 +

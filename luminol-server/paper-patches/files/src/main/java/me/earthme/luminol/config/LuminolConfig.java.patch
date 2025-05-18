@@ -129,23 +129,23 @@
 +                final Object currentValue = field.get(null);
 +
 +                if (!configFileInstance.contains(fullConfigKeyName)){
-+                    for (RemovedConfig removedConfig : field.getAnnotationsByType(RemovedConfig.class)) {
-+                        final String oldConfigKeyName = String.join(".", removedConfig.category()) + "." + removedConfig.name();
++                    for (TransferringConfig transferringConfig : field.getAnnotationsByType(TransferringConfig.class)) {
++                        final String oldConfigKeyName = String.join(".", transferringConfig.category()) + "." + transferringConfig.name();
 +                        Object oldValue = configFileInstance.get(oldConfigKeyName);
 +                        if (oldValue != null) {
 +                            boolean success = true;
-+                            if (removedConfig.transfer()) {
++                            if (transferringConfig.transfer()) {
 +                                try {
-+                                    Object oldValueTransferred = ((BasicTransferLogic)removedConfig.transferLogic().getDeclaredConstructor().newInstance()).transform(oldValue);
++                                    Object oldValueTransferred = ((BasicTransferLogic) transferringConfig.transferLogic().getDeclaredConstructor().newInstance()).transform(oldValue);
 +                                    configFileInstance.add(fullConfigKeyName, oldValueTransferred);
 +                                } catch (Exception e) {
 +                                    success = false;
-+                                    logger.error("Failed to transfer removed config {}!", removedConfig.name());
++                                    logger.error("Failed to transfer removed config {}!", transferringConfig.name());
 +                                }
 +                            }
 +
 +                            if (success) {
-+                                removeConfig(oldConfigKeyName, removedConfig.category());
++                                removeConfig(oldConfigKeyName, transferringConfig.category());
 +                            }
 +                            final String comments = configInfo.comments();
 +

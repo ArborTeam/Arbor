@@ -1,13 +1,13 @@
 --- /dev/null
-+++ b/src/main/java/me/earthme/luminol/config/RemovedConfig.java
++++ b/src/main/java/me/earthme/luminol/config/TransferringConfig.java
 @@ -1,0 +_,20 @@
 +package me.earthme.luminol.config;
 +
 +import java.lang.annotation.*;
 +
 +@Retention(RetentionPolicy.RUNTIME)
-+@Repeatable(RemovedConfig.List.class)
-+public @interface RemovedConfig {
++@Repeatable(TransferringConfig.List.class)
++public @interface TransferringConfig {
 +    String name() default "";
 +
 +    String[] category() default "";
@@ -18,6 +18,6 @@
 +
 +    @Retention(RetentionPolicy.RUNTIME)
 +    @interface List {
-+        RemovedConfig[] value();
++        TransferringConfig[] value();
 +    }
 +}

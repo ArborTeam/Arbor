@@ -16,7 +16,7 @@
 +
 +    boolean transfer() default true;
 +
-+    Class<?> transferLogic() default DefaultTransferLogic.class;
++    Class<? extends DefaultTransferLogic>[] transferLogic() default {DefaultTransferLogic.class};
 +
 +    @Retention(RetentionPolicy.RUNTIME)
 +    @interface List {

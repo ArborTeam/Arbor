@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/LuminolConfig.java
-@@ -1,0 +_,269 @@
+@@ -1,0 +_,271 @@
 +package me.earthme.luminol.config;
 +
 +import com.electronwill.nightconfig.core.UnmodifiableConfig;
@@ -138,8 +138,10 @@
 +                            boolean success = true;
 +                            if (transferringConfig.transfer() && !removed) {
 +                                try {
-+                                    Object oldValueTransferred = ((DefaultTransferLogic) transferringConfig.transferLogic().getDeclaredConstructor().newInstance()).transform(oldValue);
-+                                    configFileInstance.add(fullConfigKeyName, oldValueTransferred);
++                                    for (Class<? extends DefaultTransferLogic> logic : transferringConfig.transferLogic()) {
++                                        oldValue = logic.getDeclaredConstructor().newInstance().transform(oldValue);
++                                    }
++                                    configFileInstance.add(fullConfigKeyName, oldValue);
 +                                } catch (Exception e) {
 +                                    success = false;
 +                                    logger.error("Failed to transfer removed config {}!", transferringConfig.name());

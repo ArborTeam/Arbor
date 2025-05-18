@@ -1,9 +1,11 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/TransferringConfig.java
-@@ -1,0 +_,20 @@
+@@ -1,0 +_,22 @@
 +package me.earthme.luminol.config;
 +
-+import java.lang.annotation.*;
++import java.lang.annotation.Repeatable;
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
 +
 +@Retention(RetentionPolicy.RUNTIME)
 +@Repeatable(TransferringConfig.List.class)
@@ -14,7 +16,7 @@
 +
 +    boolean transfer() default true;
 +
-+    Class<?> transferLogic() default BasicTransferLogic.class;
++    Class<?> transferLogic() default DefaultTransferLogic.class;
 +
 +    @Retention(RetentionPolicy.RUNTIME)
 +    @interface List {

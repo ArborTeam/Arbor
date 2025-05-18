@@ -1,15 +1,18 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/LuminolConfig.java
-@@ -1,0 +_,268 @@
+@@ -1,0 +_,269 @@
 +package me.earthme.luminol.config;
 +
 +import com.electronwill.nightconfig.core.UnmodifiableConfig;
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 +import io.papermc.paper.threadedregions.RegionizedServer;
 +import me.earthme.luminol.commands.LuminolConfigCommand;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
 +import org.bukkit.Bukkit;
 +import org.jetbrains.annotations.Contract;
 +import org.jetbrains.annotations.NotNull;
++
 +import java.io.File;
 +import java.io.IOException;
 +import java.lang.reflect.Field;
@@ -23,46 +26,44 @@
 +import java.util.concurrent.CompletableFuture;
 +import java.util.jar.JarEntry;
 +import java.util.jar.JarFile;
-+import org.apache.logging.log4j.LogManager;
-+import org.apache.logging.log4j.Logger;
 +
 +public class LuminolConfig {
 +    public static final Logger logger = LogManager.getLogger();
 +    private static final File baseConfigFolder = new File("luminol_config");
-+    private static final File baseConfigFile = new File(baseConfigFolder,"luminol_global_config.toml");
++    private static final File baseConfigFile = new File(baseConfigFolder, "luminol_global_config.toml");
 +    private static final Set<IConfigModule> allInstanced = new HashSet<>();
-+    private static CommentedFileConfig configFileInstance;
 +    public static boolean alreadyInited = false;
++    private static CommentedFileConfig configFileInstance;
 +
-+    public static void setupLatch(){
-+        Bukkit.getCommandMap().register("luminolconfig","luminol",new LuminolConfigCommand());
++    public static void setupLatch() {
++        Bukkit.getCommandMap().register("luminolconfig", "luminol", new LuminolConfigCommand());
 +        alreadyInited = true;
 +    }
 +
-+    public static void reload(){
++    public static void reload() {
 +        RegionizedServer.ensureGlobalTickThread("Reload luminol config off global region thread!");
 +
 +        dropAllInstanced();
 +        try {
 +            preLoadConfig();
 +            finalizeLoadConfig();
-+        }catch (Exception e){
++        } catch (Exception e) {
 +            logger.error(e);
 +        }
 +    }
 +
 +    @Contract(" -> new")
-+    public static @NotNull CompletableFuture<Void> reloadAsync(){
-+        return CompletableFuture.runAsync(LuminolConfig::reload,task -> RegionizedServer.getInstance().addTask(() -> {
-+            try{
++    public static @NotNull CompletableFuture<Void> reloadAsync() {
++        return CompletableFuture.runAsync(LuminolConfig::reload, task -> RegionizedServer.getInstance().addTask(() -> {
++            try {
 +                task.run();
-+            }catch (Exception e){
++            } catch (Exception e) {
 +                logger.error(e);
 +            }
 +        }));
 +    }
 +
-+    public static void dropAllInstanced(){
++    public static void dropAllInstanced() {
 +        allInstanced.clear();
 +    }
 +
@@ -75,7 +76,7 @@
 +    public static void preLoadConfig() throws IOException {
 +        baseConfigFolder.mkdirs();
 +
-+        if (!baseConfigFile.exists()){
++        if (!baseConfigFile.exists()) {
 +            baseConfigFile.createNewFile();
 +        }
 +
@@ -86,8 +87,8 @@
 +        try {
 +            instanceAllModule();
 +            loadAllModules();
-+        }catch (Exception e){
-+            logger.error("Failed to load config modules!",e);
++        } catch (Exception e) {
++            logger.error("Failed to load config modules!", e);
 +            throw new RuntimeException(e);
 +        }
 +
@@ -95,14 +96,14 @@
 +    }
 +
 +    private static void loadAllModules() throws IllegalAccessException {
-+        for (IConfigModule instanced : allInstanced){
++        for (IConfigModule instanced : allInstanced) {
 +            loadForSingle(instanced);
 +        }
 +    }
 +
 +    private static void instanceAllModule() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-+        for (Class<?> clazz  : getClasses("me.earthme.luminol.config.modules")){
-+            if (IConfigModule.class.isAssignableFrom(clazz)){
++        for (Class<?> clazz : getClasses("me.earthme.luminol.config.modules")) {
++            if (IConfigModule.class.isAssignableFrom(clazz)) {
 +                allInstanced.add((IConfigModule) clazz.getConstructor().newInstance());
 +            }
 +        }
@@ -119,7 +120,7 @@
 +                boolean skipLoad = field.getAnnotation(DoNotLoad.class) != null || (alreadyInited && field.getAnnotation(HotReloadUnsupported.class) != null);
 +                ConfigInfo configInfo = field.getAnnotation(ConfigInfo.class);
 +
-+                if (skipLoad || configInfo == null){
++                if (skipLoad || configInfo == null) {
 +                    continue;
 +                }
 +
@@ -127,16 +128,17 @@
 +
 +                field.setAccessible(true);
 +                final Object currentValue = field.get(null);
++                boolean removed = fullConfigKeyName.equals("removed.removed_config.removed");
 +
-+                if (!configFileInstance.contains(fullConfigKeyName)){
++                if (!configFileInstance.contains(fullConfigKeyName) || removed) {
 +                    for (TransferringConfig transferringConfig : field.getAnnotationsByType(TransferringConfig.class)) {
 +                        final String oldConfigKeyName = String.join(".", transferringConfig.category()) + "." + transferringConfig.name();
 +                        Object oldValue = configFileInstance.get(oldConfigKeyName);
 +                        if (oldValue != null) {
 +                            boolean success = true;
-+                            if (transferringConfig.transfer()) {
++                            if (transferringConfig.transfer() && !removed) {
 +                                try {
-+                                    Object oldValueTransferred = ((BasicTransferLogic) transferringConfig.transferLogic().getDeclaredConstructor().newInstance()).transform(oldValue);
++                                    Object oldValueTransferred = ((DefaultTransferLogic) transferringConfig.transferLogic().getDeclaredConstructor().newInstance()).transform(oldValue);
 +                                    configFileInstance.add(fullConfigKeyName, oldValueTransferred);
 +                                } catch (Exception e) {
 +                                    success = false;
@@ -144,48 +146,47 @@
 +                                }
 +                            }
 +
-+                            if (success) {
-+                                removeConfig(oldConfigKeyName, transferringConfig.category());
-+                            }
++                            if (success) removeConfig(oldConfigKeyName, transferringConfig.category());
 +                            final String comments = configInfo.comments();
 +
-+                            if (!comments.isBlank()){
-+                                configFileInstance.setComment(fullConfigKeyName,comments);
-+                            }
-+                            if (configFileInstance.get(fullConfigKeyName) != null) break;
++                            if (!comments.isBlank()) configFileInstance.setComment(fullConfigKeyName, comments);
++
++                            if (!removed && configFileInstance.get(fullConfigKeyName) != null) break;
 +                        }
 +                    }
 +                    if (configFileInstance.get(fullConfigKeyName) != null) continue;
-+                    if (currentValue == null){
++                    if (currentValue == null) {
 +                        throw new UnsupportedOperationException("Config " + singleConfigModule.getBaseName() + "tried to add an null default value!");
 +                    }
 +
 +                    final String comments = configInfo.comments();
 +
-+                    if (!comments.isBlank()){
-+                        configFileInstance.setComment(fullConfigKeyName,comments);
++                    if (!comments.isBlank()) {
++                        configFileInstance.setComment(fullConfigKeyName, comments);
 +                    }
 +
-+                    configFileInstance.add(fullConfigKeyName,currentValue);
++                    configFileInstance.add(fullConfigKeyName, currentValue);
 +                    continue;
 +                }
 +
 +                final Object actuallyValue = configFileInstance.get(fullConfigKeyName);
-+                field.set(null,actuallyValue);
++                field.set(null, actuallyValue);
 +            }
 +        }
 +    }
 +
-+    public static void removeConfig(String name,String[] keys) {
++    public static void removeConfig(String name, String[] keys) {
 +        configFileInstance.remove(name);
-+        if (configFileInstance.get(String.join(".", keys)) instanceof UnmodifiableConfig) {
++        Object configAtPath = configFileInstance.get(String.join(".", keys));
++        if (configAtPath instanceof UnmodifiableConfig && ((UnmodifiableConfig) configAtPath).isEmpty()) {
 +            removeConfig(keys);
 +        }
 +    }
 +
 +    public static void removeConfig(String[] keys) {
 +        configFileInstance.remove(String.join(".", keys));
-+        if (configFileInstance.get(String.join(".", Arrays.copyOfRange(keys, 1, keys.length))) instanceof UnmodifiableConfig) {
++        Object configAtPath = configFileInstance.get(String.join(".", Arrays.copyOfRange(keys, 1, keys.length)));
++        if (configAtPath instanceof UnmodifiableConfig && ((UnmodifiableConfig) configAtPath).isEmpty()) {
 +            removeConfig(Arrays.copyOfRange(keys, 1, keys.length));
 +        }
 +    }

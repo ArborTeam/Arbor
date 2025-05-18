@@ -1,9 +1,9 @@
 --- /dev/null
-+++ b/src/main/java/me/earthme/luminol/config/BasicTransferLogic.java
++++ b/src/main/java/me/earthme/luminol/config/DefaultTransferLogic.java
 @@ -1,0 +_,7 @@
 +package me.earthme.luminol.config;
 +
-+public class BasicTransferLogic {
++public class DefaultTransferLogic {
 +    public Object transform(Object obj) {
 +        return obj;
 +    }

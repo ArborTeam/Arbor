@@ -31,10 +31,10 @@ index 9aace993c6c18f1a50610e4766225485984b8167..419c1c7e14691a472b70ed548ecb928c
                  }
              }
 diff --git a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-index f96fc1391167dea48cac1caa464b9026657df89a..bfcca7f446d1667a857f565bae8bf1cfb1e39e2e 100644
+index f96fc1391167dea48cac1caa464b9026657df89a..ba2da205b046d7d3aab8fb21e116f9be73b13eb3 100644
 --- a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-@@ -27,15 +27,41 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+@@ -27,6 +27,11 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
          // CraftBukkit end
          BlockPos.MutableBlockPos mutableBlockPos = pos.mutable();
  
@@ -46,9 +46,8 @@ index f96fc1391167dea48cac1caa464b9026657df89a..bfcca7f446d1667a857f565bae8bf1cf
          for (int i = -2; i <= 2; i++) {
              for (int i1 = -2; i1 <= 2; i1++) {
                  for (int i2 = -1; i2 < 3; i2++) {
-                     BlockPos blockPos = mutableBlockPos.set(pos).move(i1, i2, i);
-                     Block block = i2 == -1 ? Blocks.OBSIDIAN : Blocks.AIR;
--                    // CraftBukkit start
+@@ -35,7 +40,29 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+                     // CraftBukkit start
                      if (!blockList.getBlockState(blockPos).is(block)) {
                          if (dropBlocks) {
 -                            blockList.destroyBlock(blockPos, true, null);
@@ -78,7 +77,7 @@ index f96fc1391167dea48cac1caa464b9026657df89a..bfcca7f446d1667a857f565bae8bf1cf
                          }
  
                          blockList.setBlock(blockPos, block.defaultBlockState(), 3);
-@@ -54,11 +80,39 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+@@ -54,11 +81,39 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
              if (portalEvent.isCancelled()) return;
          }
  

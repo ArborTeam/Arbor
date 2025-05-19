@@ -1,9 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 15:37:25 +0800
-Subject: [PATCH] SparklyPaper Skip "distanceToSqr" call in
+Subject: [PATCH] SparklyPaper: Skip "distanceToSqr" call in
  "ServerEntity#sendChanges" if the delta movement hasn't changed
 
+Co-authored by: MrPowerGamerBR <git@mrpowergamerbr.com>
+As part of: SparklyPaper (https://github.com/SparklyPower/SparklyPaper/blob/a69d3690472c9967772ffd4d4bd1f41403b7ea6f/sparklypaper-server/minecraft-patches/features/0002-Skip-distanceToSqr-call-in-ServerEntity-sendChanges-.patch)
 
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
 index 0fb253aa55a24b56b17f524b3261c5b75c7d7e59..1de43a4969a2a4535239b15a7bc30d99eb6934c6 100644

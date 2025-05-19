@@ -3,7 +3,6 @@ From: MrHua269 <wangxyper@163.com>
 Date: Wed, 5 Feb 2025 15:22:19 +0800
 Subject: [PATCH] Add config to enable Raytracing tracker
 
-Based on the framework of EntityCulling(((((((
 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
 index 7eff847790394aecd058e7a61905da86163b4c6e..9099457f55a2829297ac1db8a69a98ff717d9a86 100644

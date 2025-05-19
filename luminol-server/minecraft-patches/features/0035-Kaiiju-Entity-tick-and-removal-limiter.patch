@@ -1,8 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 11:07:08 +0800
-Subject: [PATCH] Kaiiju Entity tick and removal limiter
+Subject: [PATCH] Kaiiju: Entity tick and removal limiter
 
+Co-authored by: Xymb <xymb@endcrystal.me>
+As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/patches/server/0021-Entity-ticking-throttling-removal-to-prevent-lag.patch)
+Licensed under: GPL-3.0 (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/LICENSE)
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 index c6e487a4c14e6b82533881d01f32349b9ae28728..2c747cb8a724cd25c9d724908f92b320741600de 100644

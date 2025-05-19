@@ -1,8 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 12:27:17 +0800
-Subject: [PATCH] Pufferfish Reduce chunk loading & lookups
+Subject: [PATCH] Pufferfish: Reduce chunk loading & lookups
 
+Co-authored by: Paul Sauve <paul@technove.co>
+As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/patches/server/0014-Reduce-chunk-loading-lookups.patch)
+Licensed under: GPL-3.0 (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/PATCH-LICENSE)
 
 diff --git a/net/minecraft/world/entity/monster/EnderMan.java b/net/minecraft/world/entity/monster/EnderMan.java
 index 4b5ffd278e0e9d47100e5452949e8d757bbfece4..772ccc4dc66253a84a6d24d00e271d9b4916f052 100644

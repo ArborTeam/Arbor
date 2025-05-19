@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Helvetica Volubi <suisuroru@blue-millennium.fun>
 Date: Sat, 10 May 2025 19:46:16 +0800
-Subject: [PATCH] Fix creative item picking
+Subject: [PATCH] Fix creative player item pick
 
 
 diff --git a/net/minecraft/world/entity/item/ItemEntity.java b/net/minecraft/world/entity/item/ItemEntity.java
-index 7587130e021d494ae5013f7992b8f3c96590cbd7..f6d537ce0549b3359462f238c39952fe855dfbc1 100644
+index 7587130e021d494ae5013f7992b8f3c96590cbd7..1116e2f00ea54f738535d7243fec6ad49b96f6ee 100644
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
 @@ -435,7 +435,15 @@ public class ItemEntity extends Entity implements TraceableEntity {
@@ -13,8 +13,8 @@ index 7587130e021d494ae5013f7992b8f3c96590cbd7..f6d537ce0549b3359462f238c39952fe
              int count = item.getCount();
              // CraftBukkit start - fire PlayerPickupItemEvent
 -            int canHold = entity.getInventory().canHold(item);
-+            int canHold;// = entity.getInventory().canHold(item); // Luminol - Fix creative item picking
 +            // Luminol start - Fix creative item picking
++            int canHold;
 +            if (entity instanceof net.minecraft.server.level.ServerPlayer
 +                    && ((net.minecraft.server.level.ServerPlayer) entity).gameMode.getGameModeForPlayer().equals(net.minecraft.world.level.GameType.CREATIVE)) {
 +                canHold = count;

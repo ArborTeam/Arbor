@@ -1,8 +1,10 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 11:43:15 +0800
-Subject: [PATCH] Purpur Use alternative keep alive
+Subject: [PATCH] Purpur: Use alternative keep alive
 
+As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/purpur-server/minecraft-patches/sources/net/minecraft/server/network/ServerCommonPacketListenerImpl.java.patch)
+Licensed under: MIT (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/LICENSE)
 
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 index 79fe336adf35f4f007461ed050e6301764fe7fc3..a5b805b98cf138eabfb06f4ff202462be60c2995 100644

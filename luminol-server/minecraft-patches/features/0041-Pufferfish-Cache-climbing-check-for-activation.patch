@@ -1,8 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 12:25:44 +0800
-Subject: [PATCH] Pufferfish Cache climbing check for activation
+Subject: [PATCH] Pufferfish: Cache climbing check for activation
 
+Co-authored by: Paul Sauve <paul@technove.co>
+As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/patches/server/0017-Cache-climbing-check-for-activation.patch)
+Licensed under: GPL-3.0 (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/PATCH-LICENSE)
 
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
 index c260741a87513b89a5cc62c543fb9f990f86491e..beb9b3b3cd5ca60bd2cdada937bff8a1da639da5 100644

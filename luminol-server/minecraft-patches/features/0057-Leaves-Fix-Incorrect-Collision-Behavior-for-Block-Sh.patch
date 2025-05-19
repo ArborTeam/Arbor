@@ -1,10 +1,10 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
 Date: Sat, 8 Feb 2025 14:25:16 +0800
-Subject: [PATCH] Leaves Fix Incorrect Collision Behavior for Block Shape
+Subject: [PATCH] Leaves: Fix Incorrect Collision Behavior for Block Shape
 
 Co-authored by: Fortern <blueten.ki@gmail.com>
-As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/master/leaves-server/minecraft-patches/features/0110-Fix-Incorrect-Collision-Behavior-for-Block-Shape.patch)
+As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54a69b6479f1959ed24a60/leaves-server/minecraft-patches/features/0110-Fix-Incorrect-Collision-Behavior-for-Block-Shape.patch)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java

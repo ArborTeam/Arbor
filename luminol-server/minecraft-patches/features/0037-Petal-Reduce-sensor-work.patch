@@ -1,8 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 12:21:59 +0800
-Subject: [PATCH] Petal Reduce sensor work
+Subject: [PATCH] Petal: Reduce sensor work
 
+Co-authored by: peaches94 <peachescu94@gmail.com>
+As part of: Petal (https://github.com/Bloom-host/Petal/blob/cc691540fb48240f38b376f3d94c8b0db2b60d99/patches/server/0005-feat-reduce-sensor-work.patch)
+Licensed under: GPL-3.0 (https://github.com/Bloom-host/Petal/blob/cc691540fb48240f38b376f3d94c8b0db2b60d99/LICENSE)
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
 index 94a7b95f41c2954561f9c3cb0f61210c0c058f1d..dbe0fc0c46f66c61a2f286d521302719b28917c1 100644

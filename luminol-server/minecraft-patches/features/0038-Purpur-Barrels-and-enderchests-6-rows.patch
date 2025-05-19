@@ -1,8 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Helvetica Volubi <suisuroru@blue-millennium.fun>
 Date: Thu, 20 Feb 2025 01:00:28 +0800
-Subject: [PATCH] Purpur Barrels and enderchests 6 rows
+Subject: [PATCH] Purpur: Barrels and enderchests 6 rows
 
+Co-authored by: William Blake Galbreath <Blake.Galbreath@GMail.com>
+As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/purpur-server/minecraft-patches/features/0003-Barrels-and-enderchests-6-rows.patch)
+Licensed under: MIT (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/LICENSE)
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
 index 751b011701d6ae373099226ea63ffbafcd24ce6a..e5e946462da9e56344428139768075b7bd228ec0 100644

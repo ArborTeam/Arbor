@@ -1,8 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
 Date: Wed, 30 Nov 2022 21:51:16 +0100
-Subject: [PATCH] Gale Faster chunk serialization
+Subject: [PATCH] Gale: Faster chunk serialization
 
+Co-authored by: Martijn Muijsers <martijnmuijsers@live.nl>, Angeline <jellysquid3@users.noreply.github.com>
+As part of: Gale (https://github.com/GaleMC/Gale/blob/276e903b2688f23b19bdc8d493c0bf87656d2400/patches/server/0096-Faster-chunk-serialization.patch), Lithium (https://github.com/CaffeineMC/lithium-fabric)
+Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/util/BitStorage.java b/net/minecraft/util/BitStorage.java
 index 02502d50f0255f5bbcc0ecb965abb48cc1a112da..322a1ba06d6aed44ec67dc3f1831ac6b05c82fe0 100644

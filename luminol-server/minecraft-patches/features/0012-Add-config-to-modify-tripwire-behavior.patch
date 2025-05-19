@@ -31,10 +31,10 @@ index 9aace993c6c18f1a50610e4766225485984b8167..419c1c7e14691a472b70ed548ecb928c
                  }
              }
 diff --git a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-index f96fc1391167dea48cac1caa464b9026657df89a..eb869e574cee0d206684d5585c664a5f1d01ab65 100644
+index f96fc1391167dea48cac1caa464b9026657df89a..bfcca7f446d1667a857f565bae8bf1cfb1e39e2e 100644
 --- a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-@@ -27,15 +27,43 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+@@ -27,15 +27,41 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
          // CraftBukkit end
          BlockPos.MutableBlockPos mutableBlockPos = pos.mutable();
  
@@ -70,9 +70,7 @@ index f96fc1391167dea48cac1caa464b9026657df89a..eb869e574cee0d206684d5585c664a5f
 +                                            }
 +                                        }
 +                                    }
-+                                    default: {
-+
-+                                    } // Luminol - 1.21 Logic - default empty
++                                    default: {} // Luminol - 1.21 & default Logic - default empty
 +                                }
 +                            }
 +                            if (flag) blockList1.add(blockPos.immutable());
@@ -80,7 +78,7 @@ index f96fc1391167dea48cac1caa464b9026657df89a..eb869e574cee0d206684d5585c664a5f
                          }
  
                          blockList.setBlock(blockPos, block.defaultBlockState(), 3);
-@@ -54,11 +82,39 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+@@ -54,11 +80,39 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
              if (portalEvent.isCancelled()) return;
          }
  

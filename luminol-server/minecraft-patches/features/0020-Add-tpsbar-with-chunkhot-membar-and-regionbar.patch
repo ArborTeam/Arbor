@@ -17,7 +17,7 @@ index 8d67b4629c69d3039b199aaad45533d1acde114e..f7bfeca4b11b9860241d5eb80b6df420
          ((ca.spottedleaf.moonrise.patches.chunk_tick_iteration.ChunkTickServerLevel)(ServerLevel)chunk.getLevel()).moonrise$removeChunkForPlayerTicking(chunk); // Moonrise - chunk tick iteration
      }
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 46375fa81b36b89b79c22f0a7ac6d610ab1183d4..f2124edb487b1d5f6bdc7fa086814f870724363a 100644
+index 27782d1096dc4c9c82c02c29e9b17e2bf8d3f4d3..56f5568848d0f20b4d706c07dc8114594e0b5337 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1665,7 +1665,44 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -66,7 +66,7 @@ index 46375fa81b36b89b79c22f0a7ac6d610ab1183d4..f2124edb487b1d5f6bdc7fa086814f87
              this.lastServerStatus = nanos;
              this.status = this.buildServerStatus();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 375f4a59333ee1d75fb1acb8c2cbada7866bd48e..3abe2881e8a80bd6c128e96b976deebe3ada4678 100644
+index f4b738b05ec9488e20402efb6c935ff55d86adf2..a0a8b0c7d091f63f023f15a2620b03ae2126782e 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -766,6 +766,9 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface

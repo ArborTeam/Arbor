@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
 Date: Mon, 27 Jan 2025 13:01:55 +0800
-Subject: [PATCH] Tick regions api
+Subject: [PATCH] Add tick regions api
 
 
 diff --git a/io/papermc/paper/threadedregions/ThreadedRegionizer.java b/io/papermc/paper/threadedregions/ThreadedRegionizer.java

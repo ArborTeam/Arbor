@@ -5,7 +5,7 @@ Subject: [PATCH] SparklyPaper Optimize canSee checks
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index af20bc3b9cfb056beca0a341e209a4cc5e869da3..91dd18a874ea83bed83983ecfa52decce2b163a5 100644
+index 3819c748473f2cbf53890867e552985eeb8ee35f..8cb02f08ccddd69ad3ea868e848c61dfb4fa5fe7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -210,7 +210,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -17,7 +17,7 @@ index af20bc3b9cfb056beca0a341e209a4cc5e869da3..91dd18a874ea83bed83983ecfa52decc
      private final Set<UUID> unlistedEntities = new HashSet<>(); // Paper - Add Listing API for Player
      private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
      private int hash = 0;
-@@ -2265,9 +2265,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2264,9 +2264,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public boolean canSee(org.bukkit.entity.Entity entity) {

@@ -6,10 +6,10 @@ Subject: [PATCH] Fix incorrectly synced data after player teleportation
 Use vanilla's flag and logics to run some status sync after post teleportation, folia forgets send some packets after teleportation and which caused some desync between client and server
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index b6df8df78105e08ca7be82524685d8b9422abf21..10e3a54f3e7aa02a5c9986d3694c02bef07a66bf 100644
+index 40f3700c9bf56cfb26f0bca0dc6320fad8c75a65..b5d0eb5026067080a376b9c3f902dcdf40d5dc48 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1812,14 +1812,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1805,14 +1805,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              this.connection.send(new ClientboundChangeDifficultyPacket(
                  worlddata.getDifficulty(), worlddata.isDifficultyLocked()
              ));

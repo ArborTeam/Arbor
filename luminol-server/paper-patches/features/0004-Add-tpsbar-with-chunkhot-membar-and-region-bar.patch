@@ -22,10 +22,10 @@ index de8b9048c8395c05b8688bc9d984b8ad680f15b3..f42692cd4f0154705c3d5b030d281cfc
 +    // KioCG end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index ac878520dc4aaa0e6a1ce8de0982d60a8397bc15..af20bc3b9cfb056beca0a341e209a4cc5e869da3 100644
+index f7ceb89d9b908f02fc9e90e426e8e14e330ac041..b6e451c8a41a1d25bac679d18156d6e813efda2a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2401,6 +2401,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2400,6 +2400,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                  handle.expToDrop = data.getInt("expToDrop");
                  handle.keepLevel = data.getBoolean("keepLevel");
              }
@@ -41,7 +41,7 @@ index ac878520dc4aaa0e6a1ce8de0982d60a8397bc15..af20bc3b9cfb056beca0a341e209a4cc
          }
      }
  
-@@ -2422,6 +2431,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2421,6 +2430,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          data.putLong("lastPlayed", System.currentTimeMillis());
          data.putString("lastKnownName", handle.getScoreboardName());
  
@@ -57,11 +57,10 @@ index ac878520dc4aaa0e6a1ce8de0982d60a8397bc15..af20bc3b9cfb056beca0a341e209a4cc
          // Paper start - persist for use in offline save data
          if (!nbttagcompound.contains("Paper")) {
              nbttagcompound.put("Paper", new CompoundTag());
-@@ -3631,4 +3649,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
-     public void setSimplifyContainerDesyncCheck(final boolean simplifyContainerDesyncCheck) {
-         this.simplifyContainerDesyncCheck = simplifyContainerDesyncCheck;
+@@ -3614,4 +3632,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     public void setDeathScreenScore(final int score) {
+         getHandle().setScore(score);
      }
-+
 +    // KioCG start - ChunkHot
 +    @Override
 +    public long getNearbyChunkHot() {

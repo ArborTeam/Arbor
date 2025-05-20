@@ -6,10 +6,10 @@ Subject: [PATCH] Fix uncorrected death check of folia
 In the new mc version, mojang changed some checks in A.C.M(AbstractContainerMenu) and there is a new death check of player which will be executed when player dead.But on folia, player entity cannot be discarded unless they disconnected from the server, so there is an obvious bug that when player dead, the logic depend on that dead check will not be executed correctly because the check logic is still asserting the player is alive by checking if the player is discarded, which caused some exploits can save items in the crafting slots(with InventoryTweaks turned on in meteor client) when keepInventory is set to false
 
 diff --git a/net/minecraft/world/inventory/AbstractContainerMenu.java b/net/minecraft/world/inventory/AbstractContainerMenu.java
-index acca8c51d2030c675c157b10d0bbc6af631afe61..d0b688e69979c5e7b8267ac96bd71bcd33444c41 100644
+index 50af953a4698a3c6e16b840fab764dd733b3fbc9..a9c058238819f3631d94ac306185e909821caf35 100644
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
-@@ -689,7 +689,7 @@ public abstract class AbstractContainerMenu {
+@@ -679,7 +679,7 @@ public abstract class AbstractContainerMenu {
      }
  
      private static void dropOrPlaceInInventory(Player player, ItemStack stack) {

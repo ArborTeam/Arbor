@@ -1,0 +1,26 @@
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/config/modules/misc/DisableEndCrystalCheckConfig.java
+@@ -1,0 +_,23 @@
++package me.earthme.luminol.config.modules.misc;
++
++import me.earthme.luminol.config.ConfigInfo;
++import me.earthme.luminol.config.EnumConfigCategory;
++import me.earthme.luminol.config.IConfigModule;
++
++public class DisableEndCrystalCheckConfig implements IConfigModule {
++    @ConfigInfo(baseName = "disable_end_crystal_check", comments =
++            """
++                    Disable paper's End Crystal position check.
++                    It reverts to vanilla respawn dragon logic.""")
++    public static boolean disableEndCrystalCheck = false;
++
++    @Override
++    public EnumConfigCategory getCategory() {
++        return EnumConfigCategory.MISC;
++    }
++
++    @Override
++    public String getBaseName() {
++        return "endCrystal";
++    }
++}

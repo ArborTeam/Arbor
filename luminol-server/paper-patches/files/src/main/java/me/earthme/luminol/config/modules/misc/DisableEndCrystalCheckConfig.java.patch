@@ -21,6 +21,6 @@
 +
 +    @Override
 +    public String getBaseName() {
-+        return "endCrystal";
++        return "end_crystal";
 +    }
 +}

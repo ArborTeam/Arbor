@@ -31,19 +31,19 @@
 +                    Disable y <= 96 check.
 +                    If you enabled revert_274911, this config will useless
 +                    and always behavior of enabled""")
-+    public static boolean height_check = false;
++    public static boolean heightCheck = false;
 +
 +    @ConfigInfo(baseName = "skip-self-raid-check", comments =
 +            """
 +                    Disable raid self check\s
 +                        --- this config is not old version's function""")
-+    public static boolean self_check = false;
++    public static boolean selfCheck = false;
 +
 +    @ConfigInfo(baseName = "revert-274911", comments =
 +            """
 +                    Revert Old raid's find spawn position logic
 +                        --- This revert MC-274911""")
-+    public static boolean pos_revert = false;
++    public static boolean posRevert = false;
 +
 +    @Override
 +    public EnumConfigCategory getCategory() {

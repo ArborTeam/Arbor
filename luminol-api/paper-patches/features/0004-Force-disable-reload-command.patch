@@ -5,15 +5,15 @@ Subject: [PATCH] Force disable reload command
 
 
 diff --git a/src/main/java/org/bukkit/command/SimpleCommandMap.java b/src/main/java/org/bukkit/command/SimpleCommandMap.java
-index baf0cbd2f995ebe2e4382244eff6e15ec125d790..0d354eb5e7df427faff2d6c816c297c3d39a6e63 100644
+index 8093eff77c80be2c2e97bf6700a69d879d4c62a5..c51bc888011091925d73945a52b252aef3e2b384 100644
 --- a/src/main/java/org/bukkit/command/SimpleCommandMap.java
 +++ b/src/main/java/org/bukkit/command/SimpleCommandMap.java
-@@ -37,7 +37,7 @@ public class SimpleCommandMap implements CommandMap {
+@@ -31,7 +31,7 @@ public class SimpleCommandMap implements CommandMap {
+     }
  
      private void setDefaultCommands() {
-         register("bukkit", new VersionCommand("version"));
 -        register("bukkit", new ReloadCommand("reload"));
 +        //register("bukkit", new ReloadCommand("reload")); // Luminol - Force disable reload command
-         //register("bukkit", new PluginsCommand("plugins")); // Paper
          //register("bukkit", new co.aikar.timings.TimingsCommand("timings")); // Paper // Luminol - Disable timings warn msg and commands
      }
+ 

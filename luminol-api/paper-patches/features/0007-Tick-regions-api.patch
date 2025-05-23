@@ -1,0 +1,206 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <wangxyper@163.com>
+Date: Mon, 27 Jan 2025 13:01:59 +0800
+Subject: [PATCH] Tick regions api
+
+
+diff --git a/src/main/java/me/earthme/luminol/api/RegionStats.java b/src/main/java/me/earthme/luminol/api/RegionStats.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..96147cace1550d14c682258dab0397587dcf76a4
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/api/RegionStats.java
+@@ -0,0 +1,25 @@
++package me.earthme.luminol.api;
++
++/**
++ * A simple package of folia's tick region state.It linked to the RegionStats of the nms part so that</br>
++ * You could call these methods to get the status of this tick region</br>
++ */
++public interface RegionStats {
++    /**
++     * Get the entity count in this tick region
++     * @return the entity count
++     */
++    int getEntityCount();
++
++    /**
++     * Get the player count in this tick region
++     * @return the player count
++     */
++    int getPlayerCount();
++
++    /**
++     * Get the chunk count in this tick region
++     * @return the chunk count
++     */
++    int getChunkCount();
++}
+diff --git a/src/main/java/me/earthme/luminol/api/ThreadedRegion.java b/src/main/java/me/earthme/luminol/api/ThreadedRegion.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..01dac0602b5f66f80c0adfbb779666fe0325a24f
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/api/ThreadedRegion.java
+@@ -0,0 +1,56 @@
++package me.earthme.luminol.api;
++
++import org.bukkit.Location;
++import org.bukkit.World;
++
++import javax.annotation.Nullable;
++
++/**
++ * A mirror of folia's ThreadedRegion</br>
++ * Including some handy methods to get the information of the tick region</br>
++ * Note: You should call these methods inside this tick region's thread context
++ */
++public interface ThreadedRegion {
++    /**
++     * Get the center chunk pos of this tick region</br>
++     * Note:</br>
++     *      1.Global region will return a null value(But we don't finish the global region yet()</br>
++     *      2.You should call these methods inside this tick region's thread context
++     * @return The center chunk pos
++     */
++    @Nullable
++    Location getCenterChunkPos();
++
++    /**
++     * Get the dead section percent of this tick region
++     * Note: </br>
++     *      1.Dead percent is mean the percent of the unloaded chunk count of this tick region, which is also used for determine
++     * that the tick region should or not check for splitting</br>
++     *      2.You should call these methods inside this tick region's thread context
++     * @return The dead section percent
++     */
++    double getDeadSectionPercent();
++
++    /**
++     * Get the tick region data of this tick region</br>
++     * Note:</br>
++     *       1.You should call this method inside this tick region's thread context</br>
++     *       2.You should call these methods inside this tick region's thread context
++     * @return The tick region data
++     */
++    TickRegionData getTickRegionData();
++
++    /**
++     * Get the world of this tick region</br>
++     * Note: Global region will return a null value too
++     * @return The world of this tick region
++     */
++    @Nullable
++    World getWorld();
++
++    /**
++     * Get the id of the tick region</br>
++     * @return The id of the tick region
++     */
++    long getId();
++}
+diff --git a/src/main/java/me/earthme/luminol/api/ThreadedRegionizer.java b/src/main/java/me/earthme/luminol/api/ThreadedRegionizer.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..ff31a68a019fd9e5e687e6818f8729f4950bc060
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/api/ThreadedRegionizer.java
+@@ -0,0 +1,56 @@
++package me.earthme.luminol.api;
++
++import org.bukkit.Location;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++import java.util.Collection;
++
++/**
++ * A mirror of folia's ThreadedRegionizer
++ */
++public interface ThreadedRegionizer {
++    /**
++     * Get all the tick regions
++     * @return Temporary copied collection of all tick regions
++     */
++    Collection<ThreadedRegion> getAllRegions();
++
++    /**
++     * Get the tick region at the given chunk coordinates
++     * @param chunkX Chunk X
++     * @param chunkZ Chunk Z
++     * @return The tick region at the given chunk coordinates
++     */
++    @Nullable
++    ThreadedRegion getAtSynchronized(int chunkX, int chunkZ);
++
++    /**
++     * Get the tick region at the given chunk coordinates
++     * @param chunkX Chunk X
++     * @param chunkZ Chunk Z
++     * @return The tick region at the given chunk coordinates
++     */
++    @Nullable
++    ThreadedRegion getAtUnSynchronized(int chunkX, int chunkZ);
++
++    /**
++     * Get the tick region at the given location
++     * @param pos The location
++     * @return The tick region at the given location
++     */
++    @Nullable
++    default ThreadedRegion getAtSynchronized(@NotNull Location pos) {
++        return this.getAtSynchronized(pos.getBlockX() >> 4, pos.getBlockZ() >> 4);
++    }
++
++    /**
++     * Get the tick region at the given location
++     * @param pos The location
++     * @return The tick region at the given location
++     */
++    @Nullable
++    default ThreadedRegion getAtUnSynchronized(@NotNull Location pos) {
++        return this.getAtUnSynchronized(pos.getBlockX() >> 4, pos.getBlockZ() >> 4);
++    }
++}
+diff --git a/src/main/java/me/earthme/luminol/api/TickRegionData.java b/src/main/java/me/earthme/luminol/api/TickRegionData.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..ecde4462b08d701b8bff9f26902f17754cf791dd
+--- /dev/null
++++ b/src/main/java/me/earthme/luminol/api/TickRegionData.java
+@@ -0,0 +1,26 @@
++package me.earthme.luminol.api;
++
++import org.bukkit.World;
++
++/**
++ * A mirror of folia's tick region data
++ */
++public interface TickRegionData {
++    /**
++     * Get the world it's currently holding
++     * @return the world
++     */
++    World getWorld();
++
++    /**
++     * Get the current tick count
++     * @return the current tick count
++     */
++    long getCurrentTickCount();
++
++    /**
++     * Get the region stats
++     * @return the region stats
++     */
++    RegionStats getRegionStats();
++}
+diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
+index a8b64f78bf3c453094074b4b4d3c8fd07b9eb273..7927012c1afe5289d22879353a88a4574da91e01 100644
+--- a/src/main/java/org/bukkit/World.java
++++ b/src/main/java/org/bukkit/World.java
+@@ -4444,4 +4444,8 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
+             }
+         }
+     }
++
++    // Luminol start - Tick regions api
++    me.earthme.luminol.api.ThreadedRegionizer getThreadedRegionizer();
++    // Luminol end - Tick regions api
+ }

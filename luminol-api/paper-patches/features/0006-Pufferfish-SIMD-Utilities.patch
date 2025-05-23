@@ -199,4 +199,4 @@ index fc9728342de7605da69813fb44b008c1343124c0..d322e6c47d751b41e4b2f2fc45bb8d74
 +        } else gg.pufferfish.pufferfish.simd.VectorMapPalette.matchColorVectorized(pixels, result); // Luminol - Pufferfish - vectorized map color conversion
          return result;
      }
-
+ 

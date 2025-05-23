@@ -1,16 +1,16 @@
 --- a/folia-api/build.gradle.kts
 +++ b/folia-api/build.gradle.kts
-@@ -54,6 +_,7 @@
+@@ -51,6 +_,7 @@
      api("org.apache.logging.log4j:log4j-api:$log4jVersion")
      api("org.slf4j:slf4j-api:$slf4jVersion")
      api("com.mojang:brigadier:1.3.10")
 +    api("io.sentry:sentry:8.0.0-rc.2") // Pufferfish
  
      // Deprecate bungeecord-chat in favor of adventure
-     api("net.md-5:bungeecord-chat:$bungeeCordChatVersion-deprecated+build.19") {
-@@ -104,17 +_,21 @@
+     api("net.md-5:bungeecord-chat:$bungeeCordChatVersion") {
+@@ -101,17 +_,21 @@
          java {
-             srcDir(generatedApiPath)
+             srcDir(generatedDir)
              srcDir(file("../paper-api/src/main/java"))
 +            srcDir(file("../folia-api/src/main/java"))
          }
@@ -30,9 +30,9 @@
          }
      }
  }
-@@ -258,3 +_,10 @@
- tasks.check {
-     dependsOn(scanJarForOldGeneratedCode)
+@@ -257,3 +_,10 @@
+         dependsOn(scanJarForOldGeneratedCode)
+     }
  }
 +
 +// Pufferfish Start

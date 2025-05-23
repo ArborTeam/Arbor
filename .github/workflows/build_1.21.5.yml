@@ -56,7 +56,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: sh scripts/SetENV.sh
         
-      - name: Create Release
+      - name: Create Release && false
         if: github.event_name != 'pull_request'
         uses: ncipollo/release-action@v1
         with:

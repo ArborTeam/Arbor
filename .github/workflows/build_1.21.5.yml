@@ -35,7 +35,7 @@ jobs:
         run: ./gradlew createMojmapPaperclipJar
         
       - name: Publish to repo
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && false
         continue-on-error: true
         run: |
           ./gradlew generateDevelopmentBundle publish -PpublishDevBundle=true
@@ -53,8 +53,8 @@ jobs:
         if: github.event_name != 'pull_request'
         run: sh scripts/SetENV.sh
         
-      - name: Create Release && false
-        if: github.event_name != 'pull_request'
+      - name: Create Release
+        if: github.event_name != 'pull_request' && false
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.tag }}

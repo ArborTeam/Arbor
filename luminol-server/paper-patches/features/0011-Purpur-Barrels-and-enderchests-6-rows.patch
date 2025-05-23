@@ -5,10 +5,10 @@ Subject: [PATCH] Purpur-Barrels-and-enderchests-6-rows
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
-index 1ce328bed5cf3d087a3f7dc9236153381d758493..20f2b9945eaa58e05b417d9cca7c30dd0496cf72 100644
+index c00ddfe41439954fa0fd87c0933f274c8a752eb6..f60e3896411ff8342639e3f3422d551c84d5871e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
-@@ -145,9 +145,26 @@ public class CraftContainer extends AbstractContainerMenu {
+@@ -150,9 +150,26 @@ public class CraftContainer extends AbstractContainerMenu {
              case PLAYER:
              case CHEST:
              case ENDER_CHEST:
@@ -38,7 +38,7 @@ index 1ce328bed5cf3d087a3f7dc9236153381d758493..20f2b9945eaa58e05b417d9cca7c30dd
              case DROPPER:
                  this.delegate = new DispenserMenu(windowId, bottom, top);
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
-index c6159c70f7a37b9bffe268b91905ce848d1d2927..1ae08daecb7f072e0afaae327bad64e43c3ae027 100644
+index f850e6cea92edc87ed54cf54488b5ebb606913ed..f4db38de4348fb03db0b769bd5b5993184dd4abb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
 @@ -84,7 +84,7 @@ public class CraftInventory implements Inventory {

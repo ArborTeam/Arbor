@@ -18,19 +18,19 @@ index a0b84535a9d3833d4df692b85b272f145559dd80..c2ba46408b5ad727d7a17f21d47b2898
              return;
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index a60e6ed437764ebeaab64e9ae7b87a177119e436..7ffdc9a50c41adcac5d2b8ac84036aacc789ece6 100644
+index 1091d2747c04166447540b37d86f51fe2591adc8..e0cee79b949fd2a4684bdfe7aa257c2ea96914b0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -315,7 +315,7 @@ public final class CraftServer implements Server {
-     public static Exception excessiveVelEx; // Paper - Velocity warnings
-     private final io.papermc.paper.logging.SysoutCatcher sysoutCatcher = new io.papermc.paper.logging.SysoutCatcher(); // Paper
-     private final io.papermc.paper.potion.PaperPotionBrewer potionBrewer; // Paper - Custom Potion Mixes
--    public final io.papermc.paper.SparksFly spark; // Paper - spark
+@@ -314,7 +314,7 @@ public final class CraftServer implements Server {
+     public static Exception excessiveVelEx;
+     private final io.papermc.paper.logging.SysoutCatcher sysoutCatcher = new io.papermc.paper.logging.SysoutCatcher();
+     private final io.papermc.paper.potion.PaperPotionBrewer potionBrewer;
+-    public final io.papermc.paper.SparksFly spark;
 +    public io.papermc.paper.SparksFly spark; // Paper - spark // Luminol - Force disable builtin spark
+     private final ServerConfiguration serverConfig = new PaperServerConfiguration();
  
      // Paper start - Folia region threading API
-     private final io.papermc.paper.threadedregions.scheduler.FoliaRegionScheduler regionizedScheduler = new io.papermc.paper.threadedregions.scheduler.FoliaRegionScheduler(); // Folia - region threading
-@@ -493,7 +493,7 @@ public final class CraftServer implements Server {
+@@ -496,7 +496,7 @@ public final class CraftServer implements Server {
          }
          this.potionBrewer = new io.papermc.paper.potion.PaperPotionBrewer(console); // Paper - custom potion mixes
          datapackManager = new io.papermc.paper.datapack.PaperDatapackManager(console.getPackRepository()); // Paper
@@ -39,7 +39,7 @@ index a60e6ed437764ebeaab64e9ae7b87a177119e436..7ffdc9a50c41adcac5d2b8ac84036aac
      }
  
      public boolean getCommandBlockOverride(String command) {
-@@ -1157,7 +1157,7 @@ public final class CraftServer implements Server {
+@@ -1141,7 +1141,7 @@ public final class CraftServer implements Server {
          this.reloadData();
          org.spigotmc.SpigotConfig.registerCommands(); // Spigot
          io.papermc.paper.command.PaperCommands.registerCommands(this.console); // Paper
@@ -48,7 +48,7 @@ index a60e6ed437764ebeaab64e9ae7b87a177119e436..7ffdc9a50c41adcac5d2b8ac84036aac
          this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
          this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
  
-@@ -1186,7 +1186,7 @@ public final class CraftServer implements Server {
+@@ -1170,7 +1170,7 @@ public final class CraftServer implements Server {
          this.loadPlugins();
          this.enablePlugins(PluginLoadOrder.STARTUP);
          this.enablePlugins(PluginLoadOrder.POSTWORLD);

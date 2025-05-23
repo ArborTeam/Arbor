@@ -80,11 +80,11 @@ index c95769a4e64fabd7acdff6c5f6f349107e1cf5c0..4efa1c057ae6cfdea7889c372bd62dc1
                  reason + ", context=" + getThreadContext() + ", world=" + WorldUtil.getWorldName(world) + ", block_pos=" + new Vec3(blockX, 0.0, blockZ);
              LOGGER.error(ex, new Throwable());
 diff --git a/src/main/java/org/spigotmc/AsyncCatcher.java b/src/main/java/org/spigotmc/AsyncCatcher.java
-index 50f01faa88c8c658252fade3748f20e48e9c8432..36fa1f83c3286e10cc7c208a2a2f1a718d525ad8 100644
+index 7e7a0ed944961af5ab7a49bc659da2862d2e2c82..f2867e3758ebfc5ea1066b0d5d2fe6f2dfab8248 100644
 --- a/src/main/java/org/spigotmc/AsyncCatcher.java
 +++ b/src/main/java/org/spigotmc/AsyncCatcher.java
-@@ -7,7 +7,7 @@ public class AsyncCatcher {
-     public static boolean enabled = true;
+@@ -5,7 +5,7 @@ import net.minecraft.server.MinecraftServer;
+ public class AsyncCatcher {
  
      public static void catchOp(String reason) {
 -        if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThread()) { // Paper - chunk system

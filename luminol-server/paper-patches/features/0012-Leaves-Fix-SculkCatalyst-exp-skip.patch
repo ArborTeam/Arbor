@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: violetc <58360096+s-yh-china@users.noreply.github.com>
-Date: Sun, 6 Apr 2025 10:42:46 +0800
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Sat, 24 May 2025 02:26:33 +0800
 Subject: [PATCH] Leaves Fix SculkCatalyst exp skip
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index bef7a026676ab59a84fc33c8af50ad2b9447fd8c..0a678458bcee4ced98d2880821dbff302f59b7f6 100644
+index ee8fcf73665de82fa3968e0998b3221d9088647b..7bb22db40f18be2dbc3ca33a0cb864cf8389ac1e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -991,7 +991,7 @@ public class CraftEventFactory {
+@@ -851,7 +851,7 @@ public class CraftEventFactory {
          CraftLivingEntity entity = (CraftLivingEntity) victim.getBukkitEntity();
          CraftDamageSource bukkitDamageSource = new CraftDamageSource(damageSource);
          CraftWorld world = (CraftWorld) entity.getWorld();
@@ -17,15 +17,15 @@ index bef7a026676ab59a84fc33c8af50ad2b9447fd8c..0a678458bcee4ced98d2880821dbff30
          populateFields(victim, event); // Paper - make cancellable
          Bukkit.getServer().getPluginManager().callEvent(event);
  
-@@ -1002,6 +1002,7 @@ public class CraftEventFactory {
-         playDeathSound(victim, event);
+@@ -862,6 +862,7 @@ public class CraftEventFactory {
+         playDeathSound(victim, event, damageSource);
          // Paper end
          victim.expToDrop = event.getDroppedExp();
 +        victim.expToReward = event.getRewardExp(); // Leaves - exp fix
          lootCheck.run(); // Paper - advancement triggers before destroying items
  
          // Paper start - Restore vanilla drops behavior
-@@ -1037,6 +1038,7 @@ public class CraftEventFactory {
+@@ -897,6 +898,7 @@ public class CraftEventFactory {
          victim.newLevel = event.getNewLevel();
          victim.newTotalExp = event.getNewTotalExp();
          victim.expToDrop = event.getDroppedExp();

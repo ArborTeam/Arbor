@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Sat, 24 May 2025 04:44:21 +0800
+Subject: [PATCH] Configurable region file format
+
+
+diff --git a/src/main/java/abomination/IRegionFile.java b/src/main/java/abomination/IRegionFile.java
+index 61fc75d2cb7cf9d57655c4191285bf0cb10eef1a..f97e889762a0d28a867ec37978c3f44fcfcd885d 100644
+--- a/src/main/java/abomination/IRegionFile.java
++++ b/src/main/java/abomination/IRegionFile.java
+@@ -36,4 +36,6 @@ public interface IRegionFile extends ChunkSystemRegionFile, AutoCloseable {
+     boolean recalculateHeader() throws IOException;
+ 
+     void setOversized(int x, int z, boolean oversized) throws IOException;
++
++    default int getRecalculateCount() {return 0;} // Luminol - Configurable region file format
+ }
+\ No newline at end of file

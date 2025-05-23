@@ -1,0 +1,98 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <wangxyper@163.com>
+Date: Sun, 12 Jan 2025 10:56:59 +0800
+Subject: [PATCH] Try fixing folia off region POI accessing issue
+
+Folia's POIManager sometimes is trying getting the POI record that doesn't belong to current tickregion which is causing some off-main-thread exceptions thrown, so we need to replace the logic with corrected one
+
+diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
+index 9d837fdfee8eea14b22a89ea7b9724d0794419d8..e0c82d3a85b0f7e9c755dee43af407e35422a923 100644
+--- a/net/minecraft/server/MinecraftServer.java
++++ b/net/minecraft/server/MinecraftServer.java
+@@ -1667,9 +1667,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         // KioCG start - ChunkHot
+         final ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet<net.minecraft.world.level.chunk.LevelChunk> chunks = new ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet<>();
+         if (region != null){
++            for (net.minecraft.world.level.chunk.LevelChunk chunk : region.world.getCurrentWorldData().getTickingChunks()) {
++            /* wait for rewrite - temporarily crash fix
+             for (net.minecraft.server.level.ServerChunkCache.ChunkAndHolder chunkAndHolder : region.world.getCurrentWorldData().getTickingChunks()){
+                 final net.minecraft.world.level.chunk.LevelChunk chunk = chunkAndHolder.chunk();
+-
++            */
+                 if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(region.world, chunk.locX, chunk.locZ)){
+                     continue;
+                 }
+diff --git a/net/minecraft/server/commands/SetBlockCommand.java b/net/minecraft/server/commands/SetBlockCommand.java
+index 21cc9a6cc8c655c9c242410907a031e0d86dc607..7f538574a44d4815687fe1f4cc3e7de47cac703b 100644
+--- a/net/minecraft/server/commands/SetBlockCommand.java
++++ b/net/minecraft/server/commands/SetBlockCommand.java
+@@ -104,7 +104,7 @@ public class SetBlockCommand {
+     // Luminol Start - Server crash fix
+     public static void processIAE(CommandSourceStack src, IllegalArgumentException ex) {
+         Component hoverText = Component.translatable("command.failed")
+-                .withStyle(style -> style.withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, Component.literal(ex.getMessage()))));
++                .withStyle(style -> style.withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(Component.literal(ex.getMessage()))));
+         src.sendFailure(hoverText);
+         com.mojang.logging.LogUtils.getLogger().error(ex.getMessage(), ex);
+     }
+diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
+index 8b55314829780fd7f53b18e5025a40b7d3316488..4b5855a456e9703b8e0c60da4ab3dfa2865cef60 100644
+--- a/net/minecraft/server/level/ServerPlayer.java
++++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -1378,15 +1378,6 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+     }
+     // Leaves end - exp fix
+ 
+-    // Leaves start - exp fix
+-    private boolean shouldDropExperience(boolean eventResult, boolean forceUseEvent) {
+-        if (forceUseEvent) {
+-            return eventResult;
+-        }
+-        return wasExperienceConsumed() ? false : eventResult;
+-    }
+-    // Leaves end - exp fix
+-
+     private void tellNeutralMobsThatIDied() {
+         AABB aabb = new AABB(this.blockPosition()).inflate(32.0, 10.0, 32.0);
+         this.level()
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index a0a14e886e83393dc8715eeeced25be3598a59f1..84cc23380667623df4a19681e355ebe35365f4a2 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -1085,10 +1085,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+     private double moveStartZ;
+     // Paper end - detailed watchdog information
+ 
+-    //Luminol start - Fix large pos moving
+-    private volatile boolean preventMoving = false;
+-    //Luminol end
+-
+     private boolean boundingBoxChanged = false; // Gale - VMP - skip entity move if movement is zero
+ 
+     //Luminol start - Fix large pos moving
+diff --git a/net/minecraft/world/entity/ai/village/poi/PoiManager.java b/net/minecraft/world/entity/ai/village/poi/PoiManager.java
+index c10810bf00d75f459c3c6a9415c1e09f0519d50e..3adafa43367cd6648ecbccb92ba5bd509740d5a4 100644
+--- a/net/minecraft/world/entity/ai/village/poi/PoiManager.java
++++ b/net/minecraft/world/entity/ai/village/poi/PoiManager.java
+@@ -212,7 +212,7 @@ public class PoiManager extends SectionStorage<PoiSection, PoiSection.Packed> im
+ 
+     public Stream<PoiRecord> getInSquare(Predicate<Holder<PoiType>> typePredicate, BlockPos pos, int distance, PoiManager.Occupancy status) {
+         int i = Math.floorDiv(distance, 16) + 1;
+-        return ChunkPos.rangeClosed(new ChunkPos(pos), i).flatMap(chunkPos -> this.getInChunk(typePredicate, chunkPos, status)).filter(poiRecord -> {
++        return ChunkPos.rangeClosed(new ChunkPos(pos), i).filter(cpos -> me.earthme.luminol.config.modules.fixes.FoliaPOIAccessOffRegionFixConfig.enabled ? ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.world,cpos) : true).flatMap(chunkPos -> this.getInChunk(typePredicate, chunkPos, status)).filter(poiRecord -> { // Luminol - Fix off region POI access
+             BlockPos pos1 = poiRecord.getPos();
+             return Math.abs(pos1.getX() - pos.getX()) <= distance && Math.abs(pos1.getZ() - pos.getZ()) <= distance;
+         });
+diff --git a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
+index d8fb060aa8570ccfd4b7c26c28fb5ab5fe5f869b..a81245aff4cc982b9eaca976ebbb54a8188b247b 100644
+--- a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
++++ b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
+@@ -257,7 +257,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
+ 
+             final ChunkPos pos = new ChunkPos(chunkX, chunkZ);
+             final ChunkPos headerChunkPos = SerializableChunkData.getChunkCoordinate(ret);
+-            final RegionFile regionFile = this.getRegionFile(pos);
++            final abomination.IRegionFile regionFile = this.getRegionFile(pos);  // Luminol - Configurable region file format
+ 
+             if (regionFile.getRecalculateCount() != readData.recalculateCount()) {
+                 return null;

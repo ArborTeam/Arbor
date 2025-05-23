@@ -1,0 +1,142 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Sun, 27 Apr 2025 14:26:01 +0800
+Subject: [PATCH] Portal Behavior Modifiers
+
+
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index 7782dae9f9155eaef35bca2dd2b0782ed6f5c9a3..12647b44edf4794dfba0fe997c3b45555d7bdcb5 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -1356,7 +1356,26 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         if (levelChunk != null) levelChunk.getChunkHot().startTicking(); try { // KioCG
+         try {
+         // Folia end - profiler
++        // Luminol start - Entity portal-teleport speed fix
+         if (isActive) { // Paper - EAR 2
++            if (!(entity instanceof Player) && entity.flag_portal && entity.flag_compensate_ticks) { // Luminol - after portal compensate tick
++                entity.tick();
++                entity.tick();
++                entity.flag_compensate_ticks = false;
++                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
++                    return;
++                }
++                if (entity.handlePortal()) {
++                    return;
++                }
++            } else if (!(entity instanceof Player) && entity.flag_portal) { // Luminol - portal teleport only
++                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
++                    return;
++                }
++                if (entity.handlePortal()) {
++                    return;
++                }
++            } else {
+         entity.tick();
+         // Folia start - region threading
+         if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
+@@ -1367,6 +1386,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+             // portalled
+             return;
+         }
++        }
++        // Luminol end - Entity portal-teleport speed fix
+         // Folia end - region threading
+         } else {entity.inactiveTick();} // Paper - EAR 2
+         profilerFiller.pop();
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 736c74cc64541b7f7658a21a12439f1213278f5c..d8ecf8091829f36024610639f2695402ca3bce3d 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -350,6 +350,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+     public long activatedTick = Integer.MIN_VALUE;
+     public boolean isTemporarilyActive;
+     public long activatedImmunityTick = Integer.MIN_VALUE;
++    // Luminol start - Entity portal-teleport speed fix
++    public boolean flag_portal = false;
++    public boolean flag_compensate_ticks = false;
++    // Luminol end - Entity portal-teleport speed fix
+ 
+     public void inactiveTick() {
+     }
+@@ -3227,6 +3231,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         } else {
+             if (this.portalProcess == null || !this.portalProcess.isSamePortal(portal)) {
+                 this.portalProcess = new PortalProcessor(portal, pos.immutable());
++                this.flag_portal = true; // Luminol - Entity portal-teleport speed fix
+             } else if (!this.portalProcess.isInsidePortalThisTick()) {
+                 this.portalProcess.updateEntryPosition(pos.immutable());
+                 this.portalProcess.setAsInsidePortalThisTick(true);
+@@ -3786,20 +3791,27 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+ 
+             EntityTreeNode curr;
+             while ((curr = queue.pollFirst()) != null) {
+-                EntityTreeNode[] passengers = curr.passengers;
++                restore(curr); // Luminol - EndGateway Portal Passengers Fix
++            }
++        }
++
++        // Luminol Start - EndGateway Portal Passengers Fix
++        private EntityTreeNode[] restore(EntityTreeNode entity) {
++                EntityTreeNode[] passengers = entity.passengers;
+                 if (passengers == null) {
+-                    continue;
++                    return null;
+                 }
+ 
+                 List<Entity> newPassengers = new java.util.ArrayList<>();
+                 for (EntityTreeNode passenger : passengers) {
++                    passenger.passengers = restore(passenger);
+                     newPassengers.add(passenger.root);
+-                    passenger.root.vehicle = curr.root;
++                    passenger.root.vehicle = entity.root;
+                 }
+-
+-                curr.root.passengers = ImmutableList.copyOf(newPassengers);
+-            }
++                entity.root.passengers = ImmutableList.copyOf(newPassengers);
++                return passengers;
+         }
++        // Luminol End - EndGateway Portal Passengers Fix
+ 
+         public void addTracker() {
+             for (final EntityTreeNode node : this.getFullTree()) {
+@@ -4518,6 +4530,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+ 
+     }
+ 
++    // Luminol start - Add afterPortalLogic
++    protected void afterPortalLogic() {
++        this.flag_compensate_ticks  = true; // Luminol - Entity portal-teleport speed fix
++        this.flag_portal = false; // Luminol - Entity portal-teleport speed fix
++    }
++    // Luminol end - Add afterPortalLogic
++
+     protected boolean portalToAsync(ServerLevel destination, BlockPos portalPos, boolean takePassengers,
+                                     PortalType type, java.util.function.Consumer<Entity> teleportComplete) {
+         ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread(this, "Cannot portal entity async");
+@@ -4601,6 +4620,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+                         info.postTeleportTransition().onTransition(teleported);
+                     }
+ 
++                    teleported.afterPortalLogic(); // Luminol - Add afterPortalLogic
++
+                     // Kaiiju start - vanilla end teleportation
+                     /*if (teleportComplete != null) {
+                         teleportComplete.accept(teleported);
+diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
+index e6f58a8b1733ff902516fe374db691029d4bd79a..713fcba887bbc6a7b059f7448a15be120b743275 100644
+--- a/net/minecraft/world/entity/item/PrimedTnt.java
++++ b/net/minecraft/world/entity/item/PrimedTnt.java
+@@ -253,4 +253,11 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+         return !this.level().paperConfig().fixes.preventTntFromMovingInWater && super.isPushedByFluid();
+     }
+     // Paper end - Option to prevent TNT from moving in water
++
++    // Luminol start - Add afterPortalLogic
++    protected void afterPortalLogic() {
++        this.setUsedPortal(true);
++        super.afterPortalLogic();
++    }
++    // Luminol end - Add afterPortalLogic
+ }

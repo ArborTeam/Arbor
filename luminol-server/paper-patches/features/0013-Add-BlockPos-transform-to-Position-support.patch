@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Sat, 24 May 2025 04:27:17 +0800
+Subject: [PATCH] Add BlockPos transform to Position support
+
+
+diff --git a/src/main/java/io/papermc/paper/util/MCUtil.java b/src/main/java/io/papermc/paper/util/MCUtil.java
+index eb94f71f626c1f89f1b9048a8e68ae09ff17effc..78fe4d49aa1108ceb180538aeea6d0cede31a58a 100644
+--- a/src/main/java/io/papermc/paper/util/MCUtil.java
++++ b/src/main/java/io/papermc/paper/util/MCUtil.java
+@@ -162,6 +162,12 @@ public final class MCUtil {
+         return new org.bukkit.Location(world.getWorld(), pos.x(), pos.y(), pos.z());
+     }
+ 
++    // Luminol start - add BlockPos support
++    public static org.bukkit.Location toLocation(net.minecraft.world.level.Level world, BlockPos pos) {
++        return new org.bukkit.Location(world.getWorld(), pos.getX(), pos.getY(), pos.getZ());
++    }
++    // Luminol end - add BlockPos support
++
+     /**
+      * Converts a NMS World/Vector to Bukkit Location
+      * @param world

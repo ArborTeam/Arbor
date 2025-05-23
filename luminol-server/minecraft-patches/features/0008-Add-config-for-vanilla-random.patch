@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <wangxyper@163.com>
+Date: Sun, 12 Jan 2025 10:24:50 +0800
+Subject: [PATCH] Add config for vanilla random
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 414be522896c63c34100199177788d71e8f2d326..bf177d9f7e5d9f643d13fcb9ea23686fd0f32dc5 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -261,7 +261,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+     public double yOld;
+     public double zOld;
+     public boolean noPhysics;
+-    public final RandomSource random = SHARED_RANDOM; // Paper - Share random for entities to make them more random
++    public final RandomSource random = me.earthme.luminol.config.modules.fixes.VanillaRandomSourceConfig.useLegacyRandomSourceForPlayers ? RandomSource.create() : SHARED_RANDOM; // Paper - Share random for entities to make them more random // Luminol - Add config for vanilla random SHARED_RANDOM
+     public int tickCount;
+     private int remainingFireTicks = -this.getFireImmuneTicks();
+     public boolean wasTouchingWater;

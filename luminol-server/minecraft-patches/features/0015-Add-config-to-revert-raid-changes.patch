@@ -21,7 +21,7 @@ index 80f17f33f670018240c854df589cf90cdeab6e70..8672757a4d5fb5c247599782fece6b8d
              if (raidAt == null || raidAt.getRaidOmenLevel() < raidAt.getMaxRaidOmenLevel()) {
                  serverPlayer.addEffect(new MobEffectInstance(MobEffects.RAID_OMEN, 600, amplifier));
 diff --git a/net/minecraft/world/entity/raid/Raid.java b/net/minecraft/world/entity/raid/Raid.java
-index 2f45befbb50645f1bfb5961ad725f3670ff0d592..0d91ae860a5c506c634e88341d958618996cc5bc 100644
+index 2f45befbb50645f1bfb5961ad725f3670ff0d592..190b9f46029ba0a0d69f68db2c56301f4ea21c94 100644
 --- a/net/minecraft/world/entity/raid/Raid.java
 +++ b/net/minecraft/world/entity/raid/Raid.java
 @@ -325,7 +325,20 @@ public class Raid {
@@ -30,7 +30,7 @@ index 2f45befbb50645f1bfb5961ad725f3670ff0d592..0d91ae860a5c506c634e88341d958618
                          if (flag1) {
 -                            this.waveSpawnPos = this.getValidSpawnPos();
 +                            // Luminol Start - Raid revert
-+                            if (!me.earthme.luminol.config.modules.misc.RaidChangesConfig.pos_revert) {
++                            if (!me.earthme.luminol.config.modules.misc.RaidChangesConfig.posRevert) {
 +                                this.waveSpawnPos = this.getValidSpawnPos();
 +                            } else {
 +                                int n4 = 0;
@@ -53,7 +53,7 @@ index 2f45befbb50645f1bfb5961ad725f3670ff0d592..0d91ae860a5c506c634e88341d958618
 -                    BlockPos blockPos = this.waveSpawnPos.orElseGet(() -> this.findRandomSpawnPos(20));
 +                    // Luminol Start - Raid revert
 +                    BlockPos blockPos;
-+                    if (!me.earthme.luminol.config.modules.misc.RaidChangesConfig.pos_revert) {
++                    if (!me.earthme.luminol.config.modules.misc.RaidChangesConfig.posRevert) {
 +                        blockPos = this.waveSpawnPos.orElseGet(() -> this.findRandomSpawnPos(20));
 +                    } else {
 +                        blockPos = this.waveSpawnPos.isPresent() ? this.waveSpawnPos.get() : this.findRandomSpawnPos(i, 20);
@@ -67,7 +67,7 @@ index 2f45befbb50645f1bfb5961ad725f3670ff0d592..0d91ae860a5c506c634e88341d958618
                      }
  
 -                    if (i > 5) {
-+                    if (i > (me.earthme.luminol.config.modules.misc.RaidChangesConfig.pos_revert ? 3 : 5)) { // Luminol - Raid revert
++                    if (i > (me.earthme.luminol.config.modules.misc.RaidChangesConfig.posRevert ? 3 : 5)) { // Luminol - Raid revert
                          org.bukkit.craftbukkit.event.CraftEventFactory.callRaidStopEvent(this, org.bukkit.event.raid.RaidStopEvent.Reason.UNSPAWNABLE); // CraftBukkit
                          this.stop();
                          break;
@@ -94,7 +94,7 @@ index 2f45befbb50645f1bfb5961ad725f3670ff0d592..0d91ae860a5c506c634e88341d958618
              int i3 = this.center.getZ() + Mth.floor(Mth.sin(f2) * 32.0F * f) + this.level.random.nextInt(3) * Mth.floor(f);
              int height = this.level.getHeight(Heightmap.Types.WORLD_SURFACE, i2, i3);
 -            if (Mth.abs(height - this.center.getY()) <= 96) {
-+            if (me.earthme.luminol.config.modules.misc.RaidChangesConfig.height_check || Mth.abs(height - this.center.getY()) <= 96) { // Leaves - Disable height check
++            if (me.earthme.luminol.config.modules.misc.RaidChangesConfig.heightCheck || Mth.abs(height - this.center.getY()) <= 96) { // Leaves - Disable height check
                  mutableBlockPos.set(i2, height, i3);
                  if (!this.level.isVillage(mutableBlockPos) || i <= 7) {
                      int i4 = 10;
@@ -126,7 +126,7 @@ index 2f45befbb50645f1bfb5961ad725f3670ff0d592..0d91ae860a5c506c634e88341d958618
          return this.addWaveMob(wave, raider, true);
      }
 diff --git a/net/minecraft/world/entity/raid/Raider.java b/net/minecraft/world/entity/raid/Raider.java
-index 7c385baae81b9a987c0e1e4deb017884600331bc..75a8e0602c249df4b587a454e35f4cd7eab2a25c 100644
+index 7c385baae81b9a987c0e1e4deb017884600331bc..075563d83fadd85191117685fa3b97a9fad14488 100644
 --- a/net/minecraft/world/entity/raid/Raider.java
 +++ b/net/minecraft/world/entity/raid/Raider.java
 @@ -125,6 +125,43 @@ public abstract class Raider extends PatrollingMonster {
@@ -178,7 +178,7 @@ index 7c385baae81b9a987c0e1e4deb017884600331bc..75a8e0602c249df4b587a454e35f4cd7
  
      public boolean hasRaid() {
 -        return this.level() instanceof ServerLevel serverLevel && (this.getCurrentRaid() != null || serverLevel.getRaidAt(this.blockPosition()) != null);
-+        return !me.earthme.luminol.config.modules.misc.RaidChangesConfig.self_check && (this.level() instanceof ServerLevel serverLevel && (this.getCurrentRaid() != null || serverLevel.getRaidAt(this.blockPosition()) != null)); // Leaves - Disable raid self check
++        return !me.earthme.luminol.config.modules.misc.RaidChangesConfig.selfCheck && (this.level() instanceof ServerLevel serverLevel && (this.getCurrentRaid() != null || serverLevel.getRaidAt(this.blockPosition()) != null)); // Leaves - Disable raid self check
      }
  
      public boolean hasActiveRaid() {

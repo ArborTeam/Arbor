@@ -6,7 +6,7 @@
 +import me.earthme.luminol.config.*;
 +
 +public class RemovedConfig implements IConfigModule {
-+    @TransferringConfig(name = "example", category = {"removed", "example"}, transfer = false)
++    @TransformedConfig(name = "example", category = {"removed", "example"}, transform = false)
 +    @DoNotLoad
 +    @ConfigInfo(baseName = "removed", comments =
 +            """

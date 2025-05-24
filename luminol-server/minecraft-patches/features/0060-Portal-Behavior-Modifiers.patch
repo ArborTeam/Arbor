@@ -45,7 +45,7 @@ index 7782dae9f9155eaef35bca2dd2b0782ed6f5c9a3..12647b44edf4794dfba0fe997c3b4555
          } else {entity.inactiveTick();} // Paper - EAR 2
          profilerFiller.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 736c74cc64541b7f7658a21a12439f1213278f5c..d8ecf8091829f36024610639f2695402ca3bce3d 100644
+index 2ed82b9a864b7878a26daf691a4a60153dba73fb..3f7940d76d4eb5ec20311d04246a2a681c4cfaad 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -350,6 +350,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -59,7 +59,7 @@ index 736c74cc64541b7f7658a21a12439f1213278f5c..d8ecf8091829f36024610639f2695402
  
      public void inactiveTick() {
      }
-@@ -3227,6 +3231,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3223,6 +3227,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          } else {
              if (this.portalProcess == null || !this.portalProcess.isSamePortal(portal)) {
                  this.portalProcess = new PortalProcessor(portal, pos.immutable());
@@ -67,7 +67,7 @@ index 736c74cc64541b7f7658a21a12439f1213278f5c..d8ecf8091829f36024610639f2695402
              } else if (!this.portalProcess.isInsidePortalThisTick()) {
                  this.portalProcess.updateEntryPosition(pos.immutable());
                  this.portalProcess.setAsInsidePortalThisTick(true);
-@@ -3786,20 +3791,27 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3782,20 +3787,27 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
              EntityTreeNode curr;
              while ((curr = queue.pollFirst()) != null) {
@@ -101,7 +101,7 @@ index 736c74cc64541b7f7658a21a12439f1213278f5c..d8ecf8091829f36024610639f2695402
  
          public void addTracker() {
              for (final EntityTreeNode node : this.getFullTree()) {
-@@ -4518,6 +4530,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4514,6 +4526,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
      }
  
@@ -115,7 +115,7 @@ index 736c74cc64541b7f7658a21a12439f1213278f5c..d8ecf8091829f36024610639f2695402
      protected boolean portalToAsync(ServerLevel destination, BlockPos portalPos, boolean takePassengers,
                                      PortalType type, java.util.function.Consumer<Entity> teleportComplete) {
          ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread(this, "Cannot portal entity async");
-@@ -4601,6 +4620,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4597,6 +4616,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          info.postTeleportTransition().onTransition(teleported);
                      }
  

@@ -20,7 +20,7 @@ index 3172e86defe86f44b1b095d89e2a35b06372dae9..5ce1f5c3e42fd0b8674cce8da9f3a732
              }
          }
 diff --git a/net/minecraft/server/commands/SetBlockCommand.java b/net/minecraft/server/commands/SetBlockCommand.java
-index 96819168051a971685c9b69044fb5c4953bebd95..21cc9a6cc8c655c9c242410907a031e0d86dc607 100644
+index 96819168051a971685c9b69044fb5c4953bebd95..7f538574a44d4815687fe1f4cc3e7de47cac703b 100644
 --- a/net/minecraft/server/commands/SetBlockCommand.java
 +++ b/net/minecraft/server/commands/SetBlockCommand.java
 @@ -101,6 +101,15 @@ public class SetBlockCommand {
@@ -30,7 +30,7 @@ index 96819168051a971685c9b69044fb5c4953bebd95..21cc9a6cc8c655c9c242410907a031e0
 +    // Luminol Start - Server crash fix
 +    public static void processIAE(CommandSourceStack src, IllegalArgumentException ex) {
 +        Component hoverText = Component.translatable("command.failed")
-+                .withStyle(style -> style.withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, Component.literal(ex.getMessage()))));
++                .withStyle(style -> style.withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(Component.literal(ex.getMessage()))));
 +        src.sendFailure(hoverText);
 +        com.mojang.logging.LogUtils.getLogger().error(ex.getMessage(), ex);
 +    }

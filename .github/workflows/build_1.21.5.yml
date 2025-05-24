@@ -1,10 +1,10 @@
 name: Luminol CI - dev/1.21.5
 
 on:
-    push:
-      branches: [ "dev/1.21.5" ]
-    pull_request:
-      branches: [ "dev/1.21.5" ]
+  push:
+    branches: [ "dev/1.21.5" ]
+  pull_request:
+    branches: [ "dev/1.21.5" ]
 
 permissions: write-all
 
@@ -27,13 +27,13 @@ jobs:
 
       - name: Configure Git User Details
         run: git config --global user.email "ci@luminolmc.com" && git config --global user.name "LuminolMC CI"
-        
+
       - name: Apply Patches
         run: ./gradlew applyAllPatches
-        
+
       - name: CreateJar
         run: ./gradlew createMojmapPaperclipJar
-        
+
       - name: Publish to repo
         if: github.event_name != 'pull_request' && false
         continue-on-error: true
@@ -42,17 +42,17 @@ jobs:
         env:
           PRIVATE_MAVEN_REPO_PASSWORD: ${{ secrets.PRIVATE_MAVEN_REPO_PASSWORD }}
           PRIVATE_MAVEN_REPO_USERNAME: ${{ secrets.PRIVATE_MAVEN_REPO_USERNAME }}
-          
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: "${{ env.project_id_b }} CI Artifacts"
           path: "luminol-server/build/libs/*-paperclip-*-mojmap.jar"
-          
+
       - name: SetENV
         if: github.event_name != 'pull_request'
         run: sh scripts/SetENV.sh
-        
+
       - name: Create Release
         if: github.event_name != 'pull_request' && false
         uses: ncipollo/release-action@v1

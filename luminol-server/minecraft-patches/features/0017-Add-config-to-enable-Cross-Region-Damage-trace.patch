@@ -5,7 +5,7 @@ Subject: [PATCH] Add config to enable Cross Region Damage trace
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index f90defbc0d06b48bdfd6bdfa1a2bf4a6267a45d2..2a4c51b42632ccfa00530d5386107296e89fb20f 100644
+index f90defbc0d06b48bdfd6bdfa1a2bf4a6267a45d2..d42f4375952239ecc53a8fbca449120d8a1c52a6 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1289,6 +1289,13 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -22,7 +22,7 @@ index f90defbc0d06b48bdfd6bdfa1a2bf4a6267a45d2..2a4c51b42632ccfa00530d5386107296
          }
  
          this.level().broadcastEntityEvent(this, (byte)3);
-@@ -1303,6 +1310,33 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1303,6 +1310,24 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.setClientLoaded(false);
      }
  
@@ -43,15 +43,6 @@ index f90defbc0d06b48bdfd6bdfa1a2bf4a6267a45d2..2a4c51b42632ccfa00530d5386107296
 +        }, null, 1L );
 +    }
 +    // Luminol End - Cross Region Damage trace
-+
-+    // Leaves start - exp fix
-+    private boolean shouldDropExperience(boolean eventResult, boolean forceUseEvent) {
-+        if (forceUseEvent) {
-+            return eventResult;
-+        }
-+        return wasExperienceConsumed() ? false : eventResult;
-+    }
-+    // Leaves end - exp fix
 +
      private void tellNeutralMobsThatIDied() {
          AABB aabb = new AABB(this.blockPosition()).inflate(32.0, 10.0, 32.0);

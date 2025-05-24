@@ -8,7 +8,7 @@ As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18
 Licensed under: MIT (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/LICENSE)
 
 diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
-index aac65526817b1767511c7e180a4d9ded89ef89a1..b9601b03c649c2009fac629929af2eaa01eeff2d 100644
+index aac65526817b1767511c7e180a4d9ded89ef89a1..02f1e08789d47d2e4f3ca51c1196dccea872963f 100644
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
 @@ -196,6 +196,53 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
@@ -65,7 +65,7 @@ index aac65526817b1767511c7e180a4d9ded89ef89a1..b9601b03c649c2009fac629929af2eaa
      @Override
      public Brain<Villager> getBrain() {
          return (Brain<Villager>)super.getBrain();
-@@ -292,11 +339,21 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -292,11 +339,20 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          // Paper start - EAR 2
          this.customServerAiStep(level, false);
      }
@@ -74,7 +74,6 @@ index aac65526817b1767511c7e180a4d9ded89ef89a1..b9601b03c649c2009fac629929af2eaa
          // Paper end - EAR 2
          ProfilerFiller profilerFiller = Profiler.get();
          profilerFiller.push("villagerBrain");
--        if (!inactive) this.getBrain().tick(level, this); // Paper - EAR 2
 +        // Purpur start
 +        if (me.earthme.luminol.config.modules.optimizations.LobotomizeVillageConfig.villagerLobotomizeEnabled) {
 +            // treat as inactive if lobotomized
@@ -83,9 +82,8 @@ index aac65526817b1767511c7e180a4d9ded89ef89a1..b9601b03c649c2009fac629929af2eaa
 +            this.isLobotomized = false;
 +        }
 +        // Purpur end
-+        if (!inactive) {
-+            this.getBrain().tick(level, this); // Paper - EAR 2
-+        } else if (this.isLobotomized && shouldRestock()) restock(); // Purpur - Lobotomize stuck villagers
+         if (!inactive) this.getBrain().tick(level, this); // Paper - EAR 2
++        else if (this.isLobotomized && shouldRestock()) restock(); // Purpur - Lobotomize stuck villagers
          profilerFiller.pop();
          if (this.assignProfessionWhenSpawned) {
              this.assignProfessionWhenSpawned = false;

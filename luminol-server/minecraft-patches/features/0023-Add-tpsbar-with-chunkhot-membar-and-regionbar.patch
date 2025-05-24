@@ -19,19 +19,21 @@ index bd3ce123652af11974be4cbf8d2e96f1b2ee0a68..706f5db61a39e2deac9467398471f42c
  
      @Override
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index ecf185fce582a542c65a9544388b84835643978b..6a54bc213f4d3541c984064066c0904283c3b134 100644
+index ecf185fce582a542c65a9544388b84835643978b..12062e37c0e832f27ba52844739d0e8d5519a30a 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1663,7 +1663,44 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1663,7 +1663,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          // Folia end - region threading
          //this.tickCount++; // Folia - region threading
          //this.tickRateManager.tick(); // Folia - region threading
 +        // KioCG start - ChunkHot
 +        final ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet<net.minecraft.world.level.chunk.LevelChunk> chunks = new ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet<>();
 +        if (region != null){
++            for (net.minecraft.world.level.chunk.LevelChunk chunk : region.world.getCurrentWorldData().getTickingChunks()) {
++            /* wait for rewrite - temporarily crash fix
 +            for (net.minecraft.server.level.ServerChunkCache.ChunkAndHolder chunkAndHolder : region.world.getCurrentWorldData().getTickingChunks()){
 +                final net.minecraft.world.level.chunk.LevelChunk chunk = chunkAndHolder.chunk();
-+
++            */
 +                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(region.world, chunk.locX, chunk.locZ)){
 +                    continue;
 +                }
@@ -120,7 +122,7 @@ index e2a34f725bbbbe590ddf2feb0f615f25ebd3dc52..795d72720a6eed7d9f7e69f5e5036a65
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 2a4c51b42632ccfa00530d5386107296e89fb20f..52d70e8ec2ac9b0006483135e2afed174f3939b6 100644
+index d42f4375952239ecc53a8fbca449120d8a1c52a6..9b59ca539080798e4b731431e8a5dc01d5d336e6 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -420,7 +420,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc

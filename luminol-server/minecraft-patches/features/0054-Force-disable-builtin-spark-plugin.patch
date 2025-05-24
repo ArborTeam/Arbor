@@ -6,7 +6,7 @@ Subject: [PATCH] Force disable builtin spark plugin
 The spark passed down from paper has some memory leaking issue, so we fully removed it from the code to prevent that memory leaking issue.
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 6a54bc213f4d3541c984064066c0904283c3b134..9d837fdfee8eea14b22a89ea7b9724d0794419d8 100644
+index 12062e37c0e832f27ba52844739d0e8d5519a30a..87625b365e04ce05fa2b6cdf2003c839255c4393 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -781,8 +781,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -47,17 +47,16 @@ index 6a54bc213f4d3541c984064066c0904283c3b134..9d837fdfee8eea14b22a89ea7b9724d0
                  if (this.emptyTicks == i) {
                      LOGGER.info("Server empty for {} seconds, pausing", this.pauseWhileEmptySeconds());
                      this.autoSave();
-@@ -1610,7 +1610,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1610,7 +1610,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  // Paper end - avoid issues with certain tasks not processing during sleep
                  //this.server.spark.executeMainThreadTasks(); // Paper - spark // Folia - region threading
                  this.tickConnection();
 -                this.server.spark.tickEnd(((double)(System.nanoTime() - lastTick) / 1000000D)); // Paper - spark
 +                if (false) this.server.spark.tickEnd(((double)(System.nanoTime() - lastTick) / 1000000D)); // Paper - spark  // Luminol - Force disable builtin spark
-+                // Paper end - Server Tick Events
                  return;
              }
          }
-@@ -1633,7 +1634,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1633,7 +1633,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          };
          // Folia end - region threading
  
@@ -66,7 +65,7 @@ index 6a54bc213f4d3541c984064066c0904283c3b134..9d837fdfee8eea14b22a89ea7b9724d0
          new com.destroystokyo.paper.event.server.ServerTickStartEvent((int)region.getCurrentTick()).callEvent(); // Paper - Server Tick Events // Folia - region threading
          // Folia start - region threading
          if (region != null) {
-@@ -1741,7 +1742,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1743,7 +1743,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          long remaining = scheduledEnd - endTime; // Folia - region ticking
          new com.destroystokyo.paper.event.server.ServerTickEndEvent((int)io.papermc.paper.threadedregions.RegionizedServer.getCurrentTick(), ((double)(endTime - startTime) / 1000000D), remaining).callEvent(); // Folia - region ticking
          // Paper end - Server Tick Events

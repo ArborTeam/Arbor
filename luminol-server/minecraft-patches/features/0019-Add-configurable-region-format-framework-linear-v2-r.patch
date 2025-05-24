@@ -184,7 +184,7 @@ index 22f3aa1674664906e8ec45372d758d79017e3987..76f1b5bb94b82044d72658d4b187dd02
          try (DataInputStream out = new DataInputStream(new java.io.BufferedInputStream(new java.util.zip.InflaterInputStream(Files.newInputStream(file))))) {
              return net.minecraft.nbt.NbtIo.read((java.io.DataInput) out);
 diff --git a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 384f2cd090d6d23bd1308d6e82c24338f2bf55d1..d8fb060aa8570ccfd4b7c26c28fb5ab5fe5f869b 100644
+index 384f2cd090d6d23bd1308d6e82c24338f2bf55d1..a81245aff4cc982b9eaca976ebbb54a8188b247b 100644
 --- a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -18,7 +18,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
@@ -289,6 +289,15 @@ index 384f2cd090d6d23bd1308d6e82c24338f2bf55d1..d8fb060aa8570ccfd4b7c26c28fb5ab5
  
          final DataInputStream input = regionFile == null ? null : regionFile.getChunkDataInputStream(new ChunkPos(chunkX, chunkZ));
  
+@@ -238,7 +257,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
+ 
+             final ChunkPos pos = new ChunkPos(chunkX, chunkZ);
+             final ChunkPos headerChunkPos = SerializableChunkData.getChunkCoordinate(ret);
+-            final RegionFile regionFile = this.getRegionFile(pos);
++            final abomination.IRegionFile regionFile = this.getRegionFile(pos);  // Luminol - Configurable region file format
+ 
+             if (regionFile.getRecalculateCount() != readData.recalculateCount()) {
+                 return null;
 @@ -262,7 +281,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
      }
      // Paper end - rewrite chunk system

@@ -6,10 +6,10 @@ Subject: [PATCH] Fix forgotten chunk pos shift
 Fixes: https://github.com/PaperMC/Folia/issues/364
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 12647b44edf4794dfba0fe997c3b45555d7bdcb5..0b8b9a864b27997436cf598a61eed97dff9ac1dd 100644
+index 7782dae9f9155eaef35bca2dd2b0782ed6f5c9a3..d3b922a5293efda76db8f42c281b782af764cb04 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -2371,11 +2371,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2350,11 +2350,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          Optional<Holder<PoiType>> optional1 = PoiTypes.forState(newState);
          if (!Objects.equals(optional, optional1)) {
              BlockPos blockPos = pos.immutable();

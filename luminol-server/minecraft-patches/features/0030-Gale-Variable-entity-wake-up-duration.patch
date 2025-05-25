@@ -8,7 +8,7 @@ As part of: Gale (https://github.com/GaleMC/Gale/blob/276e903b2688f23b19bdc8d493
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index c360232b7df95f4b418f84ae7457e7e7dea4f389..f0da0c471cc866c14dc07c49b0c680250cbe7bdd 100644
+index 5ca1ed5e564038d6ee0b8437fb477fe8c8f09d94..aec5370b285d4648280b3e1c4c2fcaa501376739 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
 @@ -54,27 +54,39 @@ public final class ActivationRange {

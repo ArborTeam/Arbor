@@ -8,10 +8,10 @@ As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249
 Licensed under: GPL-3.0 (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/PATCH-LICENSE)
 
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index 5ca1ed5e564038d6ee0b8437fb477fe8c8f09d94..8d1cbedff548af2f80b5d7c72f4c4910ac69c6ea 100644
+index aec5370b285d4648280b3e1c4c2fcaa501376739..21ca0737d07e4edb5c9f52a703ba1ea0d290925e 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
-@@ -225,7 +225,7 @@ public final class ActivationRange {
+@@ -237,7 +237,7 @@ public final class ActivationRange {
          }
          // special cases.
          if (entity instanceof final LivingEntity living) {
@@ -21,10 +21,10 @@ index 5ca1ed5e564038d6ee0b8437fb477fe8c8f09d94..8d1cbedff548af2f80b5d7c72f4c4910
              }
              if (entity instanceof final Mob mob && mob.getTarget() != null) {
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index c1d53987991a0808733eac3b500d5d5a0f5d7ac2..b9895857e91a5ee0ebf2e5428358da5d91bdaca1 100644
+index 0a06dc4b7fac7c7d63996553e2cb2a38ddb5f195..ae83447f99f483e1b509c52060353bd13ddbc458 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -2154,6 +2154,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2156,6 +2156,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
          return this.lastClimbablePos;
      }
  

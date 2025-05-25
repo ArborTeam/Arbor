@@ -8,7 +8,7 @@ As part of: Gale (https://github.com/GaleMC/Gale/blob/276e903b2688f23b19bdc8d493
 Licensed under: MIT (https://opensource.org/licenses/MIT)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 635d9d430acf676e7e3fea1afdcf0e578c644121..3489e4c3db5f71b094bc6d1841ca39f2132d73e4 100644
+index 11d995fc1554afa122475fabc904c88a8ca200dd..fce01a546e181d1feec2bb6a54801a22f84bde82 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1081,7 +1081,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -26,7 +26,7 @@ index 635d9d430acf676e7e3fea1afdcf0e578c644121..3489e4c3db5f71b094bc6d1841ca39f2
          final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
          // Paper start - detailed watchdog information
          ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread("Cannot move an entity off-main");
-@@ -5062,6 +5069,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -5046,6 +5053,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public final void setBoundingBox(AABB bb) {

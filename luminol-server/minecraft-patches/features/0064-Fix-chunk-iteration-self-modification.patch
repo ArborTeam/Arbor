@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sun, 25 May 2025 23:05:15 +0800
+Subject: [PATCH] Fix chunk iteration self modification
+
+We use the old-like logics which is in 1.21.4.
+Might fixes: https://github.com/PaperMC/Folia/issues/363
+
+diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
+index 6dc5b1a8bdba998e11bcdf352bcc0fc7161a484c..753b36a7b1c2627540c62bea78565b880803a175 100644
+--- a/net/minecraft/server/level/ServerChunkCache.java
++++ b/net/minecraft/server/level/ServerChunkCache.java
+@@ -173,10 +173,14 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+         // 2. _removes_ are impossible at this stage in the tick
+         final LevelChunk[] raw = entityTickingChunks.getRawDataUnchecked();
+         final int size = entityTickingChunks.size(); foliaProfiler.addCounter(ca.spottedleaf.leafprofiler.LProfilerRegistry.RANDOM_CHUNK_TICK_COUNT, (long)size); // Folia - profiler
++        // Luminol start - Fix chunk iteration self modification - use copy of raw array
++        final LevelChunk[] rawCopy = new LevelChunk[size];
++        System.arraycopy(raw, 0, rawCopy, 0, size);
++        // Luminol end
+ 
+-        java.util.Objects.checkFromToIndex(0, size, raw.length);
++        java.util.Objects.checkFromToIndex(0, size, rawCopy.length); // Luminol - Fix chunk iteration self modification - use copy of raw array
+         for (int i = 0; i < size; ++i) {
+-            world.tickChunk(raw[i], randomTickSpeed);
++            world.tickChunk(rawCopy[i], randomTickSpeed); // Luminol - Fix chunk iteration self modification - use copy of raw array
+ 
+             // call mid-tick tasks for chunk system
+             if ((i & 7) == 0) {

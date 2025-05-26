@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/TransformedConfig.java
-@@ -1,0 +_,22 @@
+@@ -1,0 +_,24 @@
 +package me.earthme.luminol.config;
 +
 +import java.lang.annotation.Repeatable;
@@ -15,6 +15,8 @@
 +    String[] category() default "";
 +
 +    boolean transform() default true;
++
++    boolean transformComments() default true;
 +
 +    Class<? extends DefaultTransformLogic>[] transformLogic() default {DefaultTransformLogic.class};
 +

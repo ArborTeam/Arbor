@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/LuminolConfig.java
-@@ -1,0 +_,271 @@
+@@ -1,0 +_,275 @@
 +package me.earthme.luminol.config;
 +
 +import com.electronwill.nightconfig.core.UnmodifiableConfig;
@@ -145,6 +145,10 @@
 +                                } catch (Exception e) {
 +                                    success = false;
 +                                    logger.error("Failed to transform removed config {}!", transformedConfig.name());
++                                }
++
++                                if (transformedConfig.transformComments()) {
++                                    configFileInstance.setComment(fullConfigKeyName, configFileInstance.getComment(oldConfigKeyName));
 +                                }
 +                            }
 +

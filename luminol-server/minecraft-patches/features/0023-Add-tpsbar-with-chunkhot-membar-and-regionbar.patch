@@ -84,7 +84,7 @@ index e76599e92e4bf4f5b5d7176f4a0a2a854d10818a..20df6b46c420b25b598accb57b921055
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
          SkullBlockEntity.clear();
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index e2a34f725bbbbe590ddf2feb0f615f25ebd3dc52..795d72720a6eed7d9f7e69f5e5036a65010fcbcf 100644
+index 94fb1c99baefbdde91dc5fcf103683c7ffda6baf..b4fdbdba579fa7c7de4928c259b5ff16b0e83aeb 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1342,6 +1342,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

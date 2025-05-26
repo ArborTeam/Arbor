@@ -5,7 +5,7 @@ Subject: [PATCH] Portal Behavior Modifiers
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index d3b922a5293efda76db8f42c281b782af764cb04..ff4e994bf515f48adc95fe29c4be652a2c438594 100644
+index 8329bc0cf531a1317ff8e213e948019d28df1eea..84a6bf575902676fc06211562b57806415528e64 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1356,7 +1356,27 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

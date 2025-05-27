@@ -5,7 +5,7 @@ Subject: [PATCH] Add missing teleportation apis for folia
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 9b59ca539080798e4b731431e8a5dc01d5d336e6..5564bba66959a2a280f700f6c6a05d292faced88 100644
+index 047279cce3ff3a9eedd54db370b8fa6754d85ee4..bcc0c3cfa5be4daeec6e95a1b63a6cd38890f04d 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1631,6 +1631,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -19,10 +19,10 @@ index 9b59ca539080798e4b731431e8a5dc01d5d336e6..5564bba66959a2a280f700f6c6a05d29
              );
          });
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index cc1a9d2292eea91ad7046fa35ebe511515ffb6f3..11d995fc1554afa122475fabc904c88a8ca200dd 100644
+index 0228471a16805042f13158b86379a77371600489..9d945f615187f86913be8a9b83b1aada3a1336b6 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4106,6 +4106,31 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4108,6 +4108,31 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
  
          // TODO any events that can modify go HERE
@@ -54,7 +54,7 @@ index cc1a9d2292eea91ad7046fa35ebe511515ffb6f3..11d995fc1554afa122475fabc904c88a
  
          // check for same region
          if (destination == this.level()) {
-@@ -4222,7 +4247,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4224,7 +4249,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              // we just select the spawn position
              case END: {
                  if (destination.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.END) {
@@ -74,7 +74,7 @@ index cc1a9d2292eea91ad7046fa35ebe511515ffb6f3..11d995fc1554afa122475fabc904c88a
                      // need to load chunks so we can create the platform
                      destination.moonrise$loadChunksAsync(
                          targetPos, 16, // load 16 blocks to be safe from block physics
-@@ -4243,7 +4279,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4245,7 +4281,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          }
                      );
                  } else {
@@ -94,7 +94,7 @@ index cc1a9d2292eea91ad7046fa35ebe511515ffb6f3..11d995fc1554afa122475fabc904c88a
                      // need to load chunk for heightmap
                      destination.moonrise$loadChunksAsync(
                          spawnPos, 0,
-@@ -4294,8 +4341,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4296,8 +4343,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
                  WorldBorder destinationBorder = destination.getWorldBorder();
                  double dimensionScale = net.minecraft.world.level.dimension.DimensionType.getTeleportationScale(origin.dimensionType(), destination.dimensionType());
@@ -114,7 +114,7 @@ index cc1a9d2292eea91ad7046fa35ebe511515ffb6f3..11d995fc1554afa122475fabc904c88a
                  ca.spottedleaf.concurrentutil.completable.CallbackCompletable<BlockUtil.FoundRectangle> portalFound
                      = new ca.spottedleaf.concurrentutil.completable.CallbackCompletable<>();
  
-@@ -4432,6 +4489,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4434,6 +4491,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (!this.canPortalAsync(destination, takePassengers)) {
              return false;
          }
@@ -130,7 +130,7 @@ index cc1a9d2292eea91ad7046fa35ebe511515ffb6f3..11d995fc1554afa122475fabc904c88a
  
          Vec3 initialPosition = this.position();
          ChunkPos initialPositionChunk = new ChunkPos(
-@@ -4499,6 +4565,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4501,6 +4567,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                      if (teleportComplete != null) {
                          teleportComplete.accept(teleported);
                      }

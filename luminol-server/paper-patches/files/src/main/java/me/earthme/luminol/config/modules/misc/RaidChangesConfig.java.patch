@@ -8,38 +8,38 @@
 +import me.earthme.luminol.config.IConfigModule;
 +
 +public class RaidChangesConfig implements IConfigModule {
-+    @ConfigInfo(baseName = "allow-bad-omen-trigger-raid", comments =
++    @ConfigInfo(baseName = "allow_bad_omen_trigger_raid", comments =
 +            """
 +                    Allow players with ominous signs to skip a\s
 +                    30-second cooldown and trigger attacks directly""")
 +    public static boolean trigger = false;
 +
-+    @ConfigInfo(baseName = "give-bad-omen-when-kill-patrol-leader", comments =
++    @ConfigInfo(baseName = "give_bad_omen_when_kill_patrol_leader", comments =
 +            """
 +                    Enable players to obtain an ominous omen\s
 +                    effect when killing the patrol team captain""")
 +    public static boolean effect = false;
 +
-+    @ConfigInfo(baseName = "bad-omen-infinite", comments =
++    @ConfigInfo(baseName = "bad_omen_infinite", comments =
 +            """
 +                    Enable bad omen effect infinite time
 +                        --- this config is not old version's function""")
 +    public static boolean infinite = false;
 +
-+    @ConfigInfo(baseName = "skip-height-check", comments =
++    @ConfigInfo(baseName = "skip_height_check", comments =
 +            """
 +                    Disable y <= 96 check.
 +                    If you enabled revert_274911, this config will useless
 +                    and always behavior of enabled""")
 +    public static boolean heightCheck = false;
 +
-+    @ConfigInfo(baseName = "skip-self-raid-check", comments =
++    @ConfigInfo(baseName = "skip_self_raid_check", comments =
 +            """
 +                    Disable raid self check\s
 +                        --- this config is not old version's function""")
 +    public static boolean selfCheck = false;
 +
-+    @ConfigInfo(baseName = "revert-274911", comments =
++    @ConfigInfo(baseName = "revert_274911", comments =
 +            """
 +                    Revert Old raid's find spawn position logic
 +                        --- This revert MC-274911""")
@@ -52,6 +52,6 @@
 +
 +    @Override
 +    public String getBaseName() {
-+        return "revert-raid-changes";
++        return "revert_raid_changes";
 +    }
 +}

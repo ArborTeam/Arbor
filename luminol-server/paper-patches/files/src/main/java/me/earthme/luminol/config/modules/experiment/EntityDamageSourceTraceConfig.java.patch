@@ -20,6 +20,6 @@
 +
 +    @Override
 +    public String getBaseName() {
-+        return "entity-damage-source-trace";
++        return "entity_damage_source_trace";
 +    }
 +}

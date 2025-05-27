@@ -10,7 +10,7 @@
 +public class AllowTripwireDupe implements IConfigModule {
 +    @ConfigInfo(baseName = "enabled")
 +    public static boolean enabled = false;
-+    @ConfigInfo(baseName = "behavior-mode", comments =
++    @ConfigInfo(baseName = "behavior_mode", comments =
 +            """
 +                    Allowed Value:
 +                    VANILLA20

@@ -5,7 +5,7 @@ Subject: [PATCH] Add fix for off region adult following ai behavior
 
 
 diff --git a/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java b/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
-index a9be3acbf4ea52d2988347abfa6f4f8c02b1da26..751f3dde8e6bc2c0365e8672f5079af0379a69de 100644
+index a9be3acbf4ea52d2988347abfa6f4f8c02b1da26..a38fad8433c9e349a34e0a80442269943e614c9d 100644
 --- a/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
 +++ b/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
 @@ -25,6 +25,14 @@ public class BabyFollowAdult {
@@ -23,3 +23,16 @@ index a9be3acbf4ea52d2988347abfa6f4f8c02b1da26..751f3dde8e6bc2c0365e8672f5079af0
                          if (mob.closerThan(ageableMob, followRange.getMaxValue() + 1) && !mob.closerThan(ageableMob, followRange.getMinValue())) {
                              // CraftBukkit start
                              org.bukkit.event.entity.EntityTargetLivingEntityEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callEntityTargetLivingEvent(mob, ageableMob, org.bukkit.event.entity.EntityTargetEvent.TargetReason.FOLLOW_LEADER);
+@@ -35,6 +43,12 @@ public class BabyFollowAdult {
+                                 nearestVisibleAdult.erase();
+                                 return true;
+                             }
++                            // Luminol start - Fix off region baby follow adult ai
++                            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(((org.bukkit.craftbukkit.entity.CraftEntity)event.getTarget()).getHandleRaw()) {
++                                nearestVisibleAdult.erase();
++                                return true;
++                            }
++                            // Luminol end
+                             ageableMob = ((org.bukkit.craftbukkit.entity.CraftLivingEntity) event.getTarget()).getHandle();
+                             // CraftBukkit end
+                             WalkTarget walkTarget1 = new WalkTarget(

@@ -1,31 +1,36 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/RaidChangesConfig.java
-@@ -1,0 +_,54 @@
+@@ -1,0 +_,61 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import me.earthme.luminol.config.ConfigInfo;
 +import me.earthme.luminol.config.EnumConfigCategory;
 +import me.earthme.luminol.config.IConfigModule;
++import me.earthme.luminol.config.TransformedConfig;
 +
 +public class RaidChangesConfig implements IConfigModule {
++    @TransformedConfig(name = "allow-bad-omen-trigger-raid", category = {"misc", "revert-raid-changes"})
 +    @ConfigInfo(baseName = "allow_bad_omen_trigger_raid", comments =
 +            """
 +                    Allow players with ominous signs to skip a\s
 +                    30-second cooldown and trigger attacks directly""")
 +    public static boolean trigger = false;
 +
++    @TransformedConfig(name = "give-bad-omen-when-kill-patrol-leader", category = {"misc", "revert-raid-changes"})
 +    @ConfigInfo(baseName = "give_bad_omen_when_kill_patrol_leader", comments =
 +            """
 +                    Enable players to obtain an ominous omen\s
 +                    effect when killing the patrol team captain""")
 +    public static boolean effect = false;
 +
++    @TransformedConfig(name = "bad-omen-infinite", category = {"misc", "revert-raid-changes"})
 +    @ConfigInfo(baseName = "bad_omen_infinite", comments =
 +            """
 +                    Enable bad omen effect infinite time
 +                        --- this config is not old version's function""")
 +    public static boolean infinite = false;
 +
++    @TransformedConfig(name = "skip-height-check", category = {"misc", "revert-raid-changes"})
 +    @ConfigInfo(baseName = "skip_height_check", comments =
 +            """
 +                    Disable y <= 96 check.
@@ -33,12 +38,14 @@
 +                    and always behavior of enabled""")
 +    public static boolean heightCheck = false;
 +
++    @TransformedConfig(name = "skip-self-raid-check", category = {"misc", "revert-raid-changes"})
 +    @ConfigInfo(baseName = "skip_self_raid_check", comments =
 +            """
 +                    Disable raid self check\s
 +                        --- this config is not old version's function""")
 +    public static boolean selfCheck = false;
 +
++    @TransformedConfig(name = "revert-274911", category = {"misc", "revert-raid-changes"})
 +    @ConfigInfo(baseName = "revert_274911", comments =
 +            """
 +                    Revert Old raid's find spawn position logic

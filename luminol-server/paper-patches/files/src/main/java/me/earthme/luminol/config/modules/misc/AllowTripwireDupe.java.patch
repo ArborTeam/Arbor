@@ -1,15 +1,17 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/AllowTripwireDupe.java
-@@ -1,0 +_,27 @@
+@@ -1,0 +_,29 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import me.earthme.luminol.config.ConfigInfo;
 +import me.earthme.luminol.config.EnumConfigCategory;
 +import me.earthme.luminol.config.IConfigModule;
++import me.earthme.luminol.config.TransformedConfig;
 +
 +public class AllowTripwireDupe implements IConfigModule {
 +    @ConfigInfo(baseName = "enabled")
 +    public static boolean enabled = false;
++    @TransformedConfig(name = "behavior-mode", category = {"misc", "tripwire_dupe"})
 +    @ConfigInfo(baseName = "behavior_mode", comments =
 +            """
 +                    Allowed Value:

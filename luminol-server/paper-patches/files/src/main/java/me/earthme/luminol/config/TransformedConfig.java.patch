@@ -10,9 +10,9 @@
 +@Retention(RetentionPolicy.RUNTIME)
 +@Repeatable(TransformedConfig.List.class)
 +public @interface TransformedConfig {
-+    String name() default "";
++    String name();
 +
-+    String[] category() default "";
++    String[] category();
 +
 +    boolean transform() default true;
 +

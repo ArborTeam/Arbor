@@ -5,11 +5,11 @@ Subject: [PATCH] Add BlockPos transform to Position support
 
 
 diff --git a/src/main/java/io/papermc/paper/util/MCUtil.java b/src/main/java/io/papermc/paper/util/MCUtil.java
-index eb94f71f626c1f89f1b9048a8e68ae09ff17effc..78fe4d49aa1108ceb180538aeea6d0cede31a58a 100644
+index ff6d200c3c3ecb958086f11dff39357dc0bf70fc..16d95bd30c33d831fd495c65748f6633df5971aa 100644
 --- a/src/main/java/io/papermc/paper/util/MCUtil.java
 +++ b/src/main/java/io/papermc/paper/util/MCUtil.java
-@@ -162,6 +162,12 @@ public final class MCUtil {
-         return new org.bukkit.Location(world.getWorld(), pos.x(), pos.y(), pos.z());
+@@ -160,6 +160,12 @@ public final class MCUtil {
+         return new Location(world.getWorld(), pos.x(), pos.y(), pos.z());
      }
  
 +    // Luminol start - add BlockPos support
@@ -20,4 +20,4 @@ index eb94f71f626c1f89f1b9048a8e68ae09ff17effc..78fe4d49aa1108ceb180538aeea6d0ce
 +
      /**
       * Converts a NMS World/Vector to Bukkit Location
-      * @param world
+      */

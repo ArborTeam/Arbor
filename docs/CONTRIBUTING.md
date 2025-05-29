@@ -23,6 +23,11 @@
 - `git`
 - `JDK 21 或更高版本`
 
+特别提醒：在操作前，您需要启用系统和Git的长路径支持，以下为部分平台的相关描述。
+
+[`Windows`](https://learn.microsoft.com/windows/win32/fileio/maximum-file-path-limitation)
+[`Git for Windows`](https://gitforwindows.org/faq.html#i-get-errors-trying-to-check-out-files-with-long-path-names)
+
 ## 了解补丁（Patches）
 
 Luminol 使用和 Folia 一样的补丁系统，并为了针对不同部分的修改分成了两个目录：

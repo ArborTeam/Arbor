@@ -25,6 +25,11 @@ Before coding, you need these pieces of software / tools as Dev Environment.
 - `git`
 - `JDK 21 or higher`
 
+PS: You need to enable long path support in your System and Git before start, some of the platform's resolution here.
+
+[`Windows`](https://learn.microsoft.com/windows/win32/fileio/maximum-file-path-limitation)
+[`Git for Windows`](https://gitforwindows.org/faq.html#i-get-errors-trying-to-check-out-files-with-long-path-names)
+
 ## Understanding "Patches"
 
 Luminol uses as the same patching system as Paper,  

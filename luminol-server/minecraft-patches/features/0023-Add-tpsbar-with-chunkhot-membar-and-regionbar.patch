@@ -5,19 +5,17 @@ Subject: [PATCH] Add tpsbar with chunkhot membar and regionbar
 
 
 diff --git a/ca/spottedleaf/moonrise/paper/util/BaseChunkSystemHooks.java b/ca/spottedleaf/moonrise/paper/util/BaseChunkSystemHooks.java
-index bd3ce123652af11974be4cbf8d2e96f1b2ee0a68..706f5db61a39e2deac9467398471f42cf57dab91 100644
+index bd3ce123652af11974be4cbf8d2e96f1b2ee0a68..5f26fd89704aa3fd9c37a1d68a7c4c65ce1e7a5d 100644
 --- a/ca/spottedleaf/moonrise/paper/util/BaseChunkSystemHooks.java
 +++ b/ca/spottedleaf/moonrise/paper/util/BaseChunkSystemHooks.java
-@@ -131,7 +131,9 @@ public abstract class BaseChunkSystemHooks implements ca.spottedleaf.moonrise.co
+@@ -131,6 +131,7 @@ public abstract class BaseChunkSystemHooks implements ca.spottedleaf.moonrise.co
  
      @Override
      public void onChunkNotTicking(final LevelChunk chunk, final ChunkHolder holder) {
 +        chunk.getChunkHot().clear(); // KioCG
          chunk.getLevel().getCurrentWorldData().removeTickingChunk(chunk); // Folia - region threading
-+        ((ca.spottedleaf.moonrise.patches.chunk_tick_iteration.ChunkTickServerLevel)(ServerLevel)chunk.getLevel()).moonrise$removeChunkForPlayerTicking(chunk); // Moonrise - chunk tick iteration
      }
  
-     @Override
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
 index ecf185fce582a542c65a9544388b84835643978b..12062e37c0e832f27ba52844739d0e8d5519a30a 100644
 --- a/net/minecraft/server/MinecraftServer.java

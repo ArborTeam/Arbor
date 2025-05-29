@@ -5,7 +5,7 @@ Subject: [PATCH] Add fix for off region adult following ai behavior
 
 
 diff --git a/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java b/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
-index a9be3acbf4ea52d2988347abfa6f4f8c02b1da26..a38fad8433c9e349a34e0a80442269943e614c9d 100644
+index a9be3acbf4ea52d2988347abfa6f4f8c02b1da26..7ddf9fae8e50bbda2502c6b584fac135fac21773 100644
 --- a/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
 +++ b/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
 @@ -25,6 +25,14 @@ public class BabyFollowAdult {
@@ -28,7 +28,7 @@ index a9be3acbf4ea52d2988347abfa6f4f8c02b1da26..a38fad8433c9e349a34e0a8044226994
                                  return true;
                              }
 +                            // Luminol start - Fix off region baby follow adult ai
-+                            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(((org.bukkit.craftbukkit.entity.CraftEntity)event.getTarget()).getHandleRaw()) {
++                            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(((org.bukkit.craftbukkit.entity.CraftEntity)event.getTarget()).getHandleRaw())) {
 +                                nearestVisibleAdult.erase();
 +                                return true;
 +                            }

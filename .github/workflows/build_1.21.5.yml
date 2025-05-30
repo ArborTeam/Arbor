@@ -1,10 +1,10 @@
-name: Luminol CI - dev/1.21.5
+name: Luminol CI - ver/1.21.5
 
 on:
   push:
-    branches: [ "dev/1.21.5" ]
+    branches: [ "ver/1.21.5" ]
   pull_request:
-    branches: [ "dev/1.21.5" ]
+    branches: [ "ver/1.21.5" ]
 
 permissions: write-all
 
@@ -67,6 +67,6 @@ jobs:
           artifacts: |
             ${{ env.jar_dir }}
           generateReleaseNotes: true
-          prerelease: true
+          prerelease: false
           makeLatest: ${{ env.make_latest }}
           token: "${{ secrets.GITHUB_TOKEN }}"

@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sat, 31 May 2025 16:28:19 +0800
+Subject: [PATCH] Fix mispatched entity custom spawning logic
+
+we should use local players as each tickregion will only foreach their own player entities so that we won't come across async accessing world data
+
+diff --git a/net/minecraft/world/entity/npc/CatSpawner.java b/net/minecraft/world/entity/npc/CatSpawner.java
+index f5d27988605d48cdf314f28ba332f33f0a314266..39b506dad0601b2d75acb14989f2758132155d1b 100644
+--- a/net/minecraft/world/entity/npc/CatSpawner.java
++++ b/net/minecraft/world/entity/npc/CatSpawner.java
+@@ -27,7 +27,7 @@ public class CatSpawner implements CustomSpawner {
+             worldData.catSpawnerNextTick--; // Folia - region threading
+             if (worldData.catSpawnerNextTick <= 0) { // Folia - region threading
+                 worldData.catSpawnerNextTick = 1200; // Folia - region threading
+-                Player randomPlayer = level.getRandomPlayer();
++                Player randomPlayer = level.getRandomLocalPlayer(); // Luminol - Fix mispatched entity custom spawning logic - Use local players for only the players in current tickregion
+                 if (randomPlayer != null) {
+                     RandomSource randomSource = level.random;
+                     int i = (8 + randomSource.nextInt(24)) * (randomSource.nextBoolean() ? -1 : 1);
+diff --git a/net/minecraft/world/level/levelgen/PhantomSpawner.java b/net/minecraft/world/level/levelgen/PhantomSpawner.java
+index a7f56126a26e1fca86c39d8d656b648f5d6bb4ca..4626ee9f4410d8fd683db17b49ef79ab67eeda5f 100644
+--- a/net/minecraft/world/level/levelgen/PhantomSpawner.java
++++ b/net/minecraft/world/level/levelgen/PhantomSpawner.java
+@@ -40,7 +40,7 @@ public class PhantomSpawner implements CustomSpawner {
+                     worldData.phantomSpawnerNextTick += (spawnAttemptMinSeconds + randomSource.nextInt(spawnAttemptMaxSeconds - spawnAttemptMinSeconds + 1)) * 20; // Folia - region threading
+                     // Paper end - Ability to control player's insomnia and phantoms
+                     if (level.getSkyDarken() >= 5 || !level.dimensionType().hasSkyLight()) {
+-                        for (ServerPlayer serverPlayer : level.players()) {
++                        for (ServerPlayer serverPlayer : level.getLocalPlayers()) { // Luminol - Fix mispatched entity custom spawning logic - Use local players for only the players in current tickregion
+                             if (!serverPlayer.isSpectator() && (!level.paperConfig().entities.behavior.phantomsDoNotSpawnOnCreativePlayers || !serverPlayer.isCreative())) { // Paper - Add phantom creative and insomniac controls
+                                 BlockPos blockPos = serverPlayer.blockPosition();
+                                 if (!level.dimensionType().hasSkyLight() || blockPos.getY() >= level.getSeaLevel() && level.canSeeSky(blockPos)) {

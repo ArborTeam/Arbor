@@ -1,11 +1,14 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/functions/GlobalServerRegionBar.java
-@@ -1,0 +_,184 @@
+@@ -1,0 +_,185 @@
 +package me.earthme.luminol.functions;
 +
 +import com.google.common.collect.Maps;
 +import com.mojang.logging.LogUtils;
-+import io.papermc.paper.threadedregions.*;
++import io.papermc.paper.threadedregions.ThreadedRegionizer;
++import io.papermc.paper.threadedregions.TickData;
++import io.papermc.paper.threadedregions.TickRegionScheduler;
++import io.papermc.paper.threadedregions.TickRegions;
 +import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 +import me.earthme.luminol.config.modules.misc.RegionBarConfig;
 +import me.earthme.luminol.utils.NullPlugin;
@@ -26,11 +29,9 @@
 +    protected static final NullPlugin NULL_PLUGIN = new NullPlugin();
 +    protected static final Map<UUID, BossBar> uuid2Bossbars = Maps.newConcurrentMap();
 +    protected static final Map<UUID, ScheduledTask> scheduledTasks = new HashMap<>();
-+
-+    protected static volatile ScheduledTask scannerTask = null;
 +    private static final Logger logger = LogUtils.getLogger();
-+
 +    private static final ThreadLocal<DecimalFormat> ONE_DECIMAL_PLACES = ThreadLocal.withInitial(() -> new DecimalFormat("#,##0.0"));
++    protected static volatile ScheduledTask scannerTask = null;
 +
 +    public static void init() {
 +        cancelBarUpdateTask();

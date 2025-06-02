@@ -22,28 +22,28 @@
 +
 +    @Override
 +    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
-+        if (!testPermission(sender)){
++        if (!testPermission(sender)) {
 +            return true;
 +        }
 +
-+        if (!MembarConfig.memoryBarEnabled){
-+            sender.sendMessage(Component.text("Membar was already disabled!").color(TextColor.color(255,0,0)));
++        if (!MembarConfig.memoryBarEnabled) {
++            sender.sendMessage(Component.text("Membar was already disabled!").color(TextColor.color(255, 0, 0)));
 +            return true;
 +        }
 +
-+        if (!(sender instanceof Player player)){
-+            sender.sendMessage(Component.text("Only player can use this command!").color(TextColor.color(255,0,0)));
++        if (!(sender instanceof Player player)) {
++            sender.sendMessage(Component.text("Only player can use this command!").color(TextColor.color(255, 0, 0)));
 +            return true;
 +        }
 +
 +        if (GlobalServerMemoryBar.isPlayerVisible(player)) {
-+            player.sendMessage(Component.text("Disabled mem bar").color(TextColor.color(0,255,0)));
-+            GlobalServerMemoryBar.setVisibilityForPlayer(player,false);
++            player.sendMessage(Component.text("Disabled mem bar").color(TextColor.color(0, 255, 0)));
++            GlobalServerMemoryBar.setVisibilityForPlayer(player, false);
 +            return true;
 +        }
 +
-+        player.sendMessage(Component.text("Enabled mem bar").color(TextColor.color(0,255,0)));
-+        GlobalServerMemoryBar.setVisibilityForPlayer(player,true);
++        player.sendMessage(Component.text("Enabled mem bar").color(TextColor.color(0, 255, 0)));
++        GlobalServerMemoryBar.setVisibilityForPlayer(player, true);
 +
 +        return true;
 +    }

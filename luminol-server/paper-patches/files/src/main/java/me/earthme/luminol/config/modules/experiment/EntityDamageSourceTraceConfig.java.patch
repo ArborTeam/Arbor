@@ -3,10 +3,10 @@
 @@ -1,0 +_,24 @@
 +package me.earthme.luminol.config.modules.experiment;
 +
-+import me.earthme.luminol.config.ConfigInfo;
 +import me.earthme.luminol.config.EnumConfigCategory;
 +import me.earthme.luminol.config.IConfigModule;
-+import me.earthme.luminol.config.TransformedConfig;
++import me.earthme.luminol.config.flags.ConfigInfo;
++import me.earthme.luminol.config.flags.TransformedConfig;
 +
 +public class EntityDamageSourceTraceConfig implements IConfigModule {
 +    @TransformedConfig(name = "enabled", category = {"experiment", "entity-damage-source-trace"})

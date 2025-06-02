@@ -1,7 +1,7 @@
 --- /dev/null
-+++ b/src/main/java/me/earthme/luminol/config/DoNotLoad.java
++++ b/src/main/java/me/earthme/luminol/config/flags/DoNotLoad.java
 @@ -1,0 +_,8 @@
-+package me.earthme.luminol.config;
++package me.earthme.luminol.config.flags;
 +
 +import java.lang.annotation.Retention;
 +import java.lang.annotation.RetentionPolicy;

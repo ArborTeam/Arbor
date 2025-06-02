@@ -6,10 +6,10 @@
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 +import com.mojang.logging.LogUtils;
 +import gg.pufferfish.pufferfish.simd.SIMDDetection;
-+import me.earthme.luminol.config.ConfigInfo;
-+import me.earthme.luminol.config.DoNotLoad;
 +import me.earthme.luminol.config.EnumConfigCategory;
 +import me.earthme.luminol.config.IConfigModule;
++import me.earthme.luminol.config.flags.ConfigInfo;
++import me.earthme.luminol.config.flags.DoNotLoad;
 +import org.slf4j.Logger;
 +
 +public class SIMDConfig implements IConfigModule {
@@ -30,7 +30,7 @@
 +
 +    @Override
 +    public void onLoaded(CommentedFileConfig configInstance) {
-+        if (!enabled){
++        if (!enabled) {
 +            return;
 +        }
 +

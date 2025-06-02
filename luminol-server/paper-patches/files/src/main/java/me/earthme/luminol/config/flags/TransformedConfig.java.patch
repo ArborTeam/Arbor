@@ -1,7 +1,9 @@
 --- /dev/null
-+++ b/src/main/java/me/earthme/luminol/config/TransformedConfig.java
-@@ -1,0 +_,24 @@
-+package me.earthme.luminol.config;
++++ b/src/main/java/me/earthme/luminol/config/flags/TransformedConfig.java
+@@ -1,0 +_,26 @@
++package me.earthme.luminol.config.flags;
++
++import me.earthme.luminol.config.DefaultTransformLogic;
 +
 +import java.lang.annotation.Repeatable;
 +import java.lang.annotation.Retention;

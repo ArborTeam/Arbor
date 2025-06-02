@@ -1,11 +1,15 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/RegionFormatConfig.java
-@@ -1,0 +_,59 @@
+@@ -1,0 +_,63 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import abomination.LinearRegionFile;
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-+import me.earthme.luminol.config.*;
++import me.earthme.luminol.config.EnumConfigCategory;
++import me.earthme.luminol.config.IConfigModule;
++import me.earthme.luminol.config.flags.ConfigInfo;
++import me.earthme.luminol.config.flags.DoNotLoad;
++import me.earthme.luminol.config.flags.HotReloadUnsupported;
 +import me.earthme.luminol.utils.EnumRegionFormat;
 +import net.minecraft.server.MinecraftServer;
 +

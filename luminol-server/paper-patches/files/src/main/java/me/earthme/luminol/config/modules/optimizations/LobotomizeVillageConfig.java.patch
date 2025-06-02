@@ -3,9 +3,9 @@
 @@ -1,0 +_,24 @@
 +package me.earthme.luminol.config.modules.optimizations;
 +
-+import me.earthme.luminol.config.ConfigInfo;
 +import me.earthme.luminol.config.EnumConfigCategory;
 +import me.earthme.luminol.config.IConfigModule;
++import me.earthme.luminol.config.flags.ConfigInfo;
 +
 +public class LobotomizeVillageConfig implements IConfigModule {
 +    @ConfigInfo(baseName = "enabled")

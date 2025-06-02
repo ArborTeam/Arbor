@@ -3,10 +3,10 @@
 @@ -1,0 +_,61 @@
 +package me.earthme.luminol.config.modules.misc;
 +
-+import me.earthme.luminol.config.ConfigInfo;
 +import me.earthme.luminol.config.EnumConfigCategory;
 +import me.earthme.luminol.config.IConfigModule;
-+import me.earthme.luminol.config.TransformedConfig;
++import me.earthme.luminol.config.flags.ConfigInfo;
++import me.earthme.luminol.config.flags.TransformedConfig;
 +
 +public class RaidChangesConfig implements IConfigModule {
 +    @TransformedConfig(name = "allow-bad-omen-trigger-raid", category = {"misc", "revert-raid-changes"})

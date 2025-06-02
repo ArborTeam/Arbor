@@ -3,9 +3,9 @@
 @@ -1,0 +_,28 @@
 +package me.earthme.luminol.config.modules.experiment;
 +
-+import me.earthme.luminol.config.ConfigInfo;
 +import me.earthme.luminol.config.EnumConfigCategory;
 +import me.earthme.luminol.config.IConfigModule;
++import me.earthme.luminol.config.flags.ConfigInfo;
 +
 +public class RayTrackingEntityTrackerConfig implements IConfigModule {
 +    @ConfigInfo(baseName = "enabled")

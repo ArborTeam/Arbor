@@ -1,7 +1,7 @@
 --- /dev/null
-+++ b/src/main/java/me/earthme/luminol/config/HotReloadUnsupported.java
++++ b/src/main/java/me/earthme/luminol/config/flags/HotReloadUnsupported.java
 @@ -1,0 +_,8 @@
-+package me.earthme.luminol.config;
++package me.earthme.luminol.config.flags;
 +
 +import java.lang.annotation.Retention;
 +import java.lang.annotation.RetentionPolicy;

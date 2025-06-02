@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/IConfigModule.java
-@@ -1,0 +_,22 @@
+@@ -1,0 +_,23 @@
 +package me.earthme.luminol.config;
 +
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
@@ -12,11 +12,12 @@
 +
 +    String getBaseName();
 +
-+    default void onLoaded(CommentedFileConfig configInstance) {}
++    default void onLoaded(CommentedFileConfig configInstance) {
++    }
 +
-+    default <T> T get(String keyName, T defaultValue, @NotNull CommentedFileConfig config){
-+        if (!config.contains(keyName)){
-+            config.set(keyName,defaultValue);
++    default <T> T get(String keyName, T defaultValue, @NotNull CommentedFileConfig config) {
++        if (!config.contains(keyName)) {
++            config.set(keyName, defaultValue);
 +            return defaultValue;
 +        }
 +

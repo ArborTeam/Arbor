@@ -3,12 +3,12 @@
 @@ -1,0 +_,20 @@
 +package me.earthme.luminol.config.modules.fixes;
 +
-+import me.earthme.luminol.config.ConfigInfo;
 +import me.earthme.luminol.config.EnumConfigCategory;
 +import me.earthme.luminol.config.IConfigModule;
++import me.earthme.luminol.config.flags.ConfigInfo;
 +
 +public class VanillaRandomSourceConfig implements IConfigModule {
-+    @ConfigInfo(baseName = "enable_for_player_entity",comments = "Related with RNG cracks")
++    @ConfigInfo(baseName = "enable_for_player_entity", comments = "Related with RNG cracks")
 +    public static boolean useLegacyRandomSourceForPlayers = false;
 +
 +    @Override

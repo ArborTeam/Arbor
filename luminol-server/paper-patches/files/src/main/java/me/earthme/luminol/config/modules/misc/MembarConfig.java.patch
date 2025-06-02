@@ -5,10 +5,10 @@
 +
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 +import me.earthme.luminol.commands.MembarCommand;
-+import me.earthme.luminol.config.ConfigInfo;
-+import me.earthme.luminol.config.DoNotLoad;
 +import me.earthme.luminol.config.EnumConfigCategory;
 +import me.earthme.luminol.config.IConfigModule;
++import me.earthme.luminol.config.flags.ConfigInfo;
++import me.earthme.luminol.config.flags.DoNotLoad;
 +import me.earthme.luminol.functions.GlobalServerMemoryBar;
 +import org.bukkit.Bukkit;
 +
@@ -20,7 +20,7 @@
 +    @ConfigInfo(baseName = "format")
 +    public static String memBarFormat = "<gray>Memory usage <yellow>:</yellow> <used>MB<yellow>/</yellow><available>MB";
 +    @ConfigInfo(baseName = "memory_color_list")
-+    public static List<String> memColors = List.of("GREEN","YELLOW","RED","PURPLE");
++    public static List<String> memColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
 +    @ConfigInfo(baseName = "update_interval_ticks")
 +    public static int updateInterval = 15;
 +
@@ -38,15 +38,15 @@
 +    }
 +
 +    @Override
-+    public void onLoaded(CommentedFileConfig configInstance){
-+        if (memoryBarEnabled){
++    public void onLoaded(CommentedFileConfig configInstance) {
++        if (memoryBarEnabled) {
 +            GlobalServerMemoryBar.init();
-+        }else{
++        } else {
 +            GlobalServerMemoryBar.cancelBarUpdateTask();
 +        }
 +
-+        if (!inited){
-+            Bukkit.getCommandMap().register("membar","luminol",new MembarCommand("membar"));
++        if (!inited) {
++            Bukkit.getCommandMap().register("membar", "luminol", new MembarCommand("membar"));
 +            inited = true;
 +        }
 +    }

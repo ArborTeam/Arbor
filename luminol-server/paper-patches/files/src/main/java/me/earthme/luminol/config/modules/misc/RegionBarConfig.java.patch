@@ -5,10 +5,10 @@
 +
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 +import me.earthme.luminol.commands.RegionBarCommand;
-+import me.earthme.luminol.config.ConfigInfo;
-+import me.earthme.luminol.config.DoNotLoad;
 +import me.earthme.luminol.config.EnumConfigCategory;
 +import me.earthme.luminol.config.IConfigModule;
++import me.earthme.luminol.config.flags.ConfigInfo;
++import me.earthme.luminol.config.flags.DoNotLoad;
 +import me.earthme.luminol.functions.GlobalServerRegionBar;
 +import org.bukkit.Bukkit;
 +

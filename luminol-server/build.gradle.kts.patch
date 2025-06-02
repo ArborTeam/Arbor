@@ -54,7 +54,7 @@
  dependencies {
 -    implementation(project(":folia-api"))
 +    implementation(project(":luminol-api")) // Luminol
-+    implementation("com.electronwill.night-config:toml:3.6.6") // Luminol - Night config
++    implementation("com.electronwill.night-config:toml:3.8.2") // Luminol - Night config
 +    // Abomination start
 +    implementation("com.github.luben:zstd-jni:1.5.4-1")
 +    implementation("org.lz4:lz4-java:1.8.0")

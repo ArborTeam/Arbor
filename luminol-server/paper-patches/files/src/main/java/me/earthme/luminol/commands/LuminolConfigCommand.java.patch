@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/commands/LuminolConfigCommand.java
-@@ -1,0 +_,80 @@
+@@ -1,0 +_,121 @@
 +package me.earthme.luminol.commands;
 +
 +import me.earthme.luminol.config.LuminolConfig;
@@ -23,16 +23,26 @@
 +        this.setUsage("/luminolconfig");
 +    }
 +
++    public void wrongUse(CommandSender sender) {
++        sender.sendMessage(
++                Component
++                        .text("Wrong use!")
++                        .color(TextColor.color(255, 0, 0))
++        );
++    }
++
 +    @Override
 +    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args, @Nullable Location location) throws IllegalArgumentException {
 +        final List<String> result = new ArrayList<>();
 +
 +        if (args.length == 1) {
 +            result.add("query");
-+            // result.add("set"); // TODO Later
-+            // result.add("reload"); // TODO Later
++            result.add("set");
++            result.add("reset");
++            result.add("reload");
++        } else if (args.length == 2 && args[0] != "reload") {
++            result.addAll(LuminolConfig.getAllConfigPaths(args[1]));
 +        }
-+
 +        return result;
 +    }
 +
@@ -46,11 +56,7 @@
 +        }
 +
 +        if (args.length < 1) {
-+            sender.sendMessage(
-+                    Component
-+                            .text("Wrong use!\n")
-+                            .color(TextColor.color(255, 0, 0))
-+            );
++            wrongUse(sender);
 +            return true;
 +        }
 +
@@ -62,18 +68,53 @@
 +                                .color(TextColor.color(0, 255, 0))
 +                ));
 +            }
-+
 +            case "set" -> {
-+                // TODO Later
++                if (args.length == 2 || args.length > 3) {
++                    wrongUse(sender);
++                    return true;
++                } else if (LuminolConfig.setConfig(args[1], args[2])) {
++                    LuminolConfig.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
++                            Component
++                                    .text("Set Config " + args[1] + " to " + args[2] + " successfully!")
++                                    .color(TextColor.color(0, 255, 0))
++                    ));
++                } else {
++                    sender.sendMessage(
++                            Component
++                                    .text("Failed to set config " + args[1] + " to " + args[2] + "!")
++                                    .color(TextColor.color(255, 0, 0))
++                    );
++                }
 +            }
-+
++            case "reset" -> {
++                if (args.length != 2) {
++                    wrongUse(sender);
++                    return true;
++                } else {
++                    LuminolConfig.resetConfig(args[1]);
++                    LuminolConfig.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
++                            Component
++                                    .text("Reset Config " + args[1] + " to " + LuminolConfig.getConfig(args[1]) + " successfully!")
++                                    .color(TextColor.color(0, 255, 0))
++                    ));
++                }
++            }
 +            case "query" -> {
-+                // TODO Later
++                if (args.length != 2) {
++                    wrongUse(sender);
++                    return true;
++                } else {
++                    sender.sendMessage(
++                            Component
++                                    .text("Config " + args[1] + " is " + LuminolConfig.getConfig(args[1]) + "!")
++                                    .color(TextColor.color(0, 255, 0))
++                    );
++                }
 +            }
 +
 +            default -> sender.sendMessage(
 +                    Component
-+                            .text("Unknown action!\n")
++                            .text("Unknown action!")
 +                            .color(TextColor.color(255, 0, 0))
 +            );
 +        }

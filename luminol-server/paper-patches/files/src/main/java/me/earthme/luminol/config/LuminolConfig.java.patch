@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/LuminolConfig.java
-@@ -1,0 +_,351 @@
+@@ -1,0 +_,378 @@
 +package me.earthme.luminol.config;
 +
 +import com.electronwill.nightconfig.core.CommentedConfig;
@@ -37,12 +37,14 @@
 +    private static final File baseConfigFolder = new File("luminol_config");
 +    private static final File baseConfigFile = new File(baseConfigFolder, "luminol_global_config.toml");
 +    private static final Set<IConfigModule> allInstanced = new HashSet<>();
-+    public static boolean alreadyInited = false;
++    private static final Map<String, Object> stagedConfigMap = new HashMap<>();
++    private static final Map<String, Object> defaultvalueMap = new HashMap<>();
++    public static boolean alreadyInit = false;
 +    private static CommentedFileConfig configFileInstance;
 +
 +    public static void setupLatch() {
 +        Bukkit.getCommandMap().register("luminolconfig", "luminol", new LuminolConfigCommand());
-+        alreadyInited = true;
++        alreadyInit = true;
 +    }
 +
 +    public static void reload() {
@@ -97,7 +99,7 @@
 +            throw new RuntimeException(e);
 +        }
 +
-+        configFileInstance.save();
++        saveConfigs();
 +    }
 +
 +    private static void loadAllModules() throws IllegalAccessException {
@@ -122,7 +124,7 @@
 +        for (Field field : fields) {
 +            int modifiers = field.getModifiers();
 +            if (Modifier.isStatic(modifiers) && !Modifier.isFinal(modifiers)) {
-+                boolean skipLoad = field.getAnnotation(DoNotLoad.class) != null || (alreadyInited && field.getAnnotation(HotReloadUnsupported.class) != null);
++                boolean skipLoad = field.getAnnotation(DoNotLoad.class) != null || (alreadyInit && field.getAnnotation(HotReloadUnsupported.class) != null);
 +                ConfigInfo configInfo = field.getAnnotation(ConfigInfo.class);
 +
 +                if (skipLoad || configInfo == null) {
@@ -133,6 +135,7 @@
 +
 +                field.setAccessible(true);
 +                final Object currentValue = field.get(null);
++                if (!alreadyInit) defaultvalueMap.put(fullConfigKeyName, currentValue);
 +                boolean removed = fullConfigKeyName.equals("removed.removed_config.removed");
 +
 +                if (!configFileInstance.contains(fullConfigKeyName) || removed) {
@@ -180,7 +183,21 @@
 +                    continue;
 +                }
 +
-+                final Object actuallyValue = configFileInstance.get(fullConfigKeyName);
++                Object actuallyValue;
++                if (stagedConfigMap.containsKey(fullConfigKeyName)) {
++                    actuallyValue = stagedConfigMap.get(fullConfigKeyName);
++                    if (actuallyValue == null) actuallyValue = defaultvalueMap.get(fullConfigKeyName);
++                    stagedConfigMap.remove(fullConfigKeyName);
++                } else {
++                    actuallyValue = configFileInstance.get(fullConfigKeyName);
++                }
++                try {
++                    actuallyValue = tryTransform(field.get(null).getClass(), actuallyValue);
++                    configFileInstance.set(fullConfigKeyName, actuallyValue);
++                } catch (IllegalFormatConversionException e) {
++                    resetConfig(fullConfigKeyName);
++                    logger.error("Failed to transform config {}, reset to default!", fullConfigKeyName);
++                }
 +                field.set(null, actuallyValue);
 +            }
 +        }
@@ -202,31 +219,43 @@
 +        }
 +    }
 +
-+    public static boolean setConfigAndSave(String[] keys, Object value) {
-+        return setConfigAndSave(String.join(".", keys), value);
-+    }
-+
-+    public static boolean setConfigAndSave(String key, Object value) {
-+        if (setConfig(key, value)) {
-+            saveConfig();
-+            return true;
-+        }
-+        return false;
-+    }
-+
 +    public static boolean setConfig(String[] keys, Object value) {
 +        return setConfig(String.join(".", keys), value);
 +    }
 +
 +    public static boolean setConfig(String key, Object value) {
 +        if (configFileInstance.contains(key) && configFileInstance.get(key) != null) {
-+            configFileInstance.set(key, value);
++            stagedConfigMap.put(key, value);
 +            return true;
 +        }
 +        return false;
 +    }
 +
-+    public static void saveConfig() {
++    private static Object tryTransform(Class<?> targetType, Object value) {
++        if (!targetType.isAssignableFrom(value.getClass())) {
++            try {
++                if (targetType == Integer.class) {
++                    value = Integer.parseInt(value.toString());
++                } else if (targetType == Double.class) {
++                    value = Double.parseDouble(value.toString());
++                } else if (targetType == Boolean.class) {
++                    value = Boolean.parseBoolean(value.toString());
++                } else if (targetType == Long.class) {
++                    value = Long.parseLong(value.toString());
++                } else if (targetType == Float.class) {
++                    value = Float.parseFloat(value.toString());
++                } else if (targetType == String.class) {
++                    value = value.toString();
++                }
++            } catch (Exception e) {
++                logger.error("Failed to transform value {}!", value);
++                throw new IllegalFormatConversionException((char) 0, targetType);
++            }
++        }
++        return value;
++    }
++
++    public static void saveConfigs() {
 +        configFileInstance.save();
 +    }
 +
@@ -235,9 +264,7 @@
 +    }
 +
 +    public static void resetConfig(String key) {
-+        configFileInstance.remove(key);
-+        configFileInstance.save();
-+        reload();
++        stagedConfigMap.put(key, null);
 +    }
 +
 +    public static String getConfig(String[] keys) {
@@ -245,10 +272,10 @@
 +    }
 +
 +    public static String getConfig(String key) {
-+        return configFileInstance.get(key);
++        return configFileInstance.get(key).toString();
 +    }
 +
-+    public List<String> getAllConfigPaths(String prefix) {
++    public static List<String> getAllConfigPaths(String prefix) {
 +        List<String> configPaths = getAllConfigPaths();
 +        return configPaths.stream().filter(path -> path.startsWith(prefix)).toList();
 +    }

@@ -19,8 +19,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: '22'
+          distribution: zulu
+          java-version: 22
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -28,17 +28,16 @@ jobs:
       - name: Configure Git User Details
         run: git config --global user.email "ci@luminolmc.com" && git config --global user.name "LuminolMC CI"
 
-      - name: Apply Patches
+      - name: Apply All Patches
         run: ./gradlew applyAllPatches
 
-      - name: CreateJar
+      - name: CreateMojmapPaperclipJar
         run: ./gradlew createMojmapPaperclipJar
 
       - name: Publish to repo
         if: github.event_name != 'pull_request'
         continue-on-error: true
-        run: |
-          ./gradlew generateDevelopmentBundle publish -PpublishDevBundle=true
+        run: ./gradlew generateDevelopmentBundle publish -PpublishDevBundle=true
         env:
           PRIVATE_MAVEN_REPO_PASSWORD: ${{ secrets.PRIVATE_MAVEN_REPO_PASSWORD }}
           PRIVATE_MAVEN_REPO_USERNAME: ${{ secrets.PRIVATE_MAVEN_REPO_USERNAME }}
@@ -46,8 +45,8 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ env.project_id_b }} CI Artifacts"
-          path: "luminol-server/build/libs/*-paperclip-*-mojmap.jar"
+          name: ${{ env.project_id_b }} CI Artifacts
+          path: luminol-server/build/libs/*-paperclip-*-mojmap.jar
 
       - name: SetENV
         if: github.event_name != 'pull_request'
@@ -64,9 +63,8 @@ jobs:
             This release is automatically compiled by GitHub Actions
             ### Commit Message
             ${{ env.commit_msg }}
-          artifacts: |
-            ${{ env.jar_dir }}
+          artifacts: ${{ env.jar_dir }}
           generateReleaseNotes: true
-          prerelease: false
+          prerelease: ${{ env.pre }}
           makeLatest: ${{ env.make_latest }}
-          token: "${{ secrets.GITHUB_TOKEN }}"
+          token: ${{ secrets.GITHUB_TOKEN }}

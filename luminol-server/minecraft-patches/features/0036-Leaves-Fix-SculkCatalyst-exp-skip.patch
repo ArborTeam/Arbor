@@ -8,7 +8,7 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 5564bba66959a2a280f700f6c6a05d292faced88..4492f3ab470c0bf735b6fdc69115c1ebbcd727ef 100644
+index bcc0c3cfa5be4daeec6e95a1b63a6cd38890f04d..e83c6a81e318a05580f5c811cb2543a83435f04c 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1285,7 +1285,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc

@@ -8,7 +8,7 @@ Co-authored by: MrPowerGamerBR <git@mrpowergamerbr.com>
 As part of: SparklyPaper (https://github.com/SparklyPower/SparklyPaper/blob/a69d3690472c9967772ffd4d4bd1f41403b7ea6f/sparklypaper-server/minecraft-patches/features/0002-Skip-distanceToSqr-call-in-ServerEntity-sendChanges-.patch)
 
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index b118e91f1e0b5a8b8c0b2a4a32faabc5a34a5954..8c232ae73a8c6500723994af3a28b36814cccae0 100644
+index 663bd286426537daf97ae09dc7e076a9ec6d4c9c..8739b4e806878cf3a4af9ad1aef7f2a55880d503 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
 @@ -205,6 +205,8 @@ public class ServerEntity {

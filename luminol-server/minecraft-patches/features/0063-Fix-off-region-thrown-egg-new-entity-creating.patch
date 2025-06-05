@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Thu, 5 Jun 2025 21:11:31 +0800
+Subject: [PATCH] Fix off region thrown egg new entity creating
+
+should set pos before so that we could correctly modify the entity's other attribute on-region without triggering the async catchers
+
+diff --git a/net/minecraft/world/entity/projectile/ThrownEgg.java b/net/minecraft/world/entity/projectile/ThrownEgg.java
+index 73ec34b43f3fb2aa3edc3f1cb48a923d1fa32036..5d2f80c4dd8cb6726b0f42891d4ddbc85bf153a7 100644
+--- a/net/minecraft/world/entity/projectile/ThrownEgg.java
++++ b/net/minecraft/world/entity/projectile/ThrownEgg.java
+@@ -97,17 +97,18 @@ public class ThrownEgg extends ThrowableItemProjectile {
+                 for (int i1 = 0; i1 < i; i1++) {
+                     net.minecraft.world.entity.Entity chicken = newEntityType.create(this.level(), net.minecraft.world.entity.EntitySpawnReason.TRIGGERED); // CraftBukkit
+                     if (chicken != null) {
++                        chicken.snapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F); // Luminol - Fix off region thrown egg - move up
+                         // CraftBukkit start
+                         if (chicken.getBukkitEntity() instanceof org.bukkit.entity.Ageable ageable) {
+                             ageable.setBaby();
+                         }
+                         // CraftBukkit end
+-                        chicken.snapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
++                        // chicken.snapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F); // Luminol - Fix off region thrown egg - move up
+                         // CraftBukkit start
+                         if (chicken instanceof Chicken realChicken) {
+                             Optional.ofNullable(this.getItem().get(DataComponents.CHICKEN_VARIANT))
+-                                .flatMap(eitherHolder -> eitherHolder.unwrap(this.registryAccess()))
+-                                .ifPresent(realChicken::setVariant);
++                                    .flatMap(eitherHolder -> eitherHolder.unwrap(this.registryAccess()))
++                                    .ifPresent(realChicken::setVariant);
+                         }
+                         // CraftBukkit end
+                         if (!chicken.fudgePositionAfterSizeChange(ZERO_SIZED_DIMENSIONS)) {

@@ -6,10 +6,10 @@ Subject: [PATCH] Fix off region thrown egg new entity creating
 should set pos before so that we could correctly modify the entity's other attribute on-region without triggering the async catchers
 
 diff --git a/net/minecraft/world/entity/projectile/ThrownEgg.java b/net/minecraft/world/entity/projectile/ThrownEgg.java
-index 73ec34b43f3fb2aa3edc3f1cb48a923d1fa32036..5d2f80c4dd8cb6726b0f42891d4ddbc85bf153a7 100644
+index 73ec34b43f3fb2aa3edc3f1cb48a923d1fa32036..5760ae39e8c452b8291353ed59ce7f8ef4d43dc1 100644
 --- a/net/minecraft/world/entity/projectile/ThrownEgg.java
 +++ b/net/minecraft/world/entity/projectile/ThrownEgg.java
-@@ -97,17 +97,18 @@ public class ThrownEgg extends ThrowableItemProjectile {
+@@ -97,12 +97,13 @@ public class ThrownEgg extends ThrowableItemProjectile {
                  for (int i1 = 0; i1 < i; i1++) {
                      net.minecraft.world.entity.Entity chicken = newEntityType.create(this.level(), net.minecraft.world.entity.EntitySpawnReason.TRIGGERED); // CraftBukkit
                      if (chicken != null) {
@@ -24,10 +24,3 @@ index 73ec34b43f3fb2aa3edc3f1cb48a923d1fa32036..5d2f80c4dd8cb6726b0f42891d4ddbc8
                          // CraftBukkit start
                          if (chicken instanceof Chicken realChicken) {
                              Optional.ofNullable(this.getItem().get(DataComponents.CHICKEN_VARIANT))
--                                .flatMap(eitherHolder -> eitherHolder.unwrap(this.registryAccess()))
--                                .ifPresent(realChicken::setVariant);
-+                                    .flatMap(eitherHolder -> eitherHolder.unwrap(this.registryAccess()))
-+                                    .ifPresent(realChicken::setVariant);
-                         }
-                         // CraftBukkit end
-                         if (!chicken.fudgePositionAfterSizeChange(ZERO_SIZED_DIMENSIONS)) {

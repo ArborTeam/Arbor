@@ -40,8 +40,8 @@
 +            result.add("set");
 +            result.add("reset");
 +            result.add("reload");
-+        } else if (args.length == 2 && args[0] != "reload") {
-+            result.addAll(LuminolConfig.getAllConfigPaths(args[1]));
++        } else if (args.length == 2 && (args[0].equals("query") || args[0].equals("set") || args[0].equals("reset"))) {
++            result.addAll(LuminolConfig.completeConfigPath(args[1]));
 +        }
 +        return result;
 +    }

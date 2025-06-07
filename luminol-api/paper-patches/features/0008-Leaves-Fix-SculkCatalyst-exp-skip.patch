@@ -53,3 +53,31 @@ index 76c08499b704a6cb0cb95ce69b9a9248d69cc127..d516595a8675a9f3d9c14658b66160ba
 +    }
 +    // Leaves end - exp fix
  }
+diff --git a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
+index 6316a2f1d2dc0314397e33e6dbd354fb8bc50541..6e2d1bf0e8eb9fa4917b464324a02b9b5d0dd496 100644
+--- a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
++++ b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
+@@ -25,6 +25,7 @@ public class PlayerDeathEvent extends EntityDeathEvent {
+     private boolean doExpDrop;
+     private boolean keepLevel = false;
+     private boolean keepInventory = false;
++    private boolean useApiExpDropStatus = false; // Leaves - exp fix
+     @Deprecated
+     private final List<ItemStack> itemsToKeep = new ArrayList<>();
+ 
+@@ -82,8 +83,15 @@ public class PlayerDeathEvent extends EntityDeathEvent {
+         this.showDeathMessages = true;
+         this.deathMessage = LegacyComponentSerializer.legacySection().deserializeOrNull(deathMessage);
+         this.doExpDrop = doExpDrop;
++        this.useApiExpDropStatus = true; // Leaves - exp fix
+     }
+ 
++    // Leaves start - exp fix
++    public boolean forceUseEventDropStatus() {
++        return this.useApiExpDropStatus;
++    }
++    // Leaves end - exp fix
++
+     @NotNull
+     @Override
+     public Player getEntity() {

@@ -63,7 +63,7 @@ BTW, `*-api` and `*-server` and are not normal git repositories.
 
 - Before applying patches, the base will point to unmodified source code.
 - Every commit after the base is a patch.
-- Only commits after the last commit of Paper will be considered as Luminol patches.
+- Only commits after the last commit of Folia will be considered as Luminol patches.
 
 ## Adding new patches
 

@@ -15,7 +15,7 @@ body:
         如果此bug被尝试修复，您可以帮助我们测试并回复。若bug的确被修复，您可以关闭issue来让开发者确认。
         If this bug is tried to fix, you can help us test and reply. If the bug is fixed, you can close the issue to let the developer confirm.
   - type: input
-    id: leavesMC-version
+    id: luminolMC-version
     attributes:
       label: 服务端版本 LuminolMC Version
       description:

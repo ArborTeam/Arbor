@@ -1,12 +1,11 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/removed/RemovedConfig.java
-@@ -1,0 +_,41 @@
+@@ -1,0 +_,40 @@
 +package me.earthme.luminol.config.modules.removed;
 +
 +import me.earthme.luminol.config.EnumConfigCategory;
 +import me.earthme.luminol.config.IConfigModule;
 +import me.earthme.luminol.config.flags.ConfigInfo;
-+import me.earthme.luminol.config.flags.DoNotLoad;
 +import me.earthme.luminol.config.flags.TransformedConfig;
 +
 +public class RemovedConfig implements IConfigModule {

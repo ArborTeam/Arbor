@@ -30,7 +30,7 @@ index 8a3a8b0fdf9545a41501dc992c6982d9c8ce7b66..8f9f5b0bf098a32a732e3ff9f636e3ea
                  }
              }
 diff --git a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..37ebb23c9c053de0530254d98f2120058833f232 100644
+index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..7d5fc6860ed426c4906f8c3eb2c10fd6db4296e5 100644
 --- a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 @@ -28,6 +28,11 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
@@ -89,14 +89,13 @@ index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..37ebb23c9c053de0530254d98f212005
 +                blockList.placeBlocks();
 +            }
          } else {
--            blockList.placeBlocks();
 +            if (dropBlocks) {
 +                blockList.getSnapshotBlocks().forEach((state) -> {
 +                                        level.destroyBlock(state.getPosition(), !blockList1.contains(state.getPosition()), null);
-+                    state.update();
 +                });
 +                // Luminol - prevent tripwire dupe in end platform generate
 +            }
+             blockList.placeBlocks();
          }
          // CraftBukkit end
      }

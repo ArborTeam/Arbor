@@ -1,0 +1,39 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sun, 8 Jun 2025 22:11:27 +0800
+Subject: [PATCH] Paper Backport fix for MC-296337
+
+A part of Paper(https://github.com/PaperMC/Paper)
+Diff was taken from : https://github.com/PaperMC/Paper/pull/12619/commits/9d0aef3b61f6e45ccee02ef9830f8402ada8d340
+
+Original patch license: GPLv3 (https://github.com/PaperMC/Paper/blob/main/licenses/GPL.md)
+Co-authored-by: electronicboy
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index b163c43f5398b9f38c75ae7af6a3015b686624ce..0d509b187c0ec357a7ccdf1e8b1f56d1e44398b9 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -361,6 +361,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+     public final AABB getBoundingBoxAt(double x, double y, double z) {
+         return this.dimensions.makeBoundingBox(x, y, z);
+     }
++    // MC-296337
++    protected void clearMovementsThisTick() {
++        this.movementThisTick.clear();
++    }
++    // Paper end
+     // Paper end
+     // Paper start - rewrite chunk system
+     private final boolean isHardColliding = this.moonrise$isHardCollidingUncached();
+diff --git a/net/minecraft/world/entity/vehicle/AbstractMinecart.java b/net/minecraft/world/entity/vehicle/AbstractMinecart.java
+index 99617c08cbd989092ba357d8df928786fd04c89a..47490f6152cb1394a448ebc803c973b22da24149 100644
+--- a/net/minecraft/world/entity/vehicle/AbstractMinecart.java
++++ b/net/minecraft/world/entity/vehicle/AbstractMinecart.java
+@@ -429,6 +429,7 @@ public abstract class AbstractMinecart extends VehicleEntity {
+     public void applyEffectsFromBlocks() {
+         if (!useExperimentalMovement(this.level())) {
+             this.applyEffectsFromBlocks(this.position(), this.position());
++            this.clearMovementsThisTick(); // Paper - MC-296337
+         } else {
+             super.applyEffectsFromBlocks();
+         }

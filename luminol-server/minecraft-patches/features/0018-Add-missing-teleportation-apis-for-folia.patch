@@ -5,10 +5,10 @@ Subject: [PATCH] Add missing teleportation apis for folia
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 047279cce3ff3a9eedd54db370b8fa6754d85ee4..bcc0c3cfa5be4daeec6e95a1b63a6cd38890f04d 100644
+index ec4047312cf17f3ba91348ac8d71f747202bef87..56d00caf9db21798fdcbd6ec2cd84a841a5dfd99 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1631,6 +1631,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1606,6 +1606,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      if (respawnComplete != null) {
                          respawnComplete.accept(ServerPlayer.this);
                      }
@@ -19,7 +19,7 @@ index 047279cce3ff3a9eedd54db370b8fa6754d85ee4..bcc0c3cfa5be4daeec6e95a1b63a6cd3
              );
          });
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 0228471a16805042f13158b86379a77371600489..9d945f615187f86913be8a9b83b1aada3a1336b6 100644
+index b5838a0320c729778f27f0d6a623eed4ef7c3a52..18b04e13d0347935888b3f01fe35a39aeb49d94a 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4108,6 +4108,31 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

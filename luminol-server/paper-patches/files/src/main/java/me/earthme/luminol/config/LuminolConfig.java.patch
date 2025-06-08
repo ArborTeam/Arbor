@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/LuminolConfig.java
-@@ -1,0 +_,378 @@
+@@ -1,0 +_,379 @@
 +package me.earthme.luminol.config;
 +
 +import com.electronwill.nightconfig.core.UnmodifiableConfig;
@@ -167,6 +167,7 @@
 +                            if (!removed && configFileInstance.get(fullConfigKeyName) != null) break;
 +                        }
 +                    }
++                    if (removed) continue;
 +                    if (configFileInstance.get(fullConfigKeyName) != null) continue;
 +                    if (currentValue == null) {
 +                        throw new UnsupportedOperationException("Config " + singleConfigModule.getBaseName() + "tried to add an null default value!");

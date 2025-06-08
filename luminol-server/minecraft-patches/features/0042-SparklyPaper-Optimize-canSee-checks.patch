@@ -7,7 +7,7 @@ Co-authored by: MrPowerGamerBR <git@mrpowergamerbr.com>
 As part of: SparklyPaper (https://github.com/SparklyPower/SparklyPaper/blob/a69d3690472c9967772ffd4d4bd1f41403b7ea6f/sparklypaper-server/paper-patches/features/0005-Optimize-canSee-checks.patch)
 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index 99a8b9a8ee2032107be03bbc13d0275a337faf7b..607091ecbd4a7261f2c0d839ee4dd1d27fa2190a 100644
+index d0c03dc51c8ad4997963b244ada855827a4c4065..ee53f78396f4377d3e5c2998826f231208066ef6 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
 @@ -1294,7 +1294,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider

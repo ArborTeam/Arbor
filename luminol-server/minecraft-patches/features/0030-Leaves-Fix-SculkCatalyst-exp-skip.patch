@@ -8,7 +8,7 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index bcc0c3cfa5be4daeec6e95a1b63a6cd38890f04d..e83c6a81e318a05580f5c811cb2543a83435f04c 100644
+index 56d00caf9db21798fdcbd6ec2cd84a841a5dfd99..4c811d989382f9b04f2c978ea5d1b845a55cc000 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1285,7 +1285,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -20,9 +20,9 @@ index bcc0c3cfa5be4daeec6e95a1b63a6cd38890f04d..e83c6a81e318a05580f5c811cb2543a8
          // we clean the player's inventory after the EntityDeathEvent is called so plugins can get the exact state of the inventory.
          if (!event.getKeepInventory()) {
              // Paper start - PlayerDeathEvent#getItemsToKeep
-@@ -1357,6 +1357,15 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1332,6 +1332,15 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+         this.setClientLoaded(false);
      }
-     // Luminol End - Cross Region Damage trace
  
 +    // Leaves start - exp fix
 +    private boolean shouldDropExperience(boolean eventResult, boolean forceUseEvent) {
@@ -37,7 +37,7 @@ index bcc0c3cfa5be4daeec6e95a1b63a6cd38890f04d..e83c6a81e318a05580f5c811cb2543a8
          AABB aabb = new AABB(this.blockPosition()).inflate(32.0, 10.0, 32.0);
          this.level()
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index c1d53987991a0808733eac3b500d5d5a0f5d7ac2..dcec5d26950bc654f67e7de7688c074cc502e486 100644
+index 6102493315f1db2695478ecd7a346cc3f371ebe0..99a0f521c2a327121f20821188356e2e415bc380 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -264,6 +264,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -48,7 +48,7 @@ index c1d53987991a0808733eac3b500d5d5a0f5d7ac2..dcec5d26950bc654f67e7de7688c074c
      public List<DefaultDrop> drops = new java.util.ArrayList<>(); // Paper - Restore vanilla drops behavior
      public final org.bukkit.craftbukkit.attribute.CraftAttributeMap craftAttributes;
      public boolean collides = true;
-@@ -1870,6 +1871,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -1847,6 +1848,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
                          entity.killedEntity((ServerLevel) this.level(), this);
                      }
                      this.gameEvent(GameEvent.ENTITY_DIE);
@@ -56,7 +56,7 @@ index c1d53987991a0808733eac3b500d5d5a0f5d7ac2..dcec5d26950bc654f67e7de7688c074c
                  } else {
                      this.dead = false;
                      this.setHealth((float) deathEvent.getReviveHealth());
-@@ -1950,7 +1952,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -1920,7 +1922,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
          this.drops = new java.util.ArrayList<>();
          // this.dropEquipment(level); // CraftBukkit - moved up
          // CraftBukkit end

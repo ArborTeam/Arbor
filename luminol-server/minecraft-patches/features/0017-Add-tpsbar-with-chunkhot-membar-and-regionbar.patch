@@ -17,7 +17,7 @@ index bd3ce123652af11974be4cbf8d2e96f1b2ee0a68..5f26fd89704aa3fd9c37a1d68a7c4c65
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index ecf185fce582a542c65a9544388b84835643978b..12062e37c0e832f27ba52844739d0e8d5519a30a 100644
+index b437132634f636f4c1d76c86146f377090b5fdb2..6fbdff0eeed6e37aaa7650708c7b0164795f8d0b 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1663,7 +1663,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -120,7 +120,7 @@ index 94fb1c99baefbdde91dc5fcf103683c7ffda6baf..b4fdbdba579fa7c7de4928c259b5ff16
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 111f2f05d0ad3f290dab97f231caf8516821e030..047279cce3ff3a9eedd54db370b8fa6754d85ee4 100644
+index d2ab8110871ecf8af9d35f8b47f1d67888e15df3..ec4047312cf17f3ba91348ac8d71f747202bef87 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -420,7 +420,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -187,14 +187,15 @@ index bfd904e468bbf2cc1a5b3353d3a69ad5087c81ae..116933975ac975bb5a801be81e1c0e9b
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index e9ea86d77395975afbe189993ee0dbbd066c3536..0228471a16805042f13158b86379a77371600489 100644
+index b5838a0320c729778f27f0d6a623eed4ef7c3a52..9122a78d08863cbc7321b7f7f2b6614e70dca846 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -6000,5 +6000,4 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
-             return false;
-         return this.outOfCamera;
+@@ -5957,4 +5957,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         return ((ServerLevel) this.level()).isPositionEntityTicking(this.blockPosition());
      }
--
+     // Paper end - Expose entity id counter
++
++    public boolean shouldTickHot() { return this.tickCount > 20 * 10 && this.isAlive(); } // KioCG
  }
 diff --git a/net/minecraft/world/entity/LightningBolt.java b/net/minecraft/world/entity/LightningBolt.java
 index c1c63c77598786d86b4aa4475cc4d36e60955085..27dd86d1d94959cbe8376ee714e3306732151105 100644
@@ -261,10 +262,10 @@ index 70cc20483905d3877e2ffb51afb4902bd59f0cd0..fff3965d892e20a3ad9c84fad2c2df2f
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 5af32286092222f09ad2b54dd2fa6bd9ad3a8f40..0d774fd4be1cdcf03e76db8b17309bbf01bafc55 100644
+index aed525af488eb839d31d6bec0673b7e128ca4068..543750bee43bfaaaf33f2cec53eb0de05e7a1dd2 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -1521,6 +1521,13 @@ public abstract class Player extends LivingEntity {
+@@ -1481,6 +1481,13 @@ public abstract class Player extends LivingEntity {
          return true;
      }
  

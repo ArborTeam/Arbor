@@ -6,7 +6,7 @@ Subject: [PATCH] Teleport async if entity was moving to another region at once
 On folia, entity usually cannot move out of the tickregion, but sometimes it actually does(like some end pearl gun that can shoot an end pearl to the block faraway than 10000 blocks even more). To fix this, we added a temporary fix which teleport these entities to the destination instead running its move logics so that we could ensure anything is under control.But one thing need to consider is that teleportAsync is actually calling halfway of the entity tick and there is still something running when teleportAsync called, which is actually modified the entity in another thread, so there is still need an improvement
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 87e22d1fed087886ac845f6e816be5bf20fac9fb..b163c43f5398b9f38c75ae7af6a3015b686624ce 100644
+index dbc8d2729782dd073a03682d4e8c96c4e03ce1e6..a33994df200a93d7b9721cbe13d898d96af70844 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1084,6 +1084,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

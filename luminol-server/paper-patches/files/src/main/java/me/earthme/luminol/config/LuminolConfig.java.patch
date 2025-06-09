@@ -168,7 +168,7 @@
 +                        }
 +                    }
 +                    if (removed) {
-+                        removeConfig(fullConfigKeyName.split("\\."));
++                        configFileInstance.remove("removed");
 +                        continue;
 +                    }
 +                    if (configFileInstance.get(fullConfigKeyName) != null) continue;

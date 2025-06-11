@@ -10,7 +10,7 @@ Original patch license: GPLv3 (https://github.com/PaperMC/Paper/blob/main/licens
 Co-authored-by: electronicboy
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index b163c43f5398b9f38c75ae7af6a3015b686624ce..0d509b187c0ec357a7ccdf1e8b1f56d1e44398b9 100644
+index 14e58b4093b4eafb989f9b1d498579bd25ab6c1e..0814ad6820b08a856f7bd261e96143568e772ac4 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -361,6 +361,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

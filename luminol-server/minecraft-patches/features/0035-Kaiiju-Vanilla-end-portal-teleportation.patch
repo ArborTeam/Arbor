@@ -8,10 +8,10 @@ As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2e
 Licensed under: GPL-3.0 (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/LICENSE)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 97ef9c15618168a9b4f169a03f15d4e3e326f4f6..96790ead67c29013302341422fd23d2cefd720bf 100644
+index 95fd1fc621a01d4a2a97e78f471a1d1a599db612..75b5856b892272aaa70616c35dea75ba3ac76058 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4273,14 +4273,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4277,14 +4277,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          targetPos, 16, // load 16 blocks to be safe from block physics
                          ca.spottedleaf.concurrentutil.util.Priority.HIGH,
                          (chunks) -> {
@@ -34,7 +34,7 @@ index 97ef9c15618168a9b4f169a03f15d4e3e326f4f6..96790ead67c29013302341422fd23d2c
                                      TeleportTransition.PLAY_PORTAL_SOUND.then(TeleportTransition.PLACE_PORTAL_TICKET),
                                      org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.END_PORTAL
                                  )
-@@ -4306,11 +4310,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4310,11 +4314,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          ca.spottedleaf.concurrentutil.util.Priority.HIGH,
                          (chunks) -> {
                              BlockPos adjustedSpawn = destination.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawnPos);
@@ -52,7 +52,7 @@ index 97ef9c15618168a9b4f169a03f15d4e3e326f4f6..96790ead67c29013302341422fd23d2c
                                      Relative.union(Relative.DELTA, Relative.ROTATION),
                                      TeleportTransition.PLAY_PORTAL_SOUND.then(TeleportTransition.PLACE_PORTAL_TICKET),
                                      org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.END_PORTAL
-@@ -4507,6 +4515,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4511,6 +4519,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              return false;
          }
          // Luminol end
@@ -63,7 +63,7 @@ index 97ef9c15618168a9b4f169a03f15d4e3e326f4f6..96790ead67c29013302341422fd23d2c
  
          Vec3 initialPosition = this.position();
          ChunkPos initialPositionChunk = new ChunkPos(
-@@ -4571,8 +4583,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4575,8 +4587,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          info.postTeleportTransition().onTransition(teleported);
                      }
  

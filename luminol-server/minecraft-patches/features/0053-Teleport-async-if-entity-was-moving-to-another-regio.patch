@@ -6,10 +6,10 @@ Subject: [PATCH] Teleport async if entity was moving to another region at once
 On folia, entity usually cannot move out of the tickregion, but sometimes it actually does(like some end pearl gun that can shoot an end pearl to the block faraway than 10000 blocks even more). To fix this, we added a temporary fix which teleport these entities to the destination instead running its move logics so that we could ensure anything is under control.But one thing need to consider is that teleportAsync is actually calling halfway of the entity tick and there is still something running when teleportAsync called, which is actually modified the entity in another thread, so there is still need an improvement
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index dbc8d2729782dd073a03682d4e8c96c4e03ce1e6..a33994df200a93d7b9721cbe13d898d96af70844 100644
+index 4743de5c39ee52bdde1f70e340d547a6cc7f4ead..a023cc399fc8bfee7771e5ca6716578f89b7072f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1084,6 +1084,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1088,6 +1088,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
      private boolean boundingBoxChanged = false; // Gale - VMP - skip entity move if movement is zero
  
@@ -20,7 +20,7 @@ index dbc8d2729782dd073a03682d4e8c96c4e03ce1e6..a33994df200a93d7b9721cbe13d898d9
      public void move(MoverType type, Vec3 movement) {
          // Gale start - VMP - skip entity move if movement is zero
          if (!this.boundingBoxChanged && movement.equals(Vec3.ZERO)) {
-@@ -1099,6 +1103,32 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1103,6 +1107,32 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.moveStartZ = this.getZ();
              this.moveVector = movement;
          }

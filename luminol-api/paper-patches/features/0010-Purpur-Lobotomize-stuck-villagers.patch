@@ -1,17 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <wangxyper@163.com>
-Date: Thu, 30 Jan 2025 09:29:03 +0800
+From: MrHua269 <mrhua269@gmail.com>
+Date: Thu, 12 Jun 2025 08:00:15 +0800
 Subject: [PATCH] Purpur Lobotomize stuck villagers
 
 
 diff --git a/src/main/java/org/bukkit/entity/Villager.java b/src/main/java/org/bukkit/entity/Villager.java
-index 02b86d9615f8150b13ff0beefd5ca502c0494f99..3a444609ea9fdeee9057d593fbd4d38cc9e1ad68 100644
+index 4d88bb2eaa43709fb6103a6f77d8c01e83bfe743..60b87d52c20cec947b196f47fc333bc643accbd2 100644
 --- a/src/main/java/org/bukkit/entity/Villager.java
 +++ b/src/main/java/org/bukkit/entity/Villager.java
-@@ -391,4 +391,13 @@ public interface Villager extends AbstractVillager {
-      * reputation regardless of its impact and the player associated.
+@@ -408,4 +408,13 @@ public interface Villager extends AbstractVillager {
+      * Demand is still updated even if all events are canceled.
       */
-     public void clearReputations();
+     public void restock();
 +    // Purpur start
 +
 +    /**

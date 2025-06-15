@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/data/BufferedLinearRegionFile.java
-@@ -1,0 +_,629 @@
+@@ -1,0 +_,631 @@
 +package me.earthme.luminol.data;
 +
 +import abomination.IRegionFile;
@@ -212,6 +212,8 @@
 +            tempChannel.force(true);
 +            this.currentAcquiredIndex = tempChannel.size();
 +        }
++
++        this.channel.close();
 +
 +        Files.move(
 +                new File(this.filePath.toString() + ".tmp").toPath(),

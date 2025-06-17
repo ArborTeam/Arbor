@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/src/main/java/me/earthme/luminol/config/modules/misc/CpuAffinityConfig.java
-@@ -1,0 +_,69 @@
+@@ -1,0 +_,77 @@
 +package me.earthme.luminol.config.modules.misc;
 +
 +import com.electronwill.nightconfig.core.file.CommentedFileConfig;
@@ -57,12 +57,20 @@
 +        int maxAvailable = Runtime.getRuntime().availableProcessors();
 +        BitSet affinitySet = new BitSet(affinity.size());
 +        affinity.stream()
-+                .mapToInt(Integer::parseInt)
++                .mapToInt(str -> {
++                    try {
++                        return Integer.parseInt(str);
++                    } catch (NumberFormatException ignored) {
++                        LOGGER.warn("Unable to parse cpu id {} to a valid number, falling back to 0.", str);
++                        return 0;
++                    }
++                })
++                .distinct()
 +                .filter(cpuId -> {
 +                    if (cpuId >= 0 && cpuId < maxAvailable) {
 +                        return true;
 +                    } else {
-+                        LOGGER.warn("Invalid cpuId {}, ignoring.", cpuId);
++                        LOGGER.warn("Invalid cpu id {}, ignoring.", cpuId);
 +                        return false;
 +                    }
 +                })

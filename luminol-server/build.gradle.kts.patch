@@ -48,7 +48,7 @@
      }
  }
  val log4jPlugins = sourceSets.create("log4jPlugins") {
-@@ -153,7 +_,14 @@
+@@ -153,12 +_,20 @@
  }
  
  dependencies {
@@ -64,6 +64,12 @@
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
+     implementation("net.minecrell:terminalconsoleappender:1.3.0")
+     implementation("net.kyori:adventure-text-serializer-ansi:4.21.0") // Keep in sync with adventureVersion from Paper-API build file
++    implementation("net.openhft:affinity:3.23.3") // Luminol
+     runtimeConfiguration(sourceSets.main.map { it.runtimeClasspath })
+ 
+     /*
 @@ -217,26 +_,33 @@
      implementation("me.lucko:spark-paper:1.10.133-20250413.112336-1")
  }

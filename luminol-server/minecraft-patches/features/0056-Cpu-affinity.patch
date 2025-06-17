@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+Date: Tue, 9 Nov 2077 00:00:00 +0800
+Subject: [PATCH] Cpu affinity
+
+
+diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
+index fa6b8d756195c1b430cc11214a901bd42eebc98d..0357792de0ed8ec9058d1847c8b45c33ff365af6 100644
+--- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
++++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
+@@ -49,6 +49,25 @@ public final class TickRegionScheduler {
+ 
+             @Override
+             public Thread newThread(final Runnable run) {
++                // Luminol start - cpu affinity
++                if (me.earthme.luminol.config.modules.misc.CpuAffinityConfig.cpuAffinityEnabled) {
++                    Runnable affinityRunnable = new Runnable() {
++                        private boolean affinitySet = false;
++
++                        @Override
++                        public void run() {
++                            if (!this.affinitySet) {
++                                this.affinitySet = true;
++                                net.openhft.affinity.Affinity.setAffinity(me.earthme.luminol.config.modules.misc.CpuAffinityConfig.tickRegionAffinityBitSet);
++                            }
++                            run.run();
++                        }
++                    };
++                    final Thread ret = new TickThreadRunner(affinityRunnable, "Region Scheduler Thread #" + this.idGenerator.getAndIncrement());
++                    ret.setUncaughtExceptionHandler(TickRegionScheduler.this::uncaughtException);
++                    return ret;
++                }
++                // Luminol end - cpu affinity
+                 final Thread ret = new TickThreadRunner(run, "Region Scheduler Thread #" + this.idGenerator.getAndIncrement());
+                 ret.setUncaughtExceptionHandler(TickRegionScheduler.this::uncaughtException);
+                 return ret;

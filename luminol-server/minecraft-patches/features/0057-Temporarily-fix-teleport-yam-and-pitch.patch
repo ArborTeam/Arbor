@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Wed, 18 Jun 2025 23:46:20 +0800
+Subject: [PATCH] Temporarily fix teleport yam and pitch
+
+
+diff --git a/net/minecraft/server/commands/TeleportCommand.java b/net/minecraft/server/commands/TeleportCommand.java
+index 174122905addbc88e818cd4946e831aec051b91a..4451f79df614c6e57e813996888b4e99a14c87d5 100644
+--- a/net/minecraft/server/commands/TeleportCommand.java
++++ b/net/minecraft/server/commands/TeleportCommand.java
+@@ -283,8 +283,8 @@ public class TeleportCommand {
+             if (true) {
+                 ServerLevel worldFinal = level;
+                 Vec3 posFinal = new Vec3(x, y, z);
+-                Float yawFinal = Float.valueOf(f);
+-                Float pitchFinal = Float.valueOf(f1);
++                Float yawFinal = Float.valueOf(f + target.getYRot());
++                Float pitchFinal = Float.valueOf(f1 + target.getXRot());
+                 target.getBukkitEntity().taskScheduler.schedule((Entity nmsEntity) -> {
+                     nmsEntity.unRide();
+                     nmsEntity.teleportAsync(

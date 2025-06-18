@@ -1,0 +1,28 @@
+package me.earthme.luminol.config.modules.fixes;
+
+import me.earthme.luminol.config.EnumConfigCategory;
+import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigInfo;
+
+public class FoliaEntityMovingFixConfig implements IConfigModule {
+    @ConfigInfo(baseName = "enabled", comments =
+            """
+                    A simple fix of an issue on folia\s
+                    (Sometimes the entity would\s
+                    have a large moment that cross the\s
+                    different tick regions, and it would\s
+                    make the server crashed) but sometimes it might doesn't work""")
+    public static boolean enabled = false;
+    @ConfigInfo(baseName = "warn_on_detected")
+    public static boolean warnOnDetected = true;
+
+    @Override
+    public EnumConfigCategory getCategory() {
+        return EnumConfigCategory.FIXES;
+    }
+
+    @Override
+    public String getBaseName() {
+        return "folia.fix_high_velocity_issue";
+    }
+}

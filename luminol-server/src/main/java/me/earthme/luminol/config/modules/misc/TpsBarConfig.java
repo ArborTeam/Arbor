@@ -1,0 +1,54 @@
+package me.earthme.luminol.config.modules.misc;
+
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import me.earthme.luminol.commands.TpsBarCommand;
+import me.earthme.luminol.config.EnumConfigCategory;
+import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigInfo;
+import me.earthme.luminol.config.flags.DoNotLoad;
+import me.earthme.luminol.functions.GlobalServerTpsBar;
+import org.bukkit.Bukkit;
+
+import java.util.List;
+
+public class TpsBarConfig implements IConfigModule {
+    @ConfigInfo(baseName = "enabled")
+    public static boolean tpsbarEnabled = false;
+    @ConfigInfo(baseName = "format")
+    public static String tpsBarFormat = "<gray>TPS<yellow>:</yellow> <tps> MSPT<yellow>:</yellow> <mspt> Ping<yellow>:</yellow> <ping>ms ChunkHot<yellow>:</yellow> <chunkhot>";
+    @ConfigInfo(baseName = "tps_color_list")
+    public static List<String> tpsColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
+    @ConfigInfo(baseName = "ping_color_list")
+    public static List<String> pingColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
+    @ConfigInfo(baseName = "chunkhot_color_list")
+    public static List<String> chunkHotColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
+    @ConfigInfo(baseName = "update_interval_ticks")
+    public static int updateInterval = 15;
+
+    @DoNotLoad
+    private static boolean inited = false;
+
+    @Override
+    public EnumConfigCategory getCategory() {
+        return EnumConfigCategory.MISC;
+    }
+
+    @Override
+    public String getBaseName() {
+        return "tpsbar";
+    }
+
+    @Override
+    public void onLoaded(CommentedFileConfig configInstance) {
+        if (tpsbarEnabled) {
+            GlobalServerTpsBar.init();
+        } else {
+            GlobalServerTpsBar.cancelBarUpdateTask();
+        }
+
+        if (!inited) {
+            Bukkit.getCommandMap().register("tpsbar", "luminol", new TpsBarCommand("tpsbar"));
+            inited = true;
+        }
+    }
+}

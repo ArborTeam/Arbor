@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Sat, 24 May 2025 04:04:42 +0800
+Subject: [PATCH] Command IllegalArgumentException crash fix
+
+
+diff --git a/net/minecraft/server/commands/FillCommand.java b/net/minecraft/server/commands/FillCommand.java
+index 7665bff921eda626c0f1498a4ca03b62483d10ed..350adc15b06f2405137c2c753cbb673541df61fb 100644
+--- a/net/minecraft/server/commands/FillCommand.java
++++ b/net/minecraft/server/commands/FillCommand.java
+@@ -248,6 +248,10 @@ public class FillCommand {
+                 // Folia start - region threading
+                 } catch (CommandSyntaxException ex) {
+                     sendMessage(source, ex);
++                // Luminol Start - Server crash fix
++                } catch (IllegalArgumentException ex) {
++                    net.minecraft.server.commands.SetBlockCommand.processIAE(source, ex);
++                // Luminol End - Server crash fix
+                 }}); return 0; // Folia end - region threading
+             }
+         }
+diff --git a/net/minecraft/server/commands/SetBlockCommand.java b/net/minecraft/server/commands/SetBlockCommand.java
+index 07cff4e1e7af98cf3ead1f255557c1a994072610..34cc1906bfb49501bb2b3477bc99429e05cbb0f6 100644
+--- a/net/minecraft/server/commands/SetBlockCommand.java
++++ b/net/minecraft/server/commands/SetBlockCommand.java
+@@ -102,6 +102,15 @@ public class SetBlockCommand {
+     }
+     // Folia end - region threading
+ 
++    // Luminol Start - Server crash fix
++    public static void processIAE(CommandSourceStack src, IllegalArgumentException ex) {
++        Component hoverText = Component.translatable("command.failed")
++                .withStyle(style -> style.withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(Component.literal(ex.getMessage()))));
++        src.sendFailure(hoverText);
++        com.mojang.logging.LogUtils.getLogger().error(ex.getMessage(), ex);
++    }
++    // Luminol end - Server crash fix
++
+     private static int setBlock(
+         CommandSourceStack source, BlockPos pos, BlockInput block, SetBlockCommand.Mode mode, @Nullable Predicate<BlockInWorld> filter, boolean strict
+     ) throws CommandSyntaxException {
+@@ -139,6 +148,10 @@ public class SetBlockCommand {
+         // Folia start - region threading
+                 } catch (CommandSyntaxException ex) {
+                     sendMessage(source, ex);
++                // Luminol Start - Server crash fix
++                } catch (IllegalArgumentException ex) {
++                    processIAE(source, ex);
++                // Luminol End - Server crash fix
+                 }
+             });
+         return 1;

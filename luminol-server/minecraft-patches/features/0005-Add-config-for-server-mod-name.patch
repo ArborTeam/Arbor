@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <wangxyper@163.com>
+Date: Sun, 12 Jan 2025 10:17:52 +0800
+Subject: [PATCH] Add config for server mod name
+
+
+diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
+index 54c7bb8e51af146e0ad9d5fdcc92b76db73bb66a..9a80c17151c31ed0aaa35d1feb1ace3edf7956e4 100644
+--- a/net/minecraft/server/MinecraftServer.java
++++ b/net/minecraft/server/MinecraftServer.java
+@@ -1967,7 +1967,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+     @DontObfuscate
+     public String getServerModName() {
+-        return io.papermc.paper.ServerBuildInfo.buildInfo().brandName(); // Paper
++        return me.earthme.luminol.config.modules.misc.ServerModNameConfig.fakeVanilla ? "vanilla" : me.earthme.luminol.config.modules.misc.ServerModNameConfig.serverModName; // Paper // Luminol - Add config for this
+     }
+ 
+     public SystemReport fillSystemReport(SystemReport systemReport) {

@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Wed, 4 Jun 2025 12:54:22 +0800
+Subject: [PATCH] Leaves: Fix chunk reload detector
+
+Co-authored by: Fortern <blueten.ki@gmail.com>
+As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/c5f18b7864206cea4411211b51787f10affbcb9c/leaves-server/minecraft-patches/features/0123-Fix-chunk-reload-detector.patch)
+Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+
+diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
+index e96d4dee14c05f2fa329bfb1588ec795d4e3d730..2d4c68b01cc1508a1a4715a91316a7db80d4efa2 100644
+--- a/net/minecraft/server/level/ServerEntity.java
++++ b/net/minecraft/server/level/ServerEntity.java
+@@ -370,7 +370,7 @@ public class ServerEntity {
+             if (!list.isEmpty()) {
+                 consumer.accept(new ClientboundSetEquipmentPacket(this.entity.getId(), list, true)); // Paper - data sanitization
+             }
+-            ((LivingEntity) this.entity).detectEquipmentUpdates(); // CraftBukkit - SPIGOT-3789: sync again immediately after sending
++            if (this.entity.totalEntityAge == 0) ((LivingEntity) this.entity).detectEquipmentUpdates(); // CraftBukkit - SPIGOT-3789: sync again immediately after sending // Leaves - fix chunk reload detector (#492)
+         }
+ 
+         if (!this.entity.getPassengers().isEmpty()) {

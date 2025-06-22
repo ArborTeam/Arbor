@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <wangxyper@163.com>
+Date: Sun, 12 Jan 2025 10:39:35 +0800
+Subject: [PATCH] Add fix for off region adult following ai behavior
+
+
+diff --git a/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java b/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
+index d69cb6f45cba4234605c7a0f7ddf8f331eee0c62..2ac16196b96041abc82bd3230d8305fe3333831f 100644
+--- a/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
++++ b/net/minecraft/world/entity/ai/behavior/BabyFollowAdult.java
+@@ -29,6 +29,12 @@ public class BabyFollowAdult {
+                             return false;
+                         } else {
+                             LivingEntity livingEntity = instance.get(memoryAccessor);
++                            // Luminol start - Fix off world entity following which caused async issue
++                            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(livingEntity)) {
++                                memoryAccessor.erase();
++                                return true;
++                            }
++                            // Luminol end
+                             if (entity.closerThan(livingEntity, followRange.getMaxValue() + 1) && !entity.closerThan(livingEntity, followRange.getMinValue())) {
+                                 // CraftBukkit start
+                                 org.bukkit.event.entity.EntityTargetLivingEntityEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callEntityTargetLivingEvent(entity, livingEntity, org.bukkit.event.entity.EntityTargetEvent.TargetReason.FOLLOW_LEADER);
+@@ -39,6 +45,12 @@ public class BabyFollowAdult {
+                                     memoryAccessor.erase();
+                                     return true;
+                                 }
++                                // Luminol start - Fix off region baby follow adult ai
++                                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(((org.bukkit.craftbukkit.entity.CraftEntity)event.getTarget()).getHandleRaw())) {
++                                    memoryAccessor.erase();
++                                    return true;
++                                }
++                                // Luminol end
+                                 livingEntity = ((org.bukkit.craftbukkit.entity.CraftLivingEntity) event.getTarget()).getHandle();
+                                 // CraftBukkit end
+                                 WalkTarget walkTarget = new WalkTarget(

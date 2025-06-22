@@ -1,0 +1,70 @@
+name: Luminol CI - ver/1.21.6
+
+on:
+  push:
+    branches: [ "ver/1.21.6" ]
+  pull_request:
+    branches: [ "ver/1.21.6" ]
+
+permissions: write-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: default
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 22
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Configure Git User Details
+        run: git config --global user.email "ci@luminolmc.com" && git config --global user.name "LuminolMC CI"
+
+      - name: Apply All Patches
+        run: ./gradlew applyAllPatches
+
+      - name: CreateMojmapPaperclipJar
+        run: ./gradlew createMojmapPaperclipJar
+
+      - name: Publish to repo
+        if: github.event_name != 'pull_request' && false # do not push in preview
+        continue-on-error: true
+        run: ./gradlew generateDevelopmentBundle publish -PpublishDevBundle=true
+        env:
+          PRIVATE_MAVEN_REPO_PASSWORD: ${{ secrets.PRIVATE_MAVEN_REPO_PASSWORD }}
+          PRIVATE_MAVEN_REPO_USERNAME: ${{ secrets.PRIVATE_MAVEN_REPO_USERNAME }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.project_id_b }} CI Artifacts
+          path: luminol-server/build/libs/*-paperclip-*-mojmap.jar
+
+      - name: SetENV
+        if: github.event_name != 'pull_request'
+        run: sh scripts/SetENV.sh
+
+      - name: Create Release
+        if: github.event_name != 'pull_request' && false # do not push in preview
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.tag }}
+          name: ${{ env.project_id_b }} ${{ env.mcversion }} - ${{ env.commit_id }}
+          body: |
+            📦Version: `${{ env.mcversion }}` | Commit ${{ env.commit_id }} [![download](https://img.shields.io/github/downloads/LuminolMC/${{ env.project_id }}/${{ env.tag }}/total?color=red&style=flat-square)](https://github.com/LuminolMC/${{ env.project_id }}/releases/download/${{ env.tag }}/${{ env.jar }})
+            This release is automatically compiled by GitHub Actions
+            ### Commit Message
+            ${{ env.commit_msg }}
+          artifacts: ${{ env.jar_dir }}
+          generateReleaseNotes: true
+          prerelease: ${{ env.pre }}
+          makeLatest: ${{ env.make_latest }}
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -63,7 +63,7 @@ index 1783f9ea48154dcc8971fc5ef088f5a8c0f0b2ff..22125dbe1765f930fe10fe420be1c275
          } else {
              final Optional<String> gitBranch = build.gitBranch();
 diff --git a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
-index e741201fdbea0dbbc0e42313ebd33368014c9dc4..e3c5f4c31f084294a59830f3e764921433dd80d5 100644
+index 10a0be7a4db1a51579d113d279af7a9effe7f438..4ada790812957657d580cb748077c4961987d0cb 100644
 --- a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 +++ b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 @@ -31,6 +31,7 @@ public record ServerBuildInfoImpl(
@@ -83,8 +83,8 @@ index e741201fdbea0dbbc0e42313ebd33368014c9dc4..e3c5f4c31f084294a59830f3e7649214
              getManifestAttribute(manifest, ATTRIBUTE_BRAND_NAME)
 -                .orElse("Folia"), // Folia
 +                .orElse(BRAND_LUMINOL_NAME), // Folia // Luminol
-             SharedConstants.getCurrentVersion().getId(),
-             SharedConstants.getCurrentVersion().getName(),
+             SharedConstants.getCurrentVersion().id(),
+             SharedConstants.getCurrentVersion().name(),
              getManifestAttribute(manifest, ATTRIBUTE_BUILD_NUMBER)
 @@ -61,7 +62,7 @@ public record ServerBuildInfoImpl(
  

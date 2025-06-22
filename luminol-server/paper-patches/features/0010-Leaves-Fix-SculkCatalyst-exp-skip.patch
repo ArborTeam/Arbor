@@ -5,10 +5,10 @@ Subject: [PATCH] Leaves Fix SculkCatalyst exp skip
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 77871ce6d0eb0005893ea10b17e711ce87d7bfdd..9c8a4d90974a8cf45a24aca00bf36cebd352b507 100644
+index e4f65578062960168e74a422308c8633315e98bd..47843aa88ab2fb490be663c53219b70e18861f32 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -851,7 +851,7 @@ public class CraftEventFactory {
+@@ -852,7 +852,7 @@ public class CraftEventFactory {
          CraftLivingEntity entity = (CraftLivingEntity) victim.getBukkitEntity();
          CraftDamageSource bukkitDamageSource = new CraftDamageSource(damageSource);
          CraftWorld world = (CraftWorld) entity.getWorld();
@@ -17,7 +17,7 @@ index 77871ce6d0eb0005893ea10b17e711ce87d7bfdd..9c8a4d90974a8cf45a24aca00bf36ceb
          populateFields(victim, event); // Paper - make cancellable
          Bukkit.getServer().getPluginManager().callEvent(event);
  
-@@ -862,6 +862,7 @@ public class CraftEventFactory {
+@@ -863,6 +863,7 @@ public class CraftEventFactory {
          playDeathSound(victim, event, damageSource);
          // Paper end
          victim.expToDrop = event.getDroppedExp();
@@ -25,7 +25,7 @@ index 77871ce6d0eb0005893ea10b17e711ce87d7bfdd..9c8a4d90974a8cf45a24aca00bf36ceb
          lootCheck.run(); // Paper - advancement triggers before destroying items
  
          // Paper start - Restore vanilla drops behavior
-@@ -897,6 +898,7 @@ public class CraftEventFactory {
+@@ -898,6 +899,7 @@ public class CraftEventFactory {
          victim.newLevel = event.getNewLevel();
          victim.newTotalExp = event.getNewTotalExp();
          victim.expToDrop = event.getDroppedExp();

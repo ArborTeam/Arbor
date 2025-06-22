@@ -1,14 +1,14 @@
 --- a/folia-server/build.gradle.kts
 +++ b/folia-server/build.gradle.kts
-@@ -29,6 +_,7 @@
-     //}
-       
+@@ -25,6 +_,7 @@
+     gitFilePatches = false
+ 
      val fork = forks.register("folia") {
 +        rootDirectory = upstreamsDirectory().map { it.dir("folia") }
          upstream.patchDir("paperServer") {
              upstreamPath = "paper-server"
              excludes = setOf("src/minecraft", "patches", "build.gradle.kts")
-@@ -37,7 +_,23 @@
+@@ -33,7 +_,23 @@
          }
      }
  
@@ -32,8 +32,8 @@
 +    activeFork = luminol
  
      spigot {
-         buildDataRef = "702e1a0a5072b2c4082371d5228cb30525687efc"
-@@ -123,10 +_,14 @@
+         enabled = true
+@@ -120,10 +_,14 @@
      main {
          java { srcDir("../paper-server/src/main/java"); srcDir("../paper-server/src/generated/java") }
          resources { srcDir("../paper-server/src/main/resources") }
@@ -48,7 +48,7 @@
      }
  }
  val log4jPlugins = sourceSets.create("log4jPlugins") {
-@@ -153,12 +_,20 @@
+@@ -150,12 +_,20 @@
  }
  
  dependencies {
@@ -70,7 +70,7 @@
      runtimeConfiguration(sourceSets.main.map { it.runtimeClasspath })
  
      /*
-@@ -217,26 +_,33 @@
+@@ -214,26 +_,33 @@
      implementation("me.lucko:spark-paper:1.10.133-20250413.112336-1")
  }
  

@@ -17,10 +17,10 @@ index bd3ce123652af11974be4cbf8d2e96f1b2ee0a68..5f26fd89704aa3fd9c37a1d68a7c4c65
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 84a76e8630e41ce866e8dc9ee1fc15bbb3bf20fb..b545b14a5142d31cc15cd4ed647e7985012b9c10 100644
+index 8502fdb94142cf12b8d9d4900d8a2440051051ae..d824b49b98266539258a83f9a36f73c5961a1588 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1665,7 +1665,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1664,7 +1664,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          // Folia end - region threading
          //this.tickCount++; // Folia - region threading
          //this.tickRateManager.tick(); // Folia - region threading
@@ -68,10 +68,10 @@ index 84a76e8630e41ce866e8dc9ee1fc15bbb3bf20fb..b545b14a5142d31cc15cd4ed647e7985
              this.lastServerStatus = nanos;
              this.status = this.buildServerStatus();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index e13a4c0f968928c88cf55e6629c39f41176520d3..221fc538950929705b18d60dcde92e979b51fead 100644
+index 61d63e5668e110e9c0b891959bf4cd7c91e54645..f07d3009caf964b8e1b5328bb3e28866e0c41955 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -724,6 +724,9 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -721,6 +721,9 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
  
      @Override
      public void stopServer() {
@@ -120,7 +120,7 @@ index 5e3be75b27ed609be005e8169dc84c125518253e..00482efc8e736e73ad136105ad7b9dd2
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 472914c7f01d1a3208352d40090fcf6f530d6d5c..e9d71f2665e0da1abd4bc9e54d3d4c54796ead8c 100644
+index 5e7a9be34bec7eefbb46db1409bfd90351866ec2..4e3c545f6121d3846d81d776c29edc42d6204f5c 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -431,7 +431,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -134,7 +134,7 @@ index 472914c7f01d1a3208352d40090fcf6f530d6d5c..e9d71f2665e0da1abd4bc9e54d3d4c54
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
      private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();
-@@ -961,8 +963,35 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1025,8 +1027,35 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.trackEnteredOrExitedLavaOnVehicle();
          this.updatePlayerAttributes();
          this.advancements.flushDirty(this, true);
@@ -187,10 +187,10 @@ index ec20a5a6d7c8f65abda528fec36bec7bc71117f6..b971cd61db1cfa05b8f2fd6c8a2dac2e
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 822b6483a7118a70a67868596f0e3b6a05576f63..c70de04eaf5b13a7629659d860bec1a0c60a55d7 100644
+index 49c76f150c913fdc21d0e253b78625e273f69a22..f5f03801da03089ea1d22de1012d90a2b7b17322 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -6213,4 +6213,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6218,4 +6218,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return ((ServerLevel) this.level()).isPositionEntityTicking(this.blockPosition());
      }
      // Paper end - Expose entity id counter

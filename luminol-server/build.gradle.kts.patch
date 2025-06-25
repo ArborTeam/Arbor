@@ -1,14 +1,14 @@
 --- a/folia-server/build.gradle.kts
 +++ b/folia-server/build.gradle.kts
-@@ -25,6 +_,7 @@
+@@ -27,6 +_,7 @@
      gitFilePatches = false
- 
+     
      val fork = forks.register("folia") {
 +        rootDirectory = upstreamsDirectory().map { it.dir("folia") }
          upstream.patchDir("paperServer") {
              upstreamPath = "paper-server"
              excludes = setOf("src/minecraft", "patches", "build.gradle.kts")
-@@ -33,7 +_,23 @@
+@@ -35,7 +_,23 @@
          }
      }
  
@@ -31,9 +31,9 @@
 +
 +    activeFork = luminol
  
+ 
      spigot {
-         enabled = true
-@@ -120,10 +_,14 @@
+@@ -123,10 +_,14 @@
      main {
          java { srcDir("../paper-server/src/main/java"); srcDir("../paper-server/src/generated/java") }
          resources { srcDir("../paper-server/src/main/resources") }
@@ -48,7 +48,7 @@
      }
  }
  val log4jPlugins = sourceSets.create("log4jPlugins") {
-@@ -150,12 +_,20 @@
+@@ -153,12 +_,20 @@
  }
  
  dependencies {
@@ -70,17 +70,17 @@
      runtimeConfiguration(sourceSets.main.map { it.runtimeClasspath })
  
      /*
-@@ -214,26 +_,33 @@
+@@ -216,27 +_,33 @@
+     implementation("me.lucko:spark-api:0.1-20240720.200737-2")
      implementation("me.lucko:spark-paper:1.10.133-20250413.112336-1")
  }
- 
 +// Pufferfish Start
 +tasks.withType<JavaCompile> {
 +    val compilerArgs = options.compilerArgs
 +    compilerArgs.add("--add-modules=jdk.incubator.vector")
 +}
 +// Pufferfish End
-+
+ 
  tasks.jar {
      manifest {
          val git = Git(rootProject.layout.projectDirectory.path)
@@ -110,3 +110,12 @@
              "Build-Number" to (build ?: ""),
              "Build-Time" to buildTime.toString(),
              "Git-Branch" to gitBranch,
+@@ -400,7 +_,7 @@
+ }
+ 
+ fill {
+-    project("folia")
++    project("luminol") // Luminol
+     versionFamily(paperweight.minecraftVersion.map { it.split(".", "-").takeWhile { part -> part.toIntOrNull() != null }.take(2).joinToString(".") })
+     version(paperweight.minecraftVersion)
+ 

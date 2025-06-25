@@ -5,10 +5,10 @@ Subject: [PATCH] Correct player respawn place
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 1e55643f5c4a5f8b1e10216ff2967c4867658e2c..bc3768c920037343b4e8b39e01f287bbec490017 100644
+index 8b6b881896797b93a2f475c21101463e1888cee1..a632bfb00e151a395e886aff3471084dc6cf4102 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -502,8 +502,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -566,8 +566,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          double amountX = selectMaxX - selectMinX;
          double amountZ = selectMaxZ - selectMinZ;
  
@@ -21,7 +21,7 @@ index 1e55643f5c4a5f8b1e10216ff2967c4867658e2c..bc3768c920037343b4e8b39e01f287bb
  
          return new BlockPos(selectX, 0, selectZ);
      }
-@@ -514,10 +516,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -578,10 +580,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
  
      private static BlockPos findSpawnAround(ServerLevel world, ServerPlayer player, BlockPos selected) {

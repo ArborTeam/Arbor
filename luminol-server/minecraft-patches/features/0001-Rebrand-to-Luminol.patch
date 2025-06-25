@@ -17,7 +17,7 @@ index fd3553bdc1c3cdbf6aa3dc00e0a4987f8eaa4fb8..a75a5ce8477da8d3f7b0ae41bfbd75de
              Bootstrap.bootStrap();
              Bootstrap.validate();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 1eda00e231e59927ca79c6d2e237076f25e6232a..5a8c0a451b79f2a05ce8a012cfed429ef062e5ef 100644
+index d8bab0ba6e2374fb74f3fa9f7db802f442240414..f21026ef975864700ad5ef86052acdcb7621e210 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -171,6 +171,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface

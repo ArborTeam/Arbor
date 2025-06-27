@@ -65,6 +65,6 @@ jobs:
             ${{ env.commit_msg }}
           artifacts: ${{ env.jar_dir }}
           generateReleaseNotes: true
-          prerelease: ${{ env.pre }} || true # pre-release for preview
+          prerelease: ${{ env.pre }}
           makeLatest: ${{ env.make_latest }}
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -50,14 +50,14 @@ If you have forked the main repository, then you should follow the steps below:
 The following is the simple description of the aforementioned folders, detailed description can be referred to [here](https://github.com/Toffikk/paperweight-examples/blob/18241979c88068d5b061d95ad69c98ecb201c246/README.md):
 
 1. API part
- - `luminol-api` : There is no valid file
+ - `luminol-api` : Modifications to the new API
  - `folia-api` : Modifications to Folia API should be carried out in this folder
  - `paper-api` : Modifications to Paper API/Spigot API/Bukkit API should be carried out in this folder
 
 2. Server part
- - `luminol-server` : Modifications to Minecraft Vanilla Server's source logic should be carried out in this folder
- - `folia-server` : There is no valid file
- - `paper-server` : Modifications to non-vanilla server logic should be carried out in this folder
+ - `luminol-server` : Changes and new files to the Minecraft vanilla server should be made in this folder
+ - `folia-server` : Changes to folia-server should be made in this folder
+ - `paper-server` : Modifications to the server logic for paper should be made in this folder
 
 BTW, `*-api` and `*-server` and are not normal git repositories.
 

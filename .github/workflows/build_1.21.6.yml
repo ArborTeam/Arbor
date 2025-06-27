@@ -35,7 +35,7 @@ jobs:
         run: ./gradlew createMojmapPaperclipJar
 
       - name: Publish to repo
-        if: github.event_name != 'pull_request' && false # do not push in preview
+        if: github.event_name != 'pull_request'
         continue-on-error: true
         run: ./gradlew generateDevelopmentBundle publish -PpublishDevBundle=true
         env:
@@ -53,7 +53,7 @@ jobs:
         run: sh scripts/SetENV.sh
 
       - name: Create Release
-        if: github.event_name != 'pull_request' && false # do not push in preview
+        if: github.event_name != 'pull_request'
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.tag }}
@@ -65,6 +65,6 @@ jobs:
             ${{ env.commit_msg }}
           artifacts: ${{ env.jar_dir }}
           generateReleaseNotes: true
-          prerelease: ${{ env.pre }}
+          prerelease: ${{ env.pre }} || true # pre-release for preview
           makeLatest: ${{ env.make_latest }}
           token: ${{ secrets.GITHUB_TOKEN }}

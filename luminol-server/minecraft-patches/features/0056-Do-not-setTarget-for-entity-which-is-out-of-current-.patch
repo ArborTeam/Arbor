@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sun, 29 Jun 2025 11:45:52 +0800
+Subject: [PATCH] Do not setTarget for entity which is out of current
+ tickregion
+
+
+diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
+index 4c1442410f18b2ebafdb4c4d480f0f59ef656492..b37637a0758b09ec8fba71ea0a0927796c512f14 100644
+--- a/net/minecraft/world/entity/Mob.java
++++ b/net/minecraft/world/entity/Mob.java
+@@ -274,6 +274,11 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+         if (this.getTargetRaw() == target) { // Folia - region threading
+             return false;
+         }
++        // Luminol start - Fix off-region targeting
++        if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(target)) {
++            return false;
++        }
++        // Luminol end
+         if (reason != null) {
+             if (reason == EntityTargetEvent.TargetReason.UNKNOWN && this.getTarget() != null && target == null) {
+                 reason = this.getTarget().isAlive() ? EntityTargetEvent.TargetReason.FORGOT_TARGET : EntityTargetEvent.TargetReason.TARGET_DIED;

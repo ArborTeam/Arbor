@@ -120,7 +120,7 @@ index 5e3be75b27ed609be005e8169dc84c125518253e..00482efc8e736e73ad136105ad7b9dd2
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 5e7a9be34bec7eefbb46db1409bfd90351866ec2..4e3c545f6121d3846d81d776c29edc42d6204f5c 100644
+index 4e868da7fb3dc6e033b83f55ec250d85e0b74f02..05d9283b0eed72e17e71b494118b8b934535f109 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -431,7 +431,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -187,10 +187,10 @@ index ec20a5a6d7c8f65abda528fec36bec7bc71117f6..b971cd61db1cfa05b8f2fd6c8a2dac2e
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 49c76f150c913fdc21d0e253b78625e273f69a22..f5f03801da03089ea1d22de1012d90a2b7b17322 100644
+index dffc556bff51f4079ccd6b44167286d61fcbf474..2c5243d2a8ee5b3eb811b5161b759d5a1347caf1 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -6218,4 +6218,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6208,4 +6208,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return ((ServerLevel) this.level()).isPositionEntityTicking(this.blockPosition());
      }
      // Paper end - Expose entity id counter

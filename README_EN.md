@@ -3,11 +3,13 @@
 # Luminol
 <h4>Luminol is a Folia fork with many useful optimizations, configurable vanilla features, and more API supports, and it was designed for survival and anarchy servers</h4>
 
+![Created At](https://img.shields.io/github/created-at/LuminolMC/Luminol?style=flat-square)
 [![License](https://img.shields.io/github/license/LuminolMC/Luminol?style=flat-square)](LICENSE.md)
 [![Issues](https://img.shields.io/github/issues/LuminolMC/Luminol?style=flat-square)](https://github.com/LuminolMC/Luminol/issues)
 ![Commit Activity](https://img.shields.io/github/commit-activity/w/LuminolMC/Luminol?style=flat-square)
 ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/LuminolMC/Luminol?style=flat-square)
 ![GitHub all releases](https://img.shields.io/github/downloads/LuminolMC/Luminol/total?style=flat-square)
+![Repo contributors](https://img.shields.io/github/contributors/LuminolMC/Luminol?style=flat-square)
 
 **English** | [中文](./README.md)
 

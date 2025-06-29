@@ -3,11 +3,13 @@
 # Luminol
 <h4>Luminol 是一个基于Folia的分支，具有许多有用的优化、可配置的原版特性和更多的API支持，它专为生存和无政府服务器设计</h4>
 
+![Created At](https://img.shields.io/github/created-at/LuminolMC/Luminol?style=flat-square)
 [![License](https://img.shields.io/github/license/LuminolMC/Luminol?style=flat-square)](LICENSE.md)
 [![Issues](https://img.shields.io/github/issues/LuminolMC/Luminol?style=flat-square)](https://github.com/LuminolMC/Luminol/issues)
 ![Commit Activity](https://img.shields.io/github/commit-activity/w/LuminolMC/Luminol?style=flat-square)
 ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/LuminolMC/Luminol?style=flat-square)
 ![GitHub all releases](https://img.shields.io/github/downloads/LuminolMC/Luminol/total?style=flat-square)
+![Repo contributors](https://img.shields.io/github/contributors/LuminolMC/Luminol?style=flat-square)
 
 [English](./README_EN.md) | **中文**
 

@@ -83,6 +83,12 @@ dependencies {
 
 ![legacy-lands-logo](public/image/legacy-lands-logo.png)
 
+---
+![rain-yun-logo](public/image/rain-yun.png)
+
+国际多线路选择,配套云存储 — 购买服务后七天内不满意可以申请退订,强大的技术支持团队和高在线率客服.雨云云服务器,用稳定和性价比,助力您快速上云.
+点击[这里](https://www.rainyun.com/aiyuyun_)前往雨云
+
 ## 请给我们一个 ⭐Star！
 > 你的每一个免费的 ⭐Star 就是我们每一个前进的动力。
 

@@ -17,7 +17,7 @@ index bd3ce123652af11974be4cbf8d2e96f1b2ee0a68..5f26fd89704aa3fd9c37a1d68a7c4c65
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 8502fdb94142cf12b8d9d4900d8a2440051051ae..d824b49b98266539258a83f9a36f73c5961a1588 100644
+index 301322a4e9a746bc55c0ffb5059a70da1c389703..df682061f486e927dcf3dede6ef5c4f8f6643580 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1664,7 +1664,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -120,12 +120,12 @@ index 5e3be75b27ed609be005e8169dc84c125518253e..00482efc8e736e73ad136105ad7b9dd2
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 4e868da7fb3dc6e033b83f55ec250d85e0b74f02..05d9283b0eed72e17e71b494118b8b934535f109 100644
+index 8ecdf803e1489375bc9dd955cd6031de724463f9..a089ca0b4a6a929784b26b02dff4f7dad9ffc2a0 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -431,7 +431,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -429,7 +429,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+     public boolean isRealPlayer; // Paper
      public @Nullable com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent playerNaturallySpawnedEvent; // Paper - PlayerNaturallySpawnCreaturesEvent
-     public @Nullable String clientBrandName = null; // Paper - Brand support
      public @Nullable org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - Add API for quit reason; there are a lot of changes to do if we change all methods leading to the event
 -
 +    public volatile boolean isTpsBarVisible = false; //Luminol - Tps bar
@@ -134,7 +134,7 @@ index 4e868da7fb3dc6e033b83f55ec250d85e0b74f02..05d9283b0eed72e17e71b494118b8b93
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
      private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();
-@@ -1025,8 +1027,35 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -959,8 +961,35 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.trackEnteredOrExitedLavaOnVehicle();
          this.updatePlayerAttributes();
          this.advancements.flushDirty(this, true);

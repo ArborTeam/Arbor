@@ -8,10 +8,10 @@ As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18
 Licensed under: MIT (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/LICENSE)
 
 diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
-index 3a4d349738aada9c171f01cd695987a21da3785c..6ce3d8c406f7afbc9aa8e0d6577ebf9b4724ae36 100644
+index 7d02def8b650a7574c1a6b0c212d6973d2b46f45..79242037e868a140513f032e74e8594c0c6ff41c 100644
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
-@@ -197,6 +197,53 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -196,6 +196,53 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          this.setVillagerData(this.getVillagerData().withType(villagerType).withProfession(level.registryAccess(), VillagerProfession.NONE));
      }
  
@@ -65,7 +65,7 @@ index 3a4d349738aada9c171f01cd695987a21da3785c..6ce3d8c406f7afbc9aa8e0d6577ebf9b
      @Override
      public Brain<Villager> getBrain() {
          return (Brain<Villager>)super.getBrain();
-@@ -293,11 +340,20 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -292,11 +339,20 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          // Paper start - EAR 2
          this.customServerAiStep(level, false);
      }

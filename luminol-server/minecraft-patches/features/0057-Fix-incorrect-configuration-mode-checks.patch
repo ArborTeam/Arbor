@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Wed, 2 Jul 2025 22:39:21 +0800
+Subject: [PATCH] Fix incorrect configuration mode checks
+
+A simple fix of: https://github.com/PaperMC/Folia/issues/378
+
+diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+index 28c4a7bcb73946d37ed57c6f76d27ba019554c98..8f17fdf415360ea75cafc69d6df01a8b740a559d 100644
+--- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+@@ -94,6 +94,22 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+         }
+         // Folia start - region threading
+         if (!(this instanceof ServerGamePacketListenerImpl gamePacketListener)) {
++            // Luminol start - Fix incorrect configuration mode checks
++            // we are not starting to turn into a game packet handler, so we can safely return
++            if (this instanceof ServerConfigurationPacketListenerImpl && !io.papermc.paper.threadedregions.RegionizedServer.isNotOwnedByGlobalRegion(this.connection)) {
++                // folia's weird entity scheduler process?
++                if (this.connection.savedPlayerForLoginEventLegacy != null) {
++                    io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueTickTaskQueue(
++                            this.connection.savedPlayerForLoginEventLegacy.level(),
++                            this.connection.savedPlayerForLoginEventLegacy.getBlockX() >> 4,
++                            this.connection.savedPlayerForLoginEventLegacy.getBlockZ() >> 4,
++                            () -> {
++                                this.connection.savedPlayerForLoginEventLegacy.getBukkitEntity().taskScheduler.retire();
++                            });
++                }
++                return;
++            }
++            // Luminol end
+             throw new UnsupportedOperationException("Configuration mode is not supported in its current state");
+         }
+         gamePacketListener.player.getBukkitEntity().taskScheduler.retire();
+@@ -285,6 +301,21 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+         }
+         // Folia start - region threading
+         if (!(this instanceof ServerGamePacketListenerImpl gamePacketListener)) {
++            // Luminol start - Fix incorrect configuration mode checks
++            if (this instanceof ServerConfigurationPacketListenerImpl && !io.papermc.paper.threadedregions.RegionizedServer.isNotOwnedByGlobalRegion(this.connection)) {
++                // folia's weird entity scheduler process?
++                if (this.connection.savedPlayerForLoginEventLegacy != null) {
++                    io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueTickTaskQueue(
++                            this.connection.savedPlayerForLoginEventLegacy.level(),
++                            this.connection.savedPlayerForLoginEventLegacy.getBlockX() >> 4,
++                            this.connection.savedPlayerForLoginEventLegacy.getBlockZ() >> 4,
++                            () -> {
++                                this.connection.savedPlayerForLoginEventLegacy.getBukkitEntity().taskScheduler.retire();
++                            });
++                }
++                return;
++            }
++            // Luminol end
+             throw new UnsupportedOperationException("Configuration mode is not supported in its current state");
+         }
+         // Folia end - region threading

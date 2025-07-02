@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish SIMD Utilities
 
 
 diff --git a/src/main/java/org/bukkit/map/MapPalette.java b/src/main/java/org/bukkit/map/MapPalette.java
-index fd6f3bce50a66004687b08fd80568543f814747a..bc565037b855f2063bdcbc6c5742b1985e27bff0 100644
+index 2b9e4aa8cf35e7106e510e547954ee7e1bcf3d81..dbb7f50085c656f581a9ce04ef0731437f5b7dc8 100644
 --- a/src/main/java/org/bukkit/map/MapPalette.java
 +++ b/src/main/java/org/bukkit/map/MapPalette.java
 @@ -35,7 +35,7 @@ public final class MapPalette {
@@ -15,7 +15,7 @@ index fd6f3bce50a66004687b08fd80568543f814747a..bc565037b855f2063bdcbc6c5742b198
 -    static final Color[] colors = {
 +    public static final Color[] colors = { // Luminol - package-private -> public
          // Start generate - MapPalette#colors
-         // @GeneratedFrom 1.21.6
+         // @GeneratedFrom 1.21.7
          new Color(0x00000000, true),
 @@ -395,9 +395,11 @@ public final class MapPalette {
          temp.getRGB(0, 0, temp.getWidth(), temp.getHeight(), pixels, 0, temp.getWidth());

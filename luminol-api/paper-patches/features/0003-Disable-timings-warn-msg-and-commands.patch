@@ -22,11 +22,11 @@ index 4acda947b7d69ab4133b4cc94e76d945e4d148d5..8093eff77c80be2c2e97bf6700a69d87
 --- a/src/main/java/org/bukkit/command/SimpleCommandMap.java
 +++ b/src/main/java/org/bukkit/command/SimpleCommandMap.java
 @@ -32,7 +32,7 @@ public class SimpleCommandMap implements CommandMap {
- 
-     private void setDefaultCommands() {
-         register("bukkit", new ReloadCommand("reload"));
+         final ReloadCommand reload = new ReloadCommand("reload");
+         this.knownCommands.put("bukkit:reload", reload);
+         this.knownCommands.put("bukkit:rl", reload);
 -        register("bukkit", new co.aikar.timings.TimingsCommand("timings"));
-+        //register("bukkit", new co.aikar.timings.TimingsCommand("timings")); // Paper // Luminol - Disable timings warn msg and commands
++        //register("bukkit", new co.aikar.timings.TimingsCommand("timings")); // Luminol - Disable timings warn msg and commands
      }
  
      public void setFallbackCommands() {

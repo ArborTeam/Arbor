@@ -5,19 +5,19 @@ Subject: [PATCH] SparklyPaper Optimize canSee checks
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 61a82ba26f2968567c03cb4eb8252e1b85fbc082..8433ba3748f92b98075c068df3a843c0b0a931e7 100644
+index 321203d5ce1c5c9443d8f93d44b56bb68ea4ded0..d2588d6f9b55b3a18c0427875b6c5cdb791d6dec 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -228,7 +228,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -216,7 +216,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+     private long lastPlayed = 0;
      private boolean hasPlayedBefore = false;
      private final ConversationTracker conversationTracker = new ConversationTracker();
-     private final Set<String> channels = new HashSet<String>();
 -    private final Map<UUID, Set<WeakReference<Plugin>>> invertedVisibilityEntities = new HashMap<>();
 +    private final Map<UUID, Set<WeakReference<Plugin>>> invertedVisibilityEntities = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(); // SparklyPaper - optimize canSee checks
      private final Set<UUID> unlistedEntities = new HashSet<>(); // Paper - Add Listing API for Player
      private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
      private int hash = 0;
-@@ -2228,9 +2228,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2215,9 +2215,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      @Override
      public boolean canSee(org.bukkit.entity.Entity entity) {

@@ -1,6 +1,7 @@
 package me.earthme.luminol.data;
 
 import abomination.IRegionFile;
+import ca.spottedleaf.concurrentutil.util.ConcurrentUtil;
 import ca.spottedleaf.moonrise.patches.chunk_system.io.MoonriseRegionFileIO;
 import com.github.luben.zstd.ZstdInputStream;
 import com.github.luben.zstd.ZstdOutputStream;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.lang.invoke.VarHandle;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -59,6 +61,14 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private final byte compressionLevel;
     private final LinearMasterFileFrameParser frameParser = new LinearMasterFileFrameParser();
 
+    private boolean closed = false;
+
+    private boolean synced = false;
+    private long lastWritten = System.nanoTime();
+
+    private static final VarHandle SYNCED_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "synced", boolean.class);
+    private static final VarHandle LAST_WRITTEN_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "lastWritten", long.class);
+
     public BufferedLinearRegionFile(Path masterFilePath, int compressionLevel) throws IOException {
         this.masterFilePath = masterFilePath;
         this.swapFilePath = Path.of(this.masterFilePath.toString() + ".swp");
@@ -69,7 +79,52 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.loadSwapDataFromMasterFile();
     }
 
+    public long getLastWritten() {
+        return (long) LAST_WRITTEN_HANDLE.get(this);
+    }
+
+    public boolean shouldSync() {
+        return !((boolean) SYNCED_HANDLE.get(this));
+    }
+
+    public boolean softReadLock() {
+        // not done close logic yet
+        return this.regionObjectLock.readLock().tryLock();
+    }
+
+    public void releaseReadLock() {
+        this.regionObjectLock.readLock().unlock();
+    }
+
+    public boolean isClosedRaw() {
+        return this.closed;
+    }
+
+    public boolean isClosed() {
+        this.regionObjectLock.readLock().lock();
+        try {
+            return this.closed;
+        } finally {
+            this.regionObjectLock.readLock().unlock();
+        }
+    }
+
+    public void syncIfNeeded() throws IOException {
+        // the sync operation is just coping the data from swap file to the master file
+        this.regionObjectLock.readLock().lock();
+        try {
+            this.syncToMasterFile();
+        }finally {
+            this.regionObjectLock.readLock().unlock();
+        }
+    }
+
     private void syncToMasterFile() throws IOException {
+        // prevent multiple syncs in the same time
+        if (!SYNCED_HANDLE.compareAndSet(this, false, true)) {
+            return;
+        }
+
         this.frameParser.writeMainFile(this.masterFilePath);
     }
 
@@ -195,6 +250,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void closeInternal() throws IOException {
+        this.closed = true;
         this.writeSwapFileHeaders();
         this.swapFileChannel.force(true);
         this.syncToMasterFile();
@@ -256,7 +312,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         Files.move(
                 new File(this.swapFilePath.toString() + ".tmp").toPath(),
                 this.swapFilePath,
-                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+                StandardCopyOption.REPLACE_EXISTING
         );
 
         this.reopenSwapFileChannel();
@@ -278,6 +334,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
         final Sector sector = this.sectors[chunkOrdinal];
 
         sector.store(chunkData, this.swapFileChannel);
+
+        SYNCED_HANDLE.set(this, false); // mark as unsynced
+        LAST_WRITTEN_HANDLE.set(this, System.nanoTime()); // update last written time
     }
 
     private @Nullable ByteBuffer readChunkDataRaw(int chunkOrdinal) throws IOException {
@@ -296,6 +355,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
         sector.clear();
 
         this.writeSwapFileHeaders();
+
+        SYNCED_HANDLE.set(this, false); // mark as unsynced
+        LAST_WRITTEN_HANDLE.set(this, System.nanoTime()); // update last written time
     }
 
     private static int getChunkIndex(int x, int z) {
@@ -455,8 +517,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
     public MoonriseRegionFileIO.RegionDataController.WriteData moonrise$startWrite(CompoundTag data, ChunkPos pos) {
         final DataOutputStream out = this.getChunkDataOutputStream(pos);
 
-        return new ca.spottedleaf.moonrise.patches.chunk_system.io.MoonriseRegionFileIO.RegionDataController.WriteData(
-                data, ca.spottedleaf.moonrise.patches.chunk_system.io.MoonriseRegionFileIO.RegionDataController.WriteData.WriteResult.WRITE,
+        return new MoonriseRegionFileIO.RegionDataController.WriteData(
+                data, MoonriseRegionFileIO.RegionDataController.WriteData.WriteResult.WRITE,
                 out, regionFile -> out.close()
         );
     }

@@ -129,14 +129,14 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
 
             this.syncToMasterFile();
+
+            BEING_SYNCED_HANDLE.set(this, false); // mark as not being synced
         }finally {
             this.regionObjectLock.readLock().unlock();
         }
     }
 
     private void syncToMasterFile() throws IOException {
-        BEING_SYNCED_HANDLE.set(this, false); // mark as not being synced
-
         // prevent multiple syncs in the same time
         if (!SYNCED_HANDLE.compareAndSet(this, false, true)) {
             return;

@@ -72,7 +72,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private static final VarHandle BEING_SYNCED_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "beingSynced", boolean.class);
     private static final VarHandle LAST_WRITTEN_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "lastWritten", long.class);
 
-    public BufferedLinearRegionFile(Path masterFilePath, int compressionLevel, BufferedLinearRegionFileFlusher flusher) throws IOException {
+    public BufferedLinearRegionFile(Path masterFilePath, int compressionLevel, @NotNull BufferedLinearRegionFileFlusher flusher) throws IOException {
         this.masterFilePath = masterFilePath;
         this.swapFilePath = Path.of(this.masterFilePath.toString() + ".swp");
 

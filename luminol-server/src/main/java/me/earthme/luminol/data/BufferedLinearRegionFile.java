@@ -123,6 +123,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
         // the sync operation is just coping the data from swap file to the master file
         this.regionObjectLock.readLock().lock(); // so we could acquire read lock simply so that we won't block any other read operations
         try {
+            if (this.closed) {
+                return;
+            }
+
             this.syncToMasterFile();
         }finally {
             this.regionObjectLock.readLock().unlock();
@@ -134,10 +138,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
         // prevent multiple syncs in the same time
         if (!SYNCED_HANDLE.compareAndSet(this, false, true)) {
-            return;
-        }
-
-        if (this.closed) {
             return;
         }
 
@@ -253,14 +253,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
 
         if (!Files.exists(this.masterFilePath)) {
-            this.syncToMasterFile();
-            return;
-        }
-
-        final long fileSizeOfMasterFile = Files.size(this.masterFilePath);
-        final long diff = fileSizeOfSwapFile - fileSizeOfMasterFile;
-
-        if (diff > MASTER_AUTO_SYNC_SIZE && (double)fileSizeOfSwapFile > ((double)fileSizeOfMasterFile) * MASTER_AUTO_SYNC_PERCENT) {
             this.syncToMasterFile();
         }
     }

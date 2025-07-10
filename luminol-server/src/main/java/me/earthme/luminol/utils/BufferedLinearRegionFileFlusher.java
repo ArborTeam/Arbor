@@ -91,6 +91,7 @@ public class BufferedLinearRegionFileFlusher implements Runnable{
                 this.ioWorkerPool.execute(() -> {
                     try {
                         file.flush();
+                        file.syncIfNeeded();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

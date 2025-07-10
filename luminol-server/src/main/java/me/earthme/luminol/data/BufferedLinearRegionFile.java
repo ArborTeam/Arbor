@@ -123,6 +123,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         // the sync operation is just coping the data from swap file to the master file
         this.regionObjectLock.readLock().lock(); // so we could acquire read lock simply so that we won't block any other read operations
         try {
+            // skip if closed already
             if (this.closed) {
                 return;
             }
@@ -230,6 +231,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void flushInternal() throws IOException {
+        if (this.closed) {
+            return;
+        }
+
         // save headers
         this.writeSwapFileHeaders();
 
@@ -339,6 +344,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void writeChunkDataRaw(int chunkOrdinal, ByteBuffer chunkData) throws IOException {
+        if (this.closed) {
+            throw new IOException("closed");
+        }
+
         final Sector sector = this.sectors[chunkOrdinal];
 
         sector.store(chunkData, this.swapFileChannel);
@@ -348,6 +357,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private @Nullable ByteBuffer readChunkDataRaw(int chunkOrdinal) throws IOException {
+        if (this.closed) {
+            throw new IOException("closed");
+        }
+
         final Sector sector = this.sectors[chunkOrdinal];
 
         if (!sector.hasData()) {

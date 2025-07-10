@@ -72,11 +72,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private static final VarHandle BEING_SYNCED_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "beingSynced", boolean.class);
     private static final VarHandle LAST_WRITTEN_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "lastWritten", long.class);
 
-    private final BufferedLinearRegionFileFlusher flusher;
-
     public BufferedLinearRegionFile(Path masterFilePath, int compressionLevel, BufferedLinearRegionFileFlusher flusher) throws IOException {
         this.masterFilePath = masterFilePath;
-        this.flusher = flusher;
         this.swapFilePath = Path.of(this.masterFilePath.toString() + ".swp");
 
         this.compressionLevel = (byte) compressionLevel;
@@ -84,7 +81,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.initSwapFile();
         this.loadSwapDataFromMasterFile();
 
-        this.flusher.aadFile(this);
+        flusher.aadFile(this);
     }
 
     public boolean markAsBeingSynced() {
@@ -124,7 +121,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     public void syncIfNeeded() throws IOException {
         // the sync operation is just coping the data from swap file to the master file
-        this.regionObjectLock.readLock().lock();
+        this.regionObjectLock.readLock().lock(); // so we could acquire read lock simply so that we won't block any other read operations
         try {
             this.syncToMasterFile();
         }finally {
@@ -137,6 +134,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
         // prevent multiple syncs in the same time
         if (!SYNCED_HANDLE.compareAndSet(this, false, true)) {
+            return;
+        }
+
+        if (this.closed) {
             return;
         }
 
@@ -325,7 +326,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.swapFileChannel.close();
 
         Files.move(
-                new File(this.swapFilePath.toString() + ".tmp").toPath(),
+                new File(this.swapFilePath + ".tmp").toPath(),
                 this.swapFilePath,
                 StandardCopyOption.REPLACE_EXISTING
         );

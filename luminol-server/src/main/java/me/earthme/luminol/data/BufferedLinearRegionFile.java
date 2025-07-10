@@ -5,6 +5,7 @@ import ca.spottedleaf.concurrentutil.util.ConcurrentUtil;
 import ca.spottedleaf.moonrise.patches.chunk_system.io.MoonriseRegionFileIO;
 import com.github.luben.zstd.ZstdInputStream;
 import com.github.luben.zstd.ZstdOutputStream;
+import me.earthme.luminol.utils.BufferedLinearRegionFileFlusher;
 import me.earthme.luminol.utils.DirectBufferReleaser;
 import net.jpountz.xxhash.XXHash32;
 import net.jpountz.xxhash.XXHashFactory;
@@ -63,21 +64,33 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     private boolean closed = false;
 
+    private boolean beingSynced = false;
     private boolean synced = false;
     private long lastWritten = System.nanoTime();
 
     private static final VarHandle SYNCED_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "synced", boolean.class);
+    private static final VarHandle BEING_SYNCED_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "beingSynced", boolean.class);
     private static final VarHandle LAST_WRITTEN_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "lastWritten", long.class);
 
-    public BufferedLinearRegionFile(Path masterFilePath, int compressionLevel) throws IOException {
+    private final BufferedLinearRegionFileFlusher flusher;
+
+    public BufferedLinearRegionFile(Path masterFilePath, int compressionLevel, BufferedLinearRegionFileFlusher flusher) throws IOException {
         this.masterFilePath = masterFilePath;
+        this.flusher = flusher;
         this.swapFilePath = Path.of(this.masterFilePath.toString() + ".swp");
 
         this.compressionLevel = (byte) compressionLevel;
 
         this.initSwapFile();
         this.loadSwapDataFromMasterFile();
+
+        this.flusher.aadFile(this);
     }
+
+    public boolean markAsBeingSynced() {
+        return BEING_SYNCED_HANDLE.compareAndSet(this, false, true);
+    }
+
 
     public long getLastWritten() {
         return (long) LAST_WRITTEN_HANDLE.get(this);
@@ -120,6 +133,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void syncToMasterFile() throws IOException {
+        BEING_SYNCED_HANDLE.set(this, false); // mark as not being synced
+
         // prevent multiple syncs in the same time
         if (!SYNCED_HANDLE.compareAndSet(this, false, true)) {
             return;

@@ -7,6 +7,7 @@ import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.config.flags.HotReloadUnsupported;
+import me.earthme.luminol.utils.BufferedLinearRegionFileFlusher;
 import me.earthme.luminol.utils.EnumRegionFormat;
 import net.minecraft.server.MinecraftServer;
 
@@ -26,6 +27,9 @@ public class RegionFormatConfig implements IConfigModule {
     @HotReloadUnsupported
     @ConfigInfo(baseName = "linear_use_virtual_thread")
     public static boolean linearUseVirtualThread = true;
+
+    @DoNotLoad
+    public static BufferedLinearRegionFileFlusher blinearFlusher = null;
 
     @DoNotLoad
     public static EnumRegionFormat regionFormat;
@@ -49,15 +53,25 @@ public class RegionFormatConfig implements IConfigModule {
         }
 
         if (regionFormat == EnumRegionFormat.LINEAR_V2) {
-            if (RegionFormatConfig.linearCompressionLevel > 23 || RegionFormatConfig.linearCompressionLevel < 1) {
-                MinecraftServer.LOGGER.error("Linear region compression level should be between 1 and 22 in config: {}", RegionFormatConfig.linearCompressionLevel);
-                MinecraftServer.LOGGER.error("Falling back to compression level 1.");
-                RegionFormatConfig.linearCompressionLevel = 1;
-            }
+            checkCompressionLevel();
 
             LinearRegionFile.SAVE_DELAY_MS = linearIoFlushDelayMs;
             LinearRegionFile.SAVE_THREAD_MAX_COUNT = linearIoThreadCount;
             LinearRegionFile.USE_VIRTUAL_THREAD = linearUseVirtualThread;
+        }
+
+        if (regionFormat == EnumRegionFormat.B_LINEAR) {
+            blinearFlusher = new BufferedLinearRegionFileFlusher(linearIoThreadCount, 20, linearIoFlushDelayMs);
+
+            checkCompressionLevel();
+        }
+    }
+
+    private static void checkCompressionLevel() {
+        if (RegionFormatConfig.linearCompressionLevel > 23 || RegionFormatConfig.linearCompressionLevel < 1) {
+            MinecraftServer.LOGGER.error("Linear region compression level should be between 1 and 22 in config: {}", RegionFormatConfig.linearCompressionLevel);
+            MinecraftServer.LOGGER.error("Falling back to compression level 1.");
+            RegionFormatConfig.linearCompressionLevel = 1;
         }
     }
 }

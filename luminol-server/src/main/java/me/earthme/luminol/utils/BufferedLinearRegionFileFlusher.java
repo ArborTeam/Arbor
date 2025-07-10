@@ -52,7 +52,7 @@ public class BufferedLinearRegionFileFlusher implements Runnable{
 
         final List<BufferedLinearRegionFile> toRemove = new ObjectArrayList<>();
         for (BufferedLinearRegionFile file : copied) {
-            // try acquire the read lock
+            // try acquiring the read lock
             if (!file.softReadLock()) {
                 // if the read lock is unacquirable, it might mean there is another operations is processing(might be a writing operation)
                 continue;

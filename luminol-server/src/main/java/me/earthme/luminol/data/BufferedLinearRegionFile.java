@@ -26,8 +26,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BufferedLinearRegionFile implements IRegionFile {
-    private static final double MASTER_AUTO_SYNC_PERCENT = 2.0 / 5.0; // 40 %
-    private static final long MASTER_AUTO_SYNC_SIZE = 100 * 1024; // 100 KiB
     private static final double SWAP_FILE_AUTO_COMPACT_PERCENT = 3.0 / 5.0; // 60 %
     private static final long SWAP_FILE_AUTO_COMPACT_SIZE = 1024 * 1024; // 1 MiB
 
@@ -238,9 +236,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         // save headers
         this.writeSwapFileHeaders();
 
-        final long fileSizeOfSwapFile = this.swapFileChannel.size();
-
-        long spareSize = fileSizeOfSwapFile;
+        long spareSize = this.swapFileChannel.size();
 
         spareSize -= this.headerSize();
         for (Sector sector : this.sectors) {

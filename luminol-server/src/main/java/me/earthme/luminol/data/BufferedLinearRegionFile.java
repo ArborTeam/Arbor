@@ -340,10 +340,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void writeChunkDataRaw(int chunkOrdinal, ByteBuffer chunkData) throws IOException {
-        if (this.closed) {
-            throw new IOException("closed");
-        }
-
         final Sector sector = this.sectors[chunkOrdinal];
 
         sector.store(chunkData, this.swapFileChannel);
@@ -353,10 +349,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private @Nullable ByteBuffer readChunkDataRaw(int chunkOrdinal) throws IOException {
-        if (this.closed) {
-            throw new IOException("closed");
-        }
-
         final Sector sector = this.sectors[chunkOrdinal];
 
         if (!sector.hasData()) {

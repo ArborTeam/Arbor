@@ -11,6 +11,7 @@ import net.jpountz.xxhash.XXHash32;
 import net.jpountz.xxhash.XXHashFactory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +36,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     private static final long MASTER_FILE_SUPER_BLOCK = -0x200812250269L;
     private static final byte MASTER_FILE_VERSION = 0x02; // ver 2.0
+
+    private static final long LINEAR_FILE_SUPER_BLOCK = 0xc3ff13183cca9d9aL;
 
     private static final StandardOpenOption[] SWAP_FILE_CHANNEL_OPTIONS = new StandardOpenOption[]{
             StandardOpenOption.CREATE,
@@ -641,8 +644,85 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
     }
 
-    // TODO Make a better format
     private class LinearMasterFileFrameParser {
+        private void parseBufferedLinear(@NotNull DataInputStream ioStream, Path file) throws IOException {
+            final byte version = ioStream.readByte();
+            if (version != MASTER_FILE_VERSION)
+                throw new RuntimeException("Invalid version: " + version + " in " + file);
+
+            // Skip newestTimestamp (Long) + Compression level (Byte): Unused.
+            ioStream.skipBytes(9);
+
+            try (DataInputStream dataStream = new DataInputStream(new ZstdInputStream(ioStream))) {
+                for (int index = 0; index < 1024; index++) {
+                    int size = dataStream.readInt(); // len
+
+                    if (size > 0) {
+                        byte[] sectorData = new byte[size];
+                        dataStream.readFully(sectorData, 0, size); // data
+
+                        final ByteBuffer sectorDataNioBuffer = ByteBuffer.allocateDirect(size);
+                        sectorDataNioBuffer.put(sectorData);
+                        sectorDataNioBuffer.flip();
+
+                        BufferedLinearRegionFile.this.writeChunkDataRaw(index, sectorDataNioBuffer);
+                        DirectBufferReleaser.clean(sectorDataNioBuffer);
+                    }
+                }
+            }
+        }
+
+        @Contract(value = "_ -> new", pure = true)
+        public static int @NotNull [] coordinatesFromOrdinal(int chunkIndex) {
+            int x = chunkIndex & 31;
+            int z = (chunkIndex >> 5) & 31;
+            return new int[] {x, z};
+        }
+
+        private void parseLinear(@NotNull DataInputStream ioStream, Path file) throws IOException {
+            final byte version = ioStream.readByte();
+
+            if (version != 1 && version != 2) {
+                throw new IOException("Unsupported version for linear format : " + version);
+            }
+
+            // Skip newestTimestamp (Long) + Compression level (Byte) + Chunk count (Short): Unused.
+            ioStream.skipBytes(11);
+            // Skip chunk data len(Int)(Unused).
+            ioStream.skipBytes(4);
+            // Skip data hash (Long): Unused.
+            ioStream.skipBytes(8);
+
+            try (ZstdInputStream decompressedStream = new ZstdInputStream(ioStream);
+                 DataInputStream bufferHelper = new DataInputStream(decompressedStream)){
+                final int[] chunkStarts = new int[1024];
+                for (int i = 0; i < 1024; i++) {
+                    chunkStarts[i] = bufferHelper.readInt();
+                    bufferHelper.skipBytes(4); // Skip timestamps (Int): Unused.
+                }
+
+                for (int i = 0; i < 1024; i++) {
+                    if (chunkStarts[i] > 0) {
+                        int size = chunkStarts[i];
+                        byte[] chunkData = new byte[size];
+                        bufferHelper.read(chunkData);
+
+                        final ByteBuffer chunkDataNioBuffer = ByteBuffer.allocateDirect(size);
+                        chunkDataNioBuffer.put(chunkData);
+                        chunkDataNioBuffer.flip();
+
+                        final int[] posByAxis = coordinatesFromOrdinal(i);
+
+                        final int x = posByAxis[0];
+                        final int z = posByAxis[1];
+
+                        BufferedLinearRegionFile.this.writeChunk(x, z, chunkDataNioBuffer);
+                        DirectBufferReleaser.clean(chunkDataNioBuffer);
+                    }
+                }
+            }
+        }
+
         public void parseMainFile(@NotNull Path mainFilePath) throws IOException{
             final File file = mainFilePath.toFile();
 
@@ -654,33 +734,18 @@ public class BufferedLinearRegionFile implements IRegionFile {
                  DataInputStream rawDataStream = new DataInputStream(fileStream)) {
 
                 final long superBlock = rawDataStream.readLong();
-                if (superBlock != MASTER_FILE_SUPER_BLOCK)
-                    throw new RuntimeException("Invalid superblock: " + superBlock + " in " + file);
 
-                final byte version = rawDataStream.readByte();
-                if (version != MASTER_FILE_VERSION)
-                    throw new RuntimeException("Invalid version: " + version + " in " + file);
-
-                // Skip newestTimestamp (Long) + Compression level (Byte): Unused.
-                rawDataStream.skipBytes(9);
-
-                try (DataInputStream dataStream = new DataInputStream(new ZstdInputStream(rawDataStream))) {
-                    for (int index = 0; index < 1024; index++) {
-                        int size = dataStream.readInt(); // len
-
-                        if (size > 0) {
-                            byte[] sectorData = new byte[size];
-                            dataStream.readFully(sectorData, 0, size); // data
-
-                            final ByteBuffer sectorDataNioBuffer = ByteBuffer.allocateDirect(size);
-                            sectorDataNioBuffer.put(sectorData);
-                            sectorDataNioBuffer.flip();
-
-                            BufferedLinearRegionFile.this.writeChunkDataRaw(index, sectorDataNioBuffer);
-                            DirectBufferReleaser.clean(sectorDataNioBuffer);
-                        }
-                    }
+                if (superBlock == MASTER_FILE_SUPER_BLOCK) {
+                    parseBufferedLinear(rawDataStream, mainFilePath);
+                    return;
                 }
+
+                if (superBlock == LINEAR_FILE_SUPER_BLOCK) {
+                    parseLinear(rawDataStream, mainFilePath);
+                    return;
+                }
+
+                throw new IOException("Unknown or unsupported super block : " + superBlock);
             }
         }
 

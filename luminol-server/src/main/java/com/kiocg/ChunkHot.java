@@ -37,7 +37,7 @@ public class ChunkHot {
         times[this.index] = 0L;
     }
 
-    public boolean isStarted(){
+    public boolean isStarted() {
         return this.started;
     }
 

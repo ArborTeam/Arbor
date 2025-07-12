@@ -7,11 +7,11 @@ import com.mojang.logging.LogUtils;
 import net.jpountz.lz4.LZ4Compressor;
 import net.jpountz.lz4.LZ4Factory;
 import net.jpountz.lz4.LZ4FastDecompressor;
-import net.openhft.hashing.LongHashFunction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.chunk.storage.RegionStorageInfo;
-import net.minecraft.world.level.chunk.storage.RegionFileVersion;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.storage.RegionFileVersion;
+import net.minecraft.world.level.chunk.storage.RegionStorageInfo;
+import net.openhft.hashing.LongHashFunction;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -20,16 +20,13 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 // LinearRegionFile_implementation_version_0_5byXymb
 // Just gonna use this string to inform other forks about updates ;-)
-public class LinearRegionFile implements IRegionFile{
+public class LinearRegionFile implements IRegionFile {
     private static final long SUPERBLOCK = 0xc3ff13183cca9d9aL;
     private static final byte VERSION = 3;
     private static final int HEADER_SIZE = 27;
@@ -124,7 +121,7 @@ public class LinearRegionFile implements IRegionFile{
 
         File regionFile = new File(this.regionFile.toString());
 
-        if(!regionFile.canRead()) {
+        if (!regionFile.canRead()) {
             this.bindThread.start();
             return;
         }
@@ -287,14 +284,14 @@ public class LinearRegionFile implements IRegionFile{
     }
 
     private synchronized void markToSave() {
-        synchronized(markedToSaveLock) {
+        synchronized (markedToSaveLock) {
             markedToSave = true;
         }
     }
 
     private synchronized boolean isMarkedToSave() {
-        synchronized(markedToSaveLock) {
-            if(markedToSave) {
+        synchronized (markedToSaveLock) {
+            if (markedToSave) {
                 markedToSave = false;
                 return true;
             }
@@ -338,13 +335,13 @@ public class LinearRegionFile implements IRegionFile{
     }
 
     public synchronized void flush() throws IOException {
-        if(!isMarkedToSave()) return;
+        if (!isMarkedToSave()) return;
 
         openRegionFile();
 
         long timestamp = getTimestamp();
 
-long writeStart = System.nanoTime();
+        long writeStart = System.nanoTime();
         File tempFile = new File(regionFile.toString() + ".tmp");
         FileOutputStream fileStream = new FileOutputStream(tempFile);
         DataOutputStream dataStream = new DataOutputStream(fileStream);
@@ -537,7 +534,7 @@ long writeStart = System.nanoTime();
         openRegionFile();
         openBucket(pos.x, pos.z);
 
-        if(this.bufferUncompressedSize[getChunkIndex(pos.x, pos.z)] != 0) {
+        if (this.bufferUncompressedSize[getChunkIndex(pos.x, pos.z)] != 0) {
             byte[] content = new byte[bufferUncompressedSize[getChunkIndex(pos.x, pos.z)]];
             this.decompressor.decompress(this.buffer[getChunkIndex(pos.x, pos.z)], 0, content, 0, bufferUncompressedSize[getChunkIndex(pos.x, pos.z)]);
             return new DataInputStream(new ByteArrayInputStream(content));
@@ -566,7 +563,7 @@ long writeStart = System.nanoTime();
         close = true;
         try {
             flush();
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new IOException("Region flush IOException " + e + " " + this.regionFile);
         }
     }
@@ -583,7 +580,8 @@ long writeStart = System.nanoTime();
         return false;
     }
 
-    public void setOversized(int x, int z, boolean something) {}
+    public void setOversized(int x, int z, boolean something) {
+    }
 
     public CompoundTag getOversizedData(int x, int z) throws IOException {
         throw new IOException("getOversizedData is a stub " + this.regionFile);

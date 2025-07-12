@@ -8,9 +8,6 @@ import io.sentry.SentryEvent;
 import io.sentry.SentryLevel;
 import io.sentry.protocol.Message;
 import io.sentry.protocol.User;
-
-import java.util.Map;
-
 import me.earthme.luminol.config.modules.misc.SentryConfig;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +16,8 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
+
+import java.util.Map;
 
 public class PufferfishSentryAppender extends AbstractAppender {
 

@@ -75,19 +75,19 @@ index df682061f486e927dcf3dede6ef5c4f8f6643580..b487adb2b104b14346bf7373f07c8d48
      }
  
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index f07d3009caf964b8e1b5328bb3e28866e0c41955..1f3c26cc9f3b687693c36f2946394fad5ab6bc9f 100644
+index b7f25386f4b5d6a53f133ffbd98d9db1aebdd2c0..c6c6432c2efeb7b95c2894b188cd966321ae3186 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -173,7 +173,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -172,7 +172,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
          // Paper end - initialize global and world-defaults configuration
-         me.earthme.luminol.config.LuminolConfig.finalizeLoadConfig(); // Luminol - load config file
-         me.earthme.luminol.config.LuminolConfig.setupLatch(); // Luminol - load config file
+         me.earthme.luminol.config.ConfigManager.loadConfigFiles(); // Luminol - load config file
 -        this.server.spark.enableEarlyIfRequested(); // Paper - spark
 +        if (false) this.server.spark.enableEarlyIfRequested(); // Paper - spark // Luminol - Force disable builtin spark
          // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
          if (this.convertOldUsers()) {
              this.getProfileCache().save(false); // Paper
-@@ -183,7 +183,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -182,7 +182,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          org.spigotmc.WatchdogThread.doStart(org.spigotmc.SpigotConfig.timeoutTime, org.spigotmc.SpigotConfig.restartOnCrash); // Paper - start watchdog thread
          thread.start(); // Paper - Enhance console tab completions for brigadier commands; start console thread after MinecraftServer.console & PaperConfig are initialized
          io.papermc.paper.command.PaperCommands.registerCommands(this); // Paper - setup /paper command

@@ -37,5 +37,7 @@ public interface IRegionFile extends ChunkSystemRegionFile, AutoCloseable {
 
     void setOversized(int x, int z, boolean oversized) throws IOException;
 
-    default int getRecalculateCount() {return 0;} // Luminol - Configurable region file format
+    default int getRecalculateCount() {
+        return 0;
+    } // Luminol - Configurable region file format
 }

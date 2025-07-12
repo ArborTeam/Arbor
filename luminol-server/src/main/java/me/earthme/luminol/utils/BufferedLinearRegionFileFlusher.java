@@ -1,7 +1,8 @@
 package me.earthme.luminol.utils;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import me.earthme.luminol.data.BufferedLinearRegionFile;
 
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
 
-public class BufferedLinearRegionFileFlusher implements Runnable{
+public class BufferedLinearRegionFileFlusher implements Runnable {
     private final Set<BufferedLinearRegionFile> inManagement = new ObjectLinkedOpenHashSet<>();
     private final ScheduledFuture<?> flusherChecker;
     private final Executor ioWorkerPool;
@@ -23,9 +24,9 @@ public class BufferedLinearRegionFileFlusher implements Runnable{
                 .build()
         );
         this.flusherChecker = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
-                .setNameFormat("BufferedLinearRegionFile Flusher Checker")
-                .setDaemon(true)
-                .build())
+                        .setNameFormat("BufferedLinearRegionFile Flusher Checker")
+                        .setDaemon(true)
+                        .build())
                 .scheduleWithFixedDelay(this, checkIntervalMs, checkIntervalMs, java.util.concurrent.TimeUnit.MILLISECONDS);
         this.flushOfWriteTimeoutMs = flushOfWriteTimeoutMs;
     }
@@ -34,7 +35,7 @@ public class BufferedLinearRegionFileFlusher implements Runnable{
         this.flusherChecker.cancel(false);
 
         ((ExecutorService) this.ioWorkerPool).shutdown();
-        while (!((ExecutorService) this.ioWorkerPool).awaitTermination(100, TimeUnit.MILLISECONDS));
+        while (!((ExecutorService) this.ioWorkerPool).awaitTermination(100, TimeUnit.MILLISECONDS)) ;
     }
 
     @Override
@@ -63,7 +64,7 @@ public class BufferedLinearRegionFileFlusher implements Runnable{
             try {
                 // check if the file is closed
                 closed = file.isClosedRaw();
-            }finally {
+            } finally {
                 file.releaseReadLock();
             }
 
@@ -107,7 +108,7 @@ public class BufferedLinearRegionFileFlusher implements Runnable{
         }
     }
 
-    public void aadFile(BufferedLinearRegionFile fileToAdd){
+    public void aadFile(BufferedLinearRegionFile fileToAdd) {
         synchronized (this) {
             this.inManagement.add(fileToAdd);
         }

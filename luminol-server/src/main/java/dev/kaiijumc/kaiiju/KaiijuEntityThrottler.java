@@ -1,8 +1,8 @@
 package dev.kaiijumc.kaiiju;
 
+import io.papermc.paper.threadedregions.RegionizedWorldData;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.world.entity.Entity;
-import io.papermc.paper.threadedregions.RegionizedWorldData;
 
 public class KaiijuEntityThrottler {
     private static class TickInfo {

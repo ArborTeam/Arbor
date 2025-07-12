@@ -29,13 +29,13 @@ public class Vec3d {
         this.y = y;
         this.z = z;
     }
-    
+
     public void setAdd(Vec3d vec, double x, double y, double z) {
         this.x = vec.x + x;
         this.y = vec.y + y;
         this.z = vec.z + z;
     }
-    
+
     public Vec3d div(Vec3d rayDir) {
         this.x /= rayDir.x;
         this.z /= rayDir.z;
@@ -44,13 +44,13 @@ public class Vec3d {
     }
 
     public Vec3d normalize() {
-        double mag = Math.sqrt(x*x+y*y+z*z);
+        double mag = Math.sqrt(x * x + y * y + z * z);
         this.x /= mag;
         this.y /= mag;
         this.z /= mag;
         return this;
     }
-    
+
     public boolean equals(Object other) {
         if (this == other) {
             return true;

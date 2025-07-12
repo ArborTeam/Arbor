@@ -3,7 +3,7 @@ package me.earthme.luminol.config;
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import io.papermc.paper.threadedregions.RegionizedServer;
-import me.earthme.luminol.commands.LuminolConfigCommand;
+import me.earthme.luminol.commands.ConfigCommand;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.config.flags.HotReloadUnsupported;
@@ -28,23 +28,34 @@ import java.util.concurrent.CompletableFuture;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class LuminolConfig {
-    public static final Logger logger = LogManager.getLogger();
-    private static final File baseConfigFolder = new File("luminol_config");
-    private static final File baseConfigFile = new File(baseConfigFolder, "luminol_global_config.toml");
-    private static final Set<IConfigModule> allInstanced = new HashSet<>();
-    private static final Map<String, Object> stagedConfigMap = new HashMap<>();
-    private static final Map<String, Object> defaultvalueMap = new HashMap<>();
-    public static boolean alreadyInit = false;
-    private static CommentedFileConfig configFileInstance;
+public class ConfigsInstance {
+    public final Logger logger = LogManager.getLogger();
+    private final File baseConfigFolder;
+    private final File baseConfigFile;
+    private final String name;
+    private final String pack;
+    private final Set<IConfigModule> allInstanced = new HashSet<>();
+    private final Map<String, Object> stagedConfigMap = new HashMap<>();
+    private final Map<String, Object> defaultvalueMap = new HashMap<>();
+    public boolean alreadyInit = false;
+    private CommentedFileConfig configFileInstance;
 
-    public static void setupLatch() {
-        Bukkit.getCommandMap().register("luminolconfig", "luminol", new LuminolConfigCommand());
+    public ConfigsInstance(@NotNull File base, @NotNull String name, @NotNull String pack) {
+        this.baseConfigFolder = base;
+        this.name = name;
+        this.pack = pack;
+        this.baseConfigFile = new File(base, name + "_global_config.toml");
+    }
+
+    public void setupLatch() {
+        ConfigCommand command = new ConfigCommand(name);
+        Bukkit.getCommandMap().register(name + "config", name, command);
+        command.initConfig(this);
         alreadyInit = true;
     }
 
-    public static void reload() {
-        RegionizedServer.ensureGlobalTickThread("Reload luminol config off global region thread!");
+    public void reload() {
+        RegionizedServer.ensureGlobalTickThread("Reload " + name + " config off global region thread!");
 
         dropAllInstanced();
         try {
@@ -56,8 +67,8 @@ public class LuminolConfig {
     }
 
     @Contract(" -> new")
-    public static @NotNull CompletableFuture<Void> reloadAsync() {
-        return CompletableFuture.runAsync(LuminolConfig::reload, task -> RegionizedServer.getInstance().addTask(() -> {
+    public @NotNull CompletableFuture<Void> reloadAsync() {
+        return CompletableFuture.runAsync(this::reload, task -> RegionizedServer.getInstance().addTask(() -> {
             try {
                 task.run();
             } catch (Exception e) {
@@ -66,17 +77,18 @@ public class LuminolConfig {
         }));
     }
 
-    public static void dropAllInstanced() {
+    public void dropAllInstanced() {
         allInstanced.clear();
     }
 
-    public static void finalizeLoadConfig() {
+    public void finalizeLoadConfig() {
         for (IConfigModule module : allInstanced) {
             module.onLoaded(configFileInstance);
         }
+        setupLatch();
     }
 
-    public static void preLoadConfig() throws IOException {
+    public void preLoadConfig() throws IOException {
         baseConfigFolder.mkdirs();
 
         if (!baseConfigFile.exists()) {
@@ -98,21 +110,21 @@ public class LuminolConfig {
         saveConfigs();
     }
 
-    private static void loadAllModules() throws IllegalAccessException {
+    private void loadAllModules() throws IllegalAccessException {
         for (IConfigModule instanced : allInstanced) {
             loadForSingle(instanced);
         }
     }
 
-    private static void instanceAllModule() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        for (Class<?> clazz : getClasses("me.earthme.luminol.config.modules")) {
+    private void instanceAllModule() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        for (Class<?> clazz : getClasses(pack)) {
             if (IConfigModule.class.isAssignableFrom(clazz)) {
                 allInstanced.add((IConfigModule) clazz.getConstructor().newInstance());
             }
         }
     }
 
-    private static void loadForSingle(@NotNull IConfigModule singleConfigModule) throws IllegalAccessException {
+    private void loadForSingle(@NotNull IConfigModule singleConfigModule) throws IllegalAccessException {
         final EnumConfigCategory category = singleConfigModule.getCategory();
 
         Field[] fields = singleConfigModule.getClass().getDeclaredFields();
@@ -203,7 +215,7 @@ public class LuminolConfig {
         }
     }
 
-    public static void removeConfig(String name, String[] keys) {
+    public void removeConfig(String name, String[] keys) {
         configFileInstance.remove(name);
         Object configAtPath = configFileInstance.get(String.join(".", keys));
         if (configAtPath instanceof UnmodifiableConfig && ((UnmodifiableConfig) configAtPath).isEmpty()) {
@@ -211,7 +223,7 @@ public class LuminolConfig {
         }
     }
 
-    public static void removeConfig(String[] keys) {
+    public void removeConfig(String[] keys) {
         configFileInstance.remove(String.join(".", keys));
         Object configAtPath = configFileInstance.get(String.join(".", Arrays.copyOfRange(keys, 1, keys.length)));
         if (configAtPath instanceof UnmodifiableConfig && ((UnmodifiableConfig) configAtPath).isEmpty()) {
@@ -219,11 +231,11 @@ public class LuminolConfig {
         }
     }
 
-    public static boolean setConfig(String[] keys, Object value) {
+    public boolean setConfig(String[] keys, Object value) {
         return setConfig(String.join(".", keys), value);
     }
 
-    public static boolean setConfig(String key, Object value) {
+    public boolean setConfig(String key, Object value) {
         if (configFileInstance.contains(key) && configFileInstance.get(key) != null) {
             stagedConfigMap.put(key, value);
             return true;
@@ -231,7 +243,7 @@ public class LuminolConfig {
         return false;
     }
 
-    private static Object tryTransform(Class<?> targetType, Object value) {
+    private Object tryTransform(Class<?> targetType, Object value) {
         if (!targetType.isAssignableFrom(value.getClass())) {
             try {
                 if (targetType == Integer.class) {
@@ -255,27 +267,27 @@ public class LuminolConfig {
         return value;
     }
 
-    public static void saveConfigs() {
+    public void saveConfigs() {
         configFileInstance.save();
     }
 
-    public static void resetConfig(String[] keys) {
+    public void resetConfig(String[] keys) {
         resetConfig(String.join(".", keys));
     }
 
-    public static void resetConfig(String key) {
+    public void resetConfig(String key) {
         stagedConfigMap.put(key, null);
     }
 
-    public static String getConfig(String[] keys) {
+    public String getConfig(String[] keys) {
         return getConfig(String.join(".", keys));
     }
 
-    public static String getConfig(String key) {
+    public String getConfig(String key) {
         return configFileInstance.get(key).toString();
     }
 
-    public static List<String> completeConfigPath(String partialPath) {
+    public List<String> completeConfigPath(String partialPath) {
         List<String> allPaths = getAllConfigPaths(partialPath);
         List<String> result = new ArrayList<>();
 
@@ -295,13 +307,13 @@ public class LuminolConfig {
         return result;
     }
 
-    private static List<String> getAllConfigPaths(String currentPath) {
+    private List<String> getAllConfigPaths(String currentPath) {
         return defaultvalueMap.keySet().stream()
                 .filter(k -> k.startsWith(currentPath))
                 .toList();
     }
 
-    public static @NotNull Set<Class<?>> getClasses(String pack) {
+    public @NotNull Set<Class<?>> getClasses(String pack) {
         Set<Class<?>> classes = new LinkedHashSet<>();
         String packageDirName = pack.replace('.', '/');
         Enumeration<URL> dirs;
@@ -332,7 +344,7 @@ public class LuminolConfig {
         return classes;
     }
 
-    private static void findClassesInPackageByFile(String packageName, String packagePath, Set<Class<?>> classes) {
+    private void findClassesInPackageByFile(String packageName, String packagePath, Set<Class<?>> classes) {
         File dir = new File(packagePath);
 
         if (!dir.exists() || !dir.isDirectory()) {
@@ -356,7 +368,7 @@ public class LuminolConfig {
         }
     }
 
-    private static void findClassesInPackageByJar(String packageName, Enumeration<JarEntry> entries, String packageDirName, Set<Class<?>> classes) {
+    private void findClassesInPackageByJar(String packageName, Enumeration<JarEntry> entries, String packageDirName, Set<Class<?>> classes) {
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
             String name = entry.getName();

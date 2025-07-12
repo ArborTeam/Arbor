@@ -132,7 +132,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             this.syncToMasterFile();
 
             BEING_SYNCED_HANDLE.set(this, false); // mark as not being synced
-        }finally {
+        } finally {
             this.regionObjectLock.readLock().unlock();
         }
     }
@@ -252,7 +252,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
 
         // try auto compact to clean the garbage area
-        if (spareSize > SWAP_FILE_AUTO_COMPACT_SIZE && (double)spareSize > ((double)sectorSize) * SWAP_FILE_AUTO_COMPACT_PERCENT) {
+        if (spareSize > SWAP_FILE_AUTO_COMPACT_SIZE && (double) spareSize > ((double) sectorSize) * SWAP_FILE_AUTO_COMPACT_PERCENT) {
             this.compactSwapFile();
         }
 
@@ -277,7 +277,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 StandardOpenOption.CREATE,
                 StandardOpenOption.WRITE,
                 StandardOpenOption.READ
-        )){
+        )) {
             // get the latest head in file
             final ByteBuffer headerBuffer = ByteBuffer.allocateDirect(this.headerSize());
             this.swapFileChannel.read(headerBuffer, 0);
@@ -453,7 +453,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             DirectBufferReleaser.clean(data);
 
             return new DataInputStream(new ByteArrayInputStream(dataBytes));
-        }finally {
+        } finally {
             this.regionObjectLock.readLock().unlock();
         }
     }
@@ -463,7 +463,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.regionObjectLock.readLock().lock();
         try {
             return this.hasData(getChunkIndex(pos.x, pos.z));
-        }finally {
+        } finally {
             this.regionObjectLock.readLock().unlock();
         }
     }
@@ -478,7 +478,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.regionObjectLock.writeLock().lock();
         try {
             this.clearChunkData(getChunkIndex(pos.x, pos.z));
-        }finally {
+        } finally {
             this.regionObjectLock.writeLock().unlock();
         }
     }
@@ -488,7 +488,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.regionObjectLock.readLock().lock();
         try {
             return this.hasData(getChunkIndex(pos.x, pos.z));
-        }finally {
+        } finally {
             this.regionObjectLock.readLock().unlock();
         }
     }
@@ -498,7 +498,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.regionObjectLock.writeLock().lock();
         try {
             this.writeChunk(pos.x, pos.z, buf);
-        }finally {
+        } finally {
             this.regionObjectLock.writeLock().unlock();
         }
     }
@@ -540,7 +540,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.regionObjectLock.writeLock().lock();
         try {
             this.flushInternal();
-        }finally {
+        } finally {
             this.regionObjectLock.writeLock().unlock();
         }
     }
@@ -550,12 +550,12 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.regionObjectLock.writeLock().lock();
         try {
             this.closeInternal();
-        }finally {
+        } finally {
             this.regionObjectLock.writeLock().unlock();
         }
     }
 
-    public class Sector{
+    public class Sector {
         private final int index;
         private long offset;
         private long length;
@@ -638,7 +638,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 ByteBuffer bytebuffer = ByteBuffer.wrap(this.buf, 0, this.count);
 
                 BufferedLinearRegionFile.this.writeChunk(this.pos.x, this.pos.z, bytebuffer);
-            }finally {
+            } finally {
                 BufferedLinearRegionFile.this.regionObjectLock.writeLock().unlock();
             }
         }
@@ -676,7 +676,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         public static int @NotNull [] coordinatesFromOrdinal(int chunkIndex) {
             int x = chunkIndex & 31;
             int z = (chunkIndex >> 5) & 31;
-            return new int[] {x, z};
+            return new int[]{x, z};
         }
 
         private void parseLinear(@NotNull DataInputStream ioStream, Path file) throws IOException {
@@ -694,7 +694,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             ioStream.skipBytes(8);
 
             try (ZstdInputStream decompressedStream = new ZstdInputStream(ioStream);
-                 DataInputStream bufferHelper = new DataInputStream(decompressedStream)){
+                 DataInputStream bufferHelper = new DataInputStream(decompressedStream)) {
                 final int[] chunkStarts = new int[1024];
                 for (int i = 0; i < 1024; i++) {
                     chunkStarts[i] = bufferHelper.readInt();
@@ -723,7 +723,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
         }
 
-        public void parseMainFile(@NotNull Path mainFilePath) throws IOException{
+        public void parseMainFile(@NotNull Path mainFilePath) throws IOException {
             final File file = mainFilePath.toFile();
 
             if (!file.exists() || !file.canRead()) {

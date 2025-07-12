@@ -1,6 +1,6 @@
 package me.earthme.luminol.commands;
 
-import me.earthme.luminol.config.LuminolConfig;
+import me.earthme.luminol.config.ConfigsInstance;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Location;
@@ -12,12 +12,18 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LuminolConfigCommand extends Command {
-    public LuminolConfigCommand() {
-        super("luminolconfig");
-        this.setPermission("luminol.commands.luminolconfig");
+public class ConfigCommand extends Command {
+    private ConfigsInstance config;
+
+    public ConfigCommand(String name) {
+        super(name + "config");
+        this.setPermission(name + ".commands." + name + "config");
         this.setDescription("Manage config file");
-        this.setUsage("/luminolconfig");
+        this.setUsage("/" + name + "config");
+    }
+
+    public void initConfig(ConfigsInstance config) {
+        this.config = config;
     }
 
     public void wrongUse(CommandSender sender) {
@@ -38,7 +44,7 @@ public class LuminolConfigCommand extends Command {
             result.add("reset");
             result.add("reload");
         } else if (args.length == 2 && (args[0].equals("query") || args[0].equals("set") || args[0].equals("reset"))) {
-            result.addAll(LuminolConfig.completeConfigPath(args[1]));
+            result.addAll(config.completeConfigPath(args[1]));
         }
         return result;
     }
@@ -59,7 +65,7 @@ public class LuminolConfigCommand extends Command {
 
         switch (args[0]) {
             case "reload" -> {
-                LuminolConfig.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
+                config.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
                         Component
                                 .text("Reloaded config file!")
                                 .color(TextColor.color(0, 255, 0))
@@ -69,8 +75,8 @@ public class LuminolConfigCommand extends Command {
                 if (args.length == 2 || args.length > 3) {
                     wrongUse(sender);
                     return true;
-                } else if (LuminolConfig.setConfig(args[1], args[2])) {
-                    LuminolConfig.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
+                } else if (config.setConfig(args[1], args[2])) {
+                    config.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
                             Component
                                     .text("Set Config " + args[1] + " to " + args[2] + " successfully!")
                                     .color(TextColor.color(0, 255, 0))
@@ -88,10 +94,10 @@ public class LuminolConfigCommand extends Command {
                     wrongUse(sender);
                     return true;
                 } else {
-                    LuminolConfig.resetConfig(args[1]);
-                    LuminolConfig.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
+                    config.resetConfig(args[1]);
+                    config.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
                             Component
-                                    .text("Reset Config " + args[1] + " to " + LuminolConfig.getConfig(args[1]) + " successfully!")
+                                    .text("Reset Config " + args[1] + " to " + config.getConfig(args[1]) + " successfully!")
                                     .color(TextColor.color(0, 255, 0))
                     ));
                 }
@@ -103,7 +109,7 @@ public class LuminolConfigCommand extends Command {
                 } else {
                     sender.sendMessage(
                             Component
-                                    .text("Config " + args[1] + " is " + LuminolConfig.getConfig(args[1]) + "!")
+                                    .text("Config " + args[1] + " is " + config.getConfig(args[1]) + "!")
                                     .color(TextColor.color(0, 255, 0))
                     );
                 }

@@ -391,7 +391,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         final ByteBuffer chunkSectionBuilder = ByteBuffer.allocateDirect(data.remaining() + 4 + 8 + 4);
 
         chunkSectionBuilder.putInt(data.remaining()); // Length
-        chunkSectionBuilder.putLong(System.nanoTime()); // Timestamp
+        chunkSectionBuilder.putLong(System.currentTimeMillis()); // Timestamp
         chunkSectionBuilder.putInt(xxHash32OfData); // xxHash32 of the original data
         chunkSectionBuilder.put(data); // Data
         chunkSectionBuilder.flip();
@@ -752,7 +752,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         public void writeMainFile(@NotNull Path mainFile) throws IOException {
             final Path tmpFilePath = Path.of(mainFile + ".tmp");
 
-            long timestamp = System.nanoTime();
+            long timestamp = System.currentTimeMillis();
 
             File tempFile = tmpFilePath.toFile();
 

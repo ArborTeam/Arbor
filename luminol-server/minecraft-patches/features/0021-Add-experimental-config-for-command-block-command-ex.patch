@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sun, 13 Jul 2025 22:39:17 +0800
+Subject: [PATCH] Add experimental config for command block command execution
+
+
+diff --git a/net/minecraft/world/level/BaseCommandBlock.java b/net/minecraft/world/level/BaseCommandBlock.java
+index 8b8ce26de104211728d4b64e641a2b471ce89073..36795476ad6f48f30689448ce4035d04828311a0 100644
+--- a/net/minecraft/world/level/BaseCommandBlock.java
++++ b/net/minecraft/world/level/BaseCommandBlock.java
+@@ -96,7 +96,7 @@ public abstract class BaseCommandBlock implements CommandSource {
+     }
+ 
+     public boolean performCommand(Level level) {
+-        if (true) return false; // Folia - region threading
++        if (!me.earthme.luminol.config.modules.experiment.CommandBlockExecutionConfig.enabled) return false; // Folia - region threading // Luminol - Add experimental config for command block command execution
+         if (level.isClientSide || level.getGameTime() == this.lastExecution) {
+             return false;
+         } else if ("Searge".equalsIgnoreCase(this.command)) {

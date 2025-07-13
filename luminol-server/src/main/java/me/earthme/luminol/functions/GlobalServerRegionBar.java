@@ -168,7 +168,7 @@ public class GlobalServerRegionBar {
     }
 
     private static BossBar.Color barColorFromUtil(double util) {
-        if (util >= 100) {
+        if (util > 100) {
             return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(3)); // PURPLE
         }
 

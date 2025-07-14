@@ -1,0 +1,291 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Mon, 14 Jul 2025 18:52:13 +0800
+Subject: [PATCH] Async protocol switching optimization
+
+
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index 2d18e9c153eabf266cfcc097613f33deb9ddb248..6dc5f3e88a3886b03b99d59b317085fdc3e2fa9a 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -372,6 +372,116 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+         }
+     }
+ 
++    // Luminol start - async protocol switcher
++    public <T extends PacketListener> void setupInboundProtocolAsync(ProtocolInfo<T> protocolInfo, T packetInfo, @Nullable Runnable callback, boolean releaseAutoRead) {
++        this.validateListener(protocolInfo, packetInfo);
++        if (protocolInfo.flow() != this.getReceiving()) {
++            throw new IllegalStateException("Invalid inbound protocol: " + protocolInfo.id());
++        } else {
++            this.packetListener = packetInfo;
++            this.disconnectListener = null;
++
++            UnconfiguredPipelineHandler.InboundConfigurationTask inboundConfigurationTask = UnconfiguredPipelineHandler.setupInboundProtocol(protocolInfo);
++            BundlerInfo bundlerInfo = protocolInfo.bundlerInfo();
++            if (bundlerInfo != null) {
++                PacketBundlePacker packetBundlePacker = new PacketBundlePacker(bundlerInfo);
++                inboundConfigurationTask = inboundConfigurationTask.andThen(context -> context.pipeline().addAfter("decoder", "bundler", packetBundlePacker));
++            }
++
++            // Here we could execute it in event loop async to prevent waiting io task on main
++            this.channel.config().setAutoRead(false); // stop reading new packets to prevent some packets came into pipeline too early
++            final UnconfiguredPipelineHandler.InboundConfigurationTask finalInboundConfigurationTask = inboundConfigurationTask;
++            Runnable writeTask = () -> {
++                final ChannelFuture future = this.channel.writeAndFlush(finalInboundConfigurationTask);
++
++                future.addListener(orginalFuture -> {
++                    try {
++                        if (orginalFuture.isSuccess()) {
++                            if (callback != null) callback.run(); // retire callback if there have one
++                            return;
++                        }
++
++                        final Throwable ex = orginalFuture.cause();
++
++                        // here we process our exceptions like that blocking one
++                        if (ex instanceof ClosedChannelException) {
++                            LOGGER.info("Connection closed during protocol change");
++                        } else {
++                            this.channel.pipeline().fireExceptionCaught(ex);
++                        }
++                    }finally {
++                        if (releaseAutoRead) {
++                            this.channel.config().setAutoRead(true);
++                            this.channel.read();
++                        }
++                    }
++                });
++            };
++
++            if (!this.channel.eventLoop().inEventLoop()) {
++                this.channel.eventLoop().execute(writeTask);
++                return;
++            }
++
++            writeTask.run();
++        }
++    }
++
++    public void setupOutboundProtocolAsync(ProtocolInfo<?> protocolInfo, @Nullable Runnable callback, boolean releaseAutoRead) {
++        if (protocolInfo.flow() != this.getSending()) {
++            throw new IllegalStateException("Invalid outbound protocol: " + protocolInfo.id());
++        } else {
++            UnconfiguredPipelineHandler.OutboundConfigurationTask outboundConfigurationTask = UnconfiguredPipelineHandler.setupOutboundProtocol(protocolInfo);
++            BundlerInfo bundlerInfo = protocolInfo.bundlerInfo();
++            if (bundlerInfo != null) {
++                PacketBundleUnpacker packetBundleUnpacker = new PacketBundleUnpacker(bundlerInfo);
++                outboundConfigurationTask = outboundConfigurationTask.andThen(
++                        context -> context.pipeline().addAfter("encoder", "unbundler", packetBundleUnpacker)
++                );
++            }
++
++            boolean flag = protocolInfo.id() == ConnectionProtocol.LOGIN;
++
++            // Here we could execute it in event loop async to prevent waiting io task on main
++            this.channel.config().setAutoRead(false); // stop reading new packets to prevent some packets came into pipeline too early
++            final UnconfiguredPipelineHandler.OutboundConfigurationTask finalOutboundConfigurationTask = outboundConfigurationTask;
++            final Runnable writeTask = () -> {
++                final ChannelFuture future = this.channel.writeAndFlush(finalOutboundConfigurationTask.andThen(context -> this.sendLoginDisconnect = flag));
++
++                future.addListener(orginalFuture -> {
++                    try {
++                        if (orginalFuture.isSuccess()) {
++                            if (callback != null) callback.run(); // retire callback if there have one
++                            return;
++                        }
++
++                        final Throwable ex = orginalFuture.cause();
++
++                        // here we process our exceptions like that blocking one
++                        if (ex instanceof ClosedChannelException) {
++                            LOGGER.info("Connection closed during protocol change");
++                        } else {
++                            this.channel.pipeline().fireExceptionCaught(ex);
++                        }
++                    }finally {
++                        if (releaseAutoRead) {
++                            this.channel.config().setAutoRead(true);
++                            this.channel.read(); // read once
++                        }
++                    }
++                });
++            };
++
++            if (!this.channel.eventLoop().inEventLoop()) {
++                this.channel.eventLoop().execute(writeTask);
++                return;
++            }
++
++            writeTask.run();
++        }
++    }
++    // Luminol end
++
+     public <T extends PacketListener> void setupInboundProtocol(ProtocolInfo<T> protocolInfo, T packetInfo) {
+         this.validateListener(protocolInfo, packetInfo);
+         if (protocolInfo.flow() != this.getReceiving()) {
+diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+index 2c1930ec25f0e0bc66f967f05515838cad6cf066..0fa90315ca0750b5d533a5a3df93715a28f60bbc 100644
+--- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+@@ -157,8 +157,9 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+     public void handleConfigurationFinished(ServerboundFinishConfigurationPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.server);
+         this.finishCurrentTask(JoinWorldTask.TYPE);
+-        this.connection.setupOutboundProtocol(GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess())));
++        // this.connection.setupOutboundProtocol(GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess()))); // Luminol - Async protocol switch - move down
+ 
++        Runnable afterSwitch = () -> { // Luminol - Async protocol switch
+         try {
+             PlayerList playerList = this.server.getPlayerList();
+             if (playerList.getPlayer(this.gameProfile.getId()) != null) {
+@@ -246,6 +247,18 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+             this.connection.send(new ClientboundDisconnectPacket(DISCONNECT_REASON_INVALID_DATA));
+             this.connection.disconnect(DISCONNECT_REASON_INVALID_DATA);
+         }
++        // Luminol start - Async protocol switch
++        };
++        if (!me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) {
++            this.connection.setupOutboundProtocol(GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess())));
++            afterSwitch.run(); // directly run callback as we won't process any packet this time
++        } else {
++            this.connection.setupOutboundProtocolAsync(GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess())), () -> {
++                // push back
++                io.papermc.paper.threadedregions.RegionizedServer.getInstance().addTask(afterSwitch);
++            }, false); // we will start auto read once we set up inbound handler at placeNewPlayer in PlayerList
++        }
++        // Luminol end
+     }
+ 
+     @Override
+diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 736cefb8dd20b93995ee3acf8e8671e5c8fb4d8b..e72c0ebe0030a074987ded0638410819d1cc4fc5 100644
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -2783,7 +2783,7 @@ public class ServerGamePacketListenerImpl
+         // removed from the world
+         // Folia end - rewrite login process - fix bad ordering of this field write - move after removed from world
+         try { // Folia - rewrite login process - move connection ownership to global region
+-            this.hackSwitchingConfig = true; // Folia - rewrite login process - avoid adding logout ticket here
++            this.hackSwitchingConfig = true; // Folia - rewrite login process - avoid adding logout ticket here and retiring scheduler
+         this.removePlayerFromWorld();
+         } finally { // Folia start - rewrite login process - move connection ownership to global region
+             io.papermc.paper.threadedregions.RegionizedWorldData worldData = this.player.level().getCurrentWorldData();
+@@ -2792,7 +2792,13 @@ public class ServerGamePacketListenerImpl
+         } // Folia end - rewrite login process - move connection ownership to global region
+         this.waitingForSwitchToConfig = true; // Folia - rewrite login process - fix bad ordering of this field write - moved down
+         this.send(ClientboundStartConfigurationPacket.INSTANCE);
++        if (me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) { // Luminol - Async protocol switch
+         this.connection.setupOutboundProtocol(ConfigurationProtocols.CLIENTBOUND);
++        // Luminol start - Async protcol switch
++        } else {
++            this.connection.setupOutboundProtocolAsync(ConfigurationProtocols.CLIENTBOUND, null, true);
++        }
++        // Luminol end
+     }
+ 
+     @Override
+@@ -3627,12 +3633,25 @@ public class ServerGamePacketListenerImpl
+             throw new IllegalStateException("Client acknowledged config, but none was requested");
+         } else {
+             final ServerConfigurationPacketListenerImpl listener = new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())); // Paper
++            if (!me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled){ // Luminol - Async protocol switch
+             this.connection
+                 .setupInboundProtocol(
+                     ConfigurationProtocols.SERVERBOUND,
+                     listener // Paper
+                 );
+-            new io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent(listener.paperConnection).callEvent(); // Paper
++            new io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent(listener.paperConnection).callEvent(); }// Paper // Luminol - Async protocol switch - add "{"
++            // Luminol start - Async protocol switch - move up
++            else
++                this.connection.setupInboundProtocolAsync(
++                        ConfigurationProtocols.SERVERBOUND,
++                        listener,
++                        () -> {
++                            new io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent(listener.paperConnection).callEvent(); // Paper
++                        },
++                        true
++                );
++            // Luminol end
++            // new io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent(listener.paperConnection).callEvent(); // Paper // Luminol - Async protocol switch - move up
+         }
+     }
+ 
+diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+index d114935b0879f5d83ad6c03395d565b6b92c6679..7a19bbcc74205035dee111d3fff53446bf2aad04 100644
+--- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -414,14 +414,35 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+     public void handleLoginAcknowledgement(ServerboundLoginAcknowledgedPacket packet) {
+         net.minecraft.network.protocol.PacketUtils.ensureRunningOnSameThread(packet, this, this.server); // CraftBukkit
+         Validate.validState(this.state == ServerLoginPacketListenerImpl.State.PROTOCOL_SWITCHING, "Unexpected login acknowledgement packet");
+-        this.connection.setupOutboundProtocol(ConfigurationProtocols.CLIENTBOUND);
++        /*this.connection.setupOutboundProtocol(ConfigurationProtocols.CLIENTBOUND); // Luminol - Async protocol switch - Rewrite
+         CommonListenerCookie commonListenerCookie = CommonListenerCookie.createInitial(Objects.requireNonNull(this.authenticatedProfile), this.transferred);
+         ServerConfigurationPacketListenerImpl serverConfigurationPacketListenerImpl = new ServerConfigurationPacketListenerImpl(
+             this.server, this.connection, commonListenerCookie
+         );
+         this.connection.setupInboundProtocol(ConfigurationProtocols.SERVERBOUND, serverConfigurationPacketListenerImpl);
+         serverConfigurationPacketListenerImpl.startConfiguration();
++        this.state = ServerLoginPacketListenerImpl.State.ACCEPTED;*/ // Luminol - Async protocol switch - Rewrite
++
++        // Luminol start - Async protocol switch
+         this.state = ServerLoginPacketListenerImpl.State.ACCEPTED;
++        final CommonListenerCookie commonListenerCookie = CommonListenerCookie.createInitial(Objects.requireNonNull(this.authenticatedProfile), this.transferred);
++        final ServerConfigurationPacketListenerImpl serverConfigurationPacketListenerImpl = new ServerConfigurationPacketListenerImpl(
++                this.server, this.connection, commonListenerCookie
++        );
++
++        Runnable afterSwitch = () -> io.papermc.paper.threadedregions.RegionizedServer.getInstance().addTask(serverConfigurationPacketListenerImpl::startConfiguration); // push back to main thread
++
++        if (!me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) {
++            this.connection.setupOutboundProtocol(ConfigurationProtocols.CLIENTBOUND);
++            this.connection.setupInboundProtocol(ConfigurationProtocols.SERVERBOUND, serverConfigurationPacketListenerImpl);
++            afterSwitch.run();
++            return;
++        }
++
++        this.connection.setupInboundProtocolAsync(ConfigurationProtocols.SERVERBOUND, serverConfigurationPacketListenerImpl, () -> {
++            this.connection.setupOutboundProtocolAsync(ConfigurationProtocols.CLIENTBOUND, afterSwitch, true); // start auto read when everything is ready
++        }, false);
++        // Luminol end
+     }
+ 
+     @Override
+diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
+index 3563f0291e69e6c8a993c9e032fc39f6ff77d775..d2bb72ac2078569064bbf5d090ba35e4aaea8934 100644
+--- a/net/minecraft/server/players/PlayerList.java
++++ b/net/minecraft/server/players/PlayerList.java
+@@ -342,10 +342,12 @@ public abstract class PlayerList {
+             // only after setting the connection listener to game type, add the connection to this regions list
+             serverLevel.getCurrentWorldData().connections.add(connection);
+             // Folia end - rewrite login process
++            if (!me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) { // Luminol - Async protocol switch // we will run async switch once these main thread logics became done
+             connection.setupInboundProtocol(
+                 GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess()), serverGamePacketListenerImpl),
+                 serverGamePacketListenerImpl
+             );
++            } // Luminol - Async protocol switch
+             GameRules gameRules = serverLevel.getGameRules();
+             boolean _boolean = gameRules.getBoolean(GameRules.RULE_DO_IMMEDIATE_RESPAWN);
+             boolean _boolean1 = gameRules.getBoolean(GameRules.RULE_REDUCEDDEBUGINFO);
+@@ -497,6 +499,17 @@ public abstract class PlayerList {
+                 );
+             }
+             // Paper end - Send empty chunk
++            // Luminol start - Async protocol switch
++            if (me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) {
++                // auto read will be enabled once the async switch is done
++                connection.setupInboundProtocolAsync(
++                        GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess()), serverGamePacketListenerImpl),
++                        serverGamePacketListenerImpl,
++                        null, // we don't need do anything more
++                        true // start auto read which we have disabled in configuration handler
++                );
++            }
++            // Luminol end
+         }
+     }
+ 

@@ -8,7 +8,7 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index b634295565ecbb3e3d2d55ee9b4b379e9df185d9..eaec23a69b1ca6c0681ac9d31808fb5019d8f839 100644
+index 1862dc7b355d4c82e3843abdbdcbde4cec0d62c0..4905dae5179b49731b2ac6b124a27d799449d283 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1296,7 +1296,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -37,7 +37,7 @@ index b634295565ecbb3e3d2d55ee9b4b379e9df185d9..eaec23a69b1ca6c0681ac9d31808fb50
          AABB aabb = new AABB(this.blockPosition()).inflate(32.0, 10.0, 32.0);
          this.level()
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 144d15bda80d3e5fbae0a824088fe05567a259c6..45b6bce44db3f262f59e4473029568a1efd5a083 100644
+index 2cb06dbf7a1d172ff124e39cb150696708d55460..3441c6b9c13a4a648cb5b8c78d0373665fba98a2 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -277,6 +277,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <mrhua269@gmail.com>
-Date: Mon, 14 Jul 2025 16:26:49 +0800
+From: MrHua269 <wangxyper@163.com>
+Date: Tue, 11 Feb 2025 11:57:22 +0800
 Subject: [PATCH] Add tpsbar with chunkhot membar and region bar
 
 
@@ -22,10 +22,10 @@ index 400e632208d133a3f49fc7f14bceb48a1026769b..631bec0adee5b01bfb931c25195b949e
 +    // KioCG end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 4cdbd0965f42f30979a24444625532a29b43f9c3..c1052533b0debf931d5857ba8322255b3543089d 100644
+index f3e5cb73ce2b32a807156cc0797c6bfac753d50c..321203d5ce1c5c9443d8f93d44b56bb68ea4ded0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2442,6 +2442,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2316,6 +2316,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              handle.newLevel = data.getIntOr("newLevel", 0);
              handle.expToDrop = data.getIntOr("expToDrop", 0);
              handle.keepLevel = data.getBooleanOr("keepLevel", false);
@@ -41,7 +41,7 @@ index 4cdbd0965f42f30979a24444625532a29b43f9c3..c1052533b0debf931d5857ba8322255b
          });
      }
  
-@@ -2459,6 +2468,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2333,6 +2342,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          data.putLong("lastPlayed", System.currentTimeMillis());
          data.putString("lastKnownName", handle.getScoreboardName());
  
@@ -57,9 +57,9 @@ index 4cdbd0965f42f30979a24444625532a29b43f9c3..c1052533b0debf931d5857ba8322255b
          // Paper start - persist for use in offline save data
          ValueOutput paper = output.child("Paper");
          paper.putLong("LastLogin", handle.loginTime);
-@@ -3606,4 +3624,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
-             this(new ShortArraySet(), new ArrayList<>());
-         }
+@@ -3508,4 +3526,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+     public PlayerGameConnection getConnection() {
+         return this.getHandle().connection.playerGameConnection;
      }
 +
 +    // KioCG start - ChunkHot

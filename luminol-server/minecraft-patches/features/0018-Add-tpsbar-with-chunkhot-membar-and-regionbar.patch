@@ -17,7 +17,7 @@ index bd3ce123652af11974be4cbf8d2e96f1b2ee0a68..5f26fd89704aa3fd9c37a1d68a7c4c65
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 301322a4e9a746bc55c0ffb5059a70da1c389703..df682061f486e927dcf3dede6ef5c4f8f6643580 100644
+index c9975cdbbc09f3eddf0485212adb6640589d8c29..09acbb6ef948bbececf8607b2a06504b52f84d98 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1664,7 +1664,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -120,7 +120,7 @@ index 5e3be75b27ed609be005e8169dc84c125518253e..00482efc8e736e73ad136105ad7b9dd2
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 8ecdf803e1489375bc9dd955cd6031de724463f9..a089ca0b4a6a929784b26b02dff4f7dad9ffc2a0 100644
+index 81db215d81690c3e4a934e408058c6ebe6c9f577..07e6654607d31f9160089ebae06c7aa8562ab07f 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -429,7 +429,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -187,10 +187,10 @@ index ec20a5a6d7c8f65abda528fec36bec7bc71117f6..b971cd61db1cfa05b8f2fd6c8a2dac2e
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index dffc556bff51f4079ccd6b44167286d61fcbf474..2c5243d2a8ee5b3eb811b5161b759d5a1347caf1 100644
+index 02215bda382f939d51081ac118403672e25cf8af..1cc34fd81f5ce71c59475532dfa525a81b62f72c 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -6208,4 +6208,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6207,4 +6207,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return ((ServerLevel) this.level()).isPositionEntityTicking(this.blockPosition());
      }
      // Paper end - Expose entity id counter
@@ -262,10 +262,10 @@ index c2573946dd1244eb5d1ef2be7823211064daa80d..7e9662bf7c17b2f5eda2ff88970a23e4
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 73d1557f2d7d60a9a2ad2c3f710b0969c4c5cf40..47f62fbe97c559c25ad2bc67c18f2025c78e2c69 100644
+index 6de2b7702b07edd89784a5554fee4f7a75c521f8..2842314c712449625e9275aff7707c916c3ea767 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -1493,6 +1493,13 @@ public abstract class Player extends LivingEntity {
+@@ -1492,6 +1492,13 @@ public abstract class Player extends LivingEntity {
          return true;
      }
  

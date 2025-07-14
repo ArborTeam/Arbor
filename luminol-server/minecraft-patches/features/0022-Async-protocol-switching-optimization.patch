@@ -160,7 +160,7 @@ index 2c1930ec25f0e0bc66f967f05515838cad6cf066..0fa90315ca0750b5d533a5a3df93715a
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 736cefb8dd20b93995ee3acf8e8671e5c8fb4d8b..e72c0ebe0030a074987ded0638410819d1cc4fc5 100644
+index 736cefb8dd20b93995ee3acf8e8671e5c8fb4d8b..19a09ce0fd9bb6ad0bd01143d502561195831915 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2783,7 +2783,7 @@ public class ServerGamePacketListenerImpl
@@ -176,7 +176,7 @@ index 736cefb8dd20b93995ee3acf8e8671e5c8fb4d8b..e72c0ebe0030a074987ded0638410819
          } // Folia end - rewrite login process - move connection ownership to global region
          this.waitingForSwitchToConfig = true; // Folia - rewrite login process - fix bad ordering of this field write - moved down
          this.send(ClientboundStartConfigurationPacket.INSTANCE);
-+        if (me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) { // Luminol - Async protocol switch
++        if (!me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) { // Luminol - Async protocol switch
          this.connection.setupOutboundProtocol(ConfigurationProtocols.CLIENTBOUND);
 +        // Luminol start - Async protcol switch
 +        } else {

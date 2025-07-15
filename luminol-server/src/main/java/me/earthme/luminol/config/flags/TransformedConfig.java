@@ -13,6 +13,8 @@ public @interface TransformedConfig {
 
     String[] category();
 
+    String originInstance() default "";
+
     boolean transform() default true;
 
     boolean transformComments() default true;

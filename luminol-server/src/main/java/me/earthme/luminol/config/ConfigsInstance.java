@@ -149,31 +149,35 @@ public class ConfigsInstance {
                 if (!configFileInstance.contains(fullConfigKeyName) || removed) {
                     for (TransformedConfig transformedConfig : field.getAnnotationsByType(TransformedConfig.class)) {
                         final String oldConfigKeyName = String.join(".", transformedConfig.category()) + "." + transformedConfig.name();
-                        Object oldValue = configFileInstance.get(oldConfigKeyName);
-                        if (oldValue != null) {
-                            boolean success = true;
-                            if (transformedConfig.transform() && !removed) {
-                                try {
-                                    for (Class<? extends DefaultTransformLogic> logic : transformedConfig.transformLogic()) {
-                                        oldValue = logic.getDeclaredConstructor().newInstance().transform(oldValue);
+                        if (!Objects.equals(transformedConfig.originInstance(), "")) {
+                            ConfigManager.registerTransformedConfig(transformedConfig.originInstance(), name, oldConfigKeyName, fullConfigKeyName, transformedConfig);
+                        } else {
+                            Object oldValue = configFileInstance.get(oldConfigKeyName);
+                            if (oldValue != null) {
+                                boolean success = true;
+                                if (transformedConfig.transform() && !removed) {
+                                    try {
+                                        for (Class<? extends DefaultTransformLogic> logic : transformedConfig.transformLogic()) {
+                                            oldValue = logic.getDeclaredConstructor().newInstance().transform(oldValue);
+                                        }
+                                        configFileInstance.set(fullConfigKeyName, oldValue);
+                                    } catch (Exception e) {
+                                        success = false;
+                                        logger.error("Failed to transform removed config {}!", transformedConfig.name());
                                     }
-                                    configFileInstance.add(fullConfigKeyName, oldValue);
-                                } catch (Exception e) {
-                                    success = false;
-                                    logger.error("Failed to transform removed config {}!", transformedConfig.name());
+
+                                    if (transformedConfig.transformComments()) {
+                                        configFileInstance.setComment(fullConfigKeyName, configFileInstance.getComment(oldConfigKeyName));
+                                    }
                                 }
 
-                                if (transformedConfig.transformComments()) {
-                                    configFileInstance.setComment(fullConfigKeyName, configFileInstance.getComment(oldConfigKeyName));
-                                }
+                                if (success) removeConfig(oldConfigKeyName, transformedConfig.category());
+                                final String comments = configInfo.comments();
+
+                                if (!comments.isBlank()) configFileInstance.setComment(fullConfigKeyName, comments);
+
+                                if (!removed && configFileInstance.get(fullConfigKeyName) != null) break;
                             }
-
-                            if (success) removeConfig(oldConfigKeyName, transformedConfig.category());
-                            final String comments = configInfo.comments();
-
-                            if (!comments.isBlank()) configFileInstance.setComment(fullConfigKeyName, comments);
-
-                            if (!removed && configFileInstance.get(fullConfigKeyName) != null) break;
                         }
                     }
                     if (removed) {
@@ -285,6 +289,10 @@ public class ConfigsInstance {
 
     public String getConfig(String key) {
         return configFileInstance.get(key).toString();
+    }
+
+    public CommentedFileConfig getFileInstance() {
+        return configFileInstance;
     }
 
     public List<String> completeConfigPath(String partialPath) {

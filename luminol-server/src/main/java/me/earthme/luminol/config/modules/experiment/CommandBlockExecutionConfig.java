@@ -3,11 +3,8 @@ package me.earthme.luminol.config.modules.experiment;
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigInfo;
-import me.earthme.luminol.config.flags.TransformedConfig;
 
 public class CommandBlockExecutionConfig implements IConfigModule {
-
-    @TransformedConfig(name = "enabled", category = {"experiment", "force_enable_command_block_execution"})
     @ConfigInfo(baseName = "enabled")
     public static boolean enabled = false;
 

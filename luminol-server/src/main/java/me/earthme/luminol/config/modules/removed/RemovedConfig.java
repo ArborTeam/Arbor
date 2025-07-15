@@ -6,7 +6,6 @@ import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
 
 public class RemovedConfig implements IConfigModule {
-    @TransformedConfig(name = "enabled", category = {"experiment", "force_enable_command_block_execution"}, transform = false)
     @TransformedConfig(name = "enabled", category = {"experiment", "enable_tick_command"}, transform = false)
     @TransformedConfig(name = "barrel_rows", category = {"misc", "container_expansion"}, transform = false)
     @TransformedConfig(name = "enderchest_rows", category = {"misc", "container_expansion"}, transform = false)

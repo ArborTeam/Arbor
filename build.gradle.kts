@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java // TODO java launcher tasks
-    id("io.papermc.paperweight.patcher") version "2.0.0-beta.18"
+    id("moe.luminolmc.hyacinthusweight.patcher") version "2.0.2-20250716.131730-1"
 }
 
 paperweight {
@@ -36,6 +36,7 @@ paperweight {
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
+val menthaMavenPublicUrl = "https://repo.menthamc.com/repository/maven-snapshots/";
 
 subprojects {
     apply(plugin = "java-library")
@@ -50,6 +51,7 @@ subprojects {
     repositories {
         mavenCentral()
         maven(paperMavenPublicUrl)
+        maven(menthaMavenPublicUrl)
     }
 
     dependencies {

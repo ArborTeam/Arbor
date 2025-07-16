@@ -14,7 +14,7 @@
  dependencies {
      mache("io.papermc:mache:1.21.7+build.2")
 -    paperclip("io.papermc:paperclip:3.0.3")
-+    hyacinthusclip("moe.luminolmc:hyacinthusclip:3.0.4-20250715.151039-2")
++    hyacinthusclip("moe.luminolmc:hyacinthusclip:+")
      testRuntimeOnly("org.junit.platform:junit-platform-launcher")
  }
  

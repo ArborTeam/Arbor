@@ -311,8 +311,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 while (sectorData.hasRemaining()) {
                     offset += tempChannel.write(sectorData, offset);
                 }
-
-                DirectBufferReleaser.clean(sectorData);
             }
 
             tempChannel.force(true);
@@ -388,7 +386,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         data.position(oldPositionOfData);
 
         // uncompressed length + timestamp + xxhash32
-        final ByteBuffer chunkSectionBuilder = ByteBuffer.allocateDirect(data.remaining() + 4 + 8 + 4);
+        final ByteBuffer chunkSectionBuilder = ByteBuffer.allocate(data.remaining() + 4 + 8 + 4);
 
         chunkSectionBuilder.putInt(data.remaining()); // Length
         chunkSectionBuilder.putLong(System.currentTimeMillis()); // Timestamp
@@ -397,8 +395,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
         chunkSectionBuilder.flip();
 
         this.writeChunkDataRaw(chunkIndex, chunkSectionBuilder);
-
-        DirectBufferReleaser.clean(chunkSectionBuilder);
     }
 
     private @Nullable ByteBuffer readChunk(int x, int z) throws IOException {
@@ -568,7 +564,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
 
         public @NotNull ByteBuffer read(@NotNull FileChannel channel) throws IOException {
-            final ByteBuffer result = ByteBuffer.allocateDirect((int) this.length);
+            final ByteBuffer result = ByteBuffer.allocate((int) this.length);
 
             channel.read(result, this.offset);
             result.flip();
@@ -590,7 +586,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
 
         private @NotNull ByteBuffer getEncoded() {
-            final ByteBuffer buffer = ByteBuffer.allocateDirect(sizeOfSingle());
+            final ByteBuffer buffer = ByteBuffer.allocate(sizeOfSingle());
 
             buffer.putLong(this.offset);
             buffer.putLong(this.length);
@@ -661,12 +657,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         byte[] sectorData = new byte[size];
                         dataStream.readFully(sectorData, 0, size); // data
 
-                        final ByteBuffer sectorDataNioBuffer = ByteBuffer.allocateDirect(size);
-                        sectorDataNioBuffer.put(sectorData);
-                        sectorDataNioBuffer.flip();
+                        final ByteBuffer sectorDataNioBuffer = ByteBuffer.wrap(sectorData);
 
                         BufferedLinearRegionFile.this.writeChunkDataRaw(index, sectorDataNioBuffer);
-                        DirectBufferReleaser.clean(sectorDataNioBuffer);
                     }
                 }
             }
@@ -707,9 +700,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         byte[] chunkData = new byte[size];
                         bufferHelper.read(chunkData);
 
-                        final ByteBuffer chunkDataNioBuffer = ByteBuffer.allocateDirect(size);
-                        chunkDataNioBuffer.put(chunkData);
-                        chunkDataNioBuffer.flip();
+                        final ByteBuffer chunkDataNioBuffer = ByteBuffer.wrap(chunkData);
 
                         final int[] posByAxis = coordinatesFromOrdinal(i);
 
@@ -717,7 +708,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         final int z = posByAxis[1];
 
                         BufferedLinearRegionFile.this.writeChunk(x, z, chunkDataNioBuffer);
-                        DirectBufferReleaser.clean(chunkDataNioBuffer);
                     }
                 }
             }
@@ -777,17 +767,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         zstdDataStream.writeInt(0);
                         continue;
                     }
-
-                    final int lengthOfData = chunkData.remaining();
-
-                    // convert to heap buffer
-                    final byte[] buffer = new byte[lengthOfData];
-                    chunkData.get(buffer);
-                    // clean manually
-                    DirectBufferReleaser.clean(chunkData);
-
+                    
+                    final byte[] buffer = chunkData.array();
                     // store
-                    zstdDataStream.writeInt(lengthOfData); // len
+                    zstdDataStream.writeInt(buffer.length); // len
                     zstdDataStream.write(buffer); // data
                 }
 

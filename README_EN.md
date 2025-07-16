@@ -16,8 +16,8 @@
 ## Features
 - Configurable vanilla features
 - Tpsbar support
-- Linear region file format(from kaiiju)
-- Useful optimizations to improve the performance of single threaded region
+- Linear and BufferedLinear(AKA. b_linear)(a reimplementation of linear) region format support
+- Useful fixes of bugs of folia
 - More API support for plugin development (W.I.P)
 
 ## Download

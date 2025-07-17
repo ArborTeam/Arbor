@@ -443,7 +443,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 return null;
             }
 
-            return new DataInputStream(new ByteArrayInputStream(data.array()));
+            final byte[] baked = new byte[data.remaining()];
+            data.get(baked);
+
+            return new DataInputStream(new ByteArrayInputStream(baked));
         } finally {
             this.regionObjectLock.readLock().unlock();
         }

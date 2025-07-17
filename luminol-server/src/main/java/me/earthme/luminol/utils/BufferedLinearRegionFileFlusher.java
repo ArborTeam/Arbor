@@ -108,7 +108,13 @@ public class BufferedLinearRegionFileFlusher implements Runnable {
         }
     }
 
-    public void aadFile(BufferedLinearRegionFile fileToAdd) {
+    public void removeFile(BufferedLinearRegionFile fileToRemove) {
+        synchronized (this) {
+            this.inManagement.remove(fileToRemove);
+        }
+    }
+
+    public void addFile(BufferedLinearRegionFile fileToAdd) {
         synchronized (this) {
             this.inManagement.add(fileToAdd);
         }

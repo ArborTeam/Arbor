@@ -6,7 +6,6 @@ import ca.spottedleaf.moonrise.patches.chunk_system.io.MoonriseRegionFileIO;
 import com.github.luben.zstd.ZstdInputStream;
 import com.github.luben.zstd.ZstdOutputStream;
 import me.earthme.luminol.utils.BufferedLinearRegionFileFlusher;
-import me.earthme.luminol.utils.DirectBufferReleaser;
 import net.jpountz.xxhash.XXHash32;
 import net.jpountz.xxhash.XXHashFactory;
 import net.minecraft.nbt.CompoundTag;
@@ -73,6 +72,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private static final VarHandle BEING_SYNCED_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "beingSynced", boolean.class);
     private static final VarHandle LAST_WRITTEN_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "lastWritten", long.class);
 
+    private final BufferedLinearRegionFileFlusher flusher;
+
     public BufferedLinearRegionFile(Path masterFilePath, int compressionLevel, @NotNull BufferedLinearRegionFileFlusher flusher) throws IOException {
         this.masterFilePath = masterFilePath;
         this.swapFilePath = Path.of(this.masterFilePath.toString() + ".swp");
@@ -82,7 +83,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.initSwapFile();
         this.loadSwapDataFromMasterFile();
 
-        flusher.aadFile(this);
+        this.flusher = flusher;
+
+        this.flusher.addFile(this);
     }
 
     public boolean markAsBeingSynced() {
@@ -170,7 +173,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             return;
         }
 
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(this.headerSize());
+        final ByteBuffer buffer = ByteBuffer.allocate(this.headerSize());
         this.swapFileChannel.read(buffer, 0);
         buffer.flip();
 
@@ -188,12 +191,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 this.currentAcquiredIndex = Math.max(this.currentAcquiredIndex, sector.offset + sector.length);
             }
         }
-
-        DirectBufferReleaser.clean(buffer);
     }
 
     private void writeSwapFileHeaders() throws IOException {
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(this.headerSize());
+        final ByteBuffer buffer = ByteBuffer.allocate(this.headerSize());
 
         buffer.putLong(SWAP_FILE_SUPER_BLOCK); // Magic
         buffer.put(SWAP_FILE_VERSION); // Version
@@ -211,8 +212,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
         while (buffer.hasRemaining()) {
             offset += this.swapFileChannel.write(buffer, offset);
         }
-
-        DirectBufferReleaser.clean(buffer);
     }
 
     private int sectorSize() {
@@ -263,6 +262,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     private void closeInternal() throws IOException {
         this.closed = true;
+        this.flusher.removeFile(this);
         this.writeSwapFileHeaders();
         this.swapFileChannel.force(true);
         this.syncToMasterFile();
@@ -279,42 +279,43 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 StandardOpenOption.READ
         )) {
             // get the latest head in file
-            final ByteBuffer headerBuffer = ByteBuffer.allocateDirect(this.headerSize());
+            final ByteBuffer headerBuffer = ByteBuffer.allocate(this.headerSize());
             this.swapFileChannel.read(headerBuffer, 0);
             headerBuffer.flip();
 
-            long offsetHeader = 0;
+            long offset = 0;
             while (headerBuffer.hasRemaining()) {
-                offsetHeader += tempChannel.write(headerBuffer, offsetHeader);
+                offset += tempChannel.write(headerBuffer, offset);
             }
-            DirectBufferReleaser.clean(headerBuffer);
 
-            int offsetPointer = this.headerSize();
+            long offsetPointer = this.headerSize();
+            tempChannel.position(offsetPointer);
+
             for (Sector sector : this.sectors) {
                 // skip cleared or no data-contained sectors
                 if (!sector.hasData()) {
                     continue;
                 }
 
-                // only read the available data
-                final ByteBuffer sectorData = sector.read(this.swapFileChannel);
-                final int length = sectorData.remaining();
+                // transfer to target
+                long transferred = 0;
+                while (transferred < sector.length) {
+                    transferred += this.swapFileChannel.transferTo(
+                            sector.offset + transferred,
+                            sector.length - transferred,
+                            tempChannel);
+                }
 
                 // recalculate the offset and length
-                final Sector newRecalculated = new Sector(sector.index, offsetPointer, length);
-                offsetPointer += length;
-                this.sectors[sector.index] = newRecalculated; // update sector infos
-
+                final Sector newRecalculated = new Sector(sector.index, offsetPointer, sector.length);
                 newRecalculated.hasData = true;
 
-                long offset = newRecalculated.offset;
-                while (sectorData.hasRemaining()) {
-                    offset += tempChannel.write(sectorData, offset);
-                }
+                offsetPointer += sector.length;
+                this.sectors[sector.index] = newRecalculated; // update sector infos
             }
 
             tempChannel.force(true);
-            this.currentAcquiredIndex = tempChannel.size();
+            this.currentAcquiredIndex = offsetPointer;
         }
 
         this.swapFileChannel.close();
@@ -647,7 +648,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
             // Skip newestTimestamp (Long) + Compression level (Byte): Unused.
             ioStream.skipBytes(9);
 
-            try (DataInputStream dataStream = new DataInputStream(new ZstdInputStream(ioStream))) {
+            try (ZstdInputStream decompressStream = new ZstdInputStream(ioStream);
+                    DataInputStream dataStream = new DataInputStream(decompressStream)) {
                 for (int index = 0; index < 1024; index++) {
                     int size = dataStream.readInt(); // len
 

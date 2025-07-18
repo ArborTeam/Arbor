@@ -298,13 +298,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 }
 
                 // transfer to target
-                long transferred = 0;
-                while (transferred < sector.length) {
-                    transferred += this.swapFileChannel.transferTo(
-                            sector.offset + transferred,
-                            sector.length - transferred,
-                            tempChannel);
-                }
+                sector.transferTo(this.swapFileChannel, tempChannel);
 
                 // recalculate the offset and length
                 final Sector newRecalculated = new Sector(sector.index, offsetPointer, sector.length);
@@ -560,6 +554,16 @@ public class BufferedLinearRegionFile implements IRegionFile {
             this.index = index;
             this.offset = offset;
             this.length = length;
+        }
+
+        public void transferTo(@NotNull FileChannel source, @NotNull FileChannel target) throws IOException {
+            long transferred = 0;
+            while (transferred < this.length) {
+                transferred += source.transferTo(
+                        this.offset + transferred,
+                        this.length - transferred,
+                        target);
+            }
         }
 
         public @NotNull ByteBuffer read(@NotNull FileChannel channel) throws IOException {

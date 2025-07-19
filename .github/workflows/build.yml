@@ -31,15 +31,15 @@ jobs:
         run: git config --global user.email "ci@luminolmc.com" && git config --global user.name "LuminolMC CI"
 
       - name: Apply All Patches
-        run: ./gradlew applyAllPatches
+        run: ./gradlew --refresh-dependencies applyAllPatches
 
       - name: CreateMojmapPaperclipJar
-        run: ./gradlew createMojmapPaperclipJar
+        run: ./gradlew --refresh-dependencies createMojmapPaperclipJar
 
       - name: Publish to repo
         if: github.event_name != 'pull_request'
         continue-on-error: true
-        run: ./gradlew generateDevelopmentBundle publish -PpublishDevBundle=true
+        run: ./gradlew --refresh-dependencies generateDevelopmentBundle publish -PpublishDevBundle=true
         env:
           PRIVATE_MAVEN_REPO_PASSWORD: ${{ secrets.PRIVATE_MAVEN_REPO_PASSWORD }}
           PRIVATE_MAVEN_REPO_USERNAME: ${{ secrets.PRIVATE_MAVEN_REPO_USERNAME }}

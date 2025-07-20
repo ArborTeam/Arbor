@@ -69,7 +69,6 @@ dependencies {
 
 **QQ群: [1015048616](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=QML5kIVsniPi1PlZvnjHQT_02EHsZ5Jc&authKey=%2FTCJsZC7JFQ9sxAroPCKuYnlV57Z5fyqp36ewXZk3Sn4iJ9p4MB1JKdc%2FFcX3HOM&noverify=0&group_code=1015048616)** | QQ频道: [点击加入](https://pd.qq.com/s/eq9krf9j) | Telegram: [点击加入](https://t.me/LuminolMinecraft) | Discord: [点击加入](https://discord.gg/Qd7m3V6eDx)
 
-
 ## 关于 Issue
 当您遇到任何问题时，请向我们提问，我们将尽力解决，但请记得清楚地描述您的问题并提供足够的日志等信息。
 
@@ -83,7 +82,7 @@ dependencies {
 <b>感谢[LegacyLands](https://github.com/LegacyLands)对本项目的赞助,如果你想开发一些跨folia/非folia平台的插件,[legacy-lands-library](https://github.com/LegacyLands/legacy-lands-library/)将会是个不错的lib</b>
 
 ![legacy-lands-logo](public/image/legacy-lands-logo.png)
- 
+
 ---
 ![rain-yun-logo](public/image/rain-yun.png)
 

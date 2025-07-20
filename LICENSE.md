@@ -2,7 +2,7 @@ Luminol inherits its licensing from the included upstream projects.
 
 Luminol从上游继承了许可证。
 
-As such, Luminol is licensed under the 
+As such, Luminol is licensed under the
 [GNU General Public License version 3](licenses/GPL.md); as it inherits it from Folia,
 who in turn inherits it from the original Paper, Spigot, Bukkit and CraftBukkit projects.
 

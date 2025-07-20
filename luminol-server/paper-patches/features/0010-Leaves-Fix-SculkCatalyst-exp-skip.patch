@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Helvetica Volubi <suisuroru@blue-millennium.fun>
 Date: Sat, 24 May 2025 02:26:33 +0800
-Subject: [PATCH] Leaves Fix SculkCatalyst exp skip
+Subject: [PATCH] Leaves: Fix SculkCatalyst exp skip
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 7972155606951173c0e4a0c7b937959dacb54d5f..cb1eb951e19efbee8a524050c212eb116b3b56a2 100644
+index e1aa4ce0cda19547ef396b89dc0c90c1018fee31..80efa6d78f631272d9b924f53a14fbd6595660a1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -862,7 +862,7 @@ public class CraftEventFactory {

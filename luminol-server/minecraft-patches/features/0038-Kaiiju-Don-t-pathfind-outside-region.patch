@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 11:03:59 +0800
-Subject: [PATCH] Kaiiju: Do not pathfind outside region
+Subject: [PATCH] Kaiiju: Don't pathfind outside region
 
 Co-authored by: Sofiane H. Djerbi <46628754+kugge@users.noreply.github.com>
 As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/patches/server/0028-Don-t-pathfind-outside-region.patch)

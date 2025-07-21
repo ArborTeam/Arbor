@@ -66,7 +66,7 @@
      }
  }
  val log4jPlugins = sourceSets.create("log4jPlugins") {
-@@ -153,7 +_,21 @@
+@@ -153,7 +_,22 @@
  }
  
  dependencies {
@@ -79,6 +79,7 @@
 +    implementation("net.openhft:zero-allocation-hashing:0.16")
 +    implementation("io.github.classgraph:classgraph:4.8.158")
 +    implementation("net.openhft:affinity:3.23.3")
++    implementation("io.netty:netty-all:4.2.3.Final") // bump netty
 +    // Leaves start - leaves plugin
 +    implementation("org.spongepowered:configurate-gson:4.2.0-SNAPSHOT") {
 +        exclude(group = "com.google.code.gson", module = "gson")
@@ -89,7 +90,7 @@
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -213,26 +_,33 @@
+@@ -213,26 +_,42 @@
      implementation("me.lucko:spark-paper:1.10.133-20250413.112336-1")
  }
  
@@ -99,6 +100,15 @@
 +    compilerArgs.add("--add-modules=jdk.incubator.vector")
 +}
 +// Pufferfish End
++
++// Luminol start - Hide unnecessary warnings
++tasks.withType<JavaCompile> {
++    val compilerArgs = options.compilerArgs
++    compilerArgs.add("-Xlint:-module")
++    compilerArgs.add("-Xlint:-removal")
++    compilerArgs.add("-Xlint:-dep-ann")
++}
++// Luminol end
 +
  tasks.jar {
      manifest {

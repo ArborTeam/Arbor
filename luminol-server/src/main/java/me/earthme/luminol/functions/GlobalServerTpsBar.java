@@ -8,6 +8,7 @@ import io.papermc.paper.threadedregions.TickRegionScheduler;
 import io.papermc.paper.threadedregions.TickRegions;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.earthme.luminol.config.modules.misc.TpsBarConfig;
+import me.earthme.luminol.utils.EnumStatusBarDisplay;
 import me.earthme.luminol.utils.NullPlugin;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -100,12 +101,16 @@ public class GlobalServerTpsBar {
             final TickData.TickReportData reportData = region.getData().getRegionSchedulingHandle().getTickReport5s(System.nanoTime());
 
 
-            BossBar targetBossbar = uuid2Bossbars.computeIfAbsent(
-                    playerUUID,
-                    unused -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(3)), BossBar.Overlay.NOTCHED_20)
-            );
+            BossBar targetBossbar = null;
 
-            apiPlayer.showBossBar(targetBossbar);
+            if (TpsBarConfig.display == EnumStatusBarDisplay.BOSS_BAR) {
+                targetBossbar = uuid2Bossbars.computeIfAbsent(
+                        playerUUID,
+                        unused -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(3)), BossBar.Overlay.NOTCHED_20)
+                );
+
+                apiPlayer.showBossBar(targetBossbar);
+            }
 
             if (reportData != null) {
                 final TickData.SegmentData tpsData = reportData.tpsData().segmentAll();
@@ -123,15 +128,27 @@ public class GlobalServerTpsBar {
     }
 
     private static void updateTpsBar(double tps, double mspt, @NotNull BossBar bar, @NotNull Player player) {
-        bar.name(MiniMessage.miniMessage().deserialize(
+        final Component message = MiniMessage.miniMessage().deserialize(
                 TpsBarConfig.tpsBarFormat,
                 Placeholder.component("tps", getTpsComponent(tps)),
                 Placeholder.component("mspt", getMsptComponent(mspt)),
                 Placeholder.component("ping", getPingComponent(player.getPing())),
                 Placeholder.component("chunkhot", getChunkHotComponent(player.getNearbyChunkHot()))
-        ));
-        bar.color(barColorFromTps(tps));
-        bar.progress((float) Math.min((float) 1, Math.max(mspt / 50, 0)));
+        );
+
+        switch (TpsBarConfig.display) {
+            case ACTION_BAR -> player.sendActionBar(message);
+
+            case BOSS_BAR -> {
+                bar.name(message);
+                bar.color(barColorFromTps(tps));
+                bar.progress((float) Math.min((float) 1, Math.max(mspt / 50, 0)));
+            }
+
+            case TAB_LIST -> player.sendPlayerListFooter(message);
+
+            default -> throw new IllegalStateException();
+        }
     }
 
     private static @NotNull Component getPingComponent(int ping) {
@@ -167,7 +184,7 @@ public class GlobalServerTpsBar {
         final String content = "<%s><text></%s>";
         final String replaced = String.format(content, colorString, colorString);
 
-        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.format("%.2f", mspt)));
+        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.format("%." + TpsBarConfig.precisionOfMSPT + "f", mspt)));
     }
 
     private static @NotNull Component getChunkHotComponent(long chunkHot) {
@@ -219,7 +236,7 @@ public class GlobalServerTpsBar {
         final String content = "<%s><text></%s>";
         final String replaced = String.format(content, colorString, colorString);
 
-        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.format("%.2f", tps)));
+        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.format("%." + TpsBarConfig.precisionOfTPS + "f", tps)));
     }
 
     private static BossBar.Color barColorFromTps(double tps) {

@@ -8,6 +8,8 @@ import io.papermc.paper.threadedregions.TickRegionScheduler;
 import io.papermc.paper.threadedregions.TickRegions;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.earthme.luminol.config.modules.misc.RegionBarConfig;
+import me.earthme.luminol.config.modules.misc.TpsBarConfig;
+import me.earthme.luminol.utils.EnumStatusBarDisplay;
 import me.earthme.luminol.utils.NullPlugin;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -102,12 +104,15 @@ public class GlobalServerRegionBar {
             final TickData.TickReportData reportData = region.getData().getRegionSchedulingHandle().getTickReport5s(System.nanoTime());
             final TickRegions.RegionStats regionStats = region.getData().getRegionStats();
 
-            BossBar targetBossbar = uuid2Bossbars.computeIfAbsent(
-                    playerUUID,
-                    unused -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.GREEN, BossBar.Overlay.NOTCHED_20)
-            );
+            BossBar targetBossbar = null;
+            if (RegionBarConfig.display == EnumStatusBarDisplay.BOSS_BAR) {
+                targetBossbar = uuid2Bossbars.computeIfAbsent(
+                        playerUUID,
+                        unused -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.GREEN, BossBar.Overlay.NOTCHED_20)
+                );
 
-            apiPlayer.showBossBar(targetBossbar);
+                apiPlayer.showBossBar(targetBossbar);
+            }
 
             if (reportData != null) {
                 final double utilisation = reportData.utilisation();
@@ -115,7 +120,7 @@ public class GlobalServerRegionBar {
                 final int playerCount = regionStats.getPlayerCount();
                 final int entityCount = regionStats.getEntityCount();
 
-                updateRegionBar(utilisation, chunkCount, playerCount, entityCount, targetBossbar);
+                updateRegionBar(utilisation, chunkCount, playerCount, entityCount, targetBossbar, apiPlayer);
             }
         }, () -> {
             final BossBar removed = uuid2Bossbars.remove(playerUUID); // Auto clean up it
@@ -126,20 +131,30 @@ public class GlobalServerRegionBar {
         }, 1, RegionBarConfig.updateInterval);
     }
 
-    private static void updateRegionBar(double utilisation, int chunks, int players, int entities, @NotNull BossBar bar) {
+    private static void updateRegionBar(double utilisation, int chunks, int players, int entities, @NotNull BossBar bar, Player player) {
         final double utilisationPercent = utilisation * 100.0;
         final String formattedUtil = ONE_DECIMAL_PLACES.get().format(utilisationPercent);
-
-        bar.name(MiniMessage.miniMessage().deserialize(
+        final Component message = MiniMessage.miniMessage().deserialize(
                 RegionBarConfig.regionBarFormat,
                 Placeholder.component("util", getUtilComponent(formattedUtil)),
                 Placeholder.component("chunks", getChunksComponent(chunks)),
                 Placeholder.component("players", getPlayersComponent(players)),
                 Placeholder.component("entities", getEntitiesComponent(entities))
-        ));
+        );
 
-        bar.color(barColorFromUtil(utilisationPercent));
-        bar.progress((float) Math.min(1.0, Math.max(utilisation, 0)));
+        switch (RegionBarConfig.display) {
+            case ACTION_BAR -> player.sendActionBar(message);
+
+            case BOSS_BAR -> {
+                bar.name(message);
+                bar.color(barColorFromUtil(utilisationPercent));
+                bar.progress((float) Math.min(1.0, Math.max(utilisation, 0)));
+            }
+
+            case TAB_LIST -> player.sendPlayerListFooter(message);
+
+            default -> throw new IllegalStateException();
+        }
     }
 
     private static @NotNull Component getEntitiesComponent(int entities) {

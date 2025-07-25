@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.earthme.luminol.config.modules.misc.MembarConfig;
+import me.earthme.luminol.utils.EnumStatusBarDisplay;
 import me.earthme.luminol.utils.NullPlugin;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -105,14 +106,18 @@ public class GlobalServerMemoryBar {
             long used = heap.getUsed();
             long xmx = heap.getMax();
 
-            BossBar targetBossbar = uuid2Bossbars.computeIfAbsent(
-                    playerUUID,
-                    (unused1) -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.valueOf(MembarConfig.memColors.get(3)), BossBar.Overlay.NOTCHED_20)
-            );
+            BossBar targetBossbar = null;
 
-            apiPlayer.showBossBar(targetBossbar);
+            if (MembarConfig.display == EnumStatusBarDisplay.BOSS_BAR) {
+                targetBossbar = uuid2Bossbars.computeIfAbsent(
+                        playerUUID,
+                        (unused1) -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.valueOf(MembarConfig.memColors.get(3)), BossBar.Overlay.NOTCHED_20)
+                );
 
-            updateMembar(targetBossbar, used, xmx);
+                apiPlayer.showBossBar(targetBossbar);
+            }
+
+            updateMembar(apiPlayer, targetBossbar, used, xmx);
         }, () -> {
             final BossBar removed = uuid2Bossbars.remove(apiPlayer.getUniqueId());
 
@@ -122,15 +127,27 @@ public class GlobalServerMemoryBar {
         }, 1, MembarConfig.updateInterval);
     }
 
-    private static void updateMembar(@NotNull BossBar bar, long used, long xmx) {
+    private static void updateMembar(Player player, @NotNull BossBar bar, long used, long xmx) {
         double percent = Math.max(Math.min((float) used / xmx, 1.0F), 0.0F);
-        bar.name(MiniMessage.miniMessage().deserialize(
+        final Component message = MiniMessage.miniMessage().deserialize(
                 MembarConfig.memBarFormat,
                 Placeholder.component("used", getMemoryComponent(used, xmx)),
                 Placeholder.component("available", getMaxMemComponent(xmx))
-        ));
-        bar.color(barColorFromMemory(percent));
-        bar.progress((float) percent);
+        );
+
+        switch (MembarConfig.display) {
+            case BOSS_BAR -> {
+                bar.name(message);
+                bar.color(barColorFromMemory(percent));
+                bar.progress((float) percent);
+            }
+
+            case ACTION_BAR -> player.sendActionBar(message);
+
+            case TAB_LIST -> player.sendPlayerListFooter(message);
+
+            default -> throw new IllegalStateException();
+        }
     }
 
     private static @NotNull Component getMaxMemComponent(double max) {

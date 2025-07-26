@@ -143,8 +143,8 @@ public class ConfigsInstance {
 
                 field.setAccessible(true);
                 final Object currentValue = field.get(null);
-                if (!alreadyInit) defaultvalueMap.put(fullConfigKeyName, currentValue);
                 boolean removed = fullConfigKeyName.equals("removed.removed_config.removed");
+                if (!alreadyInit && !removed) defaultvalueMap.put(fullConfigKeyName, currentValue);
 
                 if (!configFileInstance.contains(fullConfigKeyName) || removed) {
                     for (TransformedConfig transformedConfig : field.getAnnotationsByType(TransformedConfig.class)) {

@@ -13,6 +13,9 @@ public class CollisionBehaviorConfig implements IConfigModule {
                     PAPER""")
     public static String behaviorMode = "BLOCK_SHAPE_VANILLA";
 
+    @ConfigInfo(baseName = "vanilla_fluid_pushing")
+    public static boolean vanillaFluidPushing = false;
+
     @Override
     public EnumConfigCategory getCategory() {
         return EnumConfigCategory.MISC;

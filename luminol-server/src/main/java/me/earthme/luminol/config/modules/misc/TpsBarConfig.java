@@ -60,7 +60,7 @@ public class TpsBarConfig implements IConfigModule {
             logger.warn("Could not found display : {} ! Falling back to default", displayString);
             display = EnumStatusBarDisplay.BOSS_BAR;
         } else {
-            display =  EnumStatusBarDisplay.valueOf(displayString);
+            display = EnumStatusBarDisplay.valueOf(displayString);
         }
 
         if (tpsbarEnabled) {

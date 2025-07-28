@@ -34,42 +34,42 @@ public class LeavesPluginMeta extends PaperPluginMeta {
 
     public static LeavesPluginMeta create(BufferedReader reader) throws ConfigurateException {
         GsonConfigurationLoader loader = GsonConfigurationLoader.builder()
-            .source(() -> reader)
-            .defaultOptions((options) ->
-                options.serializers((serializers) ->
-                    serializers.register(new ScalarSerializer<>(ApiVersion.class) {
-                            @Override
-                            public ApiVersion deserialize(final @NotNull Type type, final @NotNull Object obj) throws SerializationException {
-                                try {
-                                    final ApiVersion version = ApiVersion.getOrCreateVersion(obj.toString());
-                                    if (version.isOlderThan(MINIMUM)) {
-                                        throw new SerializationException(version + " is too old for a leaves plugin!");
-                                    }
-                                    return version;
-                                } catch (final IllegalArgumentException e) {
-                                    throw new SerializationException(e);
-                                }
-                            }
+                .source(() -> reader)
+                .defaultOptions((options) ->
+                        options.serializers((serializers) ->
+                                serializers.register(new ScalarSerializer<>(ApiVersion.class) {
+                                            @Override
+                                            public ApiVersion deserialize(final @NotNull Type type, final @NotNull Object obj) throws SerializationException {
+                                                try {
+                                                    final ApiVersion version = ApiVersion.getOrCreateVersion(obj.toString());
+                                                    if (version.isOlderThan(MINIMUM)) {
+                                                        throw new SerializationException(version + " is too old for a leaves plugin!");
+                                                    }
+                                                    return version;
+                                                } catch (final IllegalArgumentException e) {
+                                                    throw new SerializationException(e);
+                                                }
+                                            }
 
-                            @Override
-                            protected @NotNull Object serialize(final ApiVersion item, final @NotNull Predicate<Class<?>> typeSupported) {
-                                return item.getVersionString();
-                            }
-                        })
-                        .register(new EnumValueSerializer())
-                        .register(PermissionConfiguration.class, PermissionConfigurationSerializer.SERIALIZER)
-                        .register(new ComponentSerializer())
-                        .registerAnnotatedObjects(
-                            ObjectMapper.factoryBuilder()
-                                .addConstraint(Constraint.class, new Constraint.Factory())
-                                .addConstraint(PluginConfigConstraints.PluginName.class, String.class, new PluginConfigConstraints.PluginName.Factory())
-                                .addConstraint(PluginConfigConstraints.PluginNameSpace.class, String.class, new PluginConfigConstraints.PluginNameSpace.Factory())
-                                .addNodeResolver(new FlattenedResolver.Factory())
-                                .build()
+                                            @Override
+                                            protected @NotNull Object serialize(final ApiVersion item, final @NotNull Predicate<Class<?>> typeSupported) {
+                                                return item.getVersionString();
+                                            }
+                                        })
+                                        .register(new EnumValueSerializer())
+                                        .register(PermissionConfiguration.class, PermissionConfigurationSerializer.SERIALIZER)
+                                        .register(new ComponentSerializer())
+                                        .registerAnnotatedObjects(
+                                                ObjectMapper.factoryBuilder()
+                                                        .addConstraint(Constraint.class, new Constraint.Factory())
+                                                        .addConstraint(PluginConfigConstraints.PluginName.class, String.class, new PluginConfigConstraints.PluginName.Factory())
+                                                        .addConstraint(PluginConfigConstraints.PluginNameSpace.class, String.class, new PluginConfigConstraints.PluginNameSpace.Factory())
+                                                        .addNodeResolver(new FlattenedResolver.Factory())
+                                                        .build()
+                                        )
                         )
                 )
-            )
-            .build();
+                .build();
         ConfigurationNode node = loader.load();
         LegacyPaperMeta.migrate(node);
         LeavesPluginMeta pluginConfiguration = node.require(LeavesPluginMeta.class);
@@ -82,8 +82,8 @@ public class LeavesPluginMeta extends PaperPluginMeta {
                 authorsBuilder.add(author);
             }
             pluginConfiguration.authors = authorsBuilder
-                .addAll(pluginConfiguration.authors)
-                .build();
+                    .addAll(pluginConfiguration.authors)
+                    .build();
         }
 
         return pluginConfiguration;

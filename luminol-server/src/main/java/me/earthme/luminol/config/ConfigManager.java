@@ -18,7 +18,7 @@ public class ConfigManager {
     // 3 -> target full path
 
     public static void initConfigs() throws IOException {
-        configfiles.put("luminol", new ConfigsInstance(new File("luminol_config"), "luminol", "me.earthme.luminol.config.modules"));
+        configfiles.put("luminol", ConfigsInstance.of(new File("luminol_config"), "luminol", "me.earthme.luminol.config.modules"));
         preLoad();
     }
 

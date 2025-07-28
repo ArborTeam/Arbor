@@ -8,7 +8,6 @@ import io.papermc.paper.threadedregions.TickRegionScheduler;
 import io.papermc.paper.threadedregions.TickRegions;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.earthme.luminol.config.modules.misc.RegionBarConfig;
-import me.earthme.luminol.config.modules.misc.TpsBarConfig;
 import me.earthme.luminol.utils.EnumStatusBarDisplay;
 import me.earthme.luminol.utils.NullPlugin;
 import net.kyori.adventure.bossbar.BossBar;

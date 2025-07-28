@@ -7,7 +7,7 @@ package org.dreeam.leaf.util;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Array; // Required for Array.newInstance
+import java.lang.reflect.Array;
 import java.util.List;
 
 public class FastBitRadixSort {

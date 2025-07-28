@@ -32,30 +32,44 @@ public class ConfigsInstance {
     public final Logger logger = LogManager.getLogger();
     private final File baseConfigFolder;
     private final File baseConfigFile;
-    private final String name;
-    private final String pack;
+    private final String name; // used to transform config to another config system
+    private final String commandName; // used to register command
+    private final String pack; // used to find all classes
     private final Set<IConfigModule> allInstanced = new HashSet<>();
     private final Map<String, Object> stagedConfigMap = new HashMap<>();
     private final Map<String, Object> defaultvalueMap = new HashMap<>();
     public boolean alreadyInit = false;
     private CommentedFileConfig configFileInstance;
 
-    public ConfigsInstance(@NotNull File base, @NotNull String name, @NotNull String pack) {
+    private ConfigsInstance(@NotNull File base, @NotNull String name, @NotNull String file_name, @NotNull String command_name, @NotNull String pack) {
         this.baseConfigFolder = base;
         this.name = name;
         this.pack = pack;
-        this.baseConfigFile = new File(base, name + "_global_config.toml");
+        this.commandName = command_name;
+        this.baseConfigFile = new File(base, file_name);
+    }
+
+    public static ConfigsInstance of(@NotNull File base, @NotNull String name, @NotNull String pack) {
+        return ConfigsInstance.of(base, name, name + "_global_config.toml", pack);
+    }
+
+    public static ConfigsInstance of(@NotNull File base, @NotNull String name, @NotNull String file_name, @NotNull String pack) {
+        return ConfigsInstance.of(base, name, file_name, name + "config", pack);
+    }
+
+    public static ConfigsInstance of(@NotNull File base, @NotNull String name, @NotNull String file_name, @NotNull String command_name, @NotNull String pack) {
+        return new ConfigsInstance(base, name, file_name, command_name, pack);
     }
 
     public void setupLatch() {
         ConfigCommand command = new ConfigCommand(name);
-        Bukkit.getCommandMap().register(name + "config", name, command);
+        Bukkit.getCommandMap().register(commandName, name, command);
         command.initConfig(this);
         alreadyInit = true;
     }
 
     public void reload() {
-        RegionizedServer.ensureGlobalTickThread("Reload " + name + " config off global region thread!");
+        RegionizedServer.ensureGlobalTickThread("Reload " + baseConfigFile.getName() + " off global region thread!");
 
         dropAllInstanced();
         try {

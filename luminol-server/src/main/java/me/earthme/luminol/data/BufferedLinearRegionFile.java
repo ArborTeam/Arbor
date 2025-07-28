@@ -653,7 +653,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             ioStream.skipBytes(9);
 
             try (ZstdInputStream decompressStream = new ZstdInputStream(ioStream);
-                    DataInputStream dataStream = new DataInputStream(decompressStream)) {
+                 DataInputStream dataStream = new DataInputStream(decompressStream)) {
                 for (int index = 0; index < 1024; index++) {
                     int size = dataStream.readInt(); // len
 
@@ -771,7 +771,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         zstdDataStream.writeInt(0);
                         continue;
                     }
-                    
+
                     final byte[] buffer = chunkData.array();
                     // store
                     zstdDataStream.writeInt(buffer.length); // len

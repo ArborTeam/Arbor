@@ -39,7 +39,6 @@ public class ConfigCommand extends Command {
         final List<String> result = new ArrayList<>();
 
         if (args.length == 1) {
-            result.add("query");
             result.add("set");
             result.add("reset");
             result.add("reload");
@@ -72,9 +71,15 @@ public class ConfigCommand extends Command {
                 ));
             }
             case "set" -> {
-                if (args.length == 2 || args.length > 3) {
+                if (args.length > 3) {
                     wrongUse(sender);
                     return true;
+                } else if (args.length == 2) {
+                    sender.sendMessage(
+                            Component
+                                    .text("Config " + args[1] + " is " + config.getConfig(args[1]) + "!")
+                                    .color(TextColor.color(0, 255, 0))
+                    );
                 } else if (config.setConfig(args[1], args[2])) {
                     config.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
                             Component
@@ -100,18 +105,6 @@ public class ConfigCommand extends Command {
                                     .text("Reset Config " + args[1] + " to " + config.getConfig(args[1]) + " successfully!")
                                     .color(TextColor.color(0, 255, 0))
                     ));
-                }
-            }
-            case "query" -> {
-                if (args.length != 2) {
-                    wrongUse(sender);
-                    return true;
-                } else {
-                    sender.sendMessage(
-                            Component
-                                    .text("Config " + args[1] + " is " + config.getConfig(args[1]) + "!")
-                                    .color(TextColor.color(0, 255, 0))
-                    );
                 }
             }
 

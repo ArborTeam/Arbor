@@ -22,6 +22,7 @@ public class PostPlayerRespawnEvent extends Event {
 
     /**
      * Get the respawned player
+     *
      * @return the player
      */
     public @NotNull Player getPlayer() {

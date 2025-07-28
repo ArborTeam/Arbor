@@ -23,6 +23,7 @@ public class PostEntityPortalEvent extends Event {
 
     /**
      * Get the entity which was teleported
+     *
      * @return the entity which was teleported
      */
     public Entity getTeleportedEntity() {

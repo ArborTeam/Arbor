@@ -10,26 +10,27 @@ import org.slf4j.Logger;
  */
 @Deprecated
 public class SIMDChecker {
-	
-	@Deprecated
-	public static boolean canEnable(Logger logger) {
-		try {
-			SIMDDetection.testRun = true;
 
-			VectorSpecies<Integer> ISPEC = IntVector.SPECIES_PREFERRED;
-			VectorSpecies<Float> FSPEC = FloatVector.SPECIES_PREFERRED;
+    @Deprecated
+    public static boolean canEnable(Logger logger) {
+        try {
+            SIMDDetection.testRun = true;
 
-			logger.info("Max SIMD vector size on this system is {} bits (int)", ISPEC.vectorBitSize());
-			logger.info("Max SIMD vector size on this system is " + FSPEC.vectorBitSize() + " bits (float)");
+            VectorSpecies<Integer> ISPEC = IntVector.SPECIES_PREFERRED;
+            VectorSpecies<Float> FSPEC = FloatVector.SPECIES_PREFERRED;
 
-			if (ISPEC.elementSize() < 2 || FSPEC.elementSize() < 2) {
-				logger.warn("SIMD is not properly supported on this system!");
-				return false;
-			}
+            logger.info("Max SIMD vector size on this system is {} bits (int)", ISPEC.vectorBitSize());
+            logger.info("Max SIMD vector size on this system is " + FSPEC.vectorBitSize() + " bits (float)");
 
-			return true;
-		} catch (NoClassDefFoundError | Exception ignored) {} // Basically, we don't do anything. This lets us detect if it's not functional and disable it.
-		return false;
-	}
-	
+            if (ISPEC.elementSize() < 2 || FSPEC.elementSize() < 2) {
+                logger.warn("SIMD is not properly supported on this system!");
+                return false;
+            }
+
+            return true;
+        } catch (NoClassDefFoundError | Exception ignored) {
+        } // Basically, we don't do anything. This lets us detect if it's not functional and disable it.
+        return false;
+    }
+
 }

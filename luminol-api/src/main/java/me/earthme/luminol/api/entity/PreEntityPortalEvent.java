@@ -34,6 +34,7 @@ public class PreEntityPortalEvent extends Event implements Cancellable {
 
     /**
      * Get the entity that is about to teleport
+     *
      * @return the entity
      */
     public @NotNull Entity getEntity() {
@@ -42,6 +43,7 @@ public class PreEntityPortalEvent extends Event implements Cancellable {
 
     /**
      * Get the location of the portal
+     *
      * @return the portal location
      */
     public @NotNull Location getPortalPos() {
@@ -50,6 +52,7 @@ public class PreEntityPortalEvent extends Event implements Cancellable {
 
     /**
      * Get the destination world
+     *
      * @return the destination world
      */
     public @NotNull World getDestination() {

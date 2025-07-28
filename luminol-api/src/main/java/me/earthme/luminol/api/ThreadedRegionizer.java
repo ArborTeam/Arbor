@@ -12,12 +12,14 @@ import java.util.Collection;
 public interface ThreadedRegionizer {
     /**
      * Get all the tick regions
+     *
      * @return Temporary copied collection of all tick regions
      */
     Collection<ThreadedRegion> getAllRegions();
 
     /**
      * Get the tick region at the given chunk coordinates
+     *
      * @param chunkX Chunk X
      * @param chunkZ Chunk Z
      * @return The tick region at the given chunk coordinates
@@ -27,6 +29,7 @@ public interface ThreadedRegionizer {
 
     /**
      * Get the tick region at the given chunk coordinates
+     *
      * @param chunkX Chunk X
      * @param chunkZ Chunk Z
      * @return The tick region at the given chunk coordinates
@@ -36,6 +39,7 @@ public interface ThreadedRegionizer {
 
     /**
      * Get the tick region at the given location
+     *
      * @param pos The location
      * @return The tick region at the given location
      */
@@ -46,6 +50,7 @@ public interface ThreadedRegionizer {
 
     /**
      * Get the tick region at the given location
+     *
      * @param pos The location
      * @return The tick region at the given location
      */

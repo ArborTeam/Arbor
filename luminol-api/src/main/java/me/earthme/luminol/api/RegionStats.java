@@ -7,18 +7,21 @@ package me.earthme.luminol.api;
 public interface RegionStats {
     /**
      * Get the entity count in this tick region
+     *
      * @return the entity count
      */
     int getEntityCount();
 
     /**
      * Get the player count in this tick region
+     *
      * @return the player count
      */
     int getPlayerCount();
 
     /**
      * Get the chunk count in this tick region
+     *
      * @return the chunk count
      */
     int getChunkCount();

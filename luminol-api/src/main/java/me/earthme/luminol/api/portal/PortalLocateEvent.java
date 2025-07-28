@@ -27,6 +27,7 @@ public class PortalLocateEvent extends Event {
 
     /**
      * Get the destination position of this teleportation
+     *
      * @return the destination position
      */
     public Location getDestination() {
@@ -35,6 +36,7 @@ public class PortalLocateEvent extends Event {
 
     /**
      * Get the original portal position of this teleportation
+     *
      * @return the original portal position
      */
     public Location getOriginal() {

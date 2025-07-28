@@ -1,12 +1,6 @@
 package gg.pufferfish.pufferfish.sentry;
 
 import com.google.gson.Gson;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.apache.logging.log4j.ThreadContext;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,6 +10,11 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredListener;
 import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class SentryContext {
 

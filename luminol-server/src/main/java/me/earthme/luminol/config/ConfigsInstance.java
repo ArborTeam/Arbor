@@ -8,6 +8,7 @@ import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.config.flags.HotReloadUnsupported;
 import me.earthme.luminol.config.flags.TransformedConfig;
+import me.earthme.luminol.utils.ClassLoadUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
@@ -17,16 +18,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 public class ConfigsInstance {
     public final Logger logger = LogManager.getLogger();
@@ -130,12 +124,8 @@ public class ConfigsInstance {
         }
     }
 
-    private void instanceAllModule() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        for (Class<?> clazz : getClasses(pack)) {
-            if (IConfigModule.class.isAssignableFrom(clazz)) {
-                allInstanced.add((IConfigModule) clazz.getConstructor().newInstance());
-            }
-        }
+    private void instanceAllModule() {
+        allInstanced.addAll(ClassLoadUtil.loadClasses(pack, IConfigModule.class));
     }
 
     private void loadForSingle(@NotNull IConfigModule singleConfigModule) throws IllegalAccessException {
@@ -333,84 +323,5 @@ public class ConfigsInstance {
         return defaultvalueMap.keySet().stream()
                 .filter(k -> k.startsWith(currentPath))
                 .toList();
-    }
-
-    public @NotNull Set<Class<?>> getClasses(String pack) {
-        Set<Class<?>> classes = new LinkedHashSet<>();
-        String packageDirName = pack.replace('.', '/');
-        Enumeration<URL> dirs;
-
-        try {
-            dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
-            while (dirs.hasMoreElements()) {
-                URL url = dirs.nextElement();
-                String protocol = url.getProtocol();
-                if ("file".equals(protocol)) {
-                    String filePath = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8);
-                    findClassesInPackageByFile(pack, filePath, classes);
-                } else if ("jar".equals(protocol)) {
-                    JarFile jar;
-                    try {
-                        jar = ((JarURLConnection) url.openConnection()).getJarFile();
-                        Enumeration<JarEntry> entries = jar.entries();
-                        findClassesInPackageByJar(pack, entries, packageDirName, classes);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return classes;
-    }
-
-    private void findClassesInPackageByFile(String packageName, String packagePath, Set<Class<?>> classes) {
-        File dir = new File(packagePath);
-
-        if (!dir.exists() || !dir.isDirectory()) {
-            return;
-        }
-
-        File[] dirfiles = dir.listFiles((file) -> file.isDirectory() || file.getName().endsWith(".class"));
-        if (dirfiles != null) {
-            for (File file : dirfiles) {
-                if (file.isDirectory()) {
-                    findClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes);
-                } else {
-                    String className = file.getName().substring(0, file.getName().length() - 6);
-                    try {
-                        classes.add(Class.forName(packageName + '.' + className));
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
-    }
-
-    private void findClassesInPackageByJar(String packageName, Enumeration<JarEntry> entries, String packageDirName, Set<Class<?>> classes) {
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            String name = entry.getName();
-            if (name.charAt(0) == '/') {
-                name = name.substring(1);
-            }
-            if (name.startsWith(packageDirName)) {
-                int idx = name.lastIndexOf('/');
-                if (idx != -1) {
-                    packageName = name.substring(0, idx).replace('/', '.');
-                }
-                if (name.endsWith(".class") && !entry.isDirectory()) {
-                    String className = name.substring(packageName.length() + 1, name.length() - 6);
-                    try {
-                        classes.add(Class.forName(packageName + '.' + className));
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
     }
 }

@@ -1,5 +1,5 @@
 为Luminol贡献代码
-===========
+===============
 
 [English](./CONTRIBUTING_EN.md) | **中文**
 
@@ -45,15 +45,18 @@ Luminol 使用和 Folia 一样的补丁系统，并为了针对不同部分的�
 4. 进入 仓库根目录下的 `*-api` 和 `*-server` 文件夹进行修改。
 
 以下为对上述各个文件夹的简单描述，详细描述可以参考[这里](https://github.com/Toffikk/paperweight-examples/blob/18241979c88068d5b061d95ad69c98ecb201c246/README.md)：
+
 1. API部分
- - `luminol-api` ：对新增API的修改
- - `folia-api` ：对folia-API的修改应当在此文件夹下进行
- - `paper-api` ：对paper-API/spigot-API/bukkit-API的修改应该在此文件夹下进行
+
+- `luminol-api` ：对新增API的修改
+- `folia-api` ：对folia-API的修改应当在此文件夹下进行
+- `paper-api` ：对paper-API/spigot-API/bukkit-API的修改应该在此文件夹下进行
 
 2. Server部分
- - `luminol-server` ：对Minecraft原版服务器的修改和新增文件应当在此文件夹下进行
- - `folia-server` ：对folia-Server的修改应当在此文件夹下进行
- - `paper-server` ：对于paper对服务器逻辑的修改应当在此文件夹下进行
+
+- `luminol-server` ：对Minecraft原版服务器的修改和新增文件应当在此文件夹下进行
+- `folia-server` ：对folia-Server的修改应当在此文件夹下进行
+- `paper-server` ：对于paper对服务器逻辑的修改应当在此文件夹下进行
 
 顺便一提，仓库根目录下的 `*-api` 和 `*-server` 并不是正常的 git 仓库：
 

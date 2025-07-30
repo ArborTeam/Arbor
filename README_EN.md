@@ -1,6 +1,7 @@
 <img src="./public/image/Luminol_5.png" alt="Logo" align="right" width="250">
 
 # Luminol
+
 <h4>Luminol is a Folia fork with many useful optimizations, configurable vanilla features, and more API supports, and it was designed for survival and anarchy servers</h4>
 
 ![Created At](https://img.shields.io/github/created-at/LuminolMC/Luminol?style=flat-square)
@@ -14,6 +15,7 @@
 **English** | [中文](./README.md)
 
 ## Features
+
 - Configurable vanilla features
 - Tpsbar support
 - Linear and BufferedLinear(AKA. b_linear)(a reimplementation of linear) region format support
@@ -21,9 +23,11 @@
 - More API support for plugin development (W.I.P)
 
 ## Download
+
 Any versions are available in the [release](https://github.com/LuminolMC/Luminol/releases), also you can build it by yourself through [the following steps](./README_EN.md#build).
 
 ## Build
+
 To build a paperclip jar, you need to run the following command. You can find the jar in build/libs(Note: JDK21 is needed)
 
  ```shell
@@ -31,6 +35,7 @@ To build a paperclip jar, you need to run the following command. You can find th
 ```
 
 ## Using API
+
 For gradle:
 
 ```kotlin
@@ -65,20 +70,25 @@ For maven
 ```
 
 ## Contact
+
 > If you are interested in this project or have any issue, feel free to ask us.
 
 **QQ Group: [1015048616](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=hTPlI5j6XB8pgk4sdx6RkjhBPGG1r4IR&authKey=pnu6uCKQP7Sja2CJWC15Qi3BeI%2FAsh8tU4m5muufMBjbB3zz%2BwHBZCTRRdSNKhld&noverify=0&group_code=1015048616)** | QQ Channel: [Click To Join](https://pd.qq.com/s/eq9krf9j) | Telegram: [Click To Join](https://t.me/LuminolMinecraft) | Discord: [Click To Join](https://discord.gg/Qd7m3V6eDx)
 
 ## About Issue
+
 When you meet any problems, just ask us, we will do our best to solve it, but remember to state your problem clear and provide enough logs etc.</br>
 
 ## Pull Requests
+
 See [Contributing](./docs/CONTRIBUTING_EN.md)
 
 ## BStats
+
 ![bStats](https://bstats.org/signatures/server-implementation/Luminol.svg "bStats")
 
 ## Special Thanks
+
 Thanks [LegacyLands](https://github.com/LegacyLands) for sponsoring this project.If you want to develop some crossing folia/non-folia platform plugins, [legacy-lands-library](https://github.com/LegacyLands/legacy-lands-library/) will be a nice choice for you
 
 ![legacy-lands-logo](public/image/legacy-lands-logo.png)
@@ -89,8 +99,8 @@ Thanks [LegacyLands](https://github.com/LegacyLands) for sponsoring this project
 Global multi-line routing with cloud storage. Refund available within 7 days. Reliable uptime and expert support. RainYun — stable, cost-effective, and ready for fast cloud deployment.
 Click [here](https://www.rainyun.com/aiyuyun_) to visit RainYun
 
-
 ## Please ⭐star us!
+
 <a href="https://star-history.com/#LuminolMC/Luminol&LuminolMC/LightingLuminol&LuminolMC/Lophine&Date">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=LuminolMC/Luminol%2CLuminolMC/LightingLuminol%2CLuminolMC/Lophine&type=Date&theme=dark" />

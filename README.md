@@ -1,6 +1,7 @@
 <img src="./public/image/Luminol_5.png" alt="Logo" align="right" width="250">
 
 # Luminol
+
 <h4>Luminol 是一个基于Folia的分支，具有许多有用的优化、可配置的原版特性和更多的API支持，它专为生存和无政府服务器设计</h4>
 
 ![Created At](https://img.shields.io/github/created-at/LuminolMC/Luminol?style=flat-square)
@@ -14,6 +15,7 @@
 [English](./README_EN.md) | **中文**
 
 ## 特性
+
 - 可配置的原版特性
 - Tpsbar 支持
 - 针对folia bug的一些修复
@@ -21,9 +23,11 @@
 - 更多的插件开发API支持（进行中）
 
 ## 下载
+
 任何版本都可以在 [Release](https://github.com/LuminolMC/Luminol/releases) 中找到，你也可以通过[以下步骤](./README.md#构建)自己构建。
 
 ## 构建
+
 要构建一个paperclip jar，你需要运行以下命令。你可以在build/libs中找到jar（注意：需要`JDK21`）
 
  ```shell
@@ -31,6 +35,7 @@
 ```
 
 ## 使用API
+
 使用 Gradle:
 
 ```kotlin
@@ -48,6 +53,7 @@ dependencies {
 使用 Maven
 
 ```xml
+
 <repositories>
     <repository>
         <id>menthamc</id>
@@ -56,29 +62,34 @@ dependencies {
 </repositories>
 
 <dependencies>
-    <dependency>
-        <groupId>me.earthme.luminol</groupId>
-        <artifactId>luminol-api</artifactId>
-        <version>$VERSION</version>
-    </dependency>
+<dependency>
+    <groupId>me.earthme.luminol</groupId>
+    <artifactId>luminol-api</artifactId>
+    <version>$VERSION</version>
+</dependency>
 </dependencies>
 ```
 
 ## 联系方式
+
 > 如果您对这个项目感兴趣或有任何问题，请随时向我们提问。
 
 **QQ群: [1015048616](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=QML5kIVsniPi1PlZvnjHQT_02EHsZ5Jc&authKey=%2FTCJsZC7JFQ9sxAroPCKuYnlV57Z5fyqp36ewXZk3Sn4iJ9p4MB1JKdc%2FFcX3HOM&noverify=0&group_code=1015048616)** | QQ频道: [点击加入](https://pd.qq.com/s/eq9krf9j) | Telegram: [点击加入](https://t.me/LuminolMinecraft) | Discord: [点击加入](https://discord.gg/Qd7m3V6eDx)
 
 ## 关于 Issue
+
 当您遇到任何问题时，请向我们提问，我们将尽力解决，但请记得清楚地描述您的问题并提供足够的日志等信息。
 
 ## 贡献代码
+
 可查看 [Contributing](./docs/CONTRIBUTING.md)
 
 ## BStats
+
 ![bStats](https://bstats.org/signatures/server-implementation/Luminol.svg "bStats")
 
 ## 特别感谢
+
 <b>感谢[LegacyLands](https://github.com/LegacyLands)对本项目的赞助,如果你想开发一些跨folia/非folia平台的插件,[legacy-lands-library](https://github.com/LegacyLands/legacy-lands-library/)将会是个不错的lib</b>
 
 ![legacy-lands-logo](public/image/legacy-lands-logo.png)
@@ -90,6 +101,7 @@ dependencies {
 点击[这里](https://www.rainyun.com/aiyuyun_)前往雨云
 
 ## 请给我们一个 ⭐Star！
+
 > 你的每一个免费的 ⭐Star 就是我们每一个前进的动力。
 
 <a href="https://star-history.com/#LuminolMC/Luminol&LuminolMC/LightingLuminol&LuminolMC/Lophine&Date">

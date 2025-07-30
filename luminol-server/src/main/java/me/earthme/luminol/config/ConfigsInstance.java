@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class ConfigsInstance {
     public final Logger logger = LogManager.getLogger();
@@ -212,6 +213,9 @@ public class ConfigsInstance {
                 if (stagedConfigMap.containsKey(fullConfigKeyName)) {
                     actuallyValue = stagedConfigMap.get(fullConfigKeyName);
                     if (actuallyValue == null) actuallyValue = defaultvalueMap.get(fullConfigKeyName);
+                    if (actuallyValue instanceof String v) {
+                        actuallyValue = parseListFromString(v);
+                    }
                     stagedConfigMap.remove(fullConfigKeyName);
                 } else {
                     actuallyValue = configFileInstance.get(fullConfigKeyName);
@@ -247,6 +251,65 @@ public class ConfigsInstance {
     public boolean setConfig(String[] keys, Object value) {
         return setConfig(String.join(".", keys), value);
     }
+
+    public Object parseListFromString(String input) {
+        if (input.startsWith("[") && input.endsWith("]")) {
+            String content = input.substring(1, input.length() - 1).trim();
+
+            if (content.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            List<String> result = new ArrayList<>();
+            StringBuilder current = new StringBuilder();
+            boolean inQuotes = false;
+            boolean escapeNext = false;
+
+            for (int i = 0; i < content.length(); i++) {
+                char c = content.charAt(i);
+
+                if (escapeNext) {
+                    current.append(c);
+                    escapeNext = false;
+                } else if (c == '\\') {
+                    escapeNext = true;
+                } else if (c == '"') {
+                    inQuotes = !inQuotes;
+                } else if (c == ',' && !inQuotes) {
+                    result.add(current.toString().trim());
+                    current = new StringBuilder();
+                } else {
+                    current.append(c);
+                }
+            }
+
+            if (!current.isEmpty()) {
+                result.add(current.toString().trim());
+            }
+
+            return result.stream().map(s -> {
+                if (s.startsWith("\"") && s.endsWith("\"") && s.length() >= 2) {
+                    return s.substring(1, s.length() - 1);
+                }
+                return s;
+            }).collect(Collectors.toList());
+        }
+        return input;
+    }
+
+    public String parseStringFromList(List<?> list) {
+        return list.stream()
+                .map(obj -> {
+                    String str = obj.toString();
+                    if (str.contains(",") || str.contains("\"") || str.contains(" ") || str.contains("[")) {
+                        str = str.replace("\"", "\\\"");
+                        return "\"" + str + "\"";
+                    }
+                    return str;
+                })
+                .collect(Collectors.joining(", ", "[", "]"));
+    }
+
 
     public boolean setConfig(String key, Object value) {
         if (configFileInstance.contains(key) && configFileInstance.get(key) != null) {
@@ -324,9 +387,82 @@ public class ConfigsInstance {
         return result;
     }
 
+    public List<String> getSingleConfig(String key) {
+        List<String> list = new ArrayList<>();
+        if (!key.endsWith(".")) {
+            key += ".";
+        }
+        List<String> checkList = completeConfigPath(key);
+        for (String check : checkList) {
+            List<String> checkList1 = completeConfigPath(check + ".");
+            if (checkList1.size() == 1
+                    && check.equals(checkList1.getFirst())
+                    && completeConfigPath(checkList1.getFirst() + ".").isEmpty()) {
+                list.add(checkList1.getFirst());
+            }
+        }
+        return list;
+    }
+
+    public List<String> completeConfigPath(String partialPath, int dotIndex) {
+        List<String> allPaths = getAllConfigPaths(partialPath);
+        Set<String> resultSet = new HashSet<>();
+
+        for (String path : allPaths) {
+            String remaining = path.substring(partialPath.length());
+            if (remaining.isEmpty()) continue;
+
+            String fullPath = partialPath + remaining;
+            String[] parts = fullPath.split("\\.");
+
+            if (dotIndex == -1 || dotIndex < parts.length) {
+                StringBuilder suggestionBuilder = new StringBuilder();
+                for (int i = 0; i <= dotIndex; i++) {
+                    if (i > 0) {
+                        suggestionBuilder.append(".");
+                    }
+                    suggestionBuilder.append(parts[i]);
+                }
+                String suggestion = suggestionBuilder.toString();
+                resultSet.add(suggestion);
+            }
+        }
+
+        return new ArrayList<>(resultSet);
+    }
+
     private List<String> getAllConfigPaths(String currentPath) {
         return defaultvalueMap.keySet().stream()
                 .filter(k -> k.startsWith(currentPath))
                 .toList();
+    }
+
+    public Map<String, Object> getAllData() {
+        return getData("");
+    }
+
+    public Map<String, Object> getData(String prefix) {
+        Map<String, Object> result = new HashMap<>();
+        for (String key : defaultvalueMap.keySet()) {
+            if (!key.startsWith(prefix)) continue;
+            Object value = configFileInstance.get(key);
+            if (value instanceof List list) {
+                value = parseStringFromList(list);
+            }
+            result.put(key, value);
+        }
+        return result;
+    }
+
+    public Map<String, Object> getData(List<String> list) {
+        Map<String, Object> result = new HashMap<>();
+        for (String key : list) {
+            Object value = configFileInstance.get(key);
+            if (value instanceof List list1) {
+                value = parseStringFromList(list1);
+            }
+            result.put(key, value);
+        }
+        return result;
     }
 }

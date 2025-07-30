@@ -1,67 +1,96 @@
 package me.earthme.luminol.utils;
 
-import com.mojang.logging.LogUtils;
-import org.slf4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ClassLoadUtil {
-    private static Logger LOGGER = LogUtils.getClassLogger();
+    public static @NotNull Set<Class<?>> getClasses(String pack) {
+        Set<Class<?>> classes = new LinkedHashSet<>();
+        String packageDirName = pack.replace('.', '/');
+        Enumeration<URL> dirs;
 
-    public static List<Class<?>> getClassesInPackage(String packageName) {
-        List<Class<?>> classes = new ArrayList<>();
-        ClassLoader classLoader = ClassLoadUtil.class.getClassLoader();
-        URL jarUrl = classLoader.getResource(packageName.replace('.', '/'));
-        if (jarUrl == null) {
-            throw new IllegalArgumentException("Package not found: " + packageName);
-        }
-        String jarPath = jarUrl.getPath().replace("!/" + packageName.replace('.', '/'), "");
-        if (jarPath.startsWith("file:")) {
-            jarPath = jarPath.substring(5);
-            jarPath = URLDecoder.decode(jarPath, StandardCharsets.UTF_8);
-        }
-        try (JarFile jarFile = new JarFile(jarPath)) {
-            Enumeration<JarEntry> entries = jarFile.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
-                String className = entry.getName();
-                try {
-                    if (className.endsWith(".class") && className.startsWith(packageName.replace('.', '/'))) {
-                        className = className.substring(0, className.length() - 6).replace('/', '.');
-                        Class<?> clazz = classLoader.loadClass(className);
-                        classes.add(clazz);
+        try {
+            dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+            while (dirs.hasMoreElements()) {
+                URL url = dirs.nextElement();
+                String protocol = url.getProtocol();
+                if ("file".equals(protocol)) {
+                    String filePath = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8);
+                    findClassesInPackageByFile(pack, filePath, classes);
+                } else if ("jar".equals(protocol)) {
+                    JarFile jar;
+                    try {
+                        jar = ((JarURLConnection) url.openConnection()).getJarFile();
+                        Enumeration<JarEntry> entries = jar.entries();
+                        findClassesInPackageByJar(pack, entries, packageDirName, classes);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                } catch (Exception e) {
-                    LOGGER.warn("Error loading class: {}", className);
                 }
             }
-        } catch (Exception e) {
-            LOGGER.warn("Error finding classes in package: {}", packageName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         return classes;
     }
 
-    public static <T> List<T> loadClasses(String dir, Class<T> clazz) {
-        List<Class<?>> list = getClassesInPackage(dir);
-        List<T> finalList = new ArrayList<>();
-        for (Class<?> clazz1 : list) {
-            try {
-                if (clazz.isAssignableFrom(clazz1)) {
-                    T instance = clazz.cast(clazz1.getDeclaredConstructor().newInstance());
-                    finalList.add(instance);
+    private static void findClassesInPackageByFile(String packageName, String packagePath, Set<Class<?>> classes) {
+        File dir = new File(packagePath);
+
+        if (!dir.exists() || !dir.isDirectory()) {
+            return;
+        }
+
+        File[] dirfiles = dir.listFiles((file) -> file.isDirectory() || file.getName().endsWith(".class"));
+        if (dirfiles != null) {
+            for (File file : dirfiles) {
+                if (file.isDirectory()) {
+                    findClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes);
+                } else {
+                    String className = file.getName().substring(0, file.getName().length() - 6);
+                    try {
+                        classes.add(Class.forName(packageName + '.' + className));
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-            } catch (Exception e) {
-                LOGGER.warn("Failed to transform class: {}", clazz1.getName());
             }
         }
-        return finalList;
+    }
+
+    private static void findClassesInPackageByJar(String packageName, Enumeration<JarEntry> entries, String packageDirName, Set<Class<?>> classes) {
+        while (entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            String name = entry.getName();
+            if (name.charAt(0) == '/') {
+                name = name.substring(1);
+            }
+            if (name.startsWith(packageDirName)) {
+                int idx = name.lastIndexOf('/');
+                if (idx != -1) {
+                    packageName = name.substring(0, idx).replace('/', '.');
+                }
+                if (name.endsWith(".class") && !entry.isDirectory()) {
+                    String className = name.substring(packageName.length() + 1, name.length() - 6);
+                    try {
+                        classes.add(Class.forName(packageName + '.' + className));
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
     }
 }

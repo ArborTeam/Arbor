@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -124,8 +125,12 @@ public class ConfigsInstance {
         }
     }
 
-    private void instanceAllModule() {
-        allInstanced.addAll(ClassLoadUtil.loadClasses(pack, IConfigModule.class));
+    private void instanceAllModule() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        for (Class<?> clazz : ClassLoadUtil.getClasses(pack)) {
+            if (IConfigModule.class.isAssignableFrom(clazz)) {
+                allInstanced.add((IConfigModule) clazz.getConstructor().newInstance());
+            }
+        }
     }
 
     private void loadForSingle(@NotNull IConfigModule singleConfigModule) throws IllegalAccessException {

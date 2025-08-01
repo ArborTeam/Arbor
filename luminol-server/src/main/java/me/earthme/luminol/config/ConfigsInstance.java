@@ -442,7 +442,7 @@ public class ConfigsInstance {
     }
 
     public Map<String, Object> getData(String prefix) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new TreeMap<>();
         for (String key : defaultvalueMap.keySet()) {
             if (!key.startsWith(prefix)) continue;
             Object value = configFileInstance.get(key);
@@ -455,7 +455,7 @@ public class ConfigsInstance {
     }
 
     public Map<String, Object> getData(List<String> list) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new TreeMap<>();
         for (String key : list) {
             Object value = configFileInstance.get(key);
             if (value instanceof List list1) {

@@ -3,6 +3,9 @@ From: MrHua269 <mrhua269@gmail.com>
 Date: Sun, 20 Jul 2025 09:53:01 +0800
 Subject: [PATCH] Leaves: Leaves plugin
 
+Co-authored by: MC_XiaoHei <xiaohei.xor7@outlook.com>
+As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/ea91106ae57fc4cc14e2e0225009cf9919072f7f/leaves-server/paper-patches/features/0013-Leaves-Plugin.patch#L4)
+Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java b/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
 index d0a4e1642d1be33cd9e832f961301ab267e216bc..417bb69104dc24bfb314799d84119fee2d7e9378 100644

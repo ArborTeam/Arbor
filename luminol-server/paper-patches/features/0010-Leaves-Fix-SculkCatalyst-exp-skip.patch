@@ -3,6 +3,9 @@ From: Helvetica Volubi <suisuroru@blue-millennium.fun>
 Date: Sat, 24 May 2025 02:26:33 +0800
 Subject: [PATCH] Leaves: Fix SculkCatalyst exp skip
 
+Co-authored by: violetc <58360096+s-yh-china@users.noreply.github.com>
+As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54a69b6479f1959ed24a60/leaves-server/paper-patches/features/0016-Fix-SculkCatalyst-exp-skip.patch)
+Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 index e1aa4ce0cda19547ef396b89dc0c90c1018fee31..80efa6d78f631272d9b924f53a14fbd6595660a1 100644

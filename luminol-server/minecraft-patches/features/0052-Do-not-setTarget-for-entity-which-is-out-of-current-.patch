@@ -6,10 +6,10 @@ Subject: [PATCH] Do not setTarget for entity which is out of current
 
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 4c1442410f18b2ebafdb4c4d480f0f59ef656492..b37637a0758b09ec8fba71ea0a0927796c512f14 100644
+index 0fec3165a3dbac92174111d9576a6d0124203940..a16e954805f2a6848fef125181a80134d38a1c42 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -274,6 +274,11 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -275,6 +275,11 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
          if (this.getTargetRaw() == target) { // Folia - region threading
              return false;
          }

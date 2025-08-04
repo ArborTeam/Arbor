@@ -18,10 +18,10 @@ index a0b84535a9d3833d4df692b85b272f145559dd80..c2ba46408b5ad727d7a17f21d47b2898
              return;
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index ecab0322ae03b7a3133eae192076aaf463237cd6..59f6c3ef5d4080c6661c71d68fcc63919ad170a9 100644
+index d2db175fd7bfc5ff38e3945c8744858265212b1d..b9026355309240c4d8ddc86f54eee4192a4234e2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -313,7 +313,7 @@ public final class CraftServer implements Server {
+@@ -314,7 +314,7 @@ public final class CraftServer implements Server {
      public static Exception excessiveVelEx;
      private final io.papermc.paper.logging.SysoutCatcher sysoutCatcher = new io.papermc.paper.logging.SysoutCatcher();
      private final io.papermc.paper.potion.PaperPotionBrewer potionBrewer;
@@ -30,7 +30,7 @@ index ecab0322ae03b7a3133eae192076aaf463237cd6..59f6c3ef5d4080c6661c71d68fcc6391
      private final ServerConfiguration serverConfig = new PaperServerConfiguration();
  
      // Paper start - Folia region threading API
-@@ -495,7 +495,7 @@ public final class CraftServer implements Server {
+@@ -496,7 +496,7 @@ public final class CraftServer implements Server {
          }
          this.potionBrewer = new io.papermc.paper.potion.PaperPotionBrewer(console); // Paper - custom potion mixes
          datapackManager = new io.papermc.paper.datapack.PaperDatapackManager(console.getPackRepository()); // Paper
@@ -39,7 +39,7 @@ index ecab0322ae03b7a3133eae192076aaf463237cd6..59f6c3ef5d4080c6661c71d68fcc6391
      }
  
      public boolean getCommandBlockOverride(String command) {
-@@ -1109,7 +1109,7 @@ public final class CraftServer implements Server {
+@@ -1112,7 +1112,7 @@ public final class CraftServer implements Server {
          this.reloadData();
          org.spigotmc.SpigotConfig.registerCommands(); // Spigot
          io.papermc.paper.command.PaperCommands.registerCommands(this.console); // Paper
@@ -48,7 +48,7 @@ index ecab0322ae03b7a3133eae192076aaf463237cd6..59f6c3ef5d4080c6661c71d68fcc6391
          this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
          this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
  
-@@ -1138,7 +1138,7 @@ public final class CraftServer implements Server {
+@@ -1141,7 +1141,7 @@ public final class CraftServer implements Server {
          this.loadPlugins();
          this.enablePlugins(PluginLoadOrder.STARTUP);
          this.enablePlugins(PluginLoadOrder.POSTWORLD);

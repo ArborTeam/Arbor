@@ -5,10 +5,10 @@ Subject: [PATCH] Async protocol switching optimization
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 2d18e9c153eabf266cfcc097613f33deb9ddb248..6dc5f3e88a3886b03b99d59b317085fdc3e2fa9a 100644
+index 1626b932a5e46ee77465ef08c2f4430c2e2753c1..9c7366fce56f2c8105c2e5b48f8d618e028f2604 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -372,6 +372,116 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -373,6 +373,116 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          }
      }
  
@@ -126,10 +126,10 @@ index 2d18e9c153eabf266cfcc097613f33deb9ddb248..6dc5f3e88a3886b03b99d59b317085fd
          this.validateListener(protocolInfo, packetInfo);
          if (protocolInfo.flow() != this.getReceiving()) {
 diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index 2c1930ec25f0e0bc66f967f05515838cad6cf066..0fa90315ca0750b5d533a5a3df93715a28f60bbc 100644
+index df4fa680d52a67c506cf0b5f3777d258c83f265f..b5812c5c97b38c69408d1a984786f177852904f7 100644
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-@@ -157,8 +157,9 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+@@ -158,8 +158,9 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
      public void handleConfigurationFinished(ServerboundFinishConfigurationPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.server);
          this.finishCurrentTask(JoinWorldTask.TYPE);
@@ -140,7 +140,7 @@ index 2c1930ec25f0e0bc66f967f05515838cad6cf066..0fa90315ca0750b5d533a5a3df93715a
          try {
              PlayerList playerList = this.server.getPlayerList();
              if (playerList.getPlayer(this.gameProfile.getId()) != null) {
-@@ -246,6 +247,18 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+@@ -247,6 +248,18 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
              this.connection.send(new ClientboundDisconnectPacket(DISCONNECT_REASON_INVALID_DATA));
              this.connection.disconnect(DISCONNECT_REASON_INVALID_DATA);
          }
@@ -160,7 +160,7 @@ index 2c1930ec25f0e0bc66f967f05515838cad6cf066..0fa90315ca0750b5d533a5a3df93715a
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 736cefb8dd20b93995ee3acf8e8671e5c8fb4d8b..19a09ce0fd9bb6ad0bd01143d502561195831915 100644
+index be71521ec852ec007de7de2283d625241f86bf28..c84cca8c71db7361636042a3dba915c24f463b25 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2783,7 +2783,7 @@ public class ServerGamePacketListenerImpl
@@ -186,7 +186,7 @@ index 736cefb8dd20b93995ee3acf8e8671e5c8fb4d8b..19a09ce0fd9bb6ad0bd01143d5025611
      }
  
      @Override
-@@ -3627,12 +3633,25 @@ public class ServerGamePacketListenerImpl
+@@ -3629,12 +3635,25 @@ public class ServerGamePacketListenerImpl
              throw new IllegalStateException("Client acknowledged config, but none was requested");
          } else {
              final ServerConfigurationPacketListenerImpl listener = new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())); // Paper
@@ -255,7 +255,7 @@ index d114935b0879f5d83ad6c03395d565b6b92c6679..7a19bbcc74205035dee111d3fff53446
  
      @Override
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 9fe42c55bbe1200778e4bfe850d8dc0045ae3fec..df5e0f64e55ec35c462d7a752b1b73339e2bcd5f 100644
+index 976a8982a0b0a9ae459cf08e13d69031d4238eca..482f6e26556377891bb682cdcc73193bc997a67d 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -342,10 +342,12 @@ public abstract class PlayerList {

@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <novau233@163.com>
+Date: Fri, 8 Aug 2025 08:53:18 +0000
+Subject: [PATCH] Paper: Fix quick craft
+
+Co-authored by: Owen1212055 <23108066+Owen1212055@users.noreply.github.com>
+As a part of : Paper (https://github.com/PaperMC/Paper/pull/11831/files#diff-3991edc9191addaab9f9701589f8fb4a05001c6f3c9ce1f51d22001f8de805ca)
+Licensed under: MIT (https://github.com/PaperMC/Paper/blob/main/licenses/MIT.md)
+
+diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
+index 214a378580553252f9fea3d2bba7d0cb9539c3a0..17dcb9eea2cea99b8435265f9e3d1d2ea68cfc9f 100644
+--- a/net/minecraft/world/entity/LivingEntity.java
++++ b/net/minecraft/world/entity/LivingEntity.java
+@@ -3944,11 +3944,6 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+             return null;
+         } else {
+             double d = this.getEyeY() - 0.3F;
+-            // Paper start
+-            final ItemStack tmp = stack.copy();
+-            stack.setCount(0);
+-            stack = tmp;
+-            // Paper end
+             ItemEntity itemEntity = new ItemEntity(this.level(), this.getX(), d, this.getZ(), stack);
+             itemEntity.setPickUpDelay(40);
+             if (includeThrower) {

@@ -21,7 +21,7 @@ index 328cf3c11c3ad5aa2b92a6c3bd350dd37ce6041a..7e8e67a413ec5d8ca6a0ce54fba884d3
              }
              if (entity instanceof final Mob mob && mob.getTarget() != null) {
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 214a378580553252f9fea3d2bba7d0cb9539c3a0..d55a6989fd68f0bcf7bd05e9420fda1115afa6c0 100644
+index 17dcb9eea2cea99b8435265f9e3d1d2ea68cfc9f..567d63ae589705e13403814b36e35d00c241a69e 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -2146,6 +2146,20 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

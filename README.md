@@ -11,6 +11,7 @@
 ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/LuminolMC/Luminol?style=flat-square)
 ![GitHub all releases](https://img.shields.io/github/downloads/LuminolMC/Luminol/total?style=flat-square)
 ![Repo contributors](https://img.shields.io/github/contributors/LuminolMC/Luminol?style=flat-square)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/LuminolMC/Luminol)
 
 [English](./README_EN.md) | **中文**
 

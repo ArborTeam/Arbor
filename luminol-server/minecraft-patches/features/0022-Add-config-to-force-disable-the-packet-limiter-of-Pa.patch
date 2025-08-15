@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <novau233@163.com>
+Date: Fri, 15 Aug 2025 15:03:17 +0000
+Subject: [PATCH] Add config to force disable the packet limiter of Paper
+
+
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index 1626b932a5e46ee77465ef08c2f4430c2e2753c1..2a61f9c9ae75ba4bba19e7a39eb535b322fed0f8 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -281,8 +281,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+                 if (this.stopReadingPackets) {
+                     return;
+                 }
+-                if (this.allPacketCounts != null ||
+-                    io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.containsKey(packet.getClass())) {
++                if (!me.earthme.luminol.config.modules.misc.PaperPacketLimiterConfig.forceDisable && (this.allPacketCounts != null || // Luminol - Add config to force disable the packet limiter of Paper
++                    io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.containsKey(packet.getClass()))) { // Luminol - Add config to force disable the packet limiter of Paper
+                     long time = System.nanoTime();
+                     synchronized (PACKET_LIMIT_LOCK) {
+                         if (this.allPacketCounts != null) {

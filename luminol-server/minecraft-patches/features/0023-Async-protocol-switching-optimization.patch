@@ -5,7 +5,7 @@ Subject: [PATCH] Async protocol switching optimization
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 1626b932a5e46ee77465ef08c2f4430c2e2753c1..9c7366fce56f2c8105c2e5b48f8d618e028f2604 100644
+index 2a61f9c9ae75ba4bba19e7a39eb535b322fed0f8..444f10080abac94f72f68bc16e60b7e3a377dac8 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -373,6 +373,116 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {

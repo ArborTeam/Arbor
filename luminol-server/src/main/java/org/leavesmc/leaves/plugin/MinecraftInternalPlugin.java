@@ -98,7 +98,8 @@ public class MinecraftInternalPlugin extends PluginBase {
 
     @Override
     public PluginLogger getLogger() {
-        throw new UnsupportedOperationException("Not supported.");
+        // throw new UnsupportedOperationException("Not supported.");
+        return new PluginLogger(this); // Luminol - implement get logger by default
     }
 
     @Override

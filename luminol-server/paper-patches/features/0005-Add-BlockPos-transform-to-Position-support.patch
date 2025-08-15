@@ -5,7 +5,7 @@ Subject: [PATCH] Add BlockPos transform to Position support
 
 
 diff --git a/src/main/java/io/papermc/paper/util/MCUtil.java b/src/main/java/io/papermc/paper/util/MCUtil.java
-index ff6d200c3c3ecb958086f11dff39357dc0bf70fc..16d95bd30c33d831fd495c65748f6633df5971aa 100644
+index ff6d200c3c3ecb958086f11dff39357dc0bf70fc..5b52aecea3ba5a3324cea26b6d50ae74f60666c0 100644
 --- a/src/main/java/io/papermc/paper/util/MCUtil.java
 +++ b/src/main/java/io/papermc/paper/util/MCUtil.java
 @@ -160,6 +160,12 @@ public final class MCUtil {
@@ -13,8 +13,8 @@ index ff6d200c3c3ecb958086f11dff39357dc0bf70fc..16d95bd30c33d831fd495c65748f6633
      }
  
 +    // Luminol start - add BlockPos support
-+    public static org.bukkit.Location toLocation(net.minecraft.world.level.Level world, BlockPos pos) {
-+        return new org.bukkit.Location(world.getWorld(), pos.getX(), pos.getY(), pos.getZ());
++    public static Location toLocation(Level world, BlockPos pos) {
++        return new Location(world.getWorld(), pos.getX(), pos.getY(), pos.getZ());
 +    }
 +    // Luminol end - add BlockPos support
 +

@@ -2,11 +2,13 @@ package me.earthme.luminol.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import me.earthme.luminol.config.flags.TransformedConfig;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class ConfigManager {
     public static final Map<String, ConfigsInstance> configfiles = new HashMap<>();
@@ -17,26 +19,34 @@ public class ConfigManager {
     // 2 -> origin full path
     // 3 -> target full path
 
-    public static void initConfigs() throws IOException {
+    public static void initConfigs() {
         configfiles.put("luminol", ConfigsInstance.of(new File("luminol_config"), "luminol", "me.earthme.luminol.config.modules"));
         preLoad();
     }
 
-    public static void preLoad() throws IOException {
-        for (ConfigsInstance config : configfiles.values()) {
-            config.preLoadConfig();
-        }
+    public static void preLoad() {
+        CompletableFuture<?>[] futures = configfiles.values().stream()
+                .map(config -> CompletableFuture.runAsync(() -> {
+                    try {
+                        config.preLoadConfig();
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to preload config", e);
+                    }
+                }))
+                .toArray(CompletableFuture[]::new);
+        CompletableFuture.allOf(futures).join();
         acceptTransformedConfigs();
     }
 
     public static void loadConfigFiles() {
-        for (ConfigsInstance config : configfiles.values()) {
-            config.finalizeLoadConfig();
-        }
+        CompletableFuture<?>[] futures = configfiles.values().stream()
+                .map(config -> CompletableFuture.runAsync(config::finalizeLoadConfig))
+                .toArray(CompletableFuture[]::new);
+        CompletableFuture.allOf(futures).join();
     }
 
-    public static void registerTransformedConfig(String origin, String originKey, String target, String targetKey, TransformedConfig transformedConfig) {
-        needTransformedConfigs.put(transformedConfig, new String[]{origin, originKey, target, targetKey});
+    public static void registerTransformedConfig(@NotNull String origin, @NotNull String target, @NotNull String originKey, @NotNull String targetKey, TransformedConfig transformedConfig) {
+        needTransformedConfigs.put(transformedConfig, new String[]{origin, target, originKey, targetKey});
     }
 
     private static ConfigsInstance getConfigs(String name) {

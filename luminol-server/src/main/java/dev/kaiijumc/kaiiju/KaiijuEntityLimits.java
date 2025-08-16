@@ -50,7 +50,7 @@ public class KaiijuEntityLimits {
                     + "HorseSkeleton, HorseZombie, Llama, LlamaTrader, Sniffer, EnderCrystal, EnderDragon, Wither, ArmorStand, Hanging, ItemFrame, Leash, "
                     + "Painting, GlowItemFrame, FallingBlock, Item, TNTPrimed, Blaze, CaveSpider, Creeper, Drowned, Enderman, Endermite, Evoker, Ghast, "
                     + "GiantZombie, Guardian, GuardianElder, IllagerAbstract, IllagerIllusioner, IllagerWizard, MagmaCube, Monster, MonsterPatrolling, Phantom, "
-                    + "PigZombie, Pillager, Ravager, Shulker, Silverfish, Skeleton, SkeletonAbstract, SkeletonStray, SkeletonWither, Slime, Spider, Strider, Vex, "
+                    + "ZombifiedPiglin, Pillager, Ravager, Shulker, Silverfish, Skeleton, SkeletonAbstract, SkeletonStray, SkeletonWither, Slime, Spider, Strider, Vex, "
                     + "Vindicator, Witch, Zoglin, Zombie, ZombieHusk, ZombieVillager, Hoglin, Piglin, PiglinAbstract, PiglinBrute, Warden, Villager, "
                     + "VillagerTrader, Arrow, DragonFireball, Egg, EnderPearl, EnderSignal, EvokerFangs, Fireball, FireballFireball, Fireworks, FishingHook, "
                     + "LargeFireball, LlamaSpit, Potion, Projectile, ProjectileThrowable, ShulkerBullet, SmallFireball, Snowball, SpectralArrow, ThrownExpBottle, "

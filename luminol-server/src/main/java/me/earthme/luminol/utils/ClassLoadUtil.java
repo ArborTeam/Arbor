@@ -1,5 +1,6 @@
 package me.earthme.luminol.utils;
 
+import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -21,7 +22,7 @@ public class ClassLoadUtil {
         Enumeration<URL> dirs;
 
         try {
-            dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+            dirs = MinecraftServer.class.getClassLoader().getResources(packageDirName);
             while (dirs.hasMoreElements()) {
                 URL url = dirs.nextElement();
                 String protocol = url.getProtocol();

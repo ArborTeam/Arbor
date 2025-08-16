@@ -340,8 +340,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
         sector.store(chunkData, this.swapFileChannel);
 
-        SYNCED_HANDLE.set(this, false); // mark as unsynced
-        LAST_WRITTEN_HANDLE.set(this, System.nanoTime()); // update last written time
+        this.markAsToSync();
     }
 
     private @Nullable ByteBuffer readChunkDataRaw(int chunkOrdinal) throws IOException {
@@ -360,7 +359,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
         sector.clear();
 
         this.writeSwapFileHeaders();
+        this.markAsToSync();
+    }
 
+    private void markAsToSync(){
         SYNCED_HANDLE.set(this, false); // mark as unsynced
         LAST_WRITTEN_HANDLE.set(this, System.nanoTime()); // update last written time
     }
@@ -380,13 +382,13 @@ public class BufferedLinearRegionFile implements IRegionFile {
         final int xxHash32OfData = this.xxHash32.hash(data, this.xxHash32Seed);
         data.position(oldPositionOfData);
 
-        // uncompressed length + timestamp + xxhash32
+        // uncompressed length(int) + timestamp(long) + xxhash32(int)
         final ByteBuffer chunkSectionBuilder = ByteBuffer.allocate(data.remaining() + 4 + 8 + 4);
 
-        chunkSectionBuilder.putInt(data.remaining()); // Length
-        chunkSectionBuilder.putLong(System.currentTimeMillis()); // Timestamp
-        chunkSectionBuilder.putInt(xxHash32OfData); // xxHash32 of the original data
-        chunkSectionBuilder.put(data); // Data
+        chunkSectionBuilder.putInt(data.remaining()); // Length(int)
+        chunkSectionBuilder.putLong(System.currentTimeMillis()); // Timestamp(long)
+        chunkSectionBuilder.putInt(xxHash32OfData); // xxHash32 of the original data(int)
+        chunkSectionBuilder.put(data); // Data(bytes)
         chunkSectionBuilder.flip();
 
         this.writeChunkDataRaw(chunkIndex, chunkSectionBuilder);
@@ -399,9 +401,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
             return null;
         }
 
-        final int length = data.getInt(); // compressed length
-        final long timestamp = data.getLong(); // TODO use this timestamp for something?
-        final int dataXXHash32 = data.getInt(); // XXHash32 for validation
+        final int length = data.getInt(); // compressed length(int)
+        final long timestamp = data.getLong(); // TODO use this timestamp(long) for something?
+        final int dataXXHash32 = data.getInt(); // XXHash32 for validation(int)
 
         final IOException xxHash32CheckFailedEx = this.checkXXHash32(dataXXHash32, data);
         if (xxHash32CheckFailedEx != null) {

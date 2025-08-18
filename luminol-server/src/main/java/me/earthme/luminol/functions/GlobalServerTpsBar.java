@@ -1,7 +1,5 @@
 package me.earthme.luminol.functions;
 
-import com.google.common.collect.Maps;
-import com.mojang.logging.LogUtils;
 import io.papermc.paper.threadedregions.ThreadedRegionizer;
 import io.papermc.paper.threadedregions.TickData;
 import io.papermc.paper.threadedregions.TickRegionScheduler;
@@ -9,106 +7,34 @@ import io.papermc.paper.threadedregions.TickRegions;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.earthme.luminol.config.modules.misc.TpsBarConfig;
 import me.earthme.luminol.utils.EnumStatusBarDisplay;
-import me.earthme.luminol.utils.NullPlugin;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.UUID;
 
-public class GlobalServerTpsBar {
-    protected static final NullPlugin NULL_PLUGIN = new NullPlugin();
-    protected static final Map<UUID, BossBar> uuid2Bossbars = Maps.newConcurrentMap();
-    protected static final Map<UUID, ScheduledTask> scheduledTasks = new HashMap<>();
-    private static final Logger logger = LogUtils.getLogger();
-    protected static volatile ScheduledTask scannerTask = null;
-    private static boolean disabled = true;
-
-    public static void init() {
-        disabled = false;
-        cancelBarUpdateTask();
-
-        scannerTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(NULL_PLUGIN, unused -> {
-            try {
-                update();
-                cleanUp();
-            } catch (Exception e) {
-                logger.error(e.getLocalizedMessage());
-            }
-        }, 1, TpsBarConfig.updateInterval);
+public class GlobalServerTpsBar extends AbstractGlobalServerBar {
+    public void init() {
+        init(TpsBarConfig.updateInterval);
     }
 
-    public static void cancelBarUpdateTask() {
-        if (scannerTask == null || scannerTask.isCancelled()) {
-            return;
-        }
-
-        scannerTask.cancel();
-
-        for (ScheduledTask task : scheduledTasks.values()) {
-            if (!task.isCancelled()) {
-                task.cancel();
-            }
-        }
+    public boolean isPlayerVisible(Player player) {
+        return ((CraftPlayer) player).getHandle().isTpsBarVisible && super.isPlayerVisible(player);
     }
 
-    public static void runUnloadTask() {
-        GlobalServerTpsBar.disabled = true;
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            final UUID uuid = player.getUniqueId();
-            final BossBar removed = uuid2Bossbars.remove(uuid);
-            if (removed != null) {
-                player.hideBossBar(removed);
-            }
-        }
-    }
-
-    public static boolean isPlayerVisible(Player player) {
-        return ((CraftPlayer) player).getHandle().isTpsBarVisible && !disabled;
-    }
-
-    public static void setVisibilityForPlayer(Player target, boolean canSee) {
+    public void setVisibilityForPlayer(Player target, boolean canSee) {
         ((CraftPlayer) target).getHandle().isTpsBarVisible = canSee;
     }
 
-    private static void update() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            scheduledTasks.computeIfAbsent(player.getUniqueId(), unused -> createBossBarForPlayer(player));
-        }
-    }
-
-    private static void cleanUp() {
-        final List<UUID> toCleanUp = new ArrayList<>();
-
-        for (Map.Entry<UUID, ScheduledTask> toCheck : scheduledTasks.entrySet()) {
-            if (toCheck.getValue().isCancelled()) {
-                toCleanUp.add(toCheck.getKey());
-            }
-        }
-
-        for (UUID uuid : toCleanUp) {
-            scheduledTasks.remove(uuid);
-        }
-    }
-
-    public static ScheduledTask createBossBarForPlayer(@NotNull Player apiPlayer) {
+    public ScheduledTask createBossBarForPlayer(@NotNull Player apiPlayer) {
         final UUID playerUUID = apiPlayer.getUniqueId();
 
         return apiPlayer.getScheduler().runAtFixedRate(NULL_PLUGIN, (n) -> {
-            if (!isPlayerVisible(apiPlayer)) {
-                final BossBar removed = uuid2Bossbars.remove(playerUUID);
-
-                if (removed != null) {
-                    apiPlayer.hideBossBar(removed);
-                }
-                return;
-            }
+            if (checkAndRemove(apiPlayer, playerUUID)) return;
 
             final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region = TickRegionScheduler.getCurrentRegion();
             final TickData.TickReportData reportData = region.getData().getRegionSchedulingHandle().getTickReport5s(System.nanoTime());
@@ -140,7 +66,7 @@ public class GlobalServerTpsBar {
         }, 1, TpsBarConfig.updateInterval);
     }
 
-    private static void updateTpsBar(double tps, double mspt, @NotNull BossBar bar, @NotNull Player player) {
+    private void updateTpsBar(double tps, double mspt, @NotNull BossBar bar, @NotNull Player player) {
         final Component message = MiniMessage.miniMessage().deserialize(
                 TpsBarConfig.tpsBarFormat,
                 Placeholder.component("tps", getTpsComponent(tps)),
@@ -164,7 +90,7 @@ public class GlobalServerTpsBar {
         }
     }
 
-    private static @NotNull Component getPingComponent(int ping) {
+    private @NotNull Component getPingComponent(int ping) {
         final BossBar.Color colorBukkit = barColorFromPing(ping);
         final String colorString = colorBukkit.name();
 
@@ -174,7 +100,7 @@ public class GlobalServerTpsBar {
         return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.valueOf(ping)));
     }
 
-    private static BossBar.Color barColorFromPing(int ping) {
+    private BossBar.Color barColorFromPing(int ping) {
         if (ping == -1) {
             return BossBar.Color.valueOf(TpsBarConfig.pingColors.get(3));
         }
@@ -190,7 +116,7 @@ public class GlobalServerTpsBar {
         return BossBar.Color.valueOf(TpsBarConfig.pingColors.get(2));
     }
 
-    private static @NotNull Component getMsptComponent(double mspt) {
+    private @NotNull Component getMsptComponent(double mspt) {
         final BossBar.Color colorBukkit = barColorFromMspt(mspt);
         final String colorString = colorBukkit.name();
 
@@ -200,7 +126,7 @@ public class GlobalServerTpsBar {
         return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.format("%." + TpsBarConfig.precisionOfMSPT + "f", mspt)));
     }
 
-    private static @NotNull Component getChunkHotComponent(long chunkHot) {
+    private @NotNull Component getChunkHotComponent(long chunkHot) {
         final BossBar.Color colorBukkit = barColorFromChunkHot(chunkHot);
         final String colorString = colorBukkit.name();
 
@@ -210,7 +136,7 @@ public class GlobalServerTpsBar {
         return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.valueOf(chunkHot)));
     }
 
-    private static BossBar.Color barColorFromChunkHot(long chunkHot) {
+    private BossBar.Color barColorFromChunkHot(long chunkHot) {
         if (chunkHot == -1) {
             return BossBar.Color.valueOf(TpsBarConfig.chunkHotColors.get(3));
         }
@@ -226,7 +152,7 @@ public class GlobalServerTpsBar {
         return BossBar.Color.valueOf(TpsBarConfig.chunkHotColors.get(2));
     }
 
-    private static BossBar.Color barColorFromMspt(double mspt) {
+    private BossBar.Color barColorFromMspt(double mspt) {
         if (mspt == -1) {
             return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(3));
         }
@@ -242,7 +168,7 @@ public class GlobalServerTpsBar {
         return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(2));
     }
 
-    private static @NotNull Component getTpsComponent(double tps) {
+    private @NotNull Component getTpsComponent(double tps) {
         final BossBar.Color colorBukkit = barColorFromTps(tps);
         final String colorString = colorBukkit.name();
 
@@ -252,7 +178,7 @@ public class GlobalServerTpsBar {
         return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.format("%." + TpsBarConfig.precisionOfTPS + "f", tps)));
     }
 
-    private static BossBar.Color barColorFromTps(double tps) {
+    private BossBar.Color barColorFromTps(double tps) {
         if (tps == -1) {
             return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(3));
         }

@@ -7,6 +7,7 @@ import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
+import me.earthme.luminol.functions.GlobalServerBarManager;
 import me.earthme.luminol.functions.GlobalServerRegionBar;
 import me.earthme.luminol.utils.EnumStatusBarDisplay;
 import org.bukkit.Bukkit;
@@ -54,10 +55,11 @@ public class RegionBarConfig implements IConfigModule {
             display = EnumStatusBarDisplay.valueOf(displayString);
         }
 
+        GlobalServerRegionBar regionbar = GlobalServerBarManager.get("region");
         if (regionbarEnabled) {
-            GlobalServerRegionBar.init();
+            regionbar.init();
         } else {
-            GlobalServerRegionBar.cancelBarUpdateTask();
+            regionbar.cancelBarUpdateTask();
         }
 
         if (!inited) {
@@ -68,8 +70,9 @@ public class RegionBarConfig implements IConfigModule {
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        GlobalServerRegionBar.cancelBarUpdateTask();
-        GlobalServerRegionBar.runUnloadTask();
+        GlobalServerRegionBar regionbar = GlobalServerBarManager.get("region");
+        regionbar.cancelBarUpdateTask();
+        regionbar.runUnloadTask();
         Bukkit.getCommandMap().getKnownCommands().remove("luminol:regionbar");
     }
 }

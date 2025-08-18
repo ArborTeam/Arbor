@@ -1,6 +1,7 @@
 package me.earthme.luminol.commands;
 
 import me.earthme.luminol.config.modules.misc.RegionBarConfig;
+import me.earthme.luminol.functions.GlobalServerBarManager;
 import me.earthme.luminol.functions.GlobalServerRegionBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -33,14 +34,15 @@ public class RegionBarCommand extends Command {
             return true;
         }
 
-        if (GlobalServerRegionBar.isPlayerVisible(player)) {
+        GlobalServerRegionBar regionbar = GlobalServerBarManager.get("region");
+        if (regionbar.isPlayerVisible(player)) {
             player.sendMessage(Component.text("Disabled region bar").color(TextColor.color(0, 255, 0)));
-            GlobalServerRegionBar.setVisibilityForPlayer(player, false);
+            regionbar.setVisibilityForPlayer(player, false);
             return true;
         }
 
         player.sendMessage(Component.text("Enabled region bar").color(TextColor.color(0, 255, 0)));
-        GlobalServerRegionBar.setVisibilityForPlayer(player, true);
+        regionbar.setVisibilityForPlayer(player, true);
 
         return true;
     }

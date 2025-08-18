@@ -1,7 +1,8 @@
 package me.earthme.luminol.commands;
 
 import me.earthme.luminol.config.modules.misc.TpsBarConfig;
-import me.earthme.luminol.functions.GlobalServerTpsBar;
+import me.earthme.luminol.functions.AbstractGlobalServerBar;
+import me.earthme.luminol.functions.GlobalServerBarManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.Command;
@@ -33,14 +34,15 @@ public class TpsBarCommand extends Command {
             return true;
         }
 
-        if (GlobalServerTpsBar.isPlayerVisible(player)) {
+        AbstractGlobalServerBar tpsbar = GlobalServerBarManager.get("tps");
+        if (tpsbar.isPlayerVisible(player)) {
             player.sendMessage(Component.text("Disabled tps bar").color(TextColor.color(0, 255, 0)));
-            GlobalServerTpsBar.setVisibilityForPlayer(player, false);
+            tpsbar.setVisibilityForPlayer(player, false);
             return true;
         }
 
         player.sendMessage(Component.text("Enabled tps bar").color(TextColor.color(0, 255, 0)));
-        GlobalServerTpsBar.setVisibilityForPlayer(player, true);
+        tpsbar.setVisibilityForPlayer(player, true);
 
         return true;
     }

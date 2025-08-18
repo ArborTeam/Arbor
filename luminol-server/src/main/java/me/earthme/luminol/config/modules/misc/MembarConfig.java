@@ -7,6 +7,7 @@ import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
+import me.earthme.luminol.functions.GlobalServerBarManager;
 import me.earthme.luminol.functions.GlobalServerMemoryBar;
 import me.earthme.luminol.utils.EnumStatusBarDisplay;
 import org.bukkit.Bukkit;
@@ -54,10 +55,11 @@ public class MembarConfig implements IConfigModule {
             display = EnumStatusBarDisplay.valueOf(displayString);
         }
 
+        GlobalServerMemoryBar membar = GlobalServerBarManager.get("memory");
         if (memoryBarEnabled) {
-            GlobalServerMemoryBar.init();
+            membar.init();
         } else {
-            GlobalServerMemoryBar.cancelBarUpdateTask();
+            membar.cancelBarUpdateTask();
         }
 
         if (!inited) {
@@ -68,8 +70,9 @@ public class MembarConfig implements IConfigModule {
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        GlobalServerMemoryBar.cancelBarUpdateTask();
-        GlobalServerMemoryBar.runUnloadTask();
+        GlobalServerMemoryBar membar = GlobalServerBarManager.get("memory");
+        membar.cancelBarUpdateTask();
+        membar.runUnloadTask();
         Bukkit.getCommandMap().getKnownCommands().remove("luminol:membar");
     }
 }

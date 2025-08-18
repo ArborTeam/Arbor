@@ -1,6 +1,7 @@
 package me.earthme.luminol.commands;
 
 import me.earthme.luminol.config.modules.misc.MembarConfig;
+import me.earthme.luminol.functions.GlobalServerBarManager;
 import me.earthme.luminol.functions.GlobalServerMemoryBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -33,14 +34,15 @@ public class MembarCommand extends Command {
             return true;
         }
 
-        if (GlobalServerMemoryBar.isPlayerVisible(player)) {
+        GlobalServerMemoryBar membar = GlobalServerBarManager.get("memory");
+        if (membar.isPlayerVisible(player)) {
             player.sendMessage(Component.text("Disabled mem bar").color(TextColor.color(0, 255, 0)));
-            GlobalServerMemoryBar.setVisibilityForPlayer(player, false);
+            membar.setVisibilityForPlayer(player, false);
             return true;
         }
 
         player.sendMessage(Component.text("Enabled mem bar").color(TextColor.color(0, 255, 0)));
-        GlobalServerMemoryBar.setVisibilityForPlayer(player, true);
+        membar.setVisibilityForPlayer(player, true);
 
         return true;
     }

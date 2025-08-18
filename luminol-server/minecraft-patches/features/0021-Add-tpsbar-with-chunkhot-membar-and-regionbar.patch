@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <wangxyper@163.com>
 Date: Sun, 12 Jan 2025 10:27:31 +0800
-Subject: [PATCH] Add tpsbar with chunkhot membar and regionbar
+Subject: [PATCH] Add tpsbar with chunkhot, membar and regionbar
 
 
 diff --git a/ca/spottedleaf/moonrise/paper/util/BaseChunkSystemHooks.java b/ca/spottedleaf/moonrise/paper/util/BaseChunkSystemHooks.java
@@ -68,16 +68,14 @@ index 86d28cde6e748ef52ca7b7f9641b49d9c7a76ff8..199ae0f34cdf458ff2bdc75d5a60b075
              this.lastServerStatus = nanos;
              this.status = this.buildServerStatus();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index cd2d965cce285f91c3deed8872c01ff076a12ea4..b7f25386f4b5d6a53f133ffbd98d9db1aebdd2c0 100644
+index cd2d965cce285f91c3deed8872c01ff076a12ea4..6cfb07a4b1232080360bb75bc5fdcc887d1362a1 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -720,6 +720,9 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -720,6 +720,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
  
      @Override
      public void stopServer() {
-+        me.earthme.luminol.functions.GlobalServerTpsBar.cancelBarUpdateTask(); //Luminol - Tpsbar
-+        me.earthme.luminol.functions.GlobalServerMemoryBar.cancelBarUpdateTask(); //Luminol - Memory bar
-+        me.earthme.luminol.functions.GlobalServerRegionBar.cancelBarUpdateTask(); //Luminol - Region bar
++        me.earthme.luminol.functions.GlobalServerBarManager.cancelAll(); // Luminol - turn off all bars
          super.stopServer();
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
          SkullBlockEntity.clear();

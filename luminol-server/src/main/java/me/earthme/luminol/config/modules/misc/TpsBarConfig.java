@@ -7,6 +7,7 @@ import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
+import me.earthme.luminol.functions.GlobalServerBarManager;
 import me.earthme.luminol.functions.GlobalServerTpsBar;
 import me.earthme.luminol.utils.EnumStatusBarDisplay;
 import org.bukkit.Bukkit;
@@ -63,10 +64,12 @@ public class TpsBarConfig implements IConfigModule {
             display = EnumStatusBarDisplay.valueOf(displayString);
         }
 
+        GlobalServerTpsBar tpsbar = GlobalServerBarManager.get("tps");
+
         if (tpsbarEnabled) {
-            GlobalServerTpsBar.init();
+            tpsbar.init();
         } else {
-            GlobalServerTpsBar.cancelBarUpdateTask();
+            tpsbar.cancelBarUpdateTask();
         }
 
         if (!inited) {
@@ -77,8 +80,9 @@ public class TpsBarConfig implements IConfigModule {
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        GlobalServerTpsBar.cancelBarUpdateTask();
-        GlobalServerTpsBar.runUnloadTask();
+        GlobalServerTpsBar tpsbar = GlobalServerBarManager.get("tps");
+        tpsbar.cancelBarUpdateTask();
+        tpsbar.runUnloadTask();
         Bukkit.getCommandMap().getKnownCommands().remove("luminol:tpsbar");
     }
 }

@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class RegionBarCommand extends Command {
-    public RegionBarCommand(@NotNull String name) {
-        super(name);
+    public RegionBarCommand() {
+        super("regionbar");
         this.setPermission("luminol.commands.regionbar");
         this.setDescription("Show info about your current region through a bossbar");
         this.setUsage("/regionbar");

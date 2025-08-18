@@ -26,8 +26,10 @@ public class GlobalServerMemoryBar {
     protected static final Map<UUID, ScheduledTask> scheduledTasks = new HashMap<>();
     private static final Logger logger = LogUtils.getLogger();
     protected static volatile ScheduledTask scannerTask = null;
+    private static boolean disabled = true;
 
     public static void init() {
+        disabled = false;
         cancelBarUpdateTask();
 
         scannerTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(NULL_PLUGIN, unused -> {
@@ -37,6 +39,17 @@ public class GlobalServerMemoryBar {
                 logger.error(e.getLocalizedMessage());
             }
         }, 1, MembarConfig.updateInterval);
+    }
+
+    public static void runUnloadTask() {
+        GlobalServerMemoryBar.disabled = true;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            final UUID uuid = player.getUniqueId();
+            final BossBar removed = uuid2Bossbars.remove(uuid);
+            if (removed != null) {
+                player.hideBossBar(removed);
+            }
+        }
     }
 
 
@@ -55,7 +68,7 @@ public class GlobalServerMemoryBar {
     }
 
     public static boolean isPlayerVisible(Player player) {
-        return ((CraftPlayer) player).getHandle().isMemBarVisible;
+        return ((CraftPlayer) player).getHandle().isMemBarVisible && !disabled;
     }
 
     public static void setVisibilityForPlayer(Player target, boolean canSee) {

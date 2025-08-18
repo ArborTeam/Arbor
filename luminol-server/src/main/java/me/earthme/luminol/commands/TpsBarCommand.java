@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class TpsBarCommand extends Command {
-    public TpsBarCommand(@NotNull String name) {
-        super(name);
+    public TpsBarCommand() {
+        super("tpsbar");
         this.setPermission("luminol.commands.tpsbar");
         this.setDescription("Show the tps and mspt through a bossbar");
         this.setUsage("/tpsbar");

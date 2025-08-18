@@ -70,8 +70,15 @@ public class TpsBarConfig implements IConfigModule {
         }
 
         if (!inited) {
-            Bukkit.getCommandMap().register("tpsbar", "luminol", new TpsBarCommand("tpsbar"));
+            Bukkit.getCommandMap().register("tpsbar", "luminol", new TpsBarCommand());
             inited = true;
         }
+    }
+
+    @Override
+    public void onUnloaded(CommentedFileConfig configInstance) {
+        GlobalServerTpsBar.cancelBarUpdateTask();
+        GlobalServerTpsBar.runUnloadTask();
+        Bukkit.getCommandMap().getKnownCommands().remove("luminol:tpsbar");
     }
 }

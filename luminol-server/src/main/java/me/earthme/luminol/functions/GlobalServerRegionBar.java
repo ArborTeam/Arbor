@@ -30,8 +30,10 @@ public class GlobalServerRegionBar {
     private static final Logger logger = LogUtils.getLogger();
     private static final ThreadLocal<DecimalFormat> ONE_DECIMAL_PLACES = ThreadLocal.withInitial(() -> new DecimalFormat("#,##0.0"));
     protected static volatile ScheduledTask scannerTask = null;
+    private static boolean disabled = true;
 
     public static void init() {
+        disabled = false;
         cancelBarUpdateTask();
 
         scannerTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(NULL_PLUGIN, unused -> {
@@ -42,6 +44,17 @@ public class GlobalServerRegionBar {
                 logger.error(e.getLocalizedMessage());
             }
         }, 1, RegionBarConfig.updateInterval);
+    }
+
+    public static void runUnloadTask() {
+        GlobalServerRegionBar.disabled = true;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            final UUID uuid = player.getUniqueId();
+            final BossBar removed = uuid2Bossbars.remove(uuid);
+            if (removed != null) {
+                player.hideBossBar(removed);
+            }
+        }
     }
 
     public static void cancelBarUpdateTask() {
@@ -59,7 +72,7 @@ public class GlobalServerRegionBar {
     }
 
     public static boolean isPlayerVisible(Player player) {
-        return ((CraftPlayer) player).getHandle().isRegionBarVisible;
+        return ((CraftPlayer) player).getHandle().isRegionBarVisible && !disabled;
     }
 
     public static void setVisibilityForPlayer(Player target, boolean canSee) {

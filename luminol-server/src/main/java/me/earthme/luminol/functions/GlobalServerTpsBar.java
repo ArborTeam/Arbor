@@ -28,8 +28,10 @@ public class GlobalServerTpsBar {
     protected static final Map<UUID, ScheduledTask> scheduledTasks = new HashMap<>();
     private static final Logger logger = LogUtils.getLogger();
     protected static volatile ScheduledTask scannerTask = null;
+    private static boolean disabled = true;
 
     public static void init() {
+        disabled = false;
         cancelBarUpdateTask();
 
         scannerTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(NULL_PLUGIN, unused -> {
@@ -56,8 +58,19 @@ public class GlobalServerTpsBar {
         }
     }
 
+    public static void runUnloadTask() {
+        GlobalServerTpsBar.disabled = true;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            final UUID uuid = player.getUniqueId();
+            final BossBar removed = uuid2Bossbars.remove(uuid);
+            if (removed != null) {
+                player.hideBossBar(removed);
+            }
+        }
+    }
+
     public static boolean isPlayerVisible(Player player) {
-        return ((CraftPlayer) player).getHandle().isTpsBarVisible;
+        return ((CraftPlayer) player).getHandle().isTpsBarVisible && !disabled;
     }
 
     public static void setVisibilityForPlayer(Player target, boolean canSee) {

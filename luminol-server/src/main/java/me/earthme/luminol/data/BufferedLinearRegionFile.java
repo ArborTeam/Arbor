@@ -366,7 +366,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.markAsToSync();
     }
 
-    private void markAsToSync(){
+    private void markAsToSync() {
         SYNCED_HANDLE.set(this, false); // mark as unsynced
         LAST_WRITTEN_HANDLE.set(this, System.nanoTime()); // update last written time
     }

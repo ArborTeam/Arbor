@@ -61,8 +61,15 @@ public class RegionBarConfig implements IConfigModule {
         }
 
         if (!inited) {
-            Bukkit.getCommandMap().register("regionbar", "luminol", new RegionBarCommand("regionbar"));
+            Bukkit.getCommandMap().register("regionbar", "luminol", new RegionBarCommand());
             inited = true;
         }
+    }
+
+    @Override
+    public void onUnloaded(CommentedFileConfig configInstance) {
+        GlobalServerRegionBar.cancelBarUpdateTask();
+        GlobalServerRegionBar.runUnloadTask();
+        Bukkit.getCommandMap().getKnownCommands().remove("luminol:regionbar");
     }
 }

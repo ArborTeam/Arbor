@@ -66,7 +66,7 @@ public class ConfigsInstance {
 
     public void reload() {
         RegionizedServer.ensureGlobalTickThread("Reload " + baseConfigFile.getName() + " off global region thread!");
-
+        RunUnloadTask();
         dropAllInstanced();
         try {
             preLoadConfig();
@@ -89,6 +89,12 @@ public class ConfigsInstance {
 
     public void dropAllInstanced() {
         allInstanced.clear();
+    }
+
+    public void RunUnloadTask() {
+        for (IConfigModule module : allInstanced) {
+            module.onUnloaded(configFileInstance);
+        }
     }
 
     public void finalizeLoadConfig() {

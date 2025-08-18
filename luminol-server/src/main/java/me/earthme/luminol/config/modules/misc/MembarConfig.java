@@ -61,8 +61,15 @@ public class MembarConfig implements IConfigModule {
         }
 
         if (!inited) {
-            Bukkit.getCommandMap().register("membar", "luminol", new MembarCommand("membar"));
+            Bukkit.getCommandMap().register("membar", "luminol", new MembarCommand());
             inited = true;
         }
+    }
+
+    @Override
+    public void onUnloaded(CommentedFileConfig configInstance) {
+        GlobalServerMemoryBar.cancelBarUpdateTask();
+        GlobalServerMemoryBar.runUnloadTask();
+        Bukkit.getCommandMap().getKnownCommands().remove("luminol:membar");
     }
 }

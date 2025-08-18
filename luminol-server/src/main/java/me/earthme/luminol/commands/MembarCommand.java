@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class MembarCommand extends Command {
-    public MembarCommand(@NotNull String name) {
-        super(name);
+    public MembarCommand() {
+        super("membar");
         this.setPermission("luminol.commands.membar");
         this.setDescription("Show the memory usage through a bossbar");
         this.setUsage("/membar");

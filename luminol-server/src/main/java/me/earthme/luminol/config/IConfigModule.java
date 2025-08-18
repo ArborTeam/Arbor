@@ -12,6 +12,9 @@ public interface IConfigModule {
     default void onLoaded(CommentedFileConfig configInstance) {
     }
 
+    default void onUnloaded(CommentedFileConfig configInstance) {
+    }
+
     default <T> T get(String keyName, T defaultValue, @NotNull CommentedFileConfig config) {
         if (!config.contains(keyName)) {
             config.set(keyName, defaultValue);

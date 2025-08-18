@@ -95,6 +95,19 @@ index 10a0be7a4db1a51579d113d279af7a9effe7f438..4ada790812957657d580cb748077c496
      }
  
      @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 7675acdca2162e403f4ff523bcdd6efe0cb42d49..30969198b4738e56af6c041962b2a90c45c41c36 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -231,7 +231,7 @@ public class Main {
+                     if (buildDate.before(deadline.getTime())) {
+                         // Paper start - This is some stupid bullshit
+                         System.err.println("*** Warning, you've not updated in a while! ***");
+-                        System.err.println("*** Please download a new build from https://papermc.io/downloads/paper ***");
++                        System.err.println("*** Please download a new build from https://github.com/LuminolMC/Luminol ***");
+                         // Paper end
+                     }
+                 }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 index e9b6ca3aa25e140467ae866d572483050ea3fa0e..9699d7dcca5cf67f50ad05c0e875de424a4e00c5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
@@ -108,6 +121,20 @@ index e9b6ca3aa25e140467ae866d572483050ea3fa0e..9699d7dcca5cf67f50ad05c0e875de42
          Properties properties = new Properties();
  
          if (stream != null) {
+diff --git a/src/main/java/org/spigotmc/WatchdogThread.java b/src/main/java/org/spigotmc/WatchdogThread.java
+index eafdb55d7418606dbca0b3bc4787501fed872c0a..49ba8407181fd48898de2ccb6c30839189cd9e36 100644
+--- a/src/main/java/org/spigotmc/WatchdogThread.java
++++ b/src/main/java/org/spigotmc/WatchdogThread.java
+@@ -80,7 +80,8 @@ public class WatchdogThread extends ca.spottedleaf.moonrise.common.util.TickThre
+                     logger.log(Level.SEVERE, "\t *Especially* if it looks like HTTP or MySQL operations are occurring");
+                     logger.log(Level.SEVERE, "If you see a world save or edit, then it means you did far more than your server can handle at once");
+                     logger.log(Level.SEVERE, "\t If this is the case, consider increasing timeout-time in spigot.yml but note that this will replace the crash with LARGE lag spikes");
+-                    logger.log(Level.SEVERE, "If you are unsure or still think this is a Paper bug, please report this to https://github.com/PaperMC/Paper/issues");
++                    logger.log(Level.SEVERE, "DO NOT REPORT THIS TO PAPER!");
++                    logger.log(Level.SEVERE, "If you are unsure or still think this is a Luminol bug, please report this to https://github.com/LuminolMC/Luminol/issues");
+                     logger.log(Level.SEVERE, "Be sure to include ALL relevant console errors and Minecraft crash reports");
+                     logger.log(Level.SEVERE, "Paper version: " + Bukkit.getServer().getVersion());
+ 
 diff --git a/src/main/resources/logo.png b/src/main/resources/logo.png
 index c06126b92e36566c93b901637926703bbfcc42ff..2b6037aab645e303df6edbbc8af34dc4b4a55bc5 100644
 GIT binary patch

@@ -335,10 +335,14 @@ public class BufferedLinearRegionFile implements IRegionFile {
         );
     }
 
-    private void writeChunkDataRaw(int chunkOrdinal, ByteBuffer chunkData) throws IOException {
+    private void writeChunkDataRaw(int chunkOrdinal, ByteBuffer chunkData, boolean skipSync) throws IOException {
         final Sector sector = this.sectors[chunkOrdinal];
 
         sector.store(chunkData, this.swapFileChannel);
+
+        if (skipSync) {
+            return;
+        }
 
         this.markAsToSync();
     }
@@ -391,7 +395,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         chunkSectionBuilder.put(data); // Data(bytes)
         chunkSectionBuilder.flip();
 
-        this.writeChunkDataRaw(chunkIndex, chunkSectionBuilder);
+        this.writeChunkDataRaw(chunkIndex, chunkSectionBuilder, false);
     }
 
     private @Nullable ByteBuffer readChunk(int x, int z) throws IOException {
@@ -665,7 +669,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
                         final ByteBuffer sectorDataNioBuffer = ByteBuffer.wrap(sectorData);
 
-                        BufferedLinearRegionFile.this.writeChunkDataRaw(index, sectorDataNioBuffer);
+                        BufferedLinearRegionFile.this.writeChunkDataRaw(index, sectorDataNioBuffer, true);
                     }
                 }
             }

@@ -86,6 +86,7 @@ public class ConfigManager {
 
                 if (success) origin.removeConfig(oldConfigKeyName, transformedConfig.category());
             }
+            needTransformedConfigs.remove(transformedConfig); // free space
             origin.saveConfigs();
             target.saveConfigs();
         }

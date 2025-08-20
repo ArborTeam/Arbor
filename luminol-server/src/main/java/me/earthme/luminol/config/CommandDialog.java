@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -91,14 +92,9 @@ public class CommandDialog {
     }
 
     public static void processSubmit(CommandSender sender, ConfigsInstance config, String[] args) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 1; i < args.length - 1; i++) {
-            sb.append(args[i]).append(" ");
-        }
-        sb.append(args[args.length - 1]);
-        String fullText = sb.toString();
+        String fullText = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         Gson gson = new Gson();
-        Type type = new TypeToken<Map<String, Object>>() {
+        Type type = new TypeToken<Map<String, String>>() {
         }.getType();
         Map<String, String> map = gson.fromJson(fullText, type);
         for (Map.Entry<String, String> entry : map.entrySet()) {

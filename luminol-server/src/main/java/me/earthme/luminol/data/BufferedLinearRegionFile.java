@@ -63,11 +63,11 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private final LinearMasterFileFrameParser frameParser = new LinearMasterFileFrameParser();
 
     private boolean closed = false;
-
     private boolean beingSynced = false;
     private boolean synced = false;
     private long lastWritten = System.nanoTime();
 
+    private static final VarHandle CLOSED_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "closed", boolean.class);
     private static final VarHandle SYNCED_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "synced", boolean.class);
     private static final VarHandle BEING_SYNCED_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "beingSynced", boolean.class);
     private static final VarHandle LAST_WRITTEN_HANDLE = ConcurrentUtil.getVarHandle(BufferedLinearRegionFile.class, "lastWritten", long.class);
@@ -111,13 +111,13 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     public boolean isClosedRaw() {
-        return this.closed;
+        return (boolean) CLOSED_HANDLE.getVolatile(this);
     }
 
     public boolean isClosed() {
         this.regionObjectLock.readLock().lock();
         try {
-            return this.closed;
+            return (boolean) CLOSED_HANDLE.getVolatile(this);
         } finally {
             this.regionObjectLock.readLock().unlock();
         }
@@ -128,7 +128,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.regionObjectLock.readLock().lock(); // so we could acquire read lock simply so that we won't block any other read operations
         try {
             // skip if closed already
-            if (this.closed) {
+            if (this.isClosedRaw()) {
                 return;
             }
 
@@ -193,7 +193,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
     }
 
-    private void writeSwapFileHeaders() throws IOException {
+    private void writeSwapFileHeaders(boolean forceFile, boolean forceMeta) throws IOException {
         final ByteBuffer buffer = ByteBuffer.allocate(this.headerSize());
 
         buffer.putLong(SWAP_FILE_SUPER_BLOCK); // Magic
@@ -211,6 +211,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
         long offset = 0;
         while (buffer.hasRemaining()) {
             offset += this.swapFileChannel.write(buffer, offset);
+        }
+
+        if (forceFile) {
+            this.swapFileChannel.force(forceMeta);
         }
     }
 
@@ -231,12 +235,12 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void flushInternal() throws IOException {
-        if (this.closed) {
+        if (this.isClosedRaw()) {
             return;
         }
 
         // save headers
-        this.writeSwapFileHeaders();
+        this.writeSwapFileHeaders(true, false);
 
         long spareSize = this.swapFileChannel.size();
 
@@ -261,17 +265,23 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void closeInternal() throws IOException {
-        this.closed = true;
-        this.flusher.removeFile(this);
-        this.writeSwapFileHeaders();
-        this.swapFileChannel.force(true);
+        this.markClosed();
+
+        this.writeSwapFileHeaders(true, true);
         this.syncToMasterFile();
         this.swapFileChannel.close();
     }
 
+    private void markClosed() throws IOException {
+        if (!CLOSED_HANDLE.compareAndSet(this, false, true)) {
+            throw new IOException("Already closed!");
+        }
+
+        this.flusher.removeFile(this);
+    }
+
     private void compactSwapFile() throws IOException {
-        this.writeSwapFileHeaders(); // save headers for compact
-        this.swapFileChannel.force(true);
+        this.writeSwapFileHeaders(true, true); // save headers for compact
         try (FileChannel tempChannel = FileChannel.open(
                 new File(this.swapFilePath.toString() + ".tmp").toPath(),
                 StandardOpenOption.CREATE,
@@ -314,14 +324,23 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
         this.swapFileChannel.close();
 
-        Files.move(
-                new File(this.swapFilePath + ".tmp").toPath(),
-                this.swapFilePath,
-                StandardCopyOption.REPLACE_EXISTING
-        );
+        final Path target = new File(this.swapFilePath + ".tmp").toPath();
+
+        try {
+            Files.move(
+                    target,
+                    this.swapFilePath,
+                    StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.ATOMIC_MOVE
+            );
+        }catch (Exception e) {
+            Files.deleteIfExists(target);
+            this.markClosed(); // File already broken after the exception, don't write it anymore, or we will destroy the master file (fast-fail)
+            throw new IOException("Failed to replace original swap file!", e);
+        }
 
         this.reopenSwapFileChannel();
-        this.writeSwapFileHeaders();
+        this.writeSwapFileHeaders(true, true);
     }
 
     private void reopenSwapFileChannel() throws IOException {
@@ -362,7 +381,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
         sector.clear();
 
-        this.writeSwapFileHeaders();
+        this.writeSwapFileHeaders(true, false);
         this.markAsToSync();
     }
 
@@ -444,10 +463,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 return null;
             }
 
-            final byte[] baked = new byte[data.remaining()];
-            data.get(baked);
-
-            return new DataInputStream(new ByteArrayInputStream(baked));
+            return new DataInputStream(new ByteBufferInputStream(data));
         } finally {
             this.regionObjectLock.readLock().unlock();
         }
@@ -547,6 +563,29 @@ public class BufferedLinearRegionFile implements IRegionFile {
             this.closeInternal();
         } finally {
             this.regionObjectLock.writeLock().unlock();
+        }
+    }
+
+    public static class ByteBufferInputStream extends InputStream {
+        protected final ByteBuffer internal;
+
+        public ByteBufferInputStream(ByteBuffer buf) { this.internal = buf; }
+
+        @Override public int available() {
+            return this.internal.remaining();
+        }
+
+        @Override
+        public int read() throws IOException {
+            return this.internal.hasRemaining() ? (this.internal.get() & 0xFF) : -1;
+        }
+
+        @Override
+        public int read(byte @NotNull [] bytes, int off, int len) throws IOException {
+            if (!this.internal.hasRemaining()) return -1;
+            len = Math.min(len, this.internal.remaining());
+            this.internal.get(bytes, off, len);
+            return len;
         }
     }
 
@@ -787,7 +826,12 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 zstdDataStream.flush();
             }
 
-            Files.move(tempFile.toPath(), masterFilePath, StandardCopyOption.REPLACE_EXISTING);
+            try {
+                Files.move(tempFile.toPath(), masterFilePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            }catch (Exception e) {
+                Files.deleteIfExists(masterFilePath);
+                throw new IOException("Failed to replace original master file!", e);
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ import net.jpountz.xxhash.XXHash32;
 import net.jpountz.xxhash.XXHashFactory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,7 +55,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     private final ReadWriteLock regionObjectLock = new ReentrantReadWriteLock();
     private final XXHash32 xxHash32 = XXHashFactory.fastestInstance().hash32();
-    private final Sector[] sectors = new Sector[1024];
+    private Sector[] sectors = new Sector[1024];
     private long currentAcquiredIndex = this.headerSize();
     private int xxHash32Seed = SWAP_FILE_HASH_SEED;
     private FileChannel swapFileChannel;
@@ -78,6 +79,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.masterFilePath = masterFilePath;
         this.swapFilePath = Path.of(this.masterFilePath.toString() + ".swp");
 
+        Validate.inclusiveBetween(1, 22, compressionLevel);
         this.compressionLevel = (byte) compressionLevel;
 
         this.initSwapFile();
@@ -133,9 +135,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
 
             this.syncToMasterFile();
-
-            BEING_SYNCED_HANDLE.set(this, false); // mark as not being synced
         } finally {
+            BEING_SYNCED_HANDLE.set(this, false); // mark as not being synced
+
             this.regionObjectLock.readLock().unlock();
         }
     }
@@ -146,7 +148,14 @@ public class BufferedLinearRegionFile implements IRegionFile {
             return;
         }
 
-        this.frameParser.writeMainFile(this.masterFilePath);
+        try {
+            this.frameParser.writeMainFile(this.masterFilePath);
+        }catch (Exception e) {
+            // set back
+            SYNCED_HANDLE.setVolatile(this, false);
+
+            throw new IOException("Failed to sync to master file!", e);
+        }
     }
 
     private void loadSwapDataFromMasterFile() throws IOException {
@@ -191,6 +200,18 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 this.currentAcquiredIndex = Math.max(this.currentAcquiredIndex, sector.offset + sector.length);
             }
         }
+    }
+
+    private void recalculateAcquiredIndex() {
+        long newValue = this.headerSize();
+
+        for (Sector sector : this.sectors) {
+            if (sector.hasData()) {
+                newValue = Math.max(newValue, sector.offset + sector.length);
+            }
+        }
+
+        this.currentAcquiredIndex = newValue;
     }
 
     private void writeSwapFileHeaders(boolean forceFile, boolean forceMeta) throws IOException {
@@ -282,8 +303,14 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     private void compactSwapFile() throws IOException {
         this.writeSwapFileHeaders(true, true); // save headers for compact
+
+        final Sector[] newSectorsToBeReplaced = new Sector[this.sectors.length];
+
+        System.arraycopy(this.sectors, 0, newSectorsToBeReplaced, 0, this.sectors.length);
+
+        final Path targetTemp = new File(this.swapFilePath.toString() + ".tmp").toPath();
         try (FileChannel tempChannel = FileChannel.open(
-                new File(this.swapFilePath.toString() + ".tmp").toPath(),
+                targetTemp,
                 StandardOpenOption.CREATE,
                 StandardOpenOption.WRITE,
                 StandardOpenOption.READ
@@ -301,7 +328,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             long offsetPointer = this.headerSize();
             tempChannel.position(offsetPointer);
 
-            for (Sector sector : this.sectors) {
+            for (Sector sector : newSectorsToBeReplaced) {
                 // skip cleared or no data-contained sectors
                 if (!sector.hasData()) {
                     continue;
@@ -315,11 +342,18 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 newRecalculated.hasData = true;
 
                 offsetPointer += sector.length;
-                this.sectors[sector.index] = newRecalculated; // update sector infos
+                newSectorsToBeReplaced[sector.index] = newRecalculated; // update sector infos
             }
 
             tempChannel.force(true);
             this.currentAcquiredIndex = offsetPointer;
+        } catch (Exception ex) {
+            // recalculate acquired index
+            this.recalculateAcquiredIndex();
+            // delete the target temp file
+            Files.deleteIfExists(targetTemp);
+            // fast-fail
+            throw new IOException("Failed to compact swap file!", ex);
         }
 
         this.swapFileChannel.close();
@@ -334,11 +368,17 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     StandardCopyOption.ATOMIC_MOVE
             );
         }catch (Exception e) {
+            // delete file that failed to replace
             Files.deleteIfExists(target);
-            this.markClosed(); // File already broken after the exception, don't write it anymore, or we will destroy the master file (fast-fail)
+            // recalculate acquired index
+            this.recalculateAcquiredIndex();
+            // reopen closed channel
+            this.reopenSwapFileChannel();
+            // fast-fail
             throw new IOException("Failed to replace original swap file!", e);
         }
 
+        this.sectors = newSectorsToBeReplaced;
         this.reopenSwapFileChannel();
         this.writeSwapFileHeaders(true, true);
     }
@@ -747,7 +787,14 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     if (chunkStarts[i] > 0) {
                         int size = chunkStarts[i];
                         byte[] chunkData = new byte[size];
-                        bufferHelper.read(chunkData);
+
+                        int totalRead = bufferHelper.read(chunkData);
+
+                        // should not happen in normal cases, or the file is corrupted
+                        if (totalRead == -1) {
+                            // fast-fail
+                            throw new IOException("Unexpected EOF got while loading master file!");
+                        }
 
                         final ByteBuffer chunkDataNioBuffer = ByteBuffer.wrap(chunkData);
 

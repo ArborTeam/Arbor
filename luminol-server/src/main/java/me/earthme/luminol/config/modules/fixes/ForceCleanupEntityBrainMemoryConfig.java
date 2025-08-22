@@ -12,7 +12,7 @@ public class ForceCleanupEntityBrainMemoryConfig implements IConfigModule {
 
     @Override
     public EnumConfigCategory getCategory() {
-        return EnumConfigCategory.EXPERIMENT;
+        return EnumConfigCategory.FIXES;
     }
 
     @Override

@@ -288,9 +288,12 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private void closeInternal() throws IOException {
         this.markClosed();
 
-        this.writeSwapFileHeaders(true, true);
-        this.syncToMasterFile();
-        this.swapFileChannel.close();
+        try {
+            this.writeSwapFileHeaders(true, true);
+            this.syncToMasterFile();
+        }finally {
+            this.swapFileChannel.close();
+        }
     }
 
     private void markClosed() throws IOException {
@@ -368,14 +371,25 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     StandardCopyOption.ATOMIC_MOVE
             );
         }catch (Exception e) {
-            // delete file that failed to replace
-            Files.deleteIfExists(target);
-            // recalculate acquired index
-            this.recalculateAcquiredIndex();
-            // reopen closed channel
-            this.reopenSwapFileChannel();
-            // fast-fail
-            throw new IOException("Failed to replace original swap file!", e);
+            // atomic move might be unsupported on some file systems, so give it a attempt to retry without atomic move
+            try {
+                Files.move(
+                        target,
+                        this.swapFilePath,
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+            }catch (Exception ex) {
+                // now we are totally failed
+
+                // delete file that failed to replace
+                Files.deleteIfExists(target);
+                // recalculate acquired index
+                this.recalculateAcquiredIndex();
+                // reopen closed channel
+                this.reopenSwapFileChannel();
+                // fast-fail
+                throw new IOException("Failed to replace original swap file!", e);
+            }
         }
 
         this.sectors = newSectorsToBeReplaced;
@@ -737,14 +751,17 @@ public class BufferedLinearRegionFile implements IRegionFile {
             // Skip newestTimestamp (Long) + Compression level (Byte): Unused.
             ioStream.skipBytes(9);
 
-            try (ZstdInputStream decompressStream = new ZstdInputStream(ioStream);
-                 DataInputStream dataStream = new DataInputStream(decompressStream)) {
+            try (final ZstdInputStream decompressStream = new ZstdInputStream(ioStream)) {
+                // only used as a helper stream
+                // the parent stream will be closed in the try-catch block upper
+                final DataInputStream decompressedStreamHelper = new DataInputStream(decompressStream);
+
                 for (int index = 0; index < 1024; index++) {
-                    int size = dataStream.readInt(); // len
+                    int size = decompressedStreamHelper.readInt(); // len
 
                     if (size > 0) {
                         byte[] sectorData = new byte[size];
-                        dataStream.readFully(sectorData, 0, size); // data
+                        decompressedStreamHelper.readFully(sectorData, 0, size); // data
 
                         final ByteBuffer sectorDataNioBuffer = ByteBuffer.wrap(sectorData);
 
@@ -775,8 +792,11 @@ public class BufferedLinearRegionFile implements IRegionFile {
             // Skip data hash (Long): Unused.
             ioStream.skipBytes(8);
 
-            try (ZstdInputStream decompressedStream = new ZstdInputStream(ioStream);
-                 DataInputStream bufferHelper = new DataInputStream(decompressedStream)) {
+            try (final ZstdInputStream decompressedStream = new ZstdInputStream(ioStream)) {
+                // only used as a helper stream
+                // the parent stream will be closed in the try-catch block upper
+                final DataInputStream bufferHelper = new DataInputStream(decompressedStream);
+
                 final int[] chunkStarts = new int[1024];
                 for (int i = 0; i < 1024; i++) {
                     chunkStarts[i] = bufferHelper.readInt();
@@ -787,14 +807,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     if (chunkStarts[i] > 0) {
                         int size = chunkStarts[i];
                         byte[] chunkData = new byte[size];
-
-                        int totalRead = bufferHelper.read(chunkData);
-
-                        // should not happen in normal cases, or the file is corrupted
-                        if (totalRead == -1) {
-                            // fast-fail
-                            throw new IOException("Unexpected EOF got while loading master file!");
-                        }
+                        bufferHelper.readFully(chunkData);
 
                         final ByteBuffer chunkDataNioBuffer = ByteBuffer.wrap(chunkData);
 
@@ -816,23 +829,39 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 return;
             }
 
-            try (FileInputStream fileStream = new FileInputStream(file);
-                 DataInputStream rawDataStream = new DataInputStream(fileStream)) {
+            // those streams will be closed in the parse logic, or we will close it manually
+            final FileInputStream fileStream = new FileInputStream(file);
+            final DataInputStream rawDataStream = new DataInputStream(fileStream);
 
-                final long superBlock = rawDataStream.readLong();
+            final long superBlock;
+            try {
+                superBlock = rawDataStream.readLong();
 
                 if (superBlock == MASTER_FILE_SUPER_BLOCK) {
-                    parseBufferedLinear(rawDataStream, mainFilePath);
+                    this.parseBufferedLinear(rawDataStream, mainFilePath);
                     return;
                 }
 
                 if (superBlock == LINEAR_FILE_SUPER_BLOCK) {
-                    parseLinear(rawDataStream, mainFilePath);
+                    this.parseLinear(rawDataStream, mainFilePath);
                     return;
                 }
 
-                throw new IOException("Unknown or unsupported super block : " + superBlock);
+            }catch (Exception ex) {
+                // error caught during other reading logics, close directly
+                try {
+                    rawDataStream.close();
+                } catch (IOException ignored) {
+                    // the stream might be closed already, so we could ignore this error
+                }
+
+                throw new IOException("Failed to parse master file: " + mainFilePath, ex);
             }
+
+            // anyone non-matched, close stream and throw the error
+            rawDataStream.close();
+
+            throw new IOException("Unknown or unsupported super block : " + superBlock);
         }
 
         public void writeMainFile(@NotNull Path mainFile) throws IOException {
@@ -842,17 +871,23 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             File tempFile = tmpFilePath.toFile();
 
-            try (OutputStream fileStream = Files.newOutputStream(tmpFilePath, TMP_FILE_CHANNEL_OPTIONS);
-                 DataOutputStream dataStream = new DataOutputStream(fileStream);
-                 ZstdOutputStream zstdStream = new ZstdOutputStream(fileStream, BufferedLinearRegionFile.this.compressionLevel);
-                 DataOutputStream zstdDataStream = new DataOutputStream(zstdStream)
+            try (final OutputStream fileStream = Files.newOutputStream(tmpFilePath, TMP_FILE_CHANNEL_OPTIONS);
+                 final ZstdOutputStream zstdStream = new ZstdOutputStream(fileStream, BufferedLinearRegionFile.this.compressionLevel);
             ) {
 
-                dataStream.writeLong(MASTER_FILE_SUPER_BLOCK); // super block
-                dataStream.writeByte(MASTER_FILE_VERSION); // version
-                dataStream.writeLong(timestamp); // timestamp
-                dataStream.write(BufferedLinearRegionFile.this.compressionLevel); // compression level
-                dataStream.flush();
+                // only used as a helper stream
+                // the parent stream will be closed in the try-catch block upper
+                final DataOutputStream fileDataStreamHelper = new DataOutputStream(fileStream);
+
+                fileDataStreamHelper.writeLong(MASTER_FILE_SUPER_BLOCK); // super block
+                fileDataStreamHelper.writeByte(MASTER_FILE_VERSION); // version
+                fileDataStreamHelper.writeLong(timestamp); // timestamp
+                fileDataStreamHelper.write(BufferedLinearRegionFile.this.compressionLevel); // compression level
+                fileDataStreamHelper.flush();
+
+                // only used as a helper stream
+                // the parent stream will be closed in the try-catch block upper
+                final DataOutputStream zstdDataStreamHelper = new DataOutputStream(zstdStream);
 
                 for (int i = 0; i < 1024; i++) {
                     // read from swap file
@@ -860,24 +895,32 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
                     // not found
                     if (chunkData == null) {
-                        zstdDataStream.writeInt(0);
+                        zstdDataStreamHelper.writeInt(0);
                         continue;
                     }
 
                     final byte[] buffer = chunkData.array();
                     // store
-                    zstdDataStream.writeInt(buffer.length); // len
-                    zstdDataStream.write(buffer); // data
+                    zstdDataStreamHelper.writeInt(buffer.length); // len
+                    zstdDataStreamHelper.write(buffer); // data
                 }
 
-                zstdDataStream.flush();
+                zstdDataStreamHelper.flush();
             }
 
             try {
                 Files.move(tempFile.toPath(), masterFilePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             }catch (Exception e) {
-                Files.deleteIfExists(masterFilePath);
-                throw new IOException("Failed to replace original master file!", e);
+                // retry with non-atomic move
+                try {
+                    Files.move(tempFile.toPath(), masterFilePath, StandardCopyOption.REPLACE_EXISTING);
+                }catch (Exception ex) {
+                    // now we are totally failed
+
+                    // fast-fail
+                    Files.deleteIfExists(masterFilePath);
+                    throw new IOException("Failed to replace original master file!", e);
+                }
             }
         }
     }

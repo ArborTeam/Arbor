@@ -380,6 +380,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 );
             }catch (Exception ex) {
                 // now we are totally failed
+                e.addSuppressed(ex);
 
                 // delete file that failed to replace
                 Files.deleteIfExists(target);

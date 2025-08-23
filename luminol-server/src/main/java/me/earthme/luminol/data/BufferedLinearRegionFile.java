@@ -851,8 +851,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 // error caught during other reading logics, close directly
                 try {
                     rawDataStream.close();
-                } catch (IOException ignored) {
-                    // the stream might be closed already, so we could ignore this error
+                } catch (IOException ex2) {
+                    ex.addSuppressed(ex2);
                 }
 
                 throw new IOException("Failed to parse master file: " + mainFilePath, ex);

@@ -2,8 +2,10 @@ package me.earthme.luminol.config.modules.misc;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 
+@ConfigClass
 public class PaperPacketLimiterConfig implements IConfigModule {
     @ConfigInfo(baseName = "force_disable")
     public static boolean forceDisable = false;

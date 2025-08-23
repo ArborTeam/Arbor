@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import me.earthme.luminol.commands.TpsBarCommand;
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.functions.GlobalServerBarManager;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import java.util.Arrays;
 import java.util.List;
 
+@ConfigClass
 public class TpsBarConfig implements IConfigModule {
     private static final Logger logger = LogUtils.getLogger();
 

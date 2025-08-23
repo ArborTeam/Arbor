@@ -5,10 +5,12 @@ import com.mojang.logging.LogUtils;
 import gg.pufferfish.pufferfish.simd.SIMDDetection;
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import org.slf4j.Logger;
 
+@ConfigClass
 public class SIMDConfig implements IConfigModule {
     @DoNotLoad
     private static final Logger LOGGER = LogUtils.getLogger();

@@ -2,8 +2,10 @@ package me.earthme.luminol.config.modules.fixes;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 
+@ConfigClass
 public class PreventIncorrectTeleportAsyncConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled", comments = """
             When enabled, the server would reject some incorrect teleportAsync calls during move events.\s

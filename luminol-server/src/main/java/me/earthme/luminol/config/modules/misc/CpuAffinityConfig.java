@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import net.openhft.affinity.Affinity;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import java.util.BitSet;
 import java.util.List;
 
+@ConfigClass
 public class CpuAffinityConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled")
     public static boolean cpuAffinityEnabled = false;

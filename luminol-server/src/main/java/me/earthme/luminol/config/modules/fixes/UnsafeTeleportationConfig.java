@@ -2,8 +2,10 @@ package me.earthme.luminol.config.modules.fixes;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 
+@ConfigClass
 public class UnsafeTeleportationConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled", comments = "Allow non player entities enter end portals if enabled.\n" +
             "If you want to use sand duping,please turn on this.\n" +

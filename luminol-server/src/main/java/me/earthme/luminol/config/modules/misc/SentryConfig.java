@@ -3,9 +3,11 @@ package me.earthme.luminol.config.modules.misc;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import org.apache.logging.log4j.Level;
 
+@ConfigClass
 public class SentryConfig implements IConfigModule {
 
     @ConfigInfo(baseName = "dsn", comments =

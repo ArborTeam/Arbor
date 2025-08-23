@@ -4,7 +4,9 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import dev.kaiijumc.kaiiju.KaiijuEntityLimits;
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 
+@ConfigClass
 public class KaiijuEntityLimiterConfig implements IConfigModule {
     @Override
     public EnumConfigCategory getCategory() {

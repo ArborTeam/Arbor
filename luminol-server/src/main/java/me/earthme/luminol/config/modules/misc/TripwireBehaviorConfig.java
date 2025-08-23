@@ -2,9 +2,11 @@ package me.earthme.luminol.config.modules.misc;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
 
+@ConfigClass
 public class TripwireBehaviorConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled")
     public static boolean enabled = false;

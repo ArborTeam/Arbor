@@ -2,8 +2,10 @@ package me.earthme.luminol.config.modules.optimizations;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 
+@ConfigClass
 public class EntityGoalSelectorInactiveTickConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled")
     public static boolean enabled = false;
@@ -15,6 +17,6 @@ public class EntityGoalSelectorInactiveTickConfig implements IConfigModule {
 
     @Override
     public String getBaseName() {
-        return "skip_goal_selector_tick_in_inactive_tick";
+        return "throttle_goal_selector_tick_in_inactive_tick";
     }
 }

@@ -2,9 +2,11 @@ package me.earthme.luminol.config.modules.removed;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
 
+@ConfigClass
 public class RemovedConfig implements IConfigModule {
     @TransformedConfig(name = "enabled", category = {"experiment", "enable_tick_command"}, transform = false)
     @TransformedConfig(name = "barrel_rows", category = {"misc", "container_expansion"}, transform = false)

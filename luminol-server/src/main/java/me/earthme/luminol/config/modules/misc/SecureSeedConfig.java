@@ -2,8 +2,10 @@ package me.earthme.luminol.config.modules.misc;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 
+@ConfigClass
 public class SecureSeedConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled", comments = """
             Once you enable secure seed, all ores and structures are generated with 1024-bit seed

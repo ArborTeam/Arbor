@@ -2,8 +2,10 @@ package me.earthme.luminol.config.modules.fixes;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.ConfigClass;
 import me.earthme.luminol.config.flags.ConfigInfo;
 
+@ConfigClass
 public class FoliaEntityMovingFixConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled", comments =
             """

@@ -4,7 +4,7 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.ConfigClass;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import net.openhft.affinity.Affinity;
@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import java.util.BitSet;
 import java.util.List;
 
-@ConfigClass
+@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "cpu_affinity")
 public class CpuAffinityConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled")
     public static boolean cpuAffinityEnabled = false;
@@ -29,16 +29,6 @@ public class CpuAffinityConfig implements IConfigModule {
     private static final Logger LOGGER = LogUtils.getLogger();
     @DoNotLoad
     public static BitSet tickRegionAffinityBitSet;
-
-    @Override
-    public EnumConfigCategory getCategory() {
-        return EnumConfigCategory.MISC;
-    }
-
-    @Override
-    public String getBaseName() {
-        return "cpu_affinity";
-    }
 
     @Override
     public void onLoaded(CommentedFileConfig configInstance) {

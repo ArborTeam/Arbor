@@ -4,7 +4,7 @@ import abomination.LinearRegionFile;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.ConfigClass;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.config.flags.HotReloadUnsupported;
@@ -12,7 +12,7 @@ import me.earthme.luminol.utils.BufferedLinearRegionFileFlusher;
 import me.earthme.luminol.utils.EnumRegionFormat;
 import net.minecraft.server.MinecraftServer;
 
-@ConfigClass
+@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "region_format")
 public class RegionFormatConfig implements IConfigModule {
     @HotReloadUnsupported
     @ConfigInfo(baseName = "format")
@@ -35,16 +35,6 @@ public class RegionFormatConfig implements IConfigModule {
 
     @DoNotLoad
     public static EnumRegionFormat regionFormat;
-
-    @Override
-    public EnumConfigCategory getCategory() {
-        return EnumConfigCategory.MISC;
-    }
-
-    @Override
-    public String getBaseName() {
-        return "region_format";
-    }
 
     @Override
     public void onLoaded(CommentedFileConfig configInstance) {

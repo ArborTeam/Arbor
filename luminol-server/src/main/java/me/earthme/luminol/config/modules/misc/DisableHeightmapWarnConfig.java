@@ -2,23 +2,13 @@ package me.earthme.luminol.config.modules.misc;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.ConfigClass;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 
-@ConfigClass
+@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "heightmap_warn_disable")
 public class DisableHeightmapWarnConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled", comments =
             """
                     Disable heightmap-check's warning""")
     public static boolean enabled = false;
-
-    @Override
-    public EnumConfigCategory getCategory() {
-        return EnumConfigCategory.MISC;
-    }
-
-    @Override
-    public String getBaseName() {
-        return "heightmap_warn_disable";
-    }
 }

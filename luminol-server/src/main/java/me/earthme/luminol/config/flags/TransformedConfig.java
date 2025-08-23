@@ -19,7 +19,7 @@ public @interface TransformedConfig {
 
     boolean transformComments() default true;
 
-    Class<? extends DefaultTransformLogic>[] transformLogic() default {DefaultTransformLogic.class};
+    Class<? extends DefaultTransformLogic>[] transformLogic() default {};
 
     @Retention(RetentionPolicy.RUNTIME)
     @interface List {

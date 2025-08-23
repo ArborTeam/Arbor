@@ -872,7 +872,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             File tempFile = tmpFilePath.toFile();
 
             try (final OutputStream fileStream = Files.newOutputStream(tmpFilePath, TMP_FILE_CHANNEL_OPTIONS);
-                 final ZstdOutputStream zstdStream = new ZstdOutputStream(fileStream, BufferedLinearRegionFile.this.compressionLevel);
+                 final ZstdOutputStream zstdStream = new ZstdOutputStream(fileStream, BufferedLinearRegionFile.this.compressionLevel)
             ) {
 
                 // only used as a helper stream

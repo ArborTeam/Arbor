@@ -6,13 +6,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConfigManager {
-    public static final Map<String, ConfigsInstance> configfiles = new HashMap<>();
-    public static final Map<TransformedConfig, String[]> needTransformedConfigs = new HashMap<>();
+    public static final Map<String, ConfigsInstance> configfiles = new ConcurrentHashMap<>();
+    public static final Map<TransformedConfig, String[]> needTransformedConfigs = new ConcurrentHashMap<>();
     // String[]:
     // 0 -> origin key
     // 1 -> target key

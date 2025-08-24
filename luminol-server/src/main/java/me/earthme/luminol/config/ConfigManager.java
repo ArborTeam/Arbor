@@ -75,13 +75,12 @@ public class ConfigManager {
                         }
                         oldValue = new DefaultTransformLogic().transform(oldValue);
                         targetConfig.set(newConfigKeyName, oldValue);
+                        if (transformedConfig.transformComments()) {
+                            targetConfig.setComment(newConfigKeyName, originConfig.getComment(oldConfigKeyName));
+                        }
                     } catch (Exception e) {
                         success = false;
                         target.logger.error("Failed to transform removed config {}!", transformedConfig.name());
-                    }
-
-                    if (transformedConfig.transformComments()) {
-                        targetConfig.setComment(newConfigKeyName, originConfig.getComment(oldConfigKeyName));
                     }
                 }
 

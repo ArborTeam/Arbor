@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ConfigsInstance {
@@ -29,8 +30,8 @@ public class ConfigsInstance {
     private final String commandName; // used to register command
     private final String pack; // used to find all classes
     private final Set<IConfigModule> allInstanced = new HashSet<>();
-    private final Map<String, Object> stagedConfigMap = new HashMap<>();
-    private final Map<String, Object> defaultvalueMap = new HashMap<>();
+    private final Map<String, Object> stagedConfigMap = new ConcurrentHashMap<>();
+    private final Map<String, Object> defaultvalueMap = new ConcurrentHashMap<>();
     public boolean alreadyInit = false;
     private CommentedFileConfig configFileInstance;
 
@@ -309,16 +310,32 @@ public class ConfigsInstance {
     }
 
     public String parseStringFromList(List<?> list) {
-        return list.stream()
-                .map(obj -> {
-                    String str = obj.toString();
-                    if (str.contains(",") || str.contains("\"") || str.contains(" ") || str.contains("[")) {
-                        str = str.replace("\"", "\\\"");
+        String ret;
+        if (list.getFirst() instanceof String) {
+            ret = list.stream()
+                    .map(obj -> {
+                        String str = obj.toString();
+                        if (str.contains(",") || str.contains("\"") || str.contains(" ") || str.contains("[")) {
+                            str = str.replace("\"", "\\\"");
+                            return "\"" + str + "\"";
+                        }
+                        return str;
+                    })
+                    .collect(Collectors.joining(", ", "[", "]"));
+        } else {
+            ret = list.stream()
+                    .map(obj -> {
+                        String str;
+                        try {
+                            str = (String) list.getFirst().getClass().getMethod("transformInList").invoke(obj);
+                        } catch (Exception e) {
+                            str = null;
+                        }
                         return "\"" + str + "\"";
-                    }
-                    return str;
-                })
-                .collect(Collectors.joining(", ", "[", "]"));
+                    })
+                    .collect(Collectors.joining(", ", "[", "]"));
+        }
+        return ret;
     }
 
 

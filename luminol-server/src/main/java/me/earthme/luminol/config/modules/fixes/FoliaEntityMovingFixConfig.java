@@ -2,10 +2,10 @@ package me.earthme.luminol.config.modules.fixes;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.ConfigClass;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 
-@ConfigClass
+@ConfigClassInfo(configAttribution = EnumConfigCategory.FIXES, mainName = "folia.fix_high_velocity_issue")
 public class FoliaEntityMovingFixConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled", comments =
             """
@@ -17,14 +17,4 @@ public class FoliaEntityMovingFixConfig implements IConfigModule {
     public static boolean enabled = false;
     @ConfigInfo(baseName = "warn_on_detected")
     public static boolean warnOnDetected = true;
-
-    @Override
-    public EnumConfigCategory getCategory() {
-        return EnumConfigCategory.FIXES;
-    }
-
-    @Override
-    public String getBaseName() {
-        return "folia.fix_high_velocity_issue";
-    }
 }

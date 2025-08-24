@@ -2,11 +2,11 @@ package me.earthme.luminol.config.modules.misc;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.ConfigClass;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
 
-@ConfigClass
+@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "tripwire_dupe")
 public class TripwireBehaviorConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled")
     public static boolean enabled = false;
@@ -18,14 +18,4 @@ public class TripwireBehaviorConfig implements IConfigModule {
                     VANILLA21
                     MIXED""")
     public static String behaviorMode = "VANILLA21";
-
-    @Override
-    public EnumConfigCategory getCategory() {
-        return EnumConfigCategory.MISC;
-    }
-
-    @Override
-    public String getBaseName() {
-        return "tripwire_dupe";
-    }
 }

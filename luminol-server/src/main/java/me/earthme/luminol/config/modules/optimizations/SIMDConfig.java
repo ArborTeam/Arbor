@@ -5,27 +5,17 @@ import com.mojang.logging.LogUtils;
 import gg.pufferfish.pufferfish.simd.SIMDDetection;
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.ConfigClass;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import org.slf4j.Logger;
 
-@ConfigClass
+@ConfigClassInfo(configAttribution = EnumConfigCategory.OPTIMIZATIONS, mainName = "use_simd")
 public class SIMDConfig implements IConfigModule {
     @DoNotLoad
     private static final Logger LOGGER = LogUtils.getLogger();
     @ConfigInfo(baseName = "enabled")
     public static boolean enabled = true;
-
-    @Override
-    public EnumConfigCategory getCategory() {
-        return EnumConfigCategory.OPTIMIZATIONS;
-    }
-
-    @Override
-    public String getBaseName() {
-        return "use_simd";
-    }
 
     @Override
     public void onLoaded(CommentedFileConfig configInstance) {

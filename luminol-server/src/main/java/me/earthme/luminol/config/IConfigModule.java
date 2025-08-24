@@ -4,11 +4,6 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import org.jetbrains.annotations.NotNull;
 
 public interface IConfigModule {
-
-    EnumConfigCategory getCategory();
-
-    String getBaseName();
-
     default void onLoaded(CommentedFileConfig configInstance) {
     }
 

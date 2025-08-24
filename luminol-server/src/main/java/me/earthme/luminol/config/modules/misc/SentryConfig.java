@@ -1,13 +1,14 @@
 package me.earthme.luminol.config.modules.misc;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import gg.pufferfish.pufferfish.sentry.SentryManager;
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.ConfigClass;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import org.apache.logging.log4j.Level;
 
-@ConfigClass
+@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "sentry")
 public class SentryConfig implements IConfigModule {
 
     @ConfigInfo(baseName = "dsn", comments =
@@ -22,16 +23,6 @@ public class SentryConfig implements IConfigModule {
     public static boolean onlyLogThrown = true;
 
     @Override
-    public EnumConfigCategory getCategory() {
-        return EnumConfigCategory.MISC;
-    }
-
-    @Override
-    public String getBaseName() {
-        return "sentry";
-    }
-
-    @Override
     public void onLoaded(CommentedFileConfig configInstance) {
         String sentryEnvironment = System.getenv("SENTRY_DSN");
 
@@ -43,7 +34,7 @@ public class SentryConfig implements IConfigModule {
         onlyLogThrown = configInstance.getOrElse("sentry.only-log-thrown", onlyLogThrown);
 
         if (sentryDsn != null && !sentryDsn.isBlank()) {
-            gg.pufferfish.pufferfish.sentry.SentryManager.init(Level.getLevel(logLevel));
+            SentryManager.init(Level.getLevel(logLevel));
         }
     }
 }

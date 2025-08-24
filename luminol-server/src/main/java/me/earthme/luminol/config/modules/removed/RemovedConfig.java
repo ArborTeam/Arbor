@@ -2,11 +2,11 @@ package me.earthme.luminol.config.modules.removed;
 
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.ConfigClass;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
 
-@ConfigClass
+@ConfigClassInfo(configAttribution = EnumConfigCategory.REMOVED, mainName = "removed_config")
 public class RemovedConfig implements IConfigModule {
     @TransformedConfig(name = "enabled", category = {"experiment", "enable_tick_command"}, transform = false)
     @TransformedConfig(name = "barrel_rows", category = {"misc", "container_expansion"}, transform = false)
@@ -28,14 +28,4 @@ public class RemovedConfig implements IConfigModule {
             """
                     RemovedConfig redirect to here, no any function.""")
     public static boolean enabled = true;
-
-    @Override
-    public EnumConfigCategory getCategory() {
-        return EnumConfigCategory.REMOVED;
-    }
-
-    @Override
-    public String getBaseName() {
-        return "removed_config";
-    }
 }

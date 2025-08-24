@@ -73,6 +73,7 @@ public class ConfigManager {
                         for (Class<? extends DefaultTransformLogic> logic : transformedConfig.transformLogic()) {
                             oldValue = logic.getDeclaredConstructor().newInstance().transform(oldValue);
                         }
+                        oldValue = new DefaultTransformLogic().transform(oldValue);
                         targetConfig.set(newConfigKeyName, oldValue);
                     } catch (Exception e) {
                         success = false;

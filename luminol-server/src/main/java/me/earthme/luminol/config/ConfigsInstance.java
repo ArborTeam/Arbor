@@ -4,10 +4,7 @@ import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import io.papermc.paper.threadedregions.RegionizedServer;
 import me.earthme.luminol.commands.ConfigCommand;
-import me.earthme.luminol.config.flags.ConfigInfo;
-import me.earthme.luminol.config.flags.DoNotLoad;
-import me.earthme.luminol.config.flags.HotReloadUnsupported;
-import me.earthme.luminol.config.flags.TransformedConfig;
+import me.earthme.luminol.config.flags.*;
 import me.earthme.luminol.utils.ClassLoadUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -141,7 +138,15 @@ public class ConfigsInstance {
     }
 
     private void loadForSingle(@NotNull IConfigModule singleConfigModule) throws IllegalAccessException {
-        final EnumConfigCategory category = singleConfigModule.getCategory();
+        ConfigClassInfo configClassInfo = singleConfigModule.getClass().getAnnotation(ConfigClassInfo.class);
+        if (configClassInfo == null) {
+            return;
+        }
+        List<String> category = new ArrayList<>();
+        category.add(configClassInfo.configAttribution().getBaseKeyName());
+        category.addAll(Arrays.asList(configClassInfo.subNames()));
+        category.add(configClassInfo.mainName());
+        final String fullConfigBasePath = String.join(".", category);
 
         Field[] fields = singleConfigModule.getClass().getDeclaredFields();
 
@@ -155,7 +160,7 @@ public class ConfigsInstance {
                     continue;
                 }
 
-                final String fullConfigKeyName = category.getBaseKeyName() + "." + singleConfigModule.getBaseName() + "." + configInfo.baseName();
+                final String fullConfigKeyName = fullConfigBasePath + "." + configInfo.baseName();
 
                 field.setAccessible(true);
                 final Object currentValue = field.get(null);
@@ -202,7 +207,7 @@ public class ConfigsInstance {
                     }
                     if (configFileInstance.get(fullConfigKeyName) != null) continue;
                     if (currentValue == null) {
-                        throw new UnsupportedOperationException("Config " + singleConfigModule.getBaseName() + "tried to add an null default value!");
+                        throw new UnsupportedOperationException("Config " + configInfo.baseName() + "tried to add an null default value!");
                     }
 
                     final String comments = configInfo.comments();

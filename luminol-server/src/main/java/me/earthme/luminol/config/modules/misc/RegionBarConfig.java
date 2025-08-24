@@ -5,7 +5,7 @@ import com.mojang.logging.LogUtils;
 import me.earthme.luminol.commands.RegionBarCommand;
 import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.ConfigClass;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.functions.GlobalServerBarManager;
@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import java.util.Arrays;
 import java.util.List;
 
-@ConfigClass
+@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "regionbar")
 public class RegionBarConfig implements IConfigModule {
     private static final Logger logger = LogUtils.getLogger();
 
@@ -37,16 +37,6 @@ public class RegionBarConfig implements IConfigModule {
 
     @DoNotLoad
     private static boolean inited = false;
-
-    @Override
-    public EnumConfigCategory getCategory() {
-        return EnumConfigCategory.MISC;
-    }
-
-    @Override
-    public String getBaseName() {
-        return "regionbar";
-    }
 
     @Override
     public void onLoaded(CommentedFileConfig configInstance) {

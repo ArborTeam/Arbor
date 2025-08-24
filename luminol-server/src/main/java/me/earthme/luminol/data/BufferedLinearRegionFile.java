@@ -267,11 +267,21 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
         spareSize -= this.headerSize();
         for (Sector sector : this.sectors) {
+            // skip no data sectors
+            if (!sector.hasData()) {
+                continue;
+            }
+
             spareSize -= sector.length;
         }
 
         long sectorSize = 0;
         for (Sector sector : this.sectors) {
+            // skip no data sectors
+            if (!sector.hasData()) {
+                continue;
+            }
+
             sectorSize += sector.length;
         }
 
@@ -676,9 +686,24 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
 
         public void store(@NotNull ByteBuffer newData, @NotNull FileChannel channel) throws IOException {
+            final long oldLength = this.length;
+            final long newDataLength = newData.remaining();
+
             this.hasData = true;
             this.length = newData.remaining();
-            this.offset = currentAcquiredIndex;
+
+            // data is smaller or equal to the local buffer we hold, write it directly
+            if (newDataLength <= oldLength) {
+                long offset = this.offset;
+                while (newData.hasRemaining()) {
+                    offset += channel.write(newData, offset);
+                }
+
+                return;
+            }
+
+            // or we will append to the end of file
+            this.offset = BufferedLinearRegionFile.this.currentAcquiredIndex;
 
             BufferedLinearRegionFile.this.currentAcquiredIndex += this.length;
 

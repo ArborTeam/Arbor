@@ -8,7 +8,7 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/d4854b69b2775f6d0929
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ffe23d83a0533284dd8a51ba126815de49301789..67e8e82f41e515bdef6329cd85b93e8a121522df 100644
+index ffe23d83a0533284dd8a51ba126815de49301789..3bd0d74317e0e4129077b7f29477804285d89957 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -5588,8 +5588,82 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -87,7 +87,7 @@ index ffe23d83a0533284dd8a51ba126815de49301789..67e8e82f41e515bdef6329cd85b93e8a
      // Paper start - optimise collisions
      public boolean updateFluidHeightAndDoFluidPushing(final TagKey<Fluid> fluid, final double flowScale) {
 +        // Leaves start - vanilla fluid pushing
-+        if (me.earthme.luminol.config.modules.misc.CollisionBehaviorConfig.vanillaFluidPushing) {
++        if (me.earthme.luminol.config.modules.fixes.CollisionBehaviorConfig.vanillaFluidPushing) {
 +            return vanillaUpdateFluidHeightAndDoFluidPushing(fluid, flowScale);
 +        }
 +        // Leaves end - vanilla fluid pushing

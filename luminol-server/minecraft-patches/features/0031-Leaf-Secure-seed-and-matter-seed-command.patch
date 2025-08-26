@@ -8,7 +8,7 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/server/commands/SeedCommand.java b/net/minecraft/server/commands/SeedCommand.java
-index 7c1e18d8362be5ae885c32b05e98b9ef45942d93..eb77dd6c009a0121e03a4041761dd2d69adcdfe9 100644
+index 7c1e18d8362be5ae885c32b05e98b9ef45942d93..ae2a52193eb87467c31ed79b95e15d9b50f56076 100644
 --- a/net/minecraft/server/commands/SeedCommand.java
 +++ b/net/minecraft/server/commands/SeedCommand.java
 @@ -12,6 +12,16 @@ public class SeedCommand {
@@ -16,7 +16,7 @@ index 7c1e18d8362be5ae885c32b05e98b9ef45942d93..eb77dd6c009a0121e03a4041761dd2d6
              Component component = ComponentUtils.copyOnClickText(String.valueOf(seed));
              commandContext.getSource().sendSuccess(() -> Component.translatable("commands.seed.success", component), false);
 +            // Leaf start - Matter - SecureSeed Command
-+            if (me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled) {
++            if (me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled) {
 +                su.plo.matter.Globals.setupGlobals(commandContext.getSource().getLevel());
 +                String seedStr = su.plo.matter.Globals.seedToString(su.plo.matter.Globals.worldSeed);
 +                Component featureSeedComponent = ComponentUtils.copyOnClickText(seedStr);
@@ -29,7 +29,7 @@ index 7c1e18d8362be5ae885c32b05e98b9ef45942d93..eb77dd6c009a0121e03a4041761dd2d6
          }));
      }
 diff --git a/net/minecraft/server/dedicated/DedicatedServerProperties.java b/net/minecraft/server/dedicated/DedicatedServerProperties.java
-index 4a01088da91fc6d620cb804a9ab6d6eb1630b473..3360d691cfdb8f83d6e396c83aeaa9e809d7e8db 100644
+index 4a01088da91fc6d620cb804a9ab6d6eb1630b473..2affc83e3e449776e7983919d7d6878ae6e9b3a9 100644
 --- a/net/minecraft/server/dedicated/DedicatedServerProperties.java
 +++ b/net/minecraft/server/dedicated/DedicatedServerProperties.java
 @@ -115,7 +115,17 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
@@ -38,7 +38,7 @@ index 4a01088da91fc6d620cb804a9ab6d6eb1630b473..3360d691cfdb8f83d6e396c83aeaa9e8
          long l = WorldOptions.parseSeed(string).orElse(WorldOptions.randomSeed());
 -        this.worldOptions = new WorldOptions(l, flag, false);
 +        // Leaf start - Matter - Secure Seed
-+        if (me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled) {
++        if (me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled) {
 +            String featureSeedStr = this.get("feature-level-seed", "");
 +            long[] featureSeed = su.plo.matter.Globals.parseSeed(featureSeedStr)
 +                .orElse(su.plo.matter.Globals.createRandomWorldSeed());
@@ -76,7 +76,7 @@ index 00482efc8e736e73ad136105ad7b9dd2cafd581f..55f3497503e3317d765abb0bd4a9a620
          DataFixer fixerUpper = server.getFixerUpper();
          // Paper - rewrite chunk system
 diff --git a/net/minecraft/world/entity/monster/Slime.java b/net/minecraft/world/entity/monster/Slime.java
-index 7b9105cc38380d60892647e52608787dbde28f0d..88c1880947cd9d8b3952cce3f8f3ae04ce047968 100644
+index 7b9105cc38380d60892647e52608787dbde28f0d..4686846d3841e3b294c488f8ab8329e4e901c866 100644
 --- a/net/minecraft/world/entity/monster/Slime.java
 +++ b/net/minecraft/world/entity/monster/Slime.java
 @@ -329,7 +329,12 @@ public class Slime extends Mob implements Enemy {
@@ -85,7 +85,7 @@ index 7b9105cc38380d60892647e52608787dbde28f0d..88c1880947cd9d8b3952cce3f8f3ae04
              ChunkPos chunkPos = new ChunkPos(pos);
 -            boolean flag = level.getMinecraftWorld().paperConfig().entities.spawning.allChunksAreSlimeChunks || WorldgenRandom.seedSlimeChunk(chunkPos.x, chunkPos.z, ((WorldGenLevel) level).getSeed(), level.getMinecraftWorld().spigotConfig.slimeSeed).nextInt(10) == 0; // Paper
 +            // Leaf start - Matter - Secure Seed
-+            boolean isSlimeChunk = me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled
++            boolean isSlimeChunk = me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled
 +                ? level.getChunk(chunkPos.x, chunkPos.z).isSlimeChunk()
 +                : WorldgenRandom.seedSlimeChunk(chunkPos.x, chunkPos.z, ((WorldGenLevel) level).getSeed(), level.getMinecraftWorld().spigotConfig.slimeSeed).nextInt(10) == 0; // Spigot // Paper
 +            boolean flag = level.getMinecraftWorld().paperConfig().entities.spawning.allChunksAreSlimeChunks || isSlimeChunk;
@@ -127,7 +127,7 @@ index 182c14b660f8860bed627eed4e01fd4002153e9a..686c031ec73acc80683aaa39a78fe922
  
      @Nullable
 diff --git a/net/minecraft/world/level/chunk/ChunkGenerator.java b/net/minecraft/world/level/chunk/ChunkGenerator.java
-index 92d13f9b886114553b471271391255ba08c8108f..196056021a95951e8f4c08f6508a98c0b671d15c 100644
+index 92d13f9b886114553b471271391255ba08c8108f..5e517d36bb5f16bcd1cbab97d749b2c18cef9df8 100644
 --- a/net/minecraft/world/level/chunk/ChunkGenerator.java
 +++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
 @@ -342,7 +342,11 @@ public abstract class ChunkGenerator {
@@ -136,7 +136,7 @@ index 92d13f9b886114553b471271391255ba08c8108f..196056021a95951e8f4c08f6508a98c0
              List<FeatureSorter.StepFeatureData> list = this.featuresPerStep.get();
 -            WorldgenRandom worldgenRandom = new WorldgenRandom(new XoroshiroRandomSource(RandomSupport.generateUniqueSeed()));
 +            // Leaf start - Matter - Secure Seed
-+            WorldgenRandom worldgenRandom = me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled
++            WorldgenRandom worldgenRandom = me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled
 +                ? new su.plo.matter.WorldgenCryptoRandom(blockPos.getX(), blockPos.getZ(), su.plo.matter.Globals.Salt.UNDEFINED, 0)
 +                : new WorldgenRandom(new XoroshiroRandomSource(RandomSupport.generateUniqueSeed()));
 +            // Leaf end - Matter - Secure Seed
@@ -151,7 +151,7 @@ index 92d13f9b886114553b471271391255ba08c8108f..196056021a95951e8f4c08f6508a98c0
 -                            worldgenRandom.setLargeFeatureSeed(structureState.getLevelSeed(), pos.x, pos.z);
 +                            // Leaf start - Matter - Secure Seed
 +                            WorldgenRandom worldgenRandom;
-+                            if (me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled) {
++                            if (me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled) {
 +                                worldgenRandom = new su.plo.matter.WorldgenCryptoRandom(pos.x, pos.z, su.plo.matter.Globals.Salt.GENERATE_FEATURE, 0);
 +                            } else {
 +                                worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
@@ -162,7 +162,7 @@ index 92d13f9b886114553b471271391255ba08c8108f..196056021a95951e8f4c08f6508a98c0
  
                              for (StructureSet.StructureSelectionEntry structureSelectionEntry1 : list1) {
 diff --git a/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java b/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java
-index 619b98e42e254c0c260c171a26a2472ddf59b885..7abafc6f9f89159277ff84aa79a2edc4abcd7da3 100644
+index 619b98e42e254c0c260c171a26a2472ddf59b885..22bcf554daa3686f955ac2a5809d8ebd1e1f38eb 100644
 --- a/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java
 +++ b/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java
 @@ -205,7 +205,12 @@ public class ChunkGeneratorStructureState {
@@ -171,11 +171,11 @@ index 619b98e42e254c0c260c171a26a2472ddf59b885..7abafc6f9f89159277ff84aa79a2edc4
              HolderSet<Biome> holderSet = placement.preferredBiomes();
 -            RandomSource randomSource = RandomSource.create();
 +            // Leaf start - Matter - Secure Seed
-+            RandomSource randomSource = me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled
++            RandomSource randomSource = me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled
 +                ? new su.plo.matter.WorldgenCryptoRandom(0, 0, su.plo.matter.Globals.Salt.STRONGHOLDS, 0)
 +                : RandomSource.create();
 +            // Leaf end - Matter - Secure Seed
-+            if (!me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled) {
++            if (!me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled) {
              // Paper start - Add missing structure set seed configs
              if (this.conf.strongholdSeed != null && structureSet.is(net.minecraft.world.level.levelgen.structure.BuiltinStructureSets.STRONGHOLDS)) {
                  randomSource.setSeed(this.conf.strongholdSeed);
@@ -200,7 +200,7 @@ index b8348976e80578d9eff64eea68c04c603fed49ad..bc5c6ea1f1e4f1608a70116f03fb2a58
              ProfiledDuration profiledDuration = JvmProfiler.INSTANCE
                  .onChunkGenerate(chunk.getPos(), worldGenContext.level().dimension(), this.targetStatus.getName());
 diff --git a/net/minecraft/world/level/levelgen/WorldOptions.java b/net/minecraft/world/level/levelgen/WorldOptions.java
-index c92508741439a8d0d833ea02d0104416adb83c92..a4063fe0c8e113f0fbd751b84aefaaad68e08ca0 100644
+index c92508741439a8d0d833ea02d0104416adb83c92..cb5269b8e7b2df67d5e78f8313f6fbc14cd1e39e 100644
 --- a/net/minecraft/world/level/levelgen/WorldOptions.java
 +++ b/net/minecraft/world/level/levelgen/WorldOptions.java
 @@ -9,8 +9,20 @@ import net.minecraft.util.RandomSource;
@@ -209,7 +209,7 @@ index c92508741439a8d0d833ea02d0104416adb83c92..a4063fe0c8e113f0fbd751b84aefaaad
  public class WorldOptions {
 +    // Leaf start - Matter - Secure Seed
 +    private static final com.google.gson.Gson gson = new com.google.gson.Gson();
-+    private static final boolean isSecureSeedEnabled = me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled;
++    private static final boolean isSecureSeedEnabled = me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled;
      public static final MapCodec<WorldOptions> CODEC = RecordCodecBuilder.mapCodec(
 -        instance -> instance.group(
 +        instance -> isSecureSeedEnabled
@@ -325,7 +325,7 @@ index c92508741439a8d0d833ea02d0104416adb83c92..a4063fe0c8e113f0fbd751b84aefaaad
      public static OptionalLong parseSeed(String seed) {
          seed = seed.trim();
 diff --git a/net/minecraft/world/level/levelgen/feature/GeodeFeature.java b/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
-index 4e72eb49dbf4c70ae7556ba6eb210fcd5ef36aaa..4404211177c7a0595851c1ca01d2aa5758f625c9 100644
+index 4e72eb49dbf4c70ae7556ba6eb210fcd5ef36aaa..c0919291c6f4923c42f662814bfa938b4206eeeb 100644
 --- a/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
 @@ -41,7 +41,11 @@ public class GeodeFeature extends Feature<GeodeConfiguration> {
@@ -334,7 +334,7 @@ index 4e72eb49dbf4c70ae7556ba6eb210fcd5ef36aaa..4404211177c7a0595851c1ca01d2aa57
          int i2 = geodeConfiguration.distributionPoints.sample(randomSource);
 -        WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(worldGenLevel.getSeed()));
 +        // Leaf start - Matter - Secure Seed
-+        WorldgenRandom worldgenRandom = me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled
++        WorldgenRandom worldgenRandom = me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled
 +                ? new su.plo.matter.WorldgenCryptoRandom(0, 0, su.plo.matter.Globals.Salt.GEODE_FEATURE, 0)
 +                : new WorldgenRandom(new LegacyRandomSource(worldGenLevel.getSeed()));
 +        // Leaf end - Matter - Secure Seed
@@ -342,7 +342,7 @@ index 4e72eb49dbf4c70ae7556ba6eb210fcd5ef36aaa..4404211177c7a0595851c1ca01d2aa57
          List<BlockPos> list1 = Lists.newLinkedList();
          double d = (double)i2 / geodeConfiguration.outerWallDistance.getMaxValue();
 diff --git a/net/minecraft/world/level/levelgen/structure/Structure.java b/net/minecraft/world/level/levelgen/structure/Structure.java
-index 8328e864c72b7a358d6bb1f33459b8c4df2ecb1a..05a0e97edd828ce998226fd651929b04bbb461f7 100644
+index 8328e864c72b7a358d6bb1f33459b8c4df2ecb1a..a89574d48fa4a3f91655952ba1cd7224fc3057ce 100644
 --- a/net/minecraft/world/level/levelgen/structure/Structure.java
 +++ b/net/minecraft/world/level/levelgen/structure/Structure.java
 @@ -249,6 +249,11 @@ public abstract class Structure {
@@ -350,7 +350,7 @@ index 8328e864c72b7a358d6bb1f33459b8c4df2ecb1a..05a0e97edd828ce998226fd651929b04
  
          private static WorldgenRandom makeRandom(long seed, ChunkPos chunkPos) {
 +            // Leaf start - Matter - Secure Seed
-+            if (me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled) {
++            if (me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled) {
 +                return new su.plo.matter.WorldgenCryptoRandom(chunkPos.x, chunkPos.z, su.plo.matter.Globals.Salt.GENERATE_FEATURE, seed);
 +            }
 +            // Leaf end - Matter - Secure Seed
@@ -358,7 +358,7 @@ index 8328e864c72b7a358d6bb1f33459b8c4df2ecb1a..05a0e97edd828ce998226fd651929b04
              worldgenRandom.setLargeFeatureSeed(seed, chunkPos.x, chunkPos.z);
              return worldgenRandom;
 diff --git a/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java b/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java
-index ee0d9dddb36b6879fa113299e24f1aa3b2b151cc..8a93a4eb0a4935af169ff4d4108a8c6e715187bd 100644
+index ee0d9dddb36b6879fa113299e24f1aa3b2b151cc..91b2fcb3e35369bbc99733acce5c7bf6d2140ae8 100644
 --- a/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java
 +++ b/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java
 @@ -67,8 +67,15 @@ public class RandomSpreadStructurePlacement extends StructurePlacement {
@@ -369,7 +369,7 @@ index ee0d9dddb36b6879fa113299e24f1aa3b2b151cc..8a93a4eb0a4935af169ff4d4108a8c6e
 -        worldgenRandom.setLargeFeatureWithSalt(seed, i, i1, this.salt());
 +        // Leaf start - Matter - Secure Seed
 +        WorldgenRandom worldgenRandom;
-+        if (me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled) {
++        if (me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled) {
 +            worldgenRandom = new su.plo.matter.WorldgenCryptoRandom(i, i1, su.plo.matter.Globals.Salt.POTENTIONAL_FEATURE, this.salt);
 +        } else {
 +            worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
@@ -380,7 +380,7 @@ index ee0d9dddb36b6879fa113299e24f1aa3b2b151cc..8a93a4eb0a4935af169ff4d4108a8c6e
          int i3 = this.spreadType.evaluate(worldgenRandom, i2);
          int i4 = this.spreadType.evaluate(worldgenRandom, i2);
 diff --git a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
-index f2eb0572b9d97d97bc847082461515a852310dfc..f7cd116f3cc67c059dfa3b612bccf7175242da70 100644
+index f2eb0572b9d97d97bc847082461515a852310dfc..5bdc23cd8d9e9b8b3872553ccc35be3b16f81c07 100644
 --- a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
 +++ b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
 @@ -119,8 +119,16 @@ public abstract class StructurePlacement {
@@ -391,7 +391,7 @@ index f2eb0572b9d97d97bc847082461515a852310dfc..f7cd116f3cc67c059dfa3b612bccf717
 -        worldgenRandom.setLargeFeatureWithSalt(levelSeed, regionX, regionZ, salt);
 +        // Leaf start - Matter - Secure Seed
 +        WorldgenRandom worldgenRandom;
-+        if (me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled) {
++        if (me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled) {
 +            worldgenRandom = new su.plo.matter.WorldgenCryptoRandom(regionX, regionZ, su.plo.matter.Globals.Salt.UNDEFINED, salt);
 +        } else {
 +            worldgenRandom = new WorldgenRandom(new LegacyRandomSource(0L));
@@ -403,7 +403,7 @@ index f2eb0572b9d97d97bc847082461515a852310dfc..f7cd116f3cc67c059dfa3b612bccf717
      }
  
 diff --git a/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java b/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java
-index 1cfa0fcd28685736fcdce4aef817e4d4cc4061cb..307999350819dfbc31cfd32438b7711a4f6d1467 100644
+index 1cfa0fcd28685736fcdce4aef817e4d4cc4061cb..0054a26f7c6c94214730f2b46e20c3192e4a0e76 100644
 --- a/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java
 +++ b/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java
 @@ -64,7 +64,11 @@ public class JigsawPlacement {
@@ -412,7 +412,7 @@ index 1cfa0fcd28685736fcdce4aef817e4d4cc4061cb..307999350819dfbc31cfd32438b7711a
          LevelHeightAccessor levelHeightAccessor = context.heightAccessor();
 -        WorldgenRandom worldgenRandom = context.random();
 +        // Leaf start - Matter - Secure Seed
-+        WorldgenRandom worldgenRandom = me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled
++        WorldgenRandom worldgenRandom = me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled
 +            ? new su.plo.matter.WorldgenCryptoRandom(context.chunkPos().x, context.chunkPos().z, su.plo.matter.Globals.Salt.JIGSAW_PLACEMENT, 0)
 +            : context.random();
 +        // Leaf end - Matter - Secure Seed

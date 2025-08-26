@@ -1,6 +1,6 @@
 package me.earthme.luminol.commands;
 
-import me.earthme.luminol.config.modules.misc.MembarConfig;
+import me.earthme.luminol.config.modules.function.MembarConfig;
 import me.earthme.luminol.functions.GlobalServerBarManager;
 import me.earthme.luminol.functions.GlobalServerMemoryBar;
 import net.kyori.adventure.text.Component;

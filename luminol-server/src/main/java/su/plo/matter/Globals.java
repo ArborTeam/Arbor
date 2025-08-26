@@ -1,6 +1,7 @@
 package su.plo.matter;
 
 import com.google.common.collect.Iterables;
+import me.earthme.luminol.config.modules.function.SecureSeedConfig;
 import net.minecraft.server.level.ServerLevel;
 
 import java.math.BigInteger;
@@ -36,7 +37,7 @@ public class Globals {
     }
 
     public static void setupGlobals(ServerLevel world) {
-        if (!me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled) return;
+        if (!SecureSeedConfig.enabled) return;
 
         long[] seed = world.getServer().getWorldData().worldGenOptions().featureSeed();
         System.arraycopy(seed, 0, worldSeed, 0, WORLD_SEED_LONGS);

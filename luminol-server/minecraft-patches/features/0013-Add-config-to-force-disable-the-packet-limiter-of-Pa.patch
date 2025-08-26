@@ -8,7 +8,7 @@ Some of changes from: Leaves (https://github.com/LeavesMC/Leaves/blob/6a2b9ee6b3
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 1626b932a5e46ee77465ef08c2f4430c2e2753c1..2a61f9c9ae75ba4bba19e7a39eb535b322fed0f8 100644
+index 1626b932a5e46ee77465ef08c2f4430c2e2753c1..3161dbf57cae0c934809bea816b87546bc230907 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -281,8 +281,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -17,13 +17,13 @@ index 1626b932a5e46ee77465ef08c2f4430c2e2753c1..2a61f9c9ae75ba4bba19e7a39eb535b3
                  }
 -                if (this.allPacketCounts != null ||
 -                    io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.containsKey(packet.getClass())) {
-+                if (!me.earthme.luminol.config.modules.misc.PaperPacketLimiterConfig.forceDisable && (this.allPacketCounts != null || // Luminol - Add config to force disable the packet limiter of Paper
++                if (!me.earthme.luminol.config.modules.optimizations.PaperPacketLimiterConfig.forceDisable && (this.allPacketCounts != null || // Luminol - Add config to force disable the packet limiter of Paper
 +                    io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.containsKey(packet.getClass()))) { // Luminol - Add config to force disable the packet limiter of Paper
                      long time = System.nanoTime();
                      synchronized (PACKET_LIMIT_LOCK) {
                          if (this.allPacketCounts != null) {
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index be71521ec852ec007de7de2283d625241f86bf28..948bd90489eb77b421b2668b42b4e982b843095c 100644
+index be71521ec852ec007de7de2283d625241f86bf28..b489756075906f4a46fc36a57aca6c71ad5383fe 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -854,7 +854,7 @@ public class ServerGamePacketListenerImpl
@@ -31,7 +31,7 @@ index be71521ec852ec007de7de2283d625241f86bf28..948bd90489eb77b421b2668b42b4e982
          // PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level()); // Paper - AsyncTabCompleteEvent; run this async
          // CraftBukkit start
 -        if (!this.tabSpamThrottler.isIncrementAndUnderThreshold() && !this.server.getPlayerList().isOp(this.player.getGameProfile()) && !this.server.isSingleplayerOwner(this.player.getGameProfile())) { // Paper - configurable tab spam limits
-+        if (!me.earthme.luminol.config.modules.misc.PaperPacketLimiterConfig.forceDisable && !this.tabSpamThrottler.isIncrementAndUnderThreshold() && !this.server.getPlayerList().isOp(this.player.getGameProfile()) && !this.server.isSingleplayerOwner(this.player.getGameProfile())) { // Paper - configurable tab spam limits // Leaves - can disable
++        if (!me.earthme.luminol.config.modules.optimizations.PaperPacketLimiterConfig.forceDisable && !this.tabSpamThrottler.isIncrementAndUnderThreshold() && !this.server.getPlayerList().isOp(this.player.getGameProfile()) && !this.server.isSingleplayerOwner(this.player.getGameProfile())) { // Paper - configurable tab spam limits // Leaves - can disable
              this.disconnectAsync(Component.translatable("disconnect.spam"), org.bukkit.event.player.PlayerKickEvent.Cause.SPAM); // Paper - Kick event cause // Paper - add proper async disconnect
              return;
          }
@@ -39,7 +39,7 @@ index be71521ec852ec007de7de2283d625241f86bf28..948bd90489eb77b421b2668b42b4e982
      private static int getSpamThreshold() { return io.papermc.paper.configuration.GlobalConfiguration.get().spamLimiter.incomingPacketThreshold; } // Paper - Configurable threshold
  
      private boolean checkLimit(long timestamp) {
-+        if (me.earthme.luminol.config.modules.misc.PaperPacketLimiterConfig.forceDisable) return true; // Leaves - disable
++        if (me.earthme.luminol.config.modules.optimizations.PaperPacketLimiterConfig.forceDisable) return true; // Leaves - disable
          if (this.lastLimitedPacket != -1 && timestamp - this.lastLimitedPacket < getSpamThreshold() && this.limitedPackets++ >= 8) { // Paper - Configurable threshold; raise packet limit to 8
              return false;
          }
@@ -47,7 +47,7 @@ index be71521ec852ec007de7de2283d625241f86bf28..948bd90489eb77b421b2668b42b4e982
  
      // Spigot start - spam exclusions
      private void detectRateSpam(String message) {
-+        if (me.earthme.luminol.config.modules.misc.PaperPacketLimiterConfig.forceDisable) return; // Leaves - disable
++        if (me.earthme.luminol.config.modules.optimizations.PaperPacketLimiterConfig.forceDisable) return; // Leaves - disable
          // CraftBukkit start - replaced with thread safe throttle
          if (org.spigotmc.SpigotConfig.enableSpamExclusions) {
              for (String exclude : org.spigotmc.SpigotConfig.spamExclusions) {
@@ -56,7 +56,7 @@ index be71521ec852ec007de7de2283d625241f86bf28..948bd90489eb77b421b2668b42b4e982
      public void handlePlaceRecipe(ServerboundPlaceRecipePacket packet) {
          // Paper start - auto recipe limit
 -        if (!org.bukkit.Bukkit.isPrimaryThread()) {
-+        if (!me.earthme.luminol.config.modules.misc.PaperPacketLimiterConfig.forceDisable && !org.bukkit.Bukkit.isPrimaryThread()) { // Leaves - can disable
++        if (!me.earthme.luminol.config.modules.optimizations.PaperPacketLimiterConfig.forceDisable && !org.bukkit.Bukkit.isPrimaryThread()) { // Leaves - can disable
              if (!this.recipeSpamPackets.isIncrementAndUnderThreshold()) {
                  this.disconnectAsync(net.minecraft.network.chat.Component.translatable("disconnect.spam"), org.bukkit.event.player.PlayerKickEvent.Cause.SPAM); // Paper - kick event cause // Paper - add proper async disconnect
                  return;

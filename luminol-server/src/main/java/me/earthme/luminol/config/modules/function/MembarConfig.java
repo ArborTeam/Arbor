@@ -1,34 +1,40 @@
-package me.earthme.luminol.config.modules.misc;
+package me.earthme.luminol.config.modules.function;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import me.earthme.luminol.commands.MembarCommand;
-import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
+import me.earthme.luminol.config.flags.TransformedConfig;
+import me.earthme.luminol.enums.EnumConfigCategory;
+import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import me.earthme.luminol.functions.GlobalServerBarManager;
 import me.earthme.luminol.functions.GlobalServerMemoryBar;
-import me.earthme.luminol.utils.EnumStatusBarDisplay;
 import org.bukkit.Bukkit;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "membar")
+@ConfigClassInfo(configAttribution = EnumConfigCategory.FUNCTION, mainName = "membar")
 public class MembarConfig implements IConfigModule {
+    @DoNotLoad
     private static final Logger logger = LogUtils.getLogger();
-
+    @TransformedConfig(name = "enabled", category = {"misc", "membar"})
     @ConfigInfo(baseName = "enabled")
     public static boolean memoryBarEnabled = false;
+    @TransformedConfig(name = "format", category = {"misc", "membar"})
     @ConfigInfo(baseName = "format")
     public static String memBarFormat = "<gray>Memory usage <yellow>:</yellow> <used>MB<yellow>/</yellow><available>MB";
+    @TransformedConfig(name = "memory_color_list", category = {"misc", "membar"})
     @ConfigInfo(baseName = "memory_color_list")
     public static List<String> memColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
+    @TransformedConfig(name = "update_interval_ticks", category = {"misc", "membar"})
     @ConfigInfo(baseName = "update_interval_ticks")
     public static int updateInterval = 15;
+    @TransformedConfig(name = "display", category = {"misc", "membar"})
     @ConfigInfo(baseName = "display")
     public static String displayString = "BOSS_BAR";
 

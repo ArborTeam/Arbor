@@ -1,9 +1,9 @@
 package me.earthme.luminol.config.modules.fixes;
 
-import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
+import me.earthme.luminol.enums.EnumConfigCategory;
 
 @ConfigClassInfo(configAttribution = EnumConfigCategory.FIXES, mainName = "allow_unsafe_teleportation")
 public class UnsafeTeleportationConfig implements IConfigModule {

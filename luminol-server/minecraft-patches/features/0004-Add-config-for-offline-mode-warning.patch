@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for offline mode warning
 
 
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index ad637e13b9c550c30dff51a216d482b0b72c2089..cd2d965cce285f91c3deed8872c01ff076a12ea4 100644
+index ad637e13b9c550c30dff51a216d482b0b72c2089..5871d2e7a8c24281c93c11e7935f32666b6cb539 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -242,7 +242,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -13,7 +13,7 @@ index ad637e13b9c550c30dff51a216d482b0b72c2089..cd2d965cce285f91c3deed8872c01ff0
          String proxyLink = (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.velocity.enabled) ? "https://docs.papermc.io/velocity/security" : "http://www.spigotmc.org/wiki/firewall-guide/";
          // Paper end - Add Velocity IP Forwarding Support
 -        if (!this.usesAuthentication()) {
-+        if (!this.usesAuthentication() && me.earthme.luminol.config.modules.misc.OfflineModeWarningConfig.enabled) { //Luminol - Add config for offline mod warning
++        if (!this.usesAuthentication() && me.earthme.luminol.config.modules.misc.DisableWarningConfig.disableOfflineModeWarning) { //Luminol - Add config for offline mod warning
              LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
              LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
              // Spigot start

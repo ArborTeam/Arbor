@@ -5,7 +5,7 @@ Subject: [PATCH] Add force the data command to be enabled config
 
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index ad19e9e599b26dfdb53929d9410860cb1b97698c..8a90aa5c145f53afbb3f2371f97cb09974f30bbb 100644
+index ad19e9e599b26dfdb53929d9410860cb1b97698c..e05f75b6bbd48d6fb7379926d68d5f8ed6014be9 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -189,7 +189,9 @@ public class Commands {
@@ -13,7 +13,7 @@ index ad19e9e599b26dfdb53929d9410860cb1b97698c..8a90aa5c145f53afbb3f2371f97cb099
          //CloneCommands.register(this.dispatcher, context); // Folia - region threading - TODO
          DamageCommand.register(this.dispatcher, context);
 -        //DataCommands.register(this.dispatcher); // Folia - region threading - TODO
-+        if(me.earthme.luminol.config.modules.experiment.CommandDataConfig.enabled) {
++        if(me.earthme.luminol.config.modules.experiment.CommandConfig.data) {
 +            DataCommands.register(this.dispatcher); // Folia - region threading - TODO
 +        }
          //DataPackCommand.register(this.dispatcher, context); // Folia - region threading - TODO

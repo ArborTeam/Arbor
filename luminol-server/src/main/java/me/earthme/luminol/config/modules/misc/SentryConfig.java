@@ -2,10 +2,10 @@ package me.earthme.luminol.config.modules.misc;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import gg.pufferfish.pufferfish.sentry.SentryManager;
-import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
+import me.earthme.luminol.enums.EnumConfigCategory;
 import org.apache.logging.log4j.Level;
 
 @ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "sentry")

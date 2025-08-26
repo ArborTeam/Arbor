@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for cpu affinity
 
 
 diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-index fa6b8d756195c1b430cc11214a901bd42eebc98d..0357792de0ed8ec9058d1847c8b45c33ff365af6 100644
+index fa6b8d756195c1b430cc11214a901bd42eebc98d..c485d5b3ba95f2a969bdf0dab9654ac284976f8d 100644
 --- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
 +++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
 @@ -49,6 +49,25 @@ public final class TickRegionScheduler {
@@ -13,7 +13,7 @@ index fa6b8d756195c1b430cc11214a901bd42eebc98d..0357792de0ed8ec9058d1847c8b45c33
              @Override
              public Thread newThread(final Runnable run) {
 +                // Luminol start - cpu affinity
-+                if (me.earthme.luminol.config.modules.misc.CpuAffinityConfig.cpuAffinityEnabled) {
++                if (me.earthme.luminol.config.modules.optimizations.CpuAffinityConfig.cpuAffinityEnabled) {
 +                    Runnable affinityRunnable = new Runnable() {
 +                        private boolean affinitySet = false;
 +
@@ -21,7 +21,7 @@ index fa6b8d756195c1b430cc11214a901bd42eebc98d..0357792de0ed8ec9058d1847c8b45c33
 +                        public void run() {
 +                            if (!this.affinitySet) {
 +                                this.affinitySet = true;
-+                                net.openhft.affinity.Affinity.setAffinity(me.earthme.luminol.config.modules.misc.CpuAffinityConfig.tickRegionAffinityBitSet);
++                                net.openhft.affinity.Affinity.setAffinity(me.earthme.luminol.config.modules.optimizations.CpuAffinityConfig.tickRegionAffinityBitSet);
 +                            }
 +                            run.run();
 +                        }

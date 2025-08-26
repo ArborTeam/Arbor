@@ -5,8 +5,8 @@ import io.papermc.paper.threadedregions.TickData;
 import io.papermc.paper.threadedregions.TickRegionScheduler;
 import io.papermc.paper.threadedregions.TickRegions;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-import me.earthme.luminol.config.modules.misc.RegionBarConfig;
-import me.earthme.luminol.utils.EnumStatusBarDisplay;
+import me.earthme.luminol.config.modules.function.RegionBarConfig;
+import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -84,11 +84,8 @@ public class GlobalServerRegionBar extends AbstractGlobalServerBar {
         switch (RegionBarConfig.display) {
             case ACTION_BAR -> player.sendActionBar(message);
 
-            case BOSS_BAR -> {
-                bar.name(message);
-                bar.color(barColorFromUtil(utilisationPercent));
-                bar.progress((float) Math.min(1.0, Math.max(utilisation, 0)));
-            }
+            case BOSS_BAR ->
+                    bar.name(message).color(barColorFromUtil(utilisationPercent)).progress((float) Math.min(1.0, Math.max(utilisation, 0)));
 
             case TAB_LIST -> player.sendPlayerListFooter(message);
 
@@ -123,17 +120,17 @@ public class GlobalServerRegionBar extends AbstractGlobalServerBar {
 
     private BossBar.Color barColorFromUtil(double util) {
         if (util > 100) {
-            return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(3)); // PURPLE
+            return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(3));
         }
 
         if (util >= 70) {
-            return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(2)); // RED
+            return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(2));
         }
 
         if (util >= 50) {
-            return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(1)); // YELLOW
+            return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(1));
         }
 
-        return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(0)); // GREEN
+        return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(0));
     }
 }

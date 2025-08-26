@@ -1,8 +1,8 @@
 package me.earthme.luminol.functions;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-import me.earthme.luminol.config.modules.misc.MembarConfig;
-import me.earthme.luminol.utils.EnumStatusBarDisplay;
+import me.earthme.luminol.config.modules.function.MembarConfig;
+import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -69,11 +69,7 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
         );
 
         switch (MembarConfig.display) {
-            case BOSS_BAR -> {
-                bar.name(message);
-                bar.color(barColorFromMemory(percent));
-                bar.progress((float) percent);
-            }
+            case BOSS_BAR -> bar.name(message).color(barColorFromMemory(percent)).progress((float) percent);
 
             case ACTION_BAR -> player.sendActionBar(message);
 
@@ -109,7 +105,7 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
         }
 
         if (memPercent <= 50) {
-            return BossBar.Color.valueOf(MembarConfig.memColors.getFirst());
+            return BossBar.Color.valueOf(MembarConfig.memColors.get(0));
         }
 
         if (memPercent <= 70) {

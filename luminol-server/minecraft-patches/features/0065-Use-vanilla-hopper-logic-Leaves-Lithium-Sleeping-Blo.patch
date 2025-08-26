@@ -237,7 +237,7 @@ index b382665cc125b8b5c0938e5e55984e4bf91d37ff..2afaf6a3f18af7889f4f3b35cee9bbb5
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 2292ca5c1e6f302a0ea6b9f5e5c3af18fff86f2b..b3b701e5bb03813e7ab93afc79f478673a73a782 100644
+index 2292ca5c1e6f302a0ea6b9f5e5c3af18fff86f2b..ece0331a68fd9179aa3586ef9efb92709355cc8a 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -308,7 +308,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -263,7 +263,7 @@ index 2292ca5c1e6f302a0ea6b9f5e5c3af18fff86f2b..b3b701e5bb03813e7ab93afc79f47867
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
          this.postRemoveAfterChangingDimensions();
-@@ -6071,7 +6073,38 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6071,7 +6073,41 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box
@@ -273,29 +273,32 @@ index 2292ca5c1e6f302a0ea6b9f5e5c3af18fff86f2b..b3b701e5bb03813e7ab93afc79f47867
 +    public void notifyTrackersIfNeed() {
 +        if (!me.earthme.luminol.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled) return;
 +
-+        if (io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegionizedWorldData() != null
-+                && io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegionizedWorldData().world != this.level) return; // Luminol: if this is in teleport to another world, do not notify trackers now, we will reproduce later
++        var currRegionizedWorldData = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegionizedWorldData();
++        // no world data
++        if (currRegionizedWorldData == null) return;
++
++        // has world data but not matched
++        if (currRegionizedWorldData.world != this.level) return;
 +
 +        if (this instanceof ItemEntity) {
 +            long sectionKey = ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkSectionKey(this);
-+            var tracker = this.level.getCurrentWorldData().itemEntityMovementTrackerMap.computeIfAbsent(
++
++            var tracker = currRegionizedWorldData.itemEntityMovementTrackerMap.computeIfAbsent(
 +                    sectionKey,
 +                    k -> new org.leavesmc.leaves.lithium.common.tracking.entity.ChunkSectionItemEntityMovementTracker(sectionKey, this.level)
 +            );
 +
-+            tracker.notifyAllListeners(level.getRedstoneGameTime());
++            tracker.notifyAllListeners(currRegionizedWorldData.getRedstoneGameTime());
 +            return;
 +        }
 +
 +        if (this instanceof net.minecraft.world.entity.vehicle.ContainerEntity) {
 +            long sectionKey = ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkSectionKey(this);
-+            final io.papermc.paper.threadedregions.RegionizedWorldData worldData = this.level.getCurrentWorldData();
-+            if (worldData == null) return; // Luminol: in entity initialization, worldData is null, skip it
-+            var tracker = worldData.containerEntityMovementTrackerMap.computeIfAbsent(
++            var tracker = currRegionizedWorldData.containerEntityMovementTrackerMap.computeIfAbsent(
 +                    sectionKey,
 +                    k -> new org.leavesmc.leaves.lithium.common.tracking.entity.ChunkSectionInventoryEntityTracker(sectionKey, this.level)
 +            );
-+            tracker.notifyAllListeners(level.getRedstoneGameTime());
++            tracker.notifyAllListeners(currRegionizedWorldData.getRedstoneGameTime());
 +        }
 +    }
 +    // Leaves end - Lithium Sleeping Block Entity

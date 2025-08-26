@@ -29,10 +29,10 @@ index df2d8864925f97a23f87834344db26261cd8bda1..d74a05822c6c145971dc526a62d652d3
                                          // If the event is cancelled we move the player back to their old location.
                                          if (event.isCancelled()) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 83ceb5cf1a17cae96bb97c4c70aa54e4913f0f23..c3702df38422c13df1c189463a0dfcc3ee44f072 100644
+index b2eb7f62f38ebd4e9a47400c8c4833f291bea2a5..2292ca5c1e6f302a0ea6b9f5e5c3af18fff86f2b 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4327,12 +4327,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4324,12 +4324,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              teleportTarget.cause(), teleportFlags, teleportComplete
          );
      }

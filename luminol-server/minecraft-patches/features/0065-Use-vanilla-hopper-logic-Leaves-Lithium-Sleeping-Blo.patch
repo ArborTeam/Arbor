@@ -237,7 +237,7 @@ index b382665cc125b8b5c0938e5e55984e4bf91d37ff..2afaf6a3f18af7889f4f3b35cee9bbb5
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index c3702df38422c13df1c189463a0dfcc3ee44f072..125412d16d1a66dadfe4bbf64629c4052e0c7647 100644
+index 2292ca5c1e6f302a0ea6b9f5e5c3af18fff86f2b..b3b701e5bb03813e7ab93afc79f478673a73a782 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -308,7 +308,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -249,7 +249,7 @@ index c3702df38422c13df1c189463a0dfcc3ee44f072..125412d16d1a66dadfe4bbf64629c405
      private final VecDeltaCodec packetPositionCodec = new VecDeltaCodec();
      public boolean hasImpulse;
      @Nullable
-@@ -4306,11 +4306,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4303,11 +4303,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      protected Entity transformForAsyncTeleport(ServerLevel destination, Vec3 pos, Float yaw, Float pitch, Vec3 velocity) {
@@ -263,7 +263,7 @@ index c3702df38422c13df1c189463a0dfcc3ee44f072..125412d16d1a66dadfe4bbf64629c405
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
          this.postRemoveAfterChangingDimensions();
-@@ -6074,7 +6076,38 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6071,7 +6073,38 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box
@@ -453,10 +453,10 @@ index 6a008c86f4e360c916b93f0e3a62a9d8b43e74e6..4e4434334e979bd8bf61bc81cca43a9a
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/inventory/AbstractContainerMenu.java b/net/minecraft/world/inventory/AbstractContainerMenu.java
-index 9d8ab94f84f4523a2562f9eeb3410554e4269e46..fcb2e0a722ed94acf08da06f06b20f42652896bc 100644
+index 39a6e3eb7e515060cd35c3d78ff7ba74e159588d..2d6acceffb2cb7e55dd504018a70b05afccd9c11 100644
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
-@@ -894,6 +894,7 @@ public abstract class AbstractContainerMenu {
+@@ -898,6 +898,7 @@ public abstract class AbstractContainerMenu {
          } else {
              float f = 0.0F;
  

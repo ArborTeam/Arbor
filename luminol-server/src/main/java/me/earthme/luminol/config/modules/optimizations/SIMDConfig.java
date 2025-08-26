@@ -3,11 +3,11 @@ package me.earthme.luminol.config.modules.optimizations;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import gg.pufferfish.pufferfish.simd.SIMDDetection;
-import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
+import me.earthme.luminol.enums.EnumConfigCategory;
 import org.slf4j.Logger;
 
 @ConfigClassInfo(configAttribution = EnumConfigCategory.OPTIMIZATIONS, mainName = "use_simd")

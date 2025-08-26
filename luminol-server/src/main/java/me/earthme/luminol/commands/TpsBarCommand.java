@@ -1,6 +1,6 @@
 package me.earthme.luminol.commands;
 
-import me.earthme.luminol.config.modules.misc.TpsBarConfig;
+import me.earthme.luminol.config.modules.function.TpsBarConfig;
 import me.earthme.luminol.functions.AbstractGlobalServerBar;
 import me.earthme.luminol.functions.GlobalServerBarManager;
 import net.kyori.adventure.text.Component;

@@ -7,7 +7,7 @@ As part of: Leaf
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/GPL-3.0.txt)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index 631bec0adee5b01bfb931c25195b949eaf2efd27..05d364bcadb137af4e1a8c955643b7dc3440b299 100644
+index 631bec0adee5b01bfb931c25195b949eaf2efd27..2871e097d05e972fe8e3f8d9923e44e13efba639 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 @@ -196,7 +196,12 @@ public class CraftChunk implements Chunk {
@@ -16,7 +16,7 @@ index 631bec0adee5b01bfb931c25195b949eaf2efd27..05d364bcadb137af4e1a8c955643b7dc
          // 987234911L is taken from Slime when seeing if a slime can spawn in a chunk
 -        return this.level.paperConfig().entities.spawning.allChunksAreSlimeChunks || WorldgenRandom.seedSlimeChunk(this.getX(), this.getZ(), this.getWorld().getSeed(), level.spigotConfig.slimeSeed).nextInt(10) == 0; // Paper
 +        // Leaf start - Matter - Secure Seed
-+        boolean isSlimeChunk = me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled
++        boolean isSlimeChunk = me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled
 +            ? level.getChunk(this.getX(), this.getZ()).isSlimeChunk()
 +            : WorldgenRandom.seedSlimeChunk(this.getX(), this.getZ(), this.getWorld().getSeed(), level.spigotConfig.slimeSeed).nextInt(10) == 0; // Paper
 +        return this.level.paperConfig().entities.spawning.allChunksAreSlimeChunks || isSlimeChunk;
@@ -25,7 +25,7 @@ index 631bec0adee5b01bfb931c25195b949eaf2efd27..05d364bcadb137af4e1a8c955643b7dc
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index b9026355309240c4d8ddc86f54eee4192a4234e2..4f7077b592f84334483f8edf3656fccd5b90a9ca 100644
+index b9026355309240c4d8ddc86f54eee4192a4234e2..5d05a8a843e605b6cb6d16883d17dd73d4c21e06 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1363,7 +1363,11 @@ public final class CraftServer implements Server {
@@ -34,7 +34,7 @@ index b9026355309240c4d8ddc86f54eee4192a4234e2..4f7077b592f84334483f8edf3656fccd
              LevelSettings levelSettings;
 -            WorldOptions worldOptions = new WorldOptions(creator.seed(), creator.generateStructures(), creator.bonusChest());
 +            // Leaf start - Matter - Secure Seed
-+            WorldOptions worldOptions = me.earthme.luminol.config.modules.misc.SecureSeedConfig.enabled
++            WorldOptions worldOptions = me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled
 +                ? new WorldOptions(creator.seed(), su.plo.matter.Globals.createRandomWorldSeed(), creator.generateStructures(), false)
 +                : new WorldOptions(creator.seed(), creator.generateStructures(), creator.bonusChest());
 +            // Leaf end - Matter - Secure Seed

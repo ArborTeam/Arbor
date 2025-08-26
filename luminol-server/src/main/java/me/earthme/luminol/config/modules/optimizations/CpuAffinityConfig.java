@@ -1,22 +1,25 @@
-package me.earthme.luminol.config.modules.misc;
+package me.earthme.luminol.config.modules.optimizations;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
-import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
+import me.earthme.luminol.config.flags.TransformedConfig;
+import me.earthme.luminol.enums.EnumConfigCategory;
 import net.openhft.affinity.Affinity;
 import org.slf4j.Logger;
 
 import java.util.BitSet;
 import java.util.List;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "cpu_affinity")
+@ConfigClassInfo(configAttribution = EnumConfigCategory.OPTIMIZATIONS, mainName = "cpu_affinity")
 public class CpuAffinityConfig implements IConfigModule {
+    @TransformedConfig(name = "enabled", category = {"misc", "cpu_affinity"})
     @ConfigInfo(baseName = "enabled")
     public static boolean cpuAffinityEnabled = false;
+    @TransformedConfig(name = "enabled", category = {"misc", "tickregion_affinity"})
     @ConfigInfo(baseName = "tickregion_affinity")
     public static List<String> tickRegionAffinity = Affinity.getAffinity()
             .stream()

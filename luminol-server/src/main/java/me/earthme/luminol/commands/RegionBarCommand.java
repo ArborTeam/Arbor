@@ -1,6 +1,6 @@
 package me.earthme.luminol.commands;
 
-import me.earthme.luminol.config.modules.misc.RegionBarConfig;
+import me.earthme.luminol.config.modules.function.RegionBarConfig;
 import me.earthme.luminol.functions.GlobalServerBarManager;
 import me.earthme.luminol.functions.GlobalServerRegionBar;
 import net.kyori.adventure.text.Component;

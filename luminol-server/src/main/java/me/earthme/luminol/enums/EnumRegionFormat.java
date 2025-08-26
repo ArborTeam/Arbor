@@ -1,8 +1,9 @@
-package me.earthme.luminol.utils;
+package me.earthme.luminol.enums;
 
 import abomination.LinearRegionFile;
-import me.earthme.luminol.config.modules.misc.RegionFormatConfig;
+import me.earthme.luminol.config.modules.function.RegionFormatConfig;
 import me.earthme.luminol.data.BufferedLinearRegionFile;
+import me.earthme.luminol.utils.IRegionCreateFunction;
 import net.minecraft.world.level.chunk.storage.RegionFile;
 import org.jetbrains.annotations.Nullable;
 

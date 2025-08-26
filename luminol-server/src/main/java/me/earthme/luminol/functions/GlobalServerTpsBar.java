@@ -5,8 +5,8 @@ import io.papermc.paper.threadedregions.TickData;
 import io.papermc.paper.threadedregions.TickRegionScheduler;
 import io.papermc.paper.threadedregions.TickRegions;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-import me.earthme.luminol.config.modules.misc.TpsBarConfig;
-import me.earthme.luminol.utils.EnumStatusBarDisplay;
+import me.earthme.luminol.config.modules.function.TpsBarConfig;
+import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -78,11 +78,8 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
         switch (TpsBarConfig.display) {
             case ACTION_BAR -> player.sendActionBar(message);
 
-            case BOSS_BAR -> {
-                bar.name(message);
-                bar.color(barColorFromTps(tps));
-                bar.progress((float) Math.min((float) 1, Math.max(mspt / 50, 0)));
-            }
+            case BOSS_BAR ->
+                    bar.name(message).color(barColorFromTps(tps)).progress((float) Math.min((float) 1, Math.max(mspt / 50, 0)));
 
             case TAB_LIST -> player.sendPlayerListFooter(message);
 

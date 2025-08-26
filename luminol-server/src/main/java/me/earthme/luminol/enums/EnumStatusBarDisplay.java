@@ -1,4 +1,4 @@
-package me.earthme.luminol.utils;
+package me.earthme.luminol.enums;
 
 public enum EnumStatusBarDisplay {
     BOSS_BAR,

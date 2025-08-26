@@ -1,10 +1,10 @@
 package me.earthme.luminol.config.modules.removed;
 
-import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
+import me.earthme.luminol.enums.EnumConfigCategory;
 
 @ConfigClassInfo(configAttribution = EnumConfigCategory.REMOVED, mainName = "removed_config")
 public class RemovedConfig implements IConfigModule {

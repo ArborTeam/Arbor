@@ -1,12 +1,12 @@
-package me.earthme.luminol.config.modules.misc;
+package me.earthme.luminol.config.modules.optimizations;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import dev.kaiijumc.kaiiju.KaiijuEntityLimits;
-import me.earthme.luminol.config.EnumConfigCategory;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
+import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "kaiiju_entity_limiter")
+@ConfigClassInfo(configAttribution = EnumConfigCategory.OPTIMIZATIONS, mainName = "kaiiju_entity_limiter")
 public class KaiijuEntityLimiterConfig implements IConfigModule {
     @Override
     public void onLoaded(CommentedFileConfig configInstance) {

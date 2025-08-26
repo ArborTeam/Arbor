@@ -184,7 +184,7 @@ index 22f3aa1674664906e8ec45372d758d79017e3987..76f1b5bb94b82044d72658d4b187dd02
          try (DataInputStream out = new DataInputStream(new java.io.BufferedInputStream(new java.util.zip.InflaterInputStream(Files.newInputStream(file))))) {
              return net.minecraft.nbt.NbtIo.read((java.io.DataInput) out);
 diff --git a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 384f2cd090d6d23bd1308d6e82c24338f2bf55d1..a81245aff4cc982b9eaca976ebbb54a8188b247b 100644
+index 384f2cd090d6d23bd1308d6e82c24338f2bf55d1..0763d7d09a5c2377ecf46302a846ecaa49a5fadb 100644
 --- a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -18,7 +18,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
@@ -214,7 +214,7 @@ index 384f2cd090d6d23bd1308d6e82c24338f2bf55d1..a81245aff4cc982b9eaca976ebbb54a8
      }
 +    // Luminol start - Configurable region file format
 +    public static abomination.IRegionFile createNew(RegionStorageInfo info, Path filePath, Path folder, boolean sync) throws IOException{
-+        final me.earthme.luminol.utils.EnumRegionFormat regionFormat = me.earthme.luminol.config.modules.misc.RegionFormatConfig.regionFormat;
++        final me.earthme.luminol.enums.EnumRegionFormat regionFormat = me.earthme.luminol.config.modules.function.RegionFormatConfig.regionFormat;
 +        final String fullFileName = filePath.getFileName().toString();
 +        final String[] fullNameSplit = fullFileName.split("\\.");
 +        final String extensionName = fullNameSplit[fullNameSplit.length - 1];
@@ -228,7 +228,7 @@ index 384f2cd090d6d23bd1308d6e82c24338f2bf55d1..a81245aff4cc982b9eaca976ebbb54a8
 +    }
 +
 +    public static String getExtensionName() {
-+        return "." + me.earthme.luminol.config.modules.misc.RegionFormatConfig.regionFormat.getArgument();
++        return "." + me.earthme.luminol.config.modules.function.RegionFormatConfig.regionFormat.getArgument();
 +    }
 +    // Luminol end
  

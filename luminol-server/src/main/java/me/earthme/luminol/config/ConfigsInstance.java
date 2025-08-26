@@ -5,6 +5,7 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import io.papermc.paper.threadedregions.RegionizedServer;
 import me.earthme.luminol.commands.ConfigCommand;
 import me.earthme.luminol.config.flags.*;
+import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.utils.ClassLoadUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -165,7 +166,7 @@ public class ConfigsInstance {
 
                 field.setAccessible(true);
                 final Object currentValue = field.get(null);
-                boolean removed = fullConfigKeyName.equals("removed.removed_config.removed");
+                boolean removed = configClassInfo.configAttribution() == EnumConfigCategory.REMOVED;
                 if (!alreadyInit && !removed) defaultvalueMap.put(fullConfigKeyName, currentValue);
 
                 if (!configFileInstance.contains(fullConfigKeyName) || removed) {

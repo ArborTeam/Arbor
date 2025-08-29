@@ -1,43 +1,59 @@
-<img src="./public/image/Luminol_5.png" alt="Logo" align="right" width="250">
+<div align="center">
+  <img src="./public/image/Luminol_5.png" alt="Luminol Logo" width="300">
+  
+  # Luminol
+  
+  *Designed for survival and anarchy servers, providing optimizations, configurable vanilla features, and rich API support*
+  
+  ![Created At](https://img.shields.io/github/created-at/LuminolMC/Luminol?style=for-the-badge&color=blue)
+  [![License](https://img.shields.io/github/license/LuminolMC/Luminol?style=for-the-badge&color=green)](LICENSE.md)
+  [![Issues](https://img.shields.io/github/issues/LuminolMC/Luminol?style=for-the-badge&color=orange)](https://github.com/LuminolMC/Luminol/issues)
+  
+  ![Commit Activity](https://img.shields.io/github/commit-activity/w/LuminolMC/Luminol?style=for-the-badge&color=purple)
+  ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/LuminolMC/Luminol?style=for-the-badge&color=yellow)
+  ![GitHub all releases](https://img.shields.io/github/downloads/LuminolMC/Luminol/total?style=for-the-badge&color=red)
+  
+  ![Repo contributors](https://img.shields.io/github/contributors/LuminolMC/Luminol?style=for-the-badge&color=brightgreen)
+  [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/LuminolMC/Luminol)
+  
+  **English** | [中文](./README.md)
+</div>
 
-# Luminol
+---
 
-<h4>Luminol is a Folia fork with many useful optimizations, configurable vanilla features, and more API supports, and it was designed for survival and anarchy servers</h4>
+## ✨ Core Features
 
-![Created At](https://img.shields.io/github/created-at/LuminolMC/Luminol?style=flat-square)
-[![License](https://img.shields.io/github/license/LuminolMC/Luminol?style=flat-square)](LICENSE.md)
-[![Issues](https://img.shields.io/github/issues/LuminolMC/Luminol?style=flat-square)](https://github.com/LuminolMC/Luminol/issues)
-![Commit Activity](https://img.shields.io/github/commit-activity/w/LuminolMC/Luminol?style=flat-square)
-![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/LuminolMC/Luminol?style=flat-square)
-![GitHub all releases](https://img.shields.io/github/downloads/LuminolMC/Luminol/total?style=flat-square)
-![Repo contributors](https://img.shields.io/github/contributors/LuminolMC/Luminol?style=flat-square)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/LuminolMC/Luminol)
+- 🔧 **Configurable Vanilla Features** - Flexibly adjust game mechanics to suit different server needs
+- 📊 **Tpsbar Support** - Real-time server performance monitoring
+- 🐛 **Folia Bug Fixes** - Targeted fixes for known Folia issues
+- 💾 **Multiple World Format Support** - Support for linear and b_linear (linear reimplementation) world formats
+- 🔌 **Extended API Support** - More API interfaces for plugin developers (ongoing development)
+- ⚡ **Performance Optimizations** - Optimized specifically for high-load survival and anarchy servers
 
-**English** | [中文](./README.md)
+## 📥 Download
 
-## Features
+### Stable Releases
+All release versions can be found on the [Releases](https://github.com/LuminolMC/Luminol/releases) page.
 
-- Configurable vanilla features
-- Tpsbar support
-- Linear and BufferedLinear(AKA. b_linear)(a reimplementation of linear) region format support
-- Useful fixes of bugs of folia
-- More API support for plugin development (W.I.P)
+### Development Builds
+If you want to experience the latest features, you can build it yourself following the steps below.
 
-## Download
+### Build Steps
 
-Any versions are available in the [release](https://github.com/LuminolMC/Luminol/releases), also you can build it by yourself through [the following steps](./README_EN.md#build).
+```bash
+# Clone the project
+git clone https://github.com/LuminolMC/Luminol.git
+cd Luminol
 
-## Build
-
-To build a paperclip jar, you need to run the following command. You can find the jar in build/libs(Note: JDK21 is needed)
-
- ```shell
- ./gradlew applyAllPatches && ./gradlew createMojmapPaperclipJar
+# Apply patches and build Paperclip JAR
+./gradlew applyAllPatches && ./gradlew createMojmapPaperclipJar
 ```
 
-## Using API
+After building, you can find the generated JAR file in the `build/libs` directory.
 
-For gradle:
+## 🔌 API Usage
+
+### Gradle Configuration
 
 ```kotlin
 repositories {
@@ -49,9 +65,9 @@ repositories {
 dependencies {
     compileOnly("me.earthme.luminol:luminol-api:$VERSION")
 }
- ```
+```
 
-For maven
+### Maven Configuration
 
 ```xml
 <repositories>
@@ -62,45 +78,83 @@ For maven
 </repositories>
 
 <dependencies>
-<dependency>
-    <groupId>me.earthme.luminol</groupId>
-    <artifactId>luminol-api</artifactId>
-    <version>$VERSION</version>
-</dependency>
+    <dependency>
+        <groupId>me.earthme.luminol</groupId>
+        <artifactId>luminol-api</artifactId>
+        <version>$VERSION</version>
+        <scope>provided</scope>
+    </dependency>
 </dependencies>
 ```
 
-## Contact
+## 💬 Community & Support
 
-> If you are interested in this project or have any issue, feel free to ask us.
+> If you're interested in this project or have any questions, feel free to ask us.
 
-**QQ Group: [1015048616](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=hTPlI5j6XB8pgk4sdx6RkjhBPGG1r4IR&authKey=pnu6uCKQP7Sja2CJWC15Qi3BeI%2FAsh8tU4m5muufMBjbB3zz%2BwHBZCTRRdSNKhld&noverify=0&group_code=1015048616)** | QQ Channel: [Click To Join](https://pd.qq.com/s/eq9krf9j) | Telegram: [Click To Join](https://t.me/LuminolMinecraft) | Discord: [Click To Join](https://discord.gg/Qd7m3V6eDx)
+### Join Our Community
 
-## About Issue
+- **QQ Group**: [1015048616](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=QML5kIVsniPi1PlZvnjHQT_02EHsZ5Jc&authKey=%2FTCJsZC7JFQ9sxAroPCKuYnlV57Z5fyqp36ewXZk3Sn4iJ9p4MB1JKdc%2FFcX3HOM&noverify=0&group_code=1015048616)
+- **QQ Channel**: [Join Here](https://pd.qq.com/s/eq9krf9j)
+- **Telegram**: [Join Here](https://t.me/LuminolMinecraft)
+- **Discord**: [Join Here](https://discord.gg/Qd7m3V6eDx)
 
-When you meet any problems, just ask us, we will do our best to solve it, but remember to state your problem clear and provide enough logs etc.</br>
+### Get Help
 
-## Pull Requests
+- 📋 [Submit Issues](https://github.com/LuminolMC/Luminol/issues)
+- 💬 [GitHub Discussions](https://github.com/LuminolMC/Luminol/discussions)
+- 📖 [Project Documentation](./docs/)
 
-See [Contributing](./docs/CONTRIBUTING_EN.md)
+## 🐛 Bug Reports
 
-## BStats
+When you encounter any issues, please ask us and we'll do our best to resolve them. Please remember to:
 
-![bStats](https://bstats.org/signatures/server-implementation/Luminol.svg "bStats")
+- 📝 **Describe the problem clearly** - Provide detailed information about the specific issue
+- 📋 **Provide complete logs** - Include error logs and relevant configuration information
+- 🔍 **Environment details** - Specify server version, plugin list, and other environment details
+- 🔄 **Reproduction steps** - If possible, provide specific steps to reproduce the issue
 
-## Special Thanks
+## 🤝 Contributing
 
-Thanks [LegacyLands](https://github.com/LegacyLands) for sponsoring this project.If you want to develop some crossing folia/non-folia platform plugins, [legacy-lands-library](https://github.com/LegacyLands/legacy-lands-library/) will be a nice choice for you
+We welcome community contributions! For detailed contribution guidelines, please see:
 
-![legacy-lands-logo](public/image/legacy-lands-logo.png)
+- 📖 [Contributing Guide (English)](./docs/CONTRIBUTING_EN.md)
+- 📖 [贡献指南 (中文)](./docs/CONTRIBUTING.md)
+
+## 📊 Project Statistics
+
+## 🎉 Special Thanks
+
+### Project Sponsors
+
+<div align="center">
+  <b>Thanks to <a href="https://github.com/LegacyLands">LegacyLands</a> for sponsoring this project</b>
+  <br>
+  <i>If you want to develop cross-Folia/non-Folia platform plugins, <a href="https://github.com/LegacyLands/legacy-lands-library/">legacy-lands-library</a> would be a great choice</i>
+  <br><br>
+  <img src="public/image/legacy-lands-logo.png" alt="LegacyLands Logo" width="200">
+</div>
 
 ---
-![rain-yun-logo](public/image/rain-yun.png)
 
-Global multi-line routing with cloud storage. Refund available within 7 days. Reliable uptime and expert support. RainYun — stable, cost-effective, and ready for fast cloud deployment.
-Click [here](https://www.rainyun.com/aiyuyun_) to visit RainYun
+<div align="center">
+  <img src="public/image/rain-yun.png" alt="RainYun" width="200">
+  <br>
+  <b>International multi-route selection with cloud storage support</b>
+  <br>
+  7-day satisfaction guarantee with refund option, powerful technical support team and high-availability customer service
+  <br>
+  RainYun Cloud Servers - stability and cost-effectiveness to help you get to the cloud quickly
+  <br>
+  <a href="https://www.rainyun.com/aiyuyun_">Visit RainYun</a>
+</div>
 
-## Please ⭐star us!
+---
+
+## ⭐ Give Us a Star!
+
+> Every free ⭐Star you give is the motivation for our every step forward.
+
+### Star History
 
 <a href="https://star-history.com/#LuminolMC/Luminol&LuminolMC/LightingLuminol&LuminolMC/Lophine&Date">
   <picture>
@@ -109,3 +163,7 @@ Click [here](https://www.rainyun.com/aiyuyun_) to visit RainYun
     <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=LuminolMC/Luminol%2CLuminolMC/LightingLuminol%2CLuminolMC/Lophine&type=Date" />
   </picture>
 </a>
+
+<div align="center">
+  <b>If this project helps you, please don't forget to give us a ⭐Star!</b>
+</div>

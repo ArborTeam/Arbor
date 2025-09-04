@@ -28,7 +28,7 @@ index f7002d6752aa03603eb06e298ba1d7130cf13826..7ef109cb9921c25987905149616eddbd
  
              return targets.size();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 67e8e82f41e515bdef6329cd85b93e8a121522df..c79cab9c3072977e04e91702abc18b294fc8b219 100644
+index 0a2bdd4cb84abe58ce891cf39a63c658e3cd8298..4e33cc402bf34aa9b216323a52158d5fe2eb736b 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -2816,10 +2816,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -44,10 +44,10 @@ index 67e8e82f41e515bdef6329cd85b93e8a121522df..c79cab9c3072977e04e91702abc18b29
              // Paper start - Call EntityDropItemEvent
              return this.spawnAtLocation(level, itemEntity);
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 3441c6b9c13a4a648cb5b8c78d0373665fba98a2..7a2f1ecdd03b318a1638c411b261795c0e05fc2d 100644
+index 1f41c14a146c9e412fe6f6d9d362208ddbd40e6c..6b759432136321c345ddce22e419fbfe8acc39de 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -3942,11 +3942,6 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3958,11 +3958,6 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              return null;
          } else {
              double d = this.getEyeY() - 0.3F;

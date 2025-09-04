@@ -3,13 +3,12 @@ package me.earthme.luminol.config;
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import io.papermc.paper.threadedregions.RegionizedServer;
-import me.earthme.luminol.commands.ConfigCommand;
+import me.earthme.luminol.commands.config.ConfigCommand;
 import me.earthme.luminol.config.flags.*;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.utils.ClassLoadUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +19,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ConfigsInstance {
@@ -31,8 +29,8 @@ public class ConfigsInstance {
     private final String commandName; // used to register command
     private final String pack; // used to find all classes
     private final Set<IConfigModule> allInstanced = new HashSet<>();
-    private final Map<String, Object> stagedConfigMap = new ConcurrentHashMap<>();
-    private final Map<String, Object> defaultvalueMap = new ConcurrentHashMap<>();
+    private final Map<String, Object> stagedConfigMap = new HashMap<>();
+    private final Map<String, Object> defaultvalueMap = new HashMap<>();
     public boolean alreadyInit = false;
     private CommentedFileConfig configFileInstance;
 
@@ -57,15 +55,14 @@ public class ConfigsInstance {
     }
 
     public void setupLatch() {
-        ConfigCommand command = new ConfigCommand(name);
-        Bukkit.getCommandMap().register(commandName, name, command);
-        command.initConfig(this);
+        ConfigCommand command = new ConfigCommand(name, commandName, this);
+        command.register();
         alreadyInit = true;
     }
 
     public void reload() {
         RegionizedServer.ensureGlobalTickThread("Reload " + baseConfigFile.getName() + " off global region thread!");
-        RunUnloadTask();
+        runUnloadTasks();
         dropAllInstanced();
         try {
             preLoadConfig();
@@ -90,7 +87,7 @@ public class ConfigsInstance {
         allInstanced.clear();
     }
 
-    public void RunUnloadTask() {
+    public void runUnloadTasks() {
         for (IConfigModule module : allInstanced) {
             module.onUnloaded(configFileInstance);
         }
@@ -339,7 +336,6 @@ public class ConfigsInstance {
         return ret;
     }
 
-
     public boolean setConfig(String key, Object value) {
         if (configFileInstance.contains(key) && configFileInstance.get(key) != null) {
             stagedConfigMap.put(key, value);
@@ -384,6 +380,10 @@ public class ConfigsInstance {
         stagedConfigMap.put(key, null);
     }
 
+    public String getDefaultConfig(String key) {
+        return defaultvalueMap.get(key).toString();
+    }
+
     public String getConfig(String[] keys) {
         return getConfig(String.join(".", keys));
     }
@@ -423,11 +423,8 @@ public class ConfigsInstance {
         }
         List<String> checkList = completeConfigPath(key);
         for (String check : checkList) {
-            List<String> checkList1 = completeConfigPath(check + ".");
-            if (checkList1.size() == 1
-                    && check.equals(checkList1.getFirst())
-                    && completeConfigPath(checkList1.getFirst() + ".").isEmpty()) {
-                list.add(checkList1.getFirst());
+            if (completeConfigPath(check + ".").isEmpty()) {
+                list.add(check);
             }
         }
         return list;
@@ -460,7 +457,7 @@ public class ConfigsInstance {
         return new ArrayList<>(resultSet);
     }
 
-    private List<String> getAllConfigPaths(String currentPath) {
+    public List<String> getAllConfigPaths(String currentPath) {
         return defaultvalueMap.keySet().stream()
                 .filter(k -> k.startsWith(currentPath))
                 .toList();

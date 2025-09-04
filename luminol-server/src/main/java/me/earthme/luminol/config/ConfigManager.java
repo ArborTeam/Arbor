@@ -1,6 +1,7 @@
 package me.earthme.luminol.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import me.earthme.luminol.commands.CommandRegister;
 import me.earthme.luminol.config.flags.TransformedConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,6 +44,7 @@ public class ConfigManager {
                 .map(config -> CompletableFuture.runAsync(config::finalizeLoadConfig))
                 .toArray(CompletableFuture[]::new);
         CompletableFuture.allOf(futures).join();
+        CommandRegister.register(); // register command after config loaded to enable some command didn't depend on config files
     }
 
     public static void registerTransformedConfig(@NotNull String origin, @NotNull String target, @NotNull String originKey, @NotNull String targetKey, TransformedConfig transformedConfig) {

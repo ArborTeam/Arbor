@@ -12,7 +12,6 @@ import org.leavesmc.leaves.lithium.common.util.tuples.WorldSectionBox;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class ChunkSectionItemEntityMovementTracker extends ChunkSectionEntityMovementTracker {
     private final Level level;

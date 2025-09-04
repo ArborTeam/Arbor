@@ -79,6 +79,8 @@ public abstract class AbstractGlobalServerBar {
 
     public abstract void setVisibilityForPlayer(Player target, boolean canSee);
 
+    public abstract boolean enabled();
+
     private void update() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             scheduledTasks.computeIfAbsent(player.getUniqueId(), unused -> createBossBarForPlayer(player));

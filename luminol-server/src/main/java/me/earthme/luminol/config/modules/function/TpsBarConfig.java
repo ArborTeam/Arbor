@@ -2,7 +2,6 @@ package me.earthme.luminol.config.modules.function;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
-import me.earthme.luminol.commands.TpsBarCommand;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
@@ -73,8 +72,7 @@ public class TpsBarConfig implements IConfigModule {
             tpsbar.cancelBarUpdateTask();
         }
 
-        if (!inited) {
-            Bukkit.getCommandMap().register("tpsbar", "luminol", new TpsBarCommand());
+        if (!inited) { // command has moved to CommandRegister
             inited = true;
         }
     }

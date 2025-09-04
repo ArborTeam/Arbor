@@ -30,6 +30,11 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
         ((CraftPlayer) target).getHandle().isTpsBarVisible = canSee;
     }
 
+    @Override
+    public boolean enabled() {
+        return TpsBarConfig.tpsbarEnabled;
+    }
+
     public ScheduledTask createBossBarForPlayer(@NotNull Player apiPlayer) {
         final UUID playerUUID = apiPlayer.getUniqueId();
 

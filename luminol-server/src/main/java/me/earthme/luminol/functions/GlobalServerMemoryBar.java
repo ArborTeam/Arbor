@@ -28,7 +28,12 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
         ((CraftPlayer) target).getHandle().isMemBarVisible = canSee;
     }
 
-    public ScheduledTask createBossBarForPlayer(Player apiPlayer) {
+    @Override
+    public boolean enabled() {
+        return MembarConfig.memoryBarEnabled;
+    }
+
+    public ScheduledTask createBossBarForPlayer(@NotNull Player apiPlayer) {
         return apiPlayer.getScheduler().runAtFixedRate(NULL_PLUGIN, (unused) -> {
             final UUID playerUUID = apiPlayer.getUniqueId();
 

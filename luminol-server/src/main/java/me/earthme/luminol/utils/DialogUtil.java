@@ -81,7 +81,7 @@ public class DialogUtil {
                 }
             }
         }
-        String raw = commandPrefix + valueBuilder.toJSONString();
+        String raw = commandPrefix + valueBuilder.toJSONString() + "$(missing)";
         StringTemplate template = StringTemplate.fromString(raw);
         CommandTemplate confirmTemplate = new CommandTemplate(new ParsedTemplate(raw, template));
         builder.addButton(createButton(

@@ -33,6 +33,11 @@ public class GlobalServerRegionBar extends AbstractGlobalServerBar {
         ((CraftPlayer) target).getHandle().isRegionBarVisible = canSee;
     }
 
+    @Override
+    public boolean enabled() {
+        return RegionBarConfig.regionbarEnabled;
+    }
+
     public ScheduledTask createBossBarForPlayer(@NotNull Player apiPlayer) {
         final UUID playerUUID = apiPlayer.getUniqueId();
 

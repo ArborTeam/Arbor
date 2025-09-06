@@ -31,6 +31,7 @@ public class ConfigsInstance {
     private final Set<IConfigModule> allInstanced = new HashSet<>();
     private final Map<String, Object> stagedConfigMap = new HashMap<>();
     private final Map<String, Object> defaultvalueMap = new HashMap<>();
+    public final String SPLIT = " # ";
     public boolean alreadyInit = false;
     private CommentedFileConfig configFileInstance;
 
@@ -464,31 +465,58 @@ public class ConfigsInstance {
     }
 
     public Map<String, Object> getAllData() {
-        return getData("");
+        return getData("", false);
     }
 
     public Map<String, Object> getData(String prefix) {
+        return getData(prefix, false);
+    }
+
+    public Map<String, Object> getAllDataWithComment() {
+        return getData("", true);
+    }
+
+    public Map<String, Object> getDataWithComment(String prefix) {
+        return getData(prefix, true);
+    }
+
+    private Map<String, Object> getData(String prefix, boolean _comment) {
         Map<String, Object> result = new TreeMap<>();
         for (String key : defaultvalueMap.keySet()) {
             if (!key.startsWith(prefix)) continue;
-            Object value = configFileInstance.get(key);
-            if (value instanceof List list) {
-                value = parseStringFromList(list);
-            }
-            result.put(key, value);
+            processData(key, result, _comment);
         }
         return result;
     }
 
     public Map<String, Object> getData(List<String> list) {
+        return getData(list, false);
+    }
+
+    public Map<String, Object> getDataWithComment(List<String> list) {
+        return getData(list, true);
+    }
+
+    private Map<String, Object> getData(List<String> list, boolean _comment) {
         Map<String, Object> result = new TreeMap<>();
         for (String key : list) {
-            Object value = configFileInstance.get(key);
-            if (value instanceof List list1) {
-                value = parseStringFromList(list1);
-            }
-            result.put(key, value);
+            processData(key, result, _comment);
         }
         return result;
+    }
+
+    private void processData(String key, Map<String, Object> result, boolean _comment) {
+        String _key = key;
+        Object value = configFileInstance.get(key);
+        if (value instanceof List list1) {
+            value = parseStringFromList(list1);
+        }
+        if (_comment) {
+            String comment = configFileInstance.getComment(key);
+            if (comment != null && !comment.isEmpty()) {
+                _key += SPLIT + comment;
+            }
+        }
+        result.put(_key, value);
     }
 }

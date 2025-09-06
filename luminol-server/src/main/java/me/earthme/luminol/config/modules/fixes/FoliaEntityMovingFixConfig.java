@@ -5,7 +5,7 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.FIXES, mainName = "folia.fix_high_velocity_issue")
+@ConfigClassInfo(configAttribution = EnumConfigCategory.FIXES, mainName = "fix_high_velocity_issue", subNames = {"folia"})
 public class FoliaEntityMovingFixConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled", comments =
             """

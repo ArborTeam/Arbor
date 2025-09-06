@@ -31,8 +31,9 @@ public class CommandDialog {
             player.openDialog(
                     DialogUtil.createHolder(
                             name + "config",
-                            config.getAllData(),
-                            name + "config submit "
+                            config.getAllDataWithComment(),
+                            name + "config submit ",
+                            config.SPLIT
                     ));
             return;
         }
@@ -47,8 +48,9 @@ public class CommandDialog {
                 player.openDialog(
                         DialogUtil.createHolder(
                                 name + "config",
-                                config.getData(list),
-                                name + "config submit "
+                                config.getDataWithComment(list),
+                                name + "config submit ",
+                                config.SPLIT
                         ));
                 return;
             }
@@ -63,7 +65,7 @@ public class CommandDialog {
             builder.addButton(
                     DialogUtil.createButton(
                             Component.translatable(key),
-                            150,
+                            300,
                             Optional.of(commandTemplate)
                     ));
         }
@@ -74,7 +76,7 @@ public class CommandDialog {
             builder.addButton(
                     DialogUtil.createButton(
                             Component.translatable("Show all configs"),
-                            150,
+                            300,
                             Optional.of(commandTemplate)
                     ));
         }
@@ -86,7 +88,7 @@ public class CommandDialog {
             builder.addButton(
                     DialogUtil.createButton(
                             Component.translatable("Show options at this level"),
-                            150,
+                            300,
                             Optional.of(commandTemplate)
                     ));
         }

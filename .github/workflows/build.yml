@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - "**"
-  workflow_dispatch: // TODO - add dispatch
+  workflow_dispatch: # TODO - add dispatch
 
 permissions: write-all
 

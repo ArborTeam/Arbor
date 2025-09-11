@@ -8,7 +8,7 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/d4854b69b2775f6d0929
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ffe23d83a0533284dd8a51ba126815de49301789..3bd0d74317e0e4129077b7f29477804285d89957 100644
+index 76ee76c7c6abeb14f379b73188305903be5d2df6..0a2bdd4cb84abe58ce891cf39a63c658e3cd8298 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -5588,8 +5588,82 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

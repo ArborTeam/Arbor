@@ -46,7 +46,7 @@ index 7b7c72f14ae966ef142d68615b2f88ba42a079f5..87377bba2ebdc0eba5b7b212d971994c
          } else {entity.inactiveTick();} // Paper - EAR 2
          profilerFiller.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a5294ea626b2f98cebc588918a64e123395de203..681c008cbfba5d664dbff0ad8347665d0b847531 100644
+index b00d9bd9f0299804f4f33495724071b6cfbfca30..868a3c395b0f86b7587e8aa844aacb2cabd2e971 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -371,6 +371,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

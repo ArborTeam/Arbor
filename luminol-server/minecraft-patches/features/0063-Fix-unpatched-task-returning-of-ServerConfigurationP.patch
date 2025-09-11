@@ -8,7 +8,7 @@ Inspired by https://github.com/CraftCanvasMC/Canvas/blob/ver/1.21.8/canvas-serve
 but Canvas loses its main thread checks so fixed that btw
 
 diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index b5812c5c97b38c69408d1a984786f177852904f7..eac6bb218636270a75d477ea0a9f8286500748b7 100644
+index e8f0c81b31569d610fb88f10d93c4e68fb5a24a1..c7f96531ed25c2ddb014da0a822329c65ee34c95 100644
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 @@ -292,13 +292,14 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis

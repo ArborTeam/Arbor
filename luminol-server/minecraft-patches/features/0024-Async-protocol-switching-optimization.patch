@@ -5,7 +5,7 @@ Subject: [PATCH] Async protocol switching optimization
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 2a61f9c9ae75ba4bba19e7a39eb535b322fed0f8..444f10080abac94f72f68bc16e60b7e3a377dac8 100644
+index 3161dbf57cae0c934809bea816b87546bc230907..66ec0424a46dcd49cf44467357d80b1a2d84d3b2 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -373,6 +373,116 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -126,7 +126,7 @@ index 2a61f9c9ae75ba4bba19e7a39eb535b322fed0f8..444f10080abac94f72f68bc16e60b7e3
          this.validateListener(protocolInfo, packetInfo);
          if (protocolInfo.flow() != this.getReceiving()) {
 diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index df4fa680d52a67c506cf0b5f3777d258c83f265f..b5812c5c97b38c69408d1a984786f177852904f7 100644
+index 884b7b8c4581742a1ca965d453773dc10b76d5f9..e8f0c81b31569d610fb88f10d93c4e68fb5a24a1 100644
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 @@ -158,8 +158,9 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
@@ -160,7 +160,7 @@ index df4fa680d52a67c506cf0b5f3777d258c83f265f..b5812c5c97b38c69408d1a984786f177
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 948bd90489eb77b421b2668b42b4e982b843095c..15ab1b355972233b4ff1601bed1b0cdb73a4dd4e 100644
+index b489756075906f4a46fc36a57aca6c71ad5383fe..cd873b03c553ba42b85b6165f99f5d4fba34ec3b 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2785,7 +2785,7 @@ public class ServerGamePacketListenerImpl

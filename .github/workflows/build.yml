@@ -7,7 +7,16 @@ on:
   pull_request:
     branches:
       - "**"
-  workflow_dispatch: # TODO - add dispatch
+  workflow_dispatch:
+    inputs:
+      force-release:
+        description: "Force release if you enter 1, default release if not released else skip release"
+        required: false
+        default: "0"
+      force-push:
+        description: "Push to repo if you enter 1, default push if not released else skip push repo"
+        required: false
+        default: "0"
 
 permissions: write-all
 
@@ -47,8 +56,28 @@ jobs:
         if: github.event_name != 'pull_request'
         run: sh scripts/SetENV.sh
 
-      - name: Publish to repo
+      - name: Check if release exists
         if: github.event_name != 'pull_request' && env.flag_release == 'true'
+        run: |
+          git fetch --tags
+          if [ -n "$(git tag -l "${{ env.tag }}")" ]; then
+            echo "Release already exists"
+            release_exists=true
+          else
+            echo "Release does not exist"
+            release_exists=false
+          fi
+          if [ "$release_exists" == "true" ]; then
+            counter=1
+            while [ -n "$(git tag -l "${{ env.tag }}-${counter}")" ]; do
+              counter=$((counter + 1))
+            done
+            echo "tag=${{ env.tag }}-${counter}" >> $GITHUB_ENV
+          fi
+          echo "release_exists=${release_exists}" >> $GITHUB_ENV
+
+      - name: Publish to repo
+        if: ( github.event_name != 'pull_request' && env.flag_release == 'true' && env.release_exists != 'true' ) || ( env.release_exists == 'true' && inputs.force-push == '1' )
         continue-on-error: true
         run: ./gradlew --refresh-dependencies generateDevelopmentBundle publish -PpublishDevBundle=true
         env:
@@ -56,11 +85,11 @@ jobs:
           PRIVATE_MAVEN_REPO_USERNAME: ${{ secrets.PRIVATE_MAVEN_REPO_USERNAME }}
 
       - name: Create Release
-        if: github.event_name != 'pull_request' && env.flag_release == 'true'
+        if: ( github.event_name != 'pull_request' && env.flag_release == 'true' && env.release_exists != 'true' ) || ( env.release_exists == 'true' && inputs.force-release == '1' )
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.tag }}
-          name: ${{ env.project_id_b }} ${{ env.mcversion }} - ${{ env.commit_id }}
+          name: ${{ env.project_id_b }} ${{ env.mcversion }} - ${{ env.commit_id }} - ${{ env.release_count }}
           body: |
             📦Version: `${{ env.mcversion }}` | Commit ${{ env.commit_id }} [![download](https://img.shields.io/github/downloads/LuminolMC/${{ env.project_id }}/${{ env.tag }}/total?color=red&style=flat-square)](https://github.com/LuminolMC/${{ env.project_id }}/releases/download/${{ env.tag }}/${{ env.jar }})
             This release is automatically compiled by GitHub Actions

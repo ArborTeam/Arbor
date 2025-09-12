@@ -6,6 +6,9 @@ import ca.spottedleaf.moonrise.patches.chunk_system.io.MoonriseRegionFileIO;
 import com.github.luben.zstd.ZstdInputStream;
 import com.github.luben.zstd.ZstdOutputStream;
 import me.earthme.luminol.utils.BufferedLinearRegionFileFlusher;
+import net.jpountz.lz4.LZ4CompressorWithLength;
+import net.jpountz.lz4.LZ4DecompressorWithLength;
+import net.jpountz.lz4.LZ4Factory;
 import net.jpountz.xxhash.XXHash32;
 import net.jpountz.xxhash.XXHashFactory;
 import net.minecraft.nbt.CompoundTag;
@@ -62,7 +65,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     private final byte compressionLevel;
     private final LinearMasterFileFrameParser frameParser = new LinearMasterFileFrameParser();
+    private final CompressingOps compressingOps = new CompressingOps();
 
+    // managed by VarHandles following
     private boolean closed = false;
     private boolean beingSynced = false;
     private boolean synced = false;
@@ -421,8 +426,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     private void writeChunkDataRaw(int chunkOrdinal, ByteBuffer chunkData, boolean skipSync) throws IOException {
         final Sector sector = this.sectors[chunkOrdinal];
+        final ByteBuffer committed = this.compressingOps.commitSectionData(chunkData);
 
-        sector.store(chunkData, this.swapFileChannel);
+        sector.store(committed, this.swapFileChannel);
 
         if (skipSync) {
             return;
@@ -438,7 +444,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
             return null;
         }
 
-        return sector.read(this.swapFileChannel);
+        final ByteBuffer raw = sector.read(this.swapFileChannel);
+
+        return this.compressingOps.fromCommitedSection(raw);
     }
 
     private void clearChunkData(int chunkOrdinal) throws IOException {
@@ -654,6 +662,35 @@ public class BufferedLinearRegionFile implements IRegionFile {
             len = Math.min(len, this.internal.remaining());
             this.internal.get(bytes, off, len);
             return len;
+        }
+    }
+
+    // here we use this tool to prevent the swap file goes too large
+    // sometimes when a region contains all chunks, it might be very huge without any compressions(around 100MiB)
+    private static class CompressingOps {
+        private final LZ4CompressorWithLength lz4Compressor = new LZ4CompressorWithLength(LZ4Factory.fastestInstance().fastCompressor());
+        private final LZ4DecompressorWithLength lz4Decompressor = new LZ4DecompressorWithLength(LZ4Factory.fastestInstance().fastDecompressor());
+
+        public @NotNull ByteBuffer commitSectionData(@NotNull ByteBuffer in) {
+            final int bufferLenToAllocate = this.lz4Compressor.maxCompressedLength(in.remaining());
+            final ByteBuffer result = ByteBuffer.allocate(bufferLenToAllocate);
+
+            this.lz4Compressor.compress(in, result);
+
+            return result.flip();
+        }
+
+        public @NotNull ByteBuffer fromCommitedSection(@NotNull ByteBuffer flippedIn) throws IOException {
+            if (flippedIn.isDirect() || !flippedIn.hasArray()) {
+                throw new IOException("Giving buffer is a buffer which is unsupported!");
+            }
+
+            final byte[] data = flippedIn.array();
+            final int dataStart = flippedIn.arrayOffset() + flippedIn.position();
+            final int dataLen = flippedIn.remaining();
+            final byte[] decompressed = this.lz4Decompressor.decompress(data, dataStart, dataLen);
+
+            return ByteBuffer.wrap(decompressed);
         }
     }
 

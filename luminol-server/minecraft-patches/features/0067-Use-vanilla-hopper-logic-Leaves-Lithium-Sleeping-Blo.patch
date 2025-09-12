@@ -1585,7 +1585,7 @@ index 363d85c96bd3fb1a1945595df36e30bd6dd2fa4e..5f16810643b7567702b1101234571eaf
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..01a88ad6c3c09639fe7d15a46ed05986e7b0c811 100644
+index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..adb3dd3a015480494419138d131566649de34eb8 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -27,8 +27,30 @@ import net.minecraft.world.level.block.state.BlockState;
@@ -1621,6 +1621,15 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..01a88ad6c3c09639fe7d15a46ed05986
      public static final int MOVE_ITEM_SPEED = 8;
      public static final int HOPPER_CONTAINER_SIZE = 5;
      private static final int[][] CACHED_SLOTS = new int[54][];
+@@ -76,7 +98,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+     @Override
+     public void updateTicks(final long fromTickOffset, final long fromRedstoneTimeOffset) {
+         super.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
+-        if (this.tickedGameTime != Long.MIN_VALUE) {
++        if (this.tickedGameTime != Long.MIN_VALUE && this.tickedGameTime != Long.MAX_VALUE) { // Luminol - Lithium sleeping block entity for folia
+             this.tickedGameTime += fromRedstoneTimeOffset;
+         }
+     }
 @@ -128,6 +150,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      @Override
@@ -2708,7 +2717,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..01a88ad6c3c09639fe7d15a46ed05986
 +                    transferStack = skipEvent ? transferStack : callPushMoveEvent(insertInventory, transferStack, hopperBlockEntity);
 +                    // check if event canceled
 +                    if (transferStack == null) {
-+                        break;
++                        continue;
 +                    }
 +                    boolean transferSuccess = HopperHelper.tryMoveSingleItem(insertInventory, transferStack, fromDirection);
 +                    if (transferSuccess) {

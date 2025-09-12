@@ -29,7 +29,7 @@ public record SleepUntilTimeBlockEntityTickInvoker(BlockEntity sleepingBlockEnti
     @Override
     public void tick() {
         //noinspection ConstantConditions
-        long tickTime = this.sleepingBlockEntity.getLevel().getGameTime();
+        long tickTime = this.sleepingBlockEntity.getLevel().getRedstoneGameTime();
         if (tickTime >= this.sleepUntilTickExclusive) {
             ((SleepingBlockEntity) this.sleepingBlockEntity).setTicker(this.delegate);
             this.delegate.tick();

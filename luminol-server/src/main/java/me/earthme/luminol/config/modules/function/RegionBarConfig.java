@@ -3,10 +3,7 @@ package me.earthme.luminol.config.modules.function;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.ConfigClassInfo;
-import me.earthme.luminol.config.flags.ConfigInfo;
-import me.earthme.luminol.config.flags.DoNotLoad;
-import me.earthme.luminol.config.flags.TransformedConfig;
+import me.earthme.luminol.config.flags.*;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import me.earthme.luminol.functions.GlobalServerBarManager;
@@ -33,6 +30,7 @@ public class RegionBarConfig implements IConfigModule {
     @TransformedConfig(name = "update_interval_ticks", category = {"misc", "regionbar"})
     @ConfigInfo(baseName = "update_interval_ticks")
     public static int updateInterval = 15;
+    @CommandSuggestions(suggest = {"BOSS_BAR", "ACTION_BAR", "TAB_LIST"})
     @TransformedConfig(name = "display", category = {"misc", "regionbar"})
     @ConfigInfo(baseName = "display")
     public static String displayString = "BOSS_BAR";

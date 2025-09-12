@@ -1,6 +1,7 @@
 package me.earthme.luminol.config.modules.function;
 
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.CommandSuggestions;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
@@ -13,6 +14,7 @@ public class TripwireBehaviorConfig implements IConfigModule {
     public static boolean enabled = false;
     @TransformedConfig(name = "behavior_mode", category = {"misc", "tripwire_dupe"})
     @TransformedConfig(name = "behavior-mode", category = {"misc", "tripwire_dupe"})
+    @CommandSuggestions(suggest = {"VANILLA20", "VANILLA21", "MIXED"})
     @ConfigInfo(baseName = "behavior_mode", comments =
             """
                     Available Value:

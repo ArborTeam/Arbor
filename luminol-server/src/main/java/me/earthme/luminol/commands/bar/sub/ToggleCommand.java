@@ -131,7 +131,7 @@ public class ToggleCommand extends LiteralNode {
                 .getCommands()
                 .getDispatcher()
                 .register((LiteralArgumentBuilder<CommandSourceStack>) compile0());
-        Bukkit.getOnlinePlayers().forEach(org.bukkit.entity.Player::updateCommands);
+        Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
     }
 
     public void unregister() {
@@ -139,6 +139,6 @@ public class ToggleCommand extends LiteralNode {
                 .getCommands()
                 .getDispatcher();
         dispatcher.getRoot().removeCommand(getOldName());
-        Bukkit.getOnlinePlayers().forEach(org.bukkit.entity.Player::updateCommands);
+        Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
     }
 }

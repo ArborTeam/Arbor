@@ -3,6 +3,7 @@ package me.earthme.luminol.config.modules.misc;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import gg.pufferfish.pufferfish.sentry.SentryManager;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.flags.CommandSuggestions;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
@@ -16,6 +17,7 @@ public class SentryConfig implements IConfigModule {
                     " Obtain from https://sentry.io/")
     public static String sentryDsn = "";
 
+    @CommandSuggestions(suggest = {"DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF", "TRACE", "ALL"})
     @ConfigInfo(baseName = "log_level", comments = " Logs with a level higher than or equal to this level will be recorded.")
     public static String logLevel = "WARN";
 

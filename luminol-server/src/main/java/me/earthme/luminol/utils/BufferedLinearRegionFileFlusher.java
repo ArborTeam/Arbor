@@ -27,7 +27,7 @@ public class BufferedLinearRegionFileFlusher implements Runnable {
                         .setNameFormat("BufferedLinearRegionFile Flusher Checker")
                         .setDaemon(true)
                         .build())
-                .scheduleWithFixedDelay(this, checkIntervalMs, checkIntervalMs, java.util.concurrent.TimeUnit.MILLISECONDS);
+                .scheduleWithFixedDelay(this, checkIntervalMs, checkIntervalMs, TimeUnit.MILLISECONDS);
         this.flushOfWriteTimeoutMs = flushOfWriteTimeoutMs;
     }
 

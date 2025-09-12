@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.leavesmc.leaves.command.ArgumentNode;
 import org.leavesmc.leaves.command.CommandContext;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static org.leavesmc.leaves.command.CommandUtils.getListClosestMatchingLast;
@@ -73,10 +74,23 @@ public class SetCommand extends ConfigSubcommand {
                             .suggest("<ERROR CONFIG>", net.minecraft.network.chat.Component.literal("This config path does not exist."))
                             .buildFuture();
                 }
-                return builder
-                        .suggest(father.config.getConfig(path), net.minecraft.network.chat.Component.literal("Default value")
-                                .withStyle(style -> style.withColor(net.minecraft.network.chat.TextColor.fromLegacyFormat(net.minecraft.ChatFormatting.GRAY))))
-                        .buildFuture();
+                Object value = father.config.getConfigOrigin(path);
+                String[] suggestions = father.config.getConfigSuggestions(path);
+                builder.suggest(value.toString(), net.minecraft.network.chat.Component.literal("Default value")
+                        .withStyle(style -> style.withColor(net.minecraft.network.chat.TextColor.fromLegacyFormat(net.minecraft.ChatFormatting.GRAY))));
+                if (suggestions == null) {
+                    if (value instanceof Boolean) {
+                        builder.suggest(String.valueOf(!(Boolean) value));
+                    }
+                } else {
+                    for (String s : suggestions) {
+                        if (!Objects.equals(s, value.toString())) {
+                            builder.suggest(s);
+                        }
+                    }
+                }
+
+                return builder.buildFuture();
             }
 
             @Override

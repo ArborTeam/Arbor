@@ -31,6 +31,7 @@ public class ConfigsInstance {
     private final Set<IConfigModule> allInstanced = new HashSet<>();
     private final Map<String, Object> stagedConfigMap = new HashMap<>();
     private final Map<String, Object> defaultvalueMap = new HashMap<>();
+    private final Map<String, String[]> suggestionsMap = new HashMap<>();
     public final String SPLIT = " # ";
     public boolean alreadyInit = false;
     private CommentedFileConfig configFileInstance;
@@ -239,6 +240,11 @@ public class ConfigsInstance {
                     logger.error("Failed to transform config {}, reset to default!", fullConfigKeyName);
                 }
                 field.set(null, actuallyValue);
+
+                CommandSuggestions commandSuggestions = field.getAnnotation(CommandSuggestions.class);
+                if (commandSuggestions != null) {
+                    suggestionsMap.put(fullConfigKeyName, commandSuggestions.suggest());
+                }
             }
         }
     }
@@ -390,7 +396,23 @@ public class ConfigsInstance {
     }
 
     public String getConfig(String key) {
-        return configFileInstance.get(key).toString();
+        return getConfigOrigin(key).toString();
+    }
+
+    public <T> T getConfigOrigin(String[] keys) {
+        return getConfigOrigin(String.join(".", keys));
+    }
+
+    public <T> T getConfigOrigin(String key) {
+        return configFileInstance.get(key);
+    }
+
+    public String[] getConfigSuggestions(String[] keys) {
+        return getConfigSuggestions(String.join(".", keys));
+    }
+
+    public String[] getConfigSuggestions(String key) {
+        return suggestionsMap.get(key);
     }
 
     public CommentedFileConfig getFileInstance() {

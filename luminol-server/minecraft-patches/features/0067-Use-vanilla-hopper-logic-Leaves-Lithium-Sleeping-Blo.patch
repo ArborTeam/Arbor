@@ -1585,7 +1585,7 @@ index 363d85c96bd3fb1a1945595df36e30bd6dd2fa4e..5f16810643b7567702b1101234571eaf
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..282ece8e2a0304d03d8fb5349d92e2a608c597b8 100644
+index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..01a88ad6c3c09639fe7d15a46ed05986e7b0c811 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -27,8 +27,30 @@ import net.minecraft.world.level.block.state.BlockState;
@@ -2049,7 +2049,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..282ece8e2a0304d03d8fb5349d92e2a6
      }
  
      public static void entityInside(Level level, BlockPos pos, BlockState state, Entity entity, HopperBlockEntity blockEntity) {
-@@ -889,4 +983,756 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -889,4 +983,771 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      protected AbstractContainerMenu createMenu(int id, Inventory player) {
          return new HopperMenu(id, player, this);
      }
@@ -2374,9 +2374,9 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..282ece8e2a0304d03d8fb5349d92e2a6
 +
 +        Container blockInventory = hopperBlockEntity.lithium$getExtractBlockInventory(world, extractBlockPos, extractBlockState);
 +        if (blockInventory != null) {
-+            return blockInventory;
++            return hopperBlockEntity.invokeHopperInventorySearchEvent(blockInventory); // Luminol
 +        }
-+        return hopperBlockEntity.lithium$getExtractEntityInventory(world);
++        return hopperBlockEntity.invokeHopperInventorySearchEvent(hopperBlockEntity.lithium$getExtractEntityInventory(world)); // Luminol
 +    }
 +
 +    public Container lithium$getExtractBlockInventory(Level world, BlockPos extractBlockPos, BlockState extractBlockState) {
@@ -2459,7 +2459,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..282ece8e2a0304d03d8fb5349d92e2a6
 +    public Container getInsertInventory(Level world) {
 +        Container blockInventory = this.lithium$getInsertBlockInventory(world);
 +        if (blockInventory != null) {
-+            return blockInventory;
++            return this.invokeHopperInventorySearchEvent(blockInventory); // Luminol
 +        }
 +
 +        if (this.insertInventoryEntityTracker == null) {
@@ -2486,7 +2486,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..282ece8e2a0304d03d8fb5349d92e2a6
 +            }
 +        }
 +
-+        return inventory;
++        return this.invokeHopperInventorySearchEvent(inventory); // Luminol
 +    }
 +
 +    private void initCollectItemEntityTracker() {
@@ -2805,6 +2805,21 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..282ece8e2a0304d03d8fb5349d92e2a6
 +        return new net.minecraft.world.level.ChunkPos(this.worldPosition.getX() >> 4, this.worldPosition.getZ() >> 4);
 +    }
 +    // Leaves end - Lithium Sleeping Block Entity
++    // Luminol - Hopper events with lithium
++    public Container invokeHopperInventorySearchEvent(Container original) {
++        if (org.bukkit.event.inventory.HopperInventorySearchEvent.getHandlerList().getRegisteredListeners().length == 0) return original;
++
++        final BlockPos hopperPos = BlockPos.containing(this.getLevelX(), this.getLevelY(), this.getLevelZ());
++        org.bukkit.craftbukkit.block.CraftBlock hopperBlock = org.bukkit.craftbukkit.block.CraftBlock.at(level, hopperPos);
++        org.bukkit.craftbukkit.block.CraftBlock containerBlock = org.bukkit.craftbukkit.block.CraftBlock.at(level, hopperPos.above());
++        return HopperBlockEntity.runHopperInventorySearchEvent(
++                original,
++                hopperBlock,
++                containerBlock,
++                org.bukkit.event.inventory.HopperInventorySearchEvent.ContainerType.SOURCE
++        );
++    }
++    // Luminol end
  }
 diff --git a/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java b/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
 index ebea67223ce1d350087c73dff0cc3fe6d7b47ca0..5203e85b761122b01569221f22db55f7060d97ee 100644

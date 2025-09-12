@@ -77,8 +77,8 @@ jobs:
               counter=$((counter + 1))
             done
             echo "tag=${{ env.tag }}-${counter}" >> $GITHUB_ENV
+            echo "release_count= - ${counter}" >> $GITHUB_ENV
           fi
-          echo "release_count= - ${counter}" >> $GITHUB_ENV
           echo "release_exists=${release_exists}" >> $GITHUB_ENV
 
       - name: Publish to repo

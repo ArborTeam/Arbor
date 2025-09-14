@@ -1585,7 +1585,7 @@ index 363d85c96bd3fb1a1945595df36e30bd6dd2fa4e..5f16810643b7567702b1101234571eaf
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..f07aec013ba1b658554ea1ab2ae6bddb675a0b96 100644
+index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8a7afd34a 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -27,8 +27,42 @@ import net.minecraft.world.level.block.state.BlockState;
@@ -2832,7 +2832,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..f07aec013ba1b658554ea1ab2ae6bddb
 +
 +        final BlockPos hopperPos = BlockPos.containing(this.getLevelX(), this.getLevelY(), this.getLevelZ());
 +        CraftBlock hopperBlock = CraftBlock.at(level, hopperPos);
-+        CraftBlock containerBlock = CraftBlock.at(level, fromSource == null ? hopperPos.above() : fromSource);
++        CraftBlock containerBlock = CraftBlock.at(level, fromSource == null ? this.worldPosition.relative(this.facing) : fromSource);
 +        return HopperBlockEntity.runHopperInventorySearchEvent(
 +                original,
 +                hopperBlock,

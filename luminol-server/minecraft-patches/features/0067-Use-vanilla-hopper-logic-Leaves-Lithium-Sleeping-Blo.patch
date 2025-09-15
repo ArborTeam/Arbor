@@ -1585,10 +1585,10 @@ index 363d85c96bd3fb1a1945595df36e30bd6dd2fa4e..5f16810643b7567702b1101234571eaf
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8a7afd34a 100644
+index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..aca3303a043144894ae20ddc43abc55790db44ad 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -27,8 +27,42 @@ import net.minecraft.world.level.block.state.BlockState;
+@@ -27,8 +27,33 @@ import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.storage.ValueInput;
  import net.minecraft.world.level.storage.ValueOutput;
  import net.minecraft.world.phys.AABB;
@@ -1596,21 +1596,12 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
 -public class HopperBlockEntity extends RandomizableContainerBlockEntity implements Hopper {
 +// Leaves start - Lithium Sleeping Block Entity
 +import java.util.Collections;
-+import net.minecraft.world.level.ChunkPos;
 +import java.util.Objects;
++import net.minecraft.world.level.ChunkPos;
 +import net.minecraft.world.level.chunk.LevelChunk;
 +import net.minecraft.world.CompoundContainer;
 +import net.minecraft.server.level.ServerLevel;
 +import org.bukkit.craftbukkit.block.CraftBlock;
-+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
-+import org.bukkit.craftbukkit.inventory.CraftInventory;
-+import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest;
-+import org.bukkit.craftbukkit.inventory.CraftItemStack;
-+import org.bukkit.entity.HumanEntity;
-+import org.bukkit.entity.Item;
-+import org.bukkit.event.entity.EntityRemoveEvent;
-+import org.bukkit.event.inventory.HopperInventorySearchEvent;
-+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 +import org.leavesmc.leaves.lithium.api.inventory.LithiumCooldownReceivingInventory;
 +import org.leavesmc.leaves.lithium.api.inventory.LithiumInventory;
 +import org.leavesmc.leaves.lithium.common.block.entity.SleepingBlockEntity;
@@ -1633,7 +1624,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
      public static final int MOVE_ITEM_SPEED = 8;
      public static final int HOPPER_CONTAINER_SIZE = 5;
      private static final int[][] CACHED_SLOTS = new int[54][];
-@@ -76,7 +110,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -76,7 +101,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      @Override
      public void updateTicks(final long fromTickOffset, final long fromRedstoneTimeOffset) {
          super.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
@@ -1642,7 +1633,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
              this.tickedGameTime += fromRedstoneTimeOffset;
          }
      }
-@@ -128,6 +162,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -128,6 +153,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      @Override
      public void setBlockState(BlockState blockState) {
@@ -1650,7 +1641,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
          super.setBlockState(blockState);
          this.facing = blockState.getValue(HopperBlock.FACING);
      }
-@@ -146,6 +181,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -146,6 +172,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
              boolean result = tryMoveItems(level, pos, state, blockEntity, () -> {
                  return suckInItems(level, blockEntity);
              });
@@ -1658,7 +1649,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
              if (!result && blockEntity.level.spigotConfig.hopperCheck > 1) {
                  blockEntity.setCooldown(blockEntity.level.spigotConfig.hopperCheck);
              }
-@@ -196,18 +232,26 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -196,18 +223,26 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
          } else {
              if (!blockEntity.isOnCooldown() && state.getValue(HopperBlock.ENABLED)) {
                  boolean flag = false;
@@ -1688,7 +1679,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
                      return true;
                  }
              }
-@@ -303,9 +347,9 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -303,9 +338,9 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
                  origItemStack.setCount(originalItemCount - movedItemCount + remainingItemCount);
              }
  
@@ -1700,12 +1691,12 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
              container.setChanged();
              return true;
          }
-@@ -429,68 +473,92 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -429,68 +464,92 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      // Paper end - Perf: Optimize Hoppers
  
      private static boolean ejectItems(Level level, BlockPos pos, HopperBlockEntity blockEntity) {
 -        Container attachedContainer = getAttachedContainer(level, pos, blockEntity);
-+        Container attachedContainer = me.earthme.luminol.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled ? blockEntity.getInsertInventory(level) : getAttachedContainer(level, pos, blockEntity); // Leaves - Lithium Sleeping Block Entity
++        Container attachedContainer = me.earthme.luminol.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled ? blockEntity.getInsertInventory(level, pos, blockEntity) : getAttachedContainer(level, pos, blockEntity); // Leaves - Lithium Sleeping Block Entity
          if (attachedContainer == null) {
              return false;
          } else {
@@ -1848,7 +1839,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
              }
          }
      }
-@@ -543,13 +611,22 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -543,87 +602,108 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
          io.papermc.paper.threadedregions.RegionizedWorldData worldData = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegionizedWorldData(); // Folia - region threading
          BlockPos blockPos = BlockPos.containing(hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ());
          BlockState blockState = level.getBlockState(blockPos);
@@ -1874,7 +1865,8 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
                      return true;
                  }
              }
-@@ -558,7 +635,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+-
+-            return false;
          } else {
              boolean flag = hopper.isGridAligned() && blockState.isCollisionShapeFullBlock(level, blockPos) && !blockState.is(BlockTags.DOES_NOT_BLOCK_HOPPERS);
              if (!flag) {
@@ -1883,8 +1875,12 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
                      if (addItem(hopper, itemEntity)) {
                          return true;
                      }
-@@ -569,61 +646,76 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+                 }
+             }
+-
+-            return false;
          }
++        return false;
      }
  
 -    private static boolean tryTakeInItemFromSlot(Hopper hopper, Container container, int slot, Direction direction, Level level) { // Spigot
@@ -2012,7 +2008,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
          }
  
          return false;
-@@ -695,9 +787,9 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -695,9 +775,9 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
                      stack = stack.split(destination.getMaxStackSize());
                  }
                  // Spigot end
@@ -2024,7 +2020,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
                  stack = leftover; // Paper - Make hoppers respect inventory max stack size
                  flag = true;
              } else if (canMergeItems(item, stack)) {
-@@ -799,7 +891,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -799,7 +879,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      private static Container getContainerAt(Level level, BlockPos pos, BlockState state, double x, double y, double z, final boolean optimizeEntities) {
          // Paper end - Perf: Optimize Hoppers
          Container blockContainer = getBlockContainer(level, pos, state);
@@ -2033,7 +2029,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
              blockContainer = getEntityContainer(level, x, y, z);
          }
  
-@@ -832,7 +924,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -832,7 +912,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      }
  
      private static boolean canMergeItems(ItemStack stack1, ItemStack stack2) {
@@ -2042,7 +2038,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
      }
  
      @Override
-@@ -856,6 +948,19 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -856,6 +936,19 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      }
  
      public void setCooldown(int cooldownTime) {
@@ -2062,7 +2058,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
          this.cooldownTime = cooldownTime;
      }
  
-@@ -875,6 +980,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -875,6 +968,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      @Override
      protected void setItems(NonNullList<ItemStack> items) {
          this.items = items;
@@ -2070,7 +2066,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
      }
  
      public static void entityInside(Level level, BlockPos pos, BlockState state, Entity entity, HopperBlockEntity blockEntity) {
-@@ -889,4 +995,771 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -889,4 +983,784 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      protected AbstractContainerMenu createMenu(int id, Inventory player) {
          return new HopperMenu(id, player, this);
      }
@@ -2477,7 +2473,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
 +    }
 +
 +
-+    public Container getInsertInventory(Level world) {
++    public Container getInsertInventory(Level world, BlockPos pos, HopperBlockEntity blockEntity) {
 +        Container blockInventory = this.lithium$getInsertBlockInventory(world);
 +        if (blockInventory != null) {
 +            return this.invokeHopperInventorySearchEvent(blockInventory, null); // Luminol
@@ -2488,7 +2484,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
 +        }
 +        if (ChunkSectionEntityMovementTracker.isUnchangedSince(this.insertInventoryEntityFailedSearchTime, this.insertInventoryEntityTracker)) {
 +            this.insertInventoryEntityFailedSearchTime = this.tickedGameTime;
-+            return null;
++            return this.invokeHopperInventorySearchEvent(pos, blockEntity, true); // Luminol - return null if without event
 +        }
 +        this.insertInventoryEntityFailedSearchTime = Long.MIN_VALUE;
 +        this.shouldCheckSleep = false;
@@ -2497,7 +2493,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
 +        if (inventoryEntities.isEmpty()) {
 +            this.insertInventoryEntityFailedSearchTime = this.tickedGameTime;
 +            //Remember failed entity search timestamp. This allows shortcutting if no entity movement happens.
-+            return null;
++            return this.invokeHopperInventorySearchEvent(pos, blockEntity, true); // Luminol - return null if without event
 +        }
 +        Container inventory = inventoryEntities.get(world.random.nextInt(inventoryEntities.size()));
 +        if (inventory instanceof LithiumInventory optimizedInventory) {
@@ -2827,8 +2823,21 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
 +    }
 +    // Leaves end - Lithium Sleeping Block Entity
 +    // Luminol - Hopper events with lithium
-+    public Container invokeHopperInventorySearchEvent(Container original, @Nullable BlockPos fromSource) {
-+        if (HopperInventorySearchEvent.getHandlerList().getRegisteredListeners().length == 0) return original;
++    public @Nullable Container invokeHopperInventorySearchEvent(BlockPos pos, HopperBlockEntity blockEntity, boolean destination) {
++        if (org.bukkit.event.inventory.HopperInventorySearchEvent.getHandlerList().getRegisteredListeners().length == 0) return null;
++        BlockPos searchPosition = pos.relative(blockEntity.facing);
++        Container inventory = getContainerAt(level, searchPosition);
++        org.bukkit.craftbukkit.block.CraftBlock hopper = org.bukkit.craftbukkit.block.CraftBlock.at(level, pos);
++        org.bukkit.craftbukkit.block.CraftBlock searchBlock = org.bukkit.craftbukkit.block.CraftBlock.at(level, searchPosition);
++        return HopperBlockEntity.runHopperInventorySearchEvent(
++                inventory,
++                hopper,
++                searchBlock,
++                destination ? org.bukkit.event.inventory.HopperInventorySearchEvent.ContainerType.DESTINATION : org.bukkit.event.inventory.HopperInventorySearchEvent.ContainerType.SOURCE
++        );
++    }
++    public @Nullable Container invokeHopperInventorySearchEvent(Container original, @Nullable BlockPos fromSource) {
++        if (org.bukkit.event.inventory.HopperInventorySearchEvent.getHandlerList().getRegisteredListeners().length == 0) return original;
 +
 +        final BlockPos hopperPos = BlockPos.containing(this.getLevelX(), this.getLevelY(), this.getLevelZ());
 +        CraftBlock hopperBlock = CraftBlock.at(level, hopperPos);
@@ -2837,7 +2846,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..7884d1667b8dc7dccdc2b4a76aef24e8
 +                original,
 +                hopperBlock,
 +                containerBlock,
-+                fromSource != null ? HopperInventorySearchEvent.ContainerType.SOURCE : HopperInventorySearchEvent.ContainerType.DESTINATION
++                fromSource != null ? org.bukkit.event.inventory.HopperInventorySearchEvent.ContainerType.SOURCE : org.bukkit.event.inventory.HopperInventorySearchEvent.ContainerType.DESTINATION
 +        );
 +    }
 +    // Luminol end

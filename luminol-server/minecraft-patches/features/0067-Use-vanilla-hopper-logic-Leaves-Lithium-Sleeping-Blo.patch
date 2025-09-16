@@ -1585,7 +1585,7 @@ index 363d85c96bd3fb1a1945595df36e30bd6dd2fa4e..5f16810643b7567702b1101234571eaf
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..aca3303a043144894ae20ddc43abc55790db44ad 100644
+index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..a3b180b72af3c62cd16494b45d95b86f30c75569 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -27,8 +27,33 @@ import net.minecraft.world.level.block.state.BlockState;
@@ -2066,7 +2066,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..aca3303a043144894ae20ddc43abc557
      }
  
      public static void entityInside(Level level, BlockPos pos, BlockState state, Entity entity, HopperBlockEntity blockEntity) {
-@@ -889,4 +983,784 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -889,4 +983,788 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      protected AbstractContainerMenu createMenu(int id, Inventory player) {
          return new HopperMenu(id, player, this);
      }
@@ -2827,14 +2827,18 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..aca3303a043144894ae20ddc43abc557
 +        if (org.bukkit.event.inventory.HopperInventorySearchEvent.getHandlerList().getRegisteredListeners().length == 0) return null;
 +        BlockPos searchPosition = pos.relative(blockEntity.facing);
 +        Container inventory = getContainerAt(level, searchPosition);
++        List<ItemStack> items = null;
++        if (inventory != null) items = inventory.getContents();
 +        org.bukkit.craftbukkit.block.CraftBlock hopper = org.bukkit.craftbukkit.block.CraftBlock.at(level, pos);
 +        org.bukkit.craftbukkit.block.CraftBlock searchBlock = org.bukkit.craftbukkit.block.CraftBlock.at(level, searchPosition);
-+        return HopperBlockEntity.runHopperInventorySearchEvent(
++        Container ret = HopperBlockEntity.runHopperInventorySearchEvent(
 +                inventory,
 +                hopper,
 +                searchBlock,
 +                destination ? org.bukkit.event.inventory.HopperInventorySearchEvent.ContainerType.DESTINATION : org.bukkit.event.inventory.HopperInventorySearchEvent.ContainerType.SOURCE
 +        );
++        if (ret == null || (items != null && items.equals(ret.getContents()))) return null;
++        return ret;
 +    }
 +    public @Nullable Container invokeHopperInventorySearchEvent(Container original, @Nullable BlockPos fromSource) {
 +        if (org.bukkit.event.inventory.HopperInventorySearchEvent.getHandlerList().getRegisteredListeners().length == 0) return original;

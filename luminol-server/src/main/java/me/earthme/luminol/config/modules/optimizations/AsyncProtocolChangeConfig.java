@@ -10,6 +10,6 @@ public class AsyncProtocolChangeConfig implements IConfigModule {
     @ConfigInfo(baseName = "enabled", comments = """
             Uses async protocol preparation for mc.
             Warn: Due to the packet sequence was changed by this optimization, it might be\s
-             compatible with some plugins""")
+             uncompatible with some plugins""")
     public static boolean enabled = false;
 }

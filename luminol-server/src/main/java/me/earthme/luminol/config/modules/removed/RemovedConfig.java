@@ -8,6 +8,7 @@ import me.earthme.luminol.enums.EnumConfigCategory;
 
 @ConfigClassInfo(configAttribution = EnumConfigCategory.REMOVED, mainName = "removed_config")
 public class RemovedConfig implements IConfigModule {
+    @TransformedConfig(name = "useAlternateKeepAlive", category = {"optimizations", "alternative_keepalive_handling"}, transform = false)
     @TransformedConfig(name = "enabled", category = {"experiment", "enable_tick_command"}, transform = false)
     @TransformedConfig(name = "barrel_rows", category = {"misc", "container_expansion"}, transform = false)
     @TransformedConfig(name = "enderchest_rows", category = {"misc", "container_expansion"}, transform = false)

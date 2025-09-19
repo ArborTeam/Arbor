@@ -802,6 +802,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 ByteBuffer bytebuffer = ByteBuffer.wrap(this.buf, 0, this.count);
 
                 BufferedLinearRegionFile.this.writeChunk(this.pos.x, this.pos.z, bytebuffer);
+                BufferedLinearRegionFile.this.flushInternal();
             } finally {
                 BufferedLinearRegionFile.this.regionObjectLock.writeLock().unlock();
             }

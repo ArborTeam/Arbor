@@ -1,9 +1,11 @@
 package me.earthme.luminol.utils;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import me.earthme.luminol.data.BufferedLinearRegionFile;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -12,6 +14,8 @@ import java.util.Set;
 import java.util.concurrent.*;
 
 public class BufferedLinearRegionFileFlusher implements Runnable {
+    private static final Logger logger = LogUtils.getLogger();
+
     private final Set<BufferedLinearRegionFile> inManagement = new ObjectLinkedOpenHashSet<>();
     private final ScheduledFuture<?> flusherChecker;
     private final Executor ioWorkerPool;
@@ -94,7 +98,7 @@ public class BufferedLinearRegionFileFlusher implements Runnable {
                         file.flush();
                         file.syncIfNeeded();
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        logger.error("Failed to sync master file: ", e);
                     }
                 });
             }

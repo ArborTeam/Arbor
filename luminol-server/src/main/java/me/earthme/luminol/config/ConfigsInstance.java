@@ -2,15 +2,15 @@ package me.earthme.luminol.config;
 
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.mojang.logging.LogUtils;
 import io.papermc.paper.threadedregions.RegionizedServer;
 import me.earthme.luminol.commands.config.ConfigCommand;
 import me.earthme.luminol.config.flags.*;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.utils.ClassLoadUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class ConfigsInstance {
-    public final Logger logger = LogManager.getLogger();
+    public final Logger logger = LogUtils.getClassLogger();
     private final File baseConfigFolder;
     private final File baseConfigFile;
     private final String name; // used to transform config to another config system
@@ -70,7 +70,7 @@ public class ConfigsInstance {
             preLoadConfig();
             finalizeLoadConfig();
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("Fail to load config file of {}.", name, e);
         }
     }
 
@@ -80,7 +80,7 @@ public class ConfigsInstance {
             try {
                 task.run();
             } catch (Exception e) {
-                logger.error(e);
+                logger.error("Fail to reload config of {}", name, e);
             }
         }));
     }
@@ -316,6 +316,9 @@ public class ConfigsInstance {
 
     public String parseStringFromList(List<?> list) {
         String ret;
+        if (list.isEmpty()) {
+            return "[]";
+        }
         if (list.getFirst() instanceof String) {
             ret = list.stream()
                     .map(obj -> {

@@ -95,7 +95,6 @@ public class BufferedLinearRegionFileFlusher implements Runnable {
 
                 this.ioWorkerPool.execute(() -> {
                     try {
-                        file.flush();
                         file.syncIfNeeded();
                     } catch (IOException e) {
                         logger.error("Failed to sync master file: ", e);

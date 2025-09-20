@@ -28,6 +28,12 @@ public class RegionFormatConfig implements IConfigModule {
     @ConfigInfo(baseName = "linear_io_flush_delay_ms")
     public static int linearIoFlushDelayMs = 100;
     @HotReloadUnsupported
+    @ConfigInfo(baseName = "blinear_io_flush_delay_ms")
+    public static int blinearIoFlushDelayMs = 3000;
+    @HotReloadUnsupported
+    @ConfigInfo(baseName = "blinear_io_thread_count")
+    public static int blinearIoThreadCount = 6;
+    @HotReloadUnsupported
     @TransformedConfig(name = "linear_use_virtual_thread", category = {"misc", "region_format"})
     @ConfigInfo(baseName = "linear_use_virtual_thread")
     public static boolean linearUseVirtualThread = true;
@@ -55,7 +61,7 @@ public class RegionFormatConfig implements IConfigModule {
         }
 
         if (regionFormat == EnumRegionFormat.B_LINEAR) {
-            blinearFlusher = new BufferedLinearRegionFileFlusher(linearIoThreadCount, 20, linearIoFlushDelayMs);
+            blinearFlusher = new BufferedLinearRegionFileFlusher(blinearIoThreadCount, 20, blinearIoFlushDelayMs);
 
             checkCompressionLevel();
         }

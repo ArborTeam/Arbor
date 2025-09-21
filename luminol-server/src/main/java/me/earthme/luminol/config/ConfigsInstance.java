@@ -154,7 +154,8 @@ public class ConfigsInstance {
         for (Field field : fields) {
             int modifiers = field.getModifiers();
             if (Modifier.isStatic(modifiers) && !Modifier.isFinal(modifiers)) {
-                boolean skipLoad = field.getAnnotation(DoNotLoad.class) != null || (alreadyInit && field.getAnnotation(HotReloadUnsupported.class) != null);
+                boolean skipLoad = field.getAnnotation(DoNotLoad.class) != null;
+                boolean doNotReload = alreadyInit && field.getAnnotation(HotReloadUnsupported.class) != null;
                 ConfigInfo configInfo = field.getAnnotation(ConfigInfo.class);
 
                 if (skipLoad || configInfo == null) {
@@ -239,11 +240,15 @@ public class ConfigsInstance {
                     resetConfig(fullConfigKeyName);
                     logger.error("Failed to transform config {}, reset to default!", fullConfigKeyName);
                 }
-                field.set(null, actuallyValue);
+                if (!doNotReload) {
+                    field.set(null, actuallyValue);
+                }
 
-                CommandSuggestions commandSuggestions = field.getAnnotation(CommandSuggestions.class);
-                if (commandSuggestions != null) {
-                    suggestionsMap.put(fullConfigKeyName, commandSuggestions.suggest());
+                if (!alreadyInit) {
+                    CommandSuggestions commandSuggestions = field.getAnnotation(CommandSuggestions.class);
+                    if (commandSuggestions != null) {
+                        suggestionsMap.put(fullConfigKeyName, commandSuggestions.suggest());
+                    }
                 }
             }
         }

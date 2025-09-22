@@ -132,7 +132,11 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     public void syncIfNeeded() throws IOException {
         // the sync operation is just coping the data from swap file to the master file
-        this.regionObjectLock.readLock().lock(); // so we could acquire read lock simply so that we won't block any other read operations
+        // so we could acquire read lock simply so that we won't block any other read operations
+        if (!this.regionObjectLock.readLock().tryLock()) {
+            return;
+        }
+
         try {
             // skip if closed already
             if (this.isClosedRaw()) {

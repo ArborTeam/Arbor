@@ -48,7 +48,7 @@ public class ResetCommand extends ConfigSubcommand {
         protected boolean execute(@NotNull CommandContext context) {
             String path = context.getArgumentOrDefault(PathArgument.class, "");
             father.config.resetConfig(path);
-            father.config.reloadAsync().thenAccept(nullValue -> context.getSender().sendMessage(
+            father.config.reloadAsync(true).thenAccept(nullValue -> context.getSender().sendMessage(
                     Component
                             .text("Reset Config " + path + " to " + father.config.getConfig(path) + " successfully!")
                             .color(TextColor.color(0, 255, 0))

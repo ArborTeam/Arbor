@@ -98,7 +98,7 @@ public class SetCommand extends ConfigSubcommand {
                 String path = context.getArgument(PathArgument.class);
                 String value = context.getArgument(ValueArgument.class);
                 if (father.config.setConfig(path, value)) {
-                    father.config.reloadAsync().thenAccept(nullValue -> context.getSender().sendMessage(
+                    father.config.reloadAsync(true).thenAccept(nullValue -> context.getSender().sendMessage(
                             Component
                                     .text("Set Config " + path + " to " + value + " successfully!")
                                     .color(TextColor.color(0, 255, 0))

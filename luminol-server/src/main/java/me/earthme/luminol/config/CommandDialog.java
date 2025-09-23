@@ -110,7 +110,7 @@ public class CommandDialog {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             config.setConfig(entry.getKey(), entry.getValue());
         }
-        config.reloadAsync().thenAccept(nullValue -> sender.sendMessage(
+        config.reloadAsync(true).thenAccept(nullValue -> sender.sendMessage(
                 net.kyori.adventure.text.Component
                         .text("Apply config update successfully!")
                         .color(TextColor.color(0, 255, 0))

@@ -8,7 +8,6 @@ import me.earthme.luminol.commands.config.ConfigCommand;
 import me.earthme.luminol.config.flags.*;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.utils.ClassLoadUtil;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -63,20 +62,23 @@ public class ConfigsInstance {
     }
 
     public void reload() {
+        reload(true);
+    }
+
+    public void reload(boolean keepComments) {
         RegionizedServer.ensureGlobalTickThread("Reload " + baseConfigFile.getName() + " off global region thread!");
         runUnloadTasks();
         dropAllInstanced();
         try {
-            preLoadConfig();
+            preLoadConfig(keepComments);
             finalizeLoadConfig();
         } catch (Exception e) {
             logger.error("Fail to load config file of {}.", name, e);
         }
     }
 
-    @Contract(" -> new")
-    public @NotNull CompletableFuture<Void> reloadAsync() {
-        return CompletableFuture.runAsync(this::reload, task -> RegionizedServer.getInstance().addTask(() -> {
+    public @NotNull CompletableFuture<Void> reloadAsync(boolean keepComments) {
+        return CompletableFuture.runAsync(() -> reload(keepComments), task -> RegionizedServer.getInstance().addTask(() -> {
             try {
                 task.run();
             } catch (Exception e) {
@@ -103,6 +105,10 @@ public class ConfigsInstance {
     }
 
     public void preLoadConfig() throws IOException {
+        preLoadConfig(true);
+    }
+
+    public void preLoadConfig(boolean keepComments) throws IOException {
         baseConfigFolder.mkdirs();
 
         if (!baseConfigFile.exists()) {
@@ -115,7 +121,7 @@ public class ConfigsInstance {
 
         try {
             instanceAllModule();
-            loadAllModules();
+            loadAllModules(keepComments);
         } catch (Exception e) {
             logger.error("Failed to load config modules!", e);
             throw new RuntimeException(e);
@@ -124,9 +130,9 @@ public class ConfigsInstance {
         saveConfigs();
     }
 
-    private void loadAllModules() throws IllegalAccessException {
+    private void loadAllModules(boolean keepComments) throws IllegalAccessException {
         for (IConfigModule instanced : allInstanced) {
-            loadForSingle(instanced);
+            loadForSingle(instanced, keepComments);
         }
     }
 
@@ -138,7 +144,7 @@ public class ConfigsInstance {
         }
     }
 
-    private void loadForSingle(@NotNull IConfigModule singleConfigModule) throws IllegalAccessException {
+    private void loadForSingle(@NotNull IConfigModule singleConfigModule, boolean keepComments) throws IllegalAccessException {
         ConfigClassInfo configClassInfo = singleConfigModule.getClass().getAnnotation(ConfigClassInfo.class);
         if (configClassInfo == null) {
             return;
@@ -242,6 +248,11 @@ public class ConfigsInstance {
                 }
                 if (!doNotReload) {
                     field.set(null, actuallyValue);
+                }
+
+                if (!keepComments) {
+                    final String comments = configInfo.comments();
+                    configFileInstance.setComment(fullConfigKeyName, comments);
                 }
 
                 if (!alreadyInit) {
@@ -548,5 +559,20 @@ public class ConfigsInstance {
             }
         }
         result.put(_key, value);
+    }
+
+    public void clean() {
+        Map<String, Object> valueList = new HashMap<>();
+        Map<String, String> commentList = new HashMap<>();
+        for (String key : defaultvalueMap.keySet()) {
+            valueList.put(key, configFileInstance.get(key));
+            commentList.put(key, configFileInstance.getComment(key));
+        }
+        configFileInstance.clear();
+        for (String key : defaultvalueMap.keySet()) {
+            configFileInstance.set(key, valueList.get(key));
+            configFileInstance.setComment(key, commentList.get(key));
+        }
+        saveConfigs();
     }
 }

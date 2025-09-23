@@ -15,7 +15,7 @@ public class ReloadCommand extends ConfigSubcommand {
 
     @Override
     protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
-        father.config.reloadAsync().thenAccept(nullValue -> context.getSender().sendMessage(
+        father.config.reloadAsync(true).thenAccept(nullValue -> context.getSender().sendMessage(
                 Component
                         .text("Reloaded config file!")
                         .color(TextColor.color(0, 255, 0))

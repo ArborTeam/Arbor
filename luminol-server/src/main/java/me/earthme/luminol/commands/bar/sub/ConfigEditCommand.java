@@ -58,7 +58,7 @@ public class ConfigEditCommand extends LiteralNode {
             } else {
                 ConfigsInstance config = ConfigManager.configfiles.get("luminol");
                 if (config.setConfig(configPath, value)) {
-                    config.reloadAsync().thenAccept(nullValue -> context.getSender().sendMessage(
+                    config.reloadAsync(true).thenAccept(nullValue -> context.getSender().sendMessage(
                             Component
                                     .text("Bar type with " + bar_name + (value ? " enabled" : " disabled") + " successfully!")
                                     .color(TextColor.color(0, 255, 0))

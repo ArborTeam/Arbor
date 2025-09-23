@@ -21,7 +21,9 @@ public class ConfigCommand extends RootNode {
                 new SetCommand(this),
                 new ResetCommand(this),
                 new OpenGuiCommand(this),
-                new SubmitCommand(this)
+                new SubmitCommand(this),
+                new CleanCommand(this),
+                new ResetCommentsCommand(this)
         );
     }
 

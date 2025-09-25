@@ -8,7 +8,7 @@ This patch is based on Leaves(https://github.com/LeavesMC/Leaves)
 Original license: GPL3(https://github.com/LeavesMC/Leaves/blob/master/licenses/GPL.md)
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..46b83d43b15235206e51b7d364c58cae92038e42 100644
+index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..ab5a181d0cc7e65a4a10381cbf8ddf011ceb2ba7 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -63,6 +63,10 @@ import java.util.Map;
@@ -136,8 +136,8 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..46b83d43b15235206e51b7d364c58cae
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;
 +    // Luminol start - Lithium sleeping block entity
 +    // Lithium
-+    public final Map<Long, ChunkSectionInventoryEntityTracker> containerEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap<>();
-+    public final Map<Long, ChunkSectionItemEntityMovementTracker> itemEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap<>();
++    public final Map<Long, ChunkSectionInventoryEntityTracker> containerEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();
++    public final Map<Long, ChunkSectionItemEntityMovementTracker> itemEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();
 +    // Luminol end
  
      public RegionizedWorldData(final ServerLevel world) {
@@ -237,7 +237,7 @@ index b382665cc125b8b5c0938e5e55984e4bf91d37ff..2afaf6a3f18af7889f4f3b35cee9bbb5
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 3c1a9ef0e21a529000cbdbf19f478ae1f1e0768e..06af060f5023214ee7f32b9e0dc1fe56ff96f783 100644
+index 3c1a9ef0e21a529000cbdbf19f478ae1f1e0768e..90c36bb87a761119edb376f3bd425d48d29bf36f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -308,7 +308,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -263,7 +263,7 @@ index 3c1a9ef0e21a529000cbdbf19f478ae1f1e0768e..06af060f5023214ee7f32b9e0dc1fe56
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
          this.postRemoveAfterChangingDimensions();
-@@ -6071,7 +6073,41 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6071,7 +6073,43 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box
@@ -283,10 +283,10 @@ index 3c1a9ef0e21a529000cbdbf19f478ae1f1e0768e..06af060f5023214ee7f32b9e0dc1fe56
 +        if (this instanceof ItemEntity) {
 +            long sectionKey = ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkSectionKey(this);
 +
-+            var tracker = currRegionizedWorldData.itemEntityMovementTrackerMap.computeIfAbsent(
-+                    sectionKey,
-+                    k -> new org.leavesmc.leaves.lithium.common.tracking.entity.ChunkSectionItemEntityMovementTracker(sectionKey, this.level)
-+            );
++            var tracker = currRegionizedWorldData.itemEntityMovementTrackerMap.get(sectionKey);
++            if (tracker == null) {
++                return;
++            }
 +
 +            tracker.notifyAllListeners(currRegionizedWorldData.getRedstoneGameTime());
 +            return;
@@ -294,10 +294,12 @@ index 3c1a9ef0e21a529000cbdbf19f478ae1f1e0768e..06af060f5023214ee7f32b9e0dc1fe56
 +
 +        if (this instanceof net.minecraft.world.entity.vehicle.ContainerEntity) {
 +            long sectionKey = ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkSectionKey(this);
-+            var tracker = currRegionizedWorldData.containerEntityMovementTrackerMap.computeIfAbsent(
-+                    sectionKey,
-+                    k -> new org.leavesmc.leaves.lithium.common.tracking.entity.ChunkSectionInventoryEntityTracker(sectionKey, this.level)
-+            );
++
++            var tracker = currRegionizedWorldData.containerEntityMovementTrackerMap.get(sectionKey);
++            if (tracker == null) {
++                return;
++            }
++
 +            tracker.notifyAllListeners(currRegionizedWorldData.getRedstoneGameTime());
 +        }
 +    }

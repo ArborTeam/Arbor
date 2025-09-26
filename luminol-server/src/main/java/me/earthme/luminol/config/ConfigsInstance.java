@@ -562,17 +562,15 @@ public class ConfigsInstance {
     }
 
     public void clean() {
-        Map<String, Object> valueList = new HashMap<>();
-        Map<String, String> commentList = new HashMap<>();
+        Map<String, Object> validValues = new HashMap<>();
+        Map<String, String> validComments = new HashMap<>();
         for (String key : defaultvalueMap.keySet()) {
-            valueList.put(key, configFileInstance.get(key));
-            commentList.put(key, configFileInstance.getComment(key));
+            validValues.put(key, configFileInstance.get(key));
+            validComments.put(key, configFileInstance.getComment(key));
         }
         configFileInstance.clear();
-        for (String key : defaultvalueMap.keySet()) {
-            configFileInstance.set(key, valueList.get(key));
-            configFileInstance.setComment(key, commentList.get(key));
-        }
+        validValues.forEach(configFileInstance::set);
+        validComments.forEach(configFileInstance::setComment);
         saveConfigs();
     }
 }

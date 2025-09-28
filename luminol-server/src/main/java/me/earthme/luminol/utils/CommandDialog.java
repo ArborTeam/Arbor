@@ -40,7 +40,8 @@ public class CommandDialog {
 
         if ((!prefix.isEmpty() && !prefix.endsWith("."))
                 || (config.completeConfigPath(prefix, dotCount + 1).size()
-                == config.completeConfigPath(prefix, dotCount + 2).size())) {
+                == config.completeConfigPath(prefix, dotCount + 2).size())
+                || (config.completeConfigPath(prefix, dotCount + 1).isEmpty())) {
             List<String> list = config.getSingleConfig(prefix);
             if (list.isEmpty() && !prefix.endsWith(".")) {
                 prefix += ".";
@@ -59,6 +60,13 @@ public class CommandDialog {
         List<String> keyList = config.completeConfigPath(prefix);
         DialogUtil.DialogBuilder builder = new DialogUtil.DialogBuilder();
         for (String key : keyList) {
+            if (config.completeConfigPath(key, dotCount + 1).size()
+                    == config.completeConfigPath(key, dotCount + 2).size()) {
+                if (config.completeConfigPath(key, -1).size() != config.completeConfigPath(key, dotCount + 1).size()
+                        || config.completeConfigPath(key, dotCount + 1).isEmpty()) {
+                    continue;
+                }
+            }
             String raw = name + "config open-gui " + key + ".$(missing)";
             StringTemplate template = StringTemplate.fromString(raw);
             CommandTemplate commandTemplate = new CommandTemplate(new ParsedTemplate(raw, template));

@@ -14,13 +14,13 @@ import org.slf4j.Logger;
 import java.util.BitSet;
 import java.util.List;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.OPTIMIZATIONS, mainName = "cpu_affinity")
+@ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "cpu_affinity")
 public class CpuAffinityConfig implements IConfigModule {
-    @TransformedConfig(name = "enabled", category = {"misc", "cpu_affinity"})
-    @ConfigInfo(baseName = "enabled")
+    @TransformedConfig(name = "enabled", directory = {"misc", "cpu_affinity"})
+    @ConfigInfo(name = "enabled")
     public static boolean cpuAffinityEnabled = false;
-    @TransformedConfig(name = "enabled", category = {"misc", "tickregion_affinity"})
-    @ConfigInfo(baseName = "tickregion_affinity")
+    @TransformedConfig(name = "enabled", directory = {"misc", "tickregion_affinity"})
+    @ConfigInfo(name = "tickregion_affinity")
     public static List<String> tickRegionAffinity = Affinity.getAffinity()
             .stream()
             .mapToObj(String::valueOf)

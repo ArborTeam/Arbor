@@ -5,9 +5,9 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.FIXES, mainName = "fix_high_velocity_issue", subNames = {"folia"})
+@ConfigClassInfo(category = EnumConfigCategory.FIXES, name = "fix_high_velocity_issue", directory = {"folia"})
 public class FoliaEntityMovingFixConfig implements IConfigModule {
-    @ConfigInfo(baseName = "enabled", comments =
+    @ConfigInfo(name = "enabled", comments =
             """
                     A simple fix of an issue on folia\s
                     (Sometimes the entity would\s
@@ -15,6 +15,6 @@ public class FoliaEntityMovingFixConfig implements IConfigModule {
                     different tick regions, and it would\s
                     make the server crashed) but sometimes it might doesn't work""")
     public static boolean enabled = false;
-    @ConfigInfo(baseName = "warn_on_detected")
+    @ConfigInfo(name = "warn_on_detected")
     public static boolean warnOnDetected = true;
 }

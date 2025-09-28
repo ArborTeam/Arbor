@@ -5,8 +5,8 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "disable_moved_wrongly_threshold")
+@ConfigClassInfo(category = EnumConfigCategory.MISC, name = "disable_moved_wrongly_threshold")
 public class DisableMovedWronglyThreshold implements IConfigModule {
-    @ConfigInfo(baseName = "enabled")
+    @ConfigInfo(name = "enabled")
     public static boolean enabled = false;
 }

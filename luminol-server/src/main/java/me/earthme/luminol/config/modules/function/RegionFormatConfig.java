@@ -9,33 +9,33 @@ import me.earthme.luminol.enums.EnumRegionFormat;
 import me.earthme.luminol.utils.BufferedLinearRegionFileFlusher;
 import net.minecraft.server.MinecraftServer;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.FUNCTION, mainName = "region_format")
+@ConfigClassInfo(category = EnumConfigCategory.FUNCTION, name = "region_format")
 public class RegionFormatConfig implements IConfigModule {
     @HotReloadUnsupported
-    @TransformedConfig(name = "format", category = {"misc", "region_format"})
-    @ConfigInfo(baseName = "format")
+    @TransformedConfig(name = "format", directory = {"misc", "region_format"})
+    @ConfigInfo(name = "format")
     public static String format = "MCA";
     @HotReloadUnsupported
-    @TransformedConfig(name = "linear_compression_level", category = {"misc", "region_format"})
-    @ConfigInfo(baseName = "linear_compression_level")
+    @TransformedConfig(name = "linear_compression_level", directory = {"misc", "region_format"})
+    @ConfigInfo(name = "linear_compression_level")
     public static int linearCompressionLevel = 1;
     @HotReloadUnsupported
-    @TransformedConfig(name = "linear_io_thread_count", category = {"misc", "region_format"})
-    @ConfigInfo(baseName = "linear_io_thread_count")
+    @TransformedConfig(name = "linear_io_thread_count", directory = {"misc", "region_format"})
+    @ConfigInfo(name = "linear_io_thread_count")
     public static int linearIoThreadCount = 6;
     @HotReloadUnsupported
-    @TransformedConfig(name = "linear_io_flush_delay_ms", category = {"misc", "region_format"})
-    @ConfigInfo(baseName = "linear_io_flush_delay_ms")
+    @TransformedConfig(name = "linear_io_flush_delay_ms", directory = {"misc", "region_format"})
+    @ConfigInfo(name = "linear_io_flush_delay_ms")
     public static int linearIoFlushDelayMs = 100;
     @HotReloadUnsupported
-    @ConfigInfo(baseName = "blinear_io_flush_delay_ms")
+    @ConfigInfo(name = "blinear_io_flush_delay_ms")
     public static int blinearIoFlushDelayMs = 3000;
     @HotReloadUnsupported
-    @ConfigInfo(baseName = "blinear_io_thread_count")
+    @ConfigInfo(name = "blinear_io_thread_count")
     public static int blinearIoThreadCount = 6;
     @HotReloadUnsupported
-    @TransformedConfig(name = "linear_use_virtual_thread", category = {"misc", "region_format"})
-    @ConfigInfo(baseName = "linear_use_virtual_thread")
+    @TransformedConfig(name = "linear_use_virtual_thread", directory = {"misc", "region_format"})
+    @ConfigInfo(name = "linear_use_virtual_thread")
     public static boolean linearUseVirtualThread = true;
 
     @DoNotLoad

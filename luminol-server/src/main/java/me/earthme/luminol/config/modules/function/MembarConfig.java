@@ -14,25 +14,25 @@ import org.slf4j.Logger;
 import java.util.Arrays;
 import java.util.List;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.FUNCTION, mainName = "membar")
+@ConfigClassInfo(category = EnumConfigCategory.FUNCTION, name = "membar")
 public class MembarConfig implements IConfigModule {
     @DoNotLoad
     private static final Logger logger = LogUtils.getLogger();
-    @TransformedConfig(name = "enabled", category = {"misc", "membar"})
-    @ConfigInfo(baseName = "enabled")
+    @TransformedConfig(name = "enabled", directory = {"misc", "membar"})
+    @ConfigInfo(name = "enabled")
     public static boolean memoryBarEnabled = false;
-    @TransformedConfig(name = "format", category = {"misc", "membar"})
-    @ConfigInfo(baseName = "format")
+    @TransformedConfig(name = "format", directory = {"misc", "membar"})
+    @ConfigInfo(name = "format")
     public static String memBarFormat = "<gray>Memory usage <yellow>:</yellow> <used>MB<yellow>/</yellow><available>MB";
-    @TransformedConfig(name = "memory_color_list", category = {"misc", "membar"})
-    @ConfigInfo(baseName = "memory_color_list")
+    @TransformedConfig(name = "memory_color_list", directory = {"misc", "membar"})
+    @ConfigInfo(name = "memory_color_list")
     public static List<String> memColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
-    @TransformedConfig(name = "update_interval_ticks", category = {"misc", "membar"})
-    @ConfigInfo(baseName = "update_interval_ticks")
+    @TransformedConfig(name = "update_interval_ticks", directory = {"misc", "membar"})
+    @ConfigInfo(name = "update_interval_ticks")
     public static int updateInterval = 15;
-    @TransformedConfig(name = "display", category = {"misc", "membar"})
+    @TransformedConfig(name = "display", directory = {"misc", "membar"})
     @CommandSuggestions(suggest = {"BOSS_BAR", "ACTION_BAR", "TAB_LIST"})
-    @ConfigInfo(baseName = "display")
+    @ConfigInfo(name = "display")
     public static String displayString = "BOSS_BAR";
 
     @DoNotLoad

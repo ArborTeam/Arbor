@@ -3,7 +3,7 @@ package me.earthme.luminol.commands.config.sub;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import me.earthme.luminol.commands.config.ConfigCommand;
 import me.earthme.luminol.commands.config.ConfigSubcommand;
-import me.earthme.luminol.config.CommandDialog;
+import me.earthme.luminol.utils.CommandDialog;
 import org.jetbrains.annotations.NotNull;
 import org.leavesmc.leaves.command.ArgumentNode;
 import org.leavesmc.leaves.command.CommandContext;

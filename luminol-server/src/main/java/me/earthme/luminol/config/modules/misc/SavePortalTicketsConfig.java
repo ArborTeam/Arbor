@@ -5,9 +5,9 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "save_portal_tickets")
+@ConfigClassInfo(category = EnumConfigCategory.MISC, name = "save_portal_tickets")
 public class SavePortalTicketsConfig implements IConfigModule {
-    @ConfigInfo(baseName = "do_save", comments = "whether or not to save the portal tickets when server stopping," +
+    @ConfigInfo(name = "do_save", comments = "whether or not to save the portal tickets when server stopping," +
             " this would make it acts like mc before 1.21.5," +
             " and won't auto active the portal chunk loader when server started again.")
     public static boolean doSave = true;

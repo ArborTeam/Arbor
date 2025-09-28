@@ -6,9 +6,9 @@ import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.OPTIMIZATIONS, mainName = "force_disable_packet_limiter_of_paper")
+@ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "force_disable_packet_limiter_of_paper")
 public class PaperPacketLimiterConfig implements IConfigModule {
-    @TransformedConfig(name = "force_disable", category = {"misc", "force_disable_packet_limiter_of_paper"})
-    @ConfigInfo(baseName = "force_disable")
+    @TransformedConfig(name = "force_disable", directory = {"misc", "force_disable_packet_limiter_of_paper"})
+    @ConfigInfo(name = "force_disable")
     public static boolean forceDisable = false;
 }

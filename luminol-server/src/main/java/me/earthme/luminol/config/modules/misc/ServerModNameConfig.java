@@ -5,11 +5,11 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "server_mod_name")
+@ConfigClassInfo(category = EnumConfigCategory.MISC, name = "server_mod_name")
 public class ServerModNameConfig implements IConfigModule {
-    @ConfigInfo(baseName = "name")
+    @ConfigInfo(name = "name")
     public static String serverModName = "Luminol";
 
-    @ConfigInfo(baseName = "vanilla_spoof")
+    @ConfigInfo(name = "vanilla_spoof")
     public static boolean fakeVanilla = false;
 }

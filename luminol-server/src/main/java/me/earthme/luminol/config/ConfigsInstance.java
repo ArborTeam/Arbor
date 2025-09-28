@@ -149,11 +149,20 @@ public class ConfigsInstance {
         if (configClassInfo == null) {
             return;
         }
-        List<String> category = new ArrayList<>();
-        category.add(configClassInfo.configAttribution().getBaseKeyName());
-        category.addAll(Arrays.asList(configClassInfo.subNames()));
-        category.add(configClassInfo.mainName());
+        final List<String> category = new ArrayList<>();
+        category.add(configClassInfo.category().getBaseKeyName());
+        category.addAll(List.of(configClassInfo.directory()));
+        category.add(configClassInfo.name());
+
         final String fullConfigBasePath = String.join(".", category);
+
+        final String comment = configFileInstance.getComment(fullConfigBasePath);
+        if (comment == null || comment.isBlank()) {
+            String comments0 = configClassInfo.comments();
+            if (!comments0.isBlank()) {
+                configFileInstance.setComment(fullConfigBasePath, comments0);
+            }
+        }
 
         Field[] fields = singleConfigModule.getClass().getDeclaredFields();
 
@@ -168,16 +177,19 @@ public class ConfigsInstance {
                     continue;
                 }
 
-                final String fullConfigKeyName = fullConfigBasePath + "." + configInfo.baseName();
+                final List<String> keys = new ArrayList<>(List.of(configInfo.directory()));
+                keys.add(configInfo.name());
+
+                final String fullConfigKeyName = fullConfigBasePath + "." + String.join(".", keys);
 
                 field.setAccessible(true);
                 final Object currentValue = field.get(null);
-                boolean removed = configClassInfo.configAttribution() == EnumConfigCategory.REMOVED;
+                boolean removed = configClassInfo.category() == EnumConfigCategory.REMOVED;
                 if (!alreadyInit && !removed) defaultvalueMap.put(fullConfigKeyName, currentValue);
 
                 if (!configFileInstance.contains(fullConfigKeyName) || removed) {
                     for (TransformedConfig transformedConfig : field.getAnnotationsByType(TransformedConfig.class)) {
-                        final String oldConfigKeyName = String.join(".", transformedConfig.category()) + "." + transformedConfig.name();
+                        final String oldConfigKeyName = String.join(".", transformedConfig.directory()) + "." + transformedConfig.name();
                         if (!Objects.equals(transformedConfig.originInstance(), "")) {
                             ConfigManager.registerTransformedConfig(transformedConfig.originInstance(), name, oldConfigKeyName, fullConfigKeyName, transformedConfig);
                         } else {
@@ -200,7 +212,7 @@ public class ConfigsInstance {
                                     }
                                 }
 
-                                if (success) removeConfig(oldConfigKeyName, transformedConfig.category());
+                                if (success) removeConfig(oldConfigKeyName, transformedConfig.directory());
                                 final String comments = configInfo.comments();
 
                                 if (!comments.isBlank()) configFileInstance.setComment(fullConfigKeyName, comments);
@@ -215,7 +227,7 @@ public class ConfigsInstance {
                     }
                     if (configFileInstance.get(fullConfigKeyName) != null) continue;
                     if (currentValue == null) {
-                        throw new UnsupportedOperationException("Config " + configInfo.baseName() + "tried to add an null default value!");
+                        throw new UnsupportedOperationException("Config " + configInfo.name() + "tried to add an null default value!");
                     }
 
                     final String comments = configInfo.comments();

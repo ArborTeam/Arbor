@@ -1,8 +1,8 @@
-package me.earthme.luminol.config;
+package me.earthme.luminol.utils;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import me.earthme.luminol.utils.DialogUtil;
+import me.earthme.luminol.config.ConfigsInstance;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.commands.functions.StringTemplate;
 import net.minecraft.network.chat.Component;

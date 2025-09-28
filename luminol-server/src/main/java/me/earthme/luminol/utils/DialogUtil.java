@@ -116,7 +116,7 @@ public class DialogUtil {
                     builder.addInput(textbox);
                 }
                 case Number numberValue -> {
-                    Input numberInput = createTextInput(label, key, value.toString(), 300, true, 2147483647, null);
+                    Input numberInput = createTextInput(label, key, numberValue.toString(), 300, true, 2147483647, null);
                     builder.addInput(numberInput);
                 }
                 default -> {

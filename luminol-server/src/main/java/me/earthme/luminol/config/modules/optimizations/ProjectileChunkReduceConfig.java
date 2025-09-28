@@ -5,10 +5,10 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.OPTIMIZATIONS, mainName = "projectile")
+@ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "projectile")
 public class ProjectileChunkReduceConfig implements IConfigModule {
-    @ConfigInfo(baseName = "max-loads-per-tick")
+    @ConfigInfo(name = "max-loads-per-tick")
     public static int maxProjectileLoadsPerTick;
-    @ConfigInfo(baseName = "max-loads-per-projectile")
+    @ConfigInfo(name = "max-loads-per-projectile")
     public static int maxProjectileLoadsPerProjectile;
 }

@@ -11,7 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface TransformedConfig {
     String name();
 
-    String[] category();
+    String[] directory();
 
     String originInstance() default "";
 

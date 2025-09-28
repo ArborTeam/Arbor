@@ -7,9 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ConfigClassInfo {
-    EnumConfigCategory configAttribution();
+    EnumConfigCategory category();
 
-    String mainName();
+    String name();
 
-    String[] subNames() default {};
+    String[] directory() default {};
+
+    String comments() default "";
 }

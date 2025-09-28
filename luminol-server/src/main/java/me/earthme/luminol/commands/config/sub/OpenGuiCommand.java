@@ -6,7 +6,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.earthme.luminol.commands.config.ConfigCommand;
 import me.earthme.luminol.commands.config.ConfigSubcommand;
-import me.earthme.luminol.config.CommandDialog;
+import me.earthme.luminol.utils.CommandDialog;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.world.entity.player.Player;

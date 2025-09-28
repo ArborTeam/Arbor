@@ -5,9 +5,9 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.OPTIMIZATIONS, mainName = "use_async_protocol_switching")
+@ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "use_async_protocol_switching")
 public class AsyncProtocolChangeConfig implements IConfigModule {
-    @ConfigInfo(baseName = "enabled", comments = """
+    @ConfigInfo(name = "enabled", comments = """
             Uses async protocol preparation for mc.
             Warn: Due to the packet sequence was changed by this optimization, it might be\s
              uncompatible with some plugins""")

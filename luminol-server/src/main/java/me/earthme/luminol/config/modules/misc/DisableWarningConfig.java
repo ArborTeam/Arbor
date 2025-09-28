@@ -6,13 +6,13 @@ import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "disable_warning")
+@ConfigClassInfo(category = EnumConfigCategory.MISC, name = "disable_warning")
 public class DisableWarningConfig implements IConfigModule {
-    @TransformedConfig(name = "enabled", category = {"misc", "heightmap_warn_disable"})
-    @ConfigInfo(baseName = "disable_heightmap_warning", comments =
+    @TransformedConfig(name = "enabled", directory = {"misc", "heightmap_warn_disable"})
+    @ConfigInfo(name = "disable_heightmap_warning", comments =
             """
                     Disable heightmap-check's warning""")
     public static boolean disableHeightmapWarning = false;
-    @ConfigInfo(baseName = "disable_offline_mode_warning")
+    @ConfigInfo(name = "disable_offline_mode_warning")
     public static boolean disableOfflineModeWarning = false;
 }

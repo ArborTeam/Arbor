@@ -5,10 +5,10 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.OPTIMIZATIONS, mainName = "reduce_sensor_work")
+@ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "reduce_sensor_work")
 public class PetalReduceSensorWorkConfig implements IConfigModule {
-    @ConfigInfo(baseName = "enabled")
+    @ConfigInfo(name = "enabled")
     public static boolean enabled = true;
-    @ConfigInfo(baseName = "delay_ticks")
+    @ConfigInfo(name = "delay_ticks")
     public static int delayTicks = 10;
 }

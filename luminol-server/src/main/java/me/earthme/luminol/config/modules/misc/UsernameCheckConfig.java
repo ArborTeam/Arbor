@@ -5,8 +5,8 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "username_checks")
+@ConfigClassInfo(category = EnumConfigCategory.MISC, name = "username_checks")
 public class UsernameCheckConfig implements IConfigModule {
-    @ConfigInfo(baseName = "enabled")
+    @ConfigInfo(name = "enabled")
     public static boolean enabled = true;
 }

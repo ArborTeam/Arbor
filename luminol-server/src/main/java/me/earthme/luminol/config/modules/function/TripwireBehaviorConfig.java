@@ -7,15 +7,15 @@ import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.FUNCTION, mainName = "tripwire_dupe")
+@ConfigClassInfo(category = EnumConfigCategory.FUNCTION, name = "tripwire_dupe")
 public class TripwireBehaviorConfig implements IConfigModule {
-    @TransformedConfig(name = "enabled", category = {"misc", "tripwire_dupe"})
-    @ConfigInfo(baseName = "enabled")
+    @TransformedConfig(name = "enabled", directory = {"misc", "tripwire_dupe"})
+    @ConfigInfo(name = "enabled")
     public static boolean enabled = false;
-    @TransformedConfig(name = "behavior_mode", category = {"misc", "tripwire_dupe"})
-    @TransformedConfig(name = "behavior-mode", category = {"misc", "tripwire_dupe"})
+    @TransformedConfig(name = "behavior_mode", directory = {"misc", "tripwire_dupe"})
+    @TransformedConfig(name = "behavior-mode", directory = {"misc", "tripwire_dupe"})
     @CommandSuggestions(suggest = {"VANILLA20", "VANILLA21", "MIXED"})
-    @ConfigInfo(baseName = "behavior_mode", comments =
+    @ConfigInfo(name = "behavior_mode", comments =
             """
                     Available Value:
                     VANILLA20

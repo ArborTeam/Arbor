@@ -6,10 +6,10 @@ import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.FUNCTION, mainName = "secure_seed")
+@ConfigClassInfo(category = EnumConfigCategory.FUNCTION, name = "secure_seed")
 public class SecureSeedConfig implements IConfigModule {
-    @TransformedConfig(name = "enabled", category = {"misc", "secure_seed"})
-    @ConfigInfo(baseName = "enabled", comments = """
+    @TransformedConfig(name = "enabled", directory = {"misc", "secure_seed"})
+    @ConfigInfo(name = "enabled", comments = """
             Once you enable secure seed, all ores and structures are generated with 1024-bit seed
             instead of using 64-bit seed in vanilla, made seed cracker become impossible.""")
     public static boolean enabled = false;

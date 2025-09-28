@@ -5,8 +5,8 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.OPTIMIZATIONS, mainName = "end_dragon")
+@ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "end_dragon")
 public class OptimizedDragonRespawnConfig implements IConfigModule {
-    @ConfigInfo(baseName = "optimized_dragon_respawn")
+    @ConfigInfo(name = "optimized_dragon_respawn")
     public static boolean optimizedRespawn = false;
 }

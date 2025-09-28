@@ -5,8 +5,8 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.MISC, mainName = "folia_watchdog")
+@ConfigClassInfo(category = EnumConfigCategory.MISC, name = "folia_watchdog")
 public class FoliaWatchogConfig implements IConfigModule {
-    @ConfigInfo(baseName = "tick_region_time_out_ms")
+    @ConfigInfo(name = "tick_region_time_out_ms")
     public static int tickRegionTimeOutMs = 5000;
 }

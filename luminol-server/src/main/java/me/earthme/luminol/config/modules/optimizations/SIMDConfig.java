@@ -10,11 +10,11 @@ import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import org.slf4j.Logger;
 
-@ConfigClassInfo(configAttribution = EnumConfigCategory.OPTIMIZATIONS, mainName = "use_simd")
+@ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "use_simd")
 public class SIMDConfig implements IConfigModule {
     @DoNotLoad
     private static final Logger LOGGER = LogUtils.getLogger();
-    @ConfigInfo(baseName = "enabled")
+    @ConfigInfo(name = "enabled")
     public static boolean enabled = true;
 
     @Override

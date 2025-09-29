@@ -294,12 +294,14 @@ public class BufferedLinearRegionFile implements IRegionFile {
             sectorSize += sector.length;
         }
 
+        boolean compacted = false;
         // try auto compact to clean the garbage area
         if (spareSize > SWAP_FILE_AUTO_COMPACT_SIZE && (double) spareSize > ((double) sectorSize) * SWAP_FILE_AUTO_COMPACT_PERCENT) {
+            compacted = true;
             this.compactSwapFile();
         }
 
-        if (!Files.exists(this.masterFilePath)) {
+        if (!Files.exists(this.masterFilePath) && !compacted) {
             this.syncToMasterFile();
         }
     }
@@ -375,6 +377,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             // delete the target temp file
             Files.deleteIfExists(targetTemp);
             // fast-fail
+            this.markClosed(); // prevent new writing & sync opeartions
             throw new IOException("Failed to compact swap file!", ex);
         }
 
@@ -408,13 +411,15 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 // reopen closed channel
                 this.reopenSwapFileChannel();
                 // fast-fail
+                this.markClosed(); // prevent new writing & sync opeartions
                 throw new IOException("Failed to replace original swap file!", e);
             }
         }
 
-        this.sectors = newSectorsToBeReplaced;
         this.reopenSwapFileChannel();
         this.writeSwapFileHeaders(true, true);
+
+        this.sectors = newSectorsToBeReplaced;
     }
 
     private void reopenSwapFileChannel() throws IOException {
@@ -719,9 +724,17 @@ public class BufferedLinearRegionFile implements IRegionFile {
         public @NotNull ByteBuffer read(@NotNull FileChannel channel) throws IOException {
             final ByteBuffer result = ByteBuffer.allocate((int) this.length);
 
-            channel.read(result, this.offset);
-            result.flip();
+            int totalRead = 0;
+            while (totalRead < this.length) {
+                int read = channel.read(result, this.offset + totalRead);
+                if (read == -1) {
+                    throw new IOException("Unexpected EOF while reading sector " + this.index +
+                            ", expected " + this.length + " bytes, got " + totalRead);
+                }
+                totalRead += read;
+            }
 
+            result.flip();
             return result;
         }
 

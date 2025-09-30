@@ -7,13 +7,14 @@ package org.dreeam.leaf.util;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.ref.WeakReference; // Luminol - fix memory leak
 import java.lang.reflect.Array;
 import java.util.List;
 
-public class FastBitRadixSort {
+public final class FastBitRadixSort {
 
     private static final int SMALL_ARRAY_THRESHOLD = 6;
-    private Entity[] entityBuffer = new Entity[0];
+    private WeakReference<Entity>[] entityBuffer = new WeakReference[0]; // Luminol - fix memory leak
     private long[] bitsBuffer = new long[0];
 
     @SuppressWarnings("unchecked")
@@ -25,11 +26,11 @@ public class FastBitRadixSort {
         }
 
         if (this.entityBuffer.length < size) {
-            this.entityBuffer = new Entity[size];
+            this.entityBuffer = new WeakReference[size]; // Luminol - fix memory leak
             this.bitsBuffer = new long[size];
         }
         for (int i = 0; i < size; i++) {
-            this.entityBuffer[i] = entities.get(i);
+            this.entityBuffer[i] = new WeakReference<>(entities.get(i)); // Luminol - fix memory leak
             this.bitsBuffer[i] = Double.doubleToRawLongBits(
                     referenceEntity.distanceToSqr(entities.get(i))
             );
@@ -39,13 +40,19 @@ public class FastBitRadixSort {
 
         T[] resultArray = (T[]) Array.newInstance(entityClass, size);
         for (int i = 0; i < size; i++) {
-            resultArray[i] = entityClass.cast(this.entityBuffer[i]);
+            // Luminol start - fix memory leak
+            WeakReference<Entity> ref = this.entityBuffer[i];
+            Entity entity = ref != null ? ref.get() : null;
+            if (entity != null) {
+                resultArray[i] = entityClass.cast(entity);
+            }
+            // Luminol end - fix memory leak
         }
         return resultArray;
     }
 
     private void fastRadixSort(
-            Entity[] ents,
+            WeakReference<Entity>[] ents, // Luminol - fix memory leak
             long[] bits,
             int low,
             int high,
@@ -85,28 +92,35 @@ public class FastBitRadixSort {
     }
 
     private void insertionSort(
-            Entity[] ents,
+            WeakReference<Entity>[] ents, // Luminol - fix memory leak
             long[] bits,
             int low,
             int high
     ) {
         for (int i = low + 1; i <= high; i++) {
             int j = i;
-            Entity currentEntity = ents[j];
+            WeakReference<Entity> currentEntityRef = ents[j]; // Luminol - fix memory leak
             long currentBits = bits[j];
 
-            while (j > low && bits[j - 1] > currentBits) {
+            // Luminol start - fix memory leak
+            while (j > low) {
+                WeakReference<Entity> prevEntityRef = ents[j - 1];
+                Entity prevEntity = prevEntityRef != null ? prevEntityRef.get() : null;
+                if (prevEntity == null || bits[j - 1] <= currentBits) {
+                    break;
+                }
+                // Luminol end - fix memory leak
                 ents[j] = ents[j - 1];
                 bits[j] = bits[j - 1];
                 j--;
             }
-            ents[j] = currentEntity;
+            ents[j] = currentEntityRef; // Luminol - fix memory leak
             bits[j] = currentBits;
         }
     }
 
-    private void swap(Entity @NotNull [] ents, long[] bits, int a, int b) {
-        Entity tempEntity = ents[a];
+    private void swap(WeakReference<Entity>[] ents, long[] bits, int a, int b) {
+        WeakReference<Entity> tempEntity = ents[a];
         ents[a] = ents[b];
         ents[b] = tempEntity;
 

@@ -134,6 +134,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         // the sync operation is just coping the data from swap file to the master file
         // so we could acquire read lock simply so that we won't block any other read operations
         if (!this.regionObjectLock.readLock().tryLock()) {
+            BEING_SYNCED_HANDLE.set(this, false); // mark as not being synced
             return;
         }
 
@@ -979,7 +980,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         continue;
                     }
 
-                    final byte[] buffer = chunkData.array();
+                    final byte[] buffer = new byte[chunkData.remaining()];
+                    chunkData.get(buffer);
+
                     // store
                     zstdDataStreamHelper.writeInt(buffer.length); // len
                     zstdDataStreamHelper.write(buffer); // data

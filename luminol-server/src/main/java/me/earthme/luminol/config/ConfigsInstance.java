@@ -60,7 +60,7 @@ public class ConfigsInstance {
     // ========================================================================
 
     public static ConfigsInstance of(@NotNull String name, @NotNull String pack) {
-        return ConfigsInstance.of(new File(name + "_config"), name, name + "_global_config.toml", pack);
+        return ConfigsInstance.of(new File(name + "_config"), name, pack);
     }
 
     public static ConfigsInstance of(@NotNull File base, @NotNull String name, @NotNull String pack) {

@@ -8,7 +8,7 @@ This patch is based on Leaves(https://github.com/LeavesMC/Leaves)
 Original license: GPL3(https://github.com/LeavesMC/Leaves/blob/master/licenses/GPL.md)
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..ab5a181d0cc7e65a4a10381cbf8ddf011ceb2ba7 100644
+index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..3318df90f90b6fd831d0a96450e54ae426865ab1 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -63,6 +63,10 @@ import java.util.Map;
@@ -52,7 +52,40 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..ab5a181d0cc7e65a4a10381cbf8ddf01
              // connections
              for (final Connection conn : from.connections) {
                  into.connections.add(conn);
-@@ -165,6 +192,37 @@ public final class RegionizedWorldData {
+@@ -113,14 +140,30 @@ public final class RegionizedWorldData {
+             // tile entity ticking
+             for (final TickingBlockEntity tileEntityWrapped : from.pendingBlockEntityTickers) {
+                 into.pendingBlockEntityTickers.add(tileEntityWrapped);
+-                final BlockEntity tileEntity = tileEntityWrapped.getTileEntity();
++                BlockEntity tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - Lithium sleeping block entity
++                // Luminol start - Lithium sleeping block entity
++                if (tileEntity == null) {
++                    var baked = tileEntityWrapped.getLithiumSleepingBaked();
++                    if (baked != null) {
++                        tileEntity = baked.getTileEntity();
++                    }
++                }
++                // Luminol end
+                 if (tileEntity != null) {
+                     tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
+                 }
+             }
+             for (final TickingBlockEntity tileEntityWrapped : from.blockEntityTickers) {
+                 into.blockEntityTickers.add(tileEntityWrapped);
+-                final BlockEntity tileEntity = tileEntityWrapped.getTileEntity();
++                BlockEntity tileEntity = tileEntityWrapped.getTileEntity();  // Luminol - Lithium sleeping block entity
++                // Luminol start - Lithium sleeping block entity
++                if (tileEntity == null) {
++                    var baked = tileEntityWrapped.getLithiumSleepingBaked();
++                    if (baked != null) {
++                        tileEntity = baked.getTileEntity();
++                    }
++                }
++                // Luminol end
+                 if (tileEntity != null) {
+                     tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
+                 }
+@@ -165,6 +208,37 @@ public final class RegionizedWorldData {
          public void split(final RegionizedWorldData from, final int chunkToRegionShift,
                            final Long2ReferenceOpenHashMap<RegionizedWorldData> regionToData,
                            final ReferenceOpenHashSet<RegionizedWorldData> dataSet) {
@@ -90,7 +123,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..ab5a181d0cc7e65a4a10381cbf8ddf01
              // connections
              for (final Connection conn : from.connections) {
                  final ServerPlayer player = conn.getPlayer();
-@@ -241,7 +299,18 @@ public final class RegionizedWorldData {
+@@ -241,7 +315,18 @@ public final class RegionizedWorldData {
  
              // tile entity ticking
              for (final TickingBlockEntity tileEntity : from.pendingBlockEntityTickers) {
@@ -110,7 +143,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..ab5a181d0cc7e65a4a10381cbf8ddf01
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -252,7 +321,18 @@ public final class RegionizedWorldData {
+@@ -252,7 +337,18 @@ public final class RegionizedWorldData {
                    //       marked as removed. So if there is no section, it's probably removed!
              }
              for (final TickingBlockEntity tileEntity : from.blockEntityTickers) {
@@ -130,7 +163,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..ab5a181d0cc7e65a4a10381cbf8ddf01
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -447,6 +527,11 @@ public final class RegionizedWorldData {
+@@ -447,6 +543,11 @@ public final class RegionizedWorldData {
      // Redstone
      public final alternate.current.wire.WireHandler wireHandler;
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;

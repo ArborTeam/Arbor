@@ -5,7 +5,6 @@ import me.earthme.luminol.commands.CommandRegister;
 import me.earthme.luminol.config.flags.TransformedConfig;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +20,7 @@ public class ConfigManager {
     // 3 -> target full path
 
     public static void initConfigs() {
-        configfiles.put("luminol", ConfigsInstance.of(new File("luminol_config"), "luminol", "me.earthme.luminol.config.modules"));
+        configfiles.put("luminol", ConfigsInstance.of("luminol", "me.earthme.luminol.config.modules"));
         preLoad();
     }
 

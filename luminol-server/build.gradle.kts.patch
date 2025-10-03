@@ -66,7 +66,7 @@
      }
  }
  val log4jPlugins = sourceSets.create("log4jPlugins") {
-@@ -153,7 +_,22 @@
+@@ -153,7 +_,21 @@
  }
  
  dependencies {
@@ -79,7 +79,6 @@
 +    implementation("net.openhft:zero-allocation-hashing:0.16")
 +    implementation("io.github.classgraph:classgraph:4.8.158")
 +    implementation("net.openhft:affinity:3.23.3")
-+    implementation("io.netty:netty-all:4.2.3.Final") // bump netty
 +    // Leaves start - leaves plugin
 +    implementation("org.spongepowered:configurate-gson:4.2.0-SNAPSHOT") {
 +        exclude(group = "com.google.code.gson", module = "gson")

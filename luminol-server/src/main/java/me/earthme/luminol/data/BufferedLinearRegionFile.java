@@ -352,16 +352,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 StandardOpenOption.WRITE,
                 StandardOpenOption.READ
         )) {
-            // get the latest head in file
-            final ByteBuffer headerBuffer = ByteBuffer.allocate(this.headerSize());
-            this.swapFileChannel.read(headerBuffer, 0);
-            headerBuffer.flip();
-
-            long offset = 0;
-            while (headerBuffer.hasRemaining()) {
-                offset += tempChannel.write(headerBuffer, offset);
-            }
-
             long offsetPointer = this.headerSize();
             tempChannel.position(offsetPointer);
 

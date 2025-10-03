@@ -302,6 +302,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             this.compactSwapFile();
         }
 
+        // prevent syncing after compact because it could be time costing sometimes
         if (!Files.exists(this.masterFilePath) && !compacted) {
             this.syncToMasterFile();
         }
@@ -430,11 +431,14 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
 
 
+        // reopen file channel
         this.reopenSwapFileChannel();
 
+        // replace with recalculated file headers
         this.sectors = newSectorsToBeReplaced;
         this.currentAcquiredIndex = newAcquiredIndex;
 
+        // flush to file
         this.writeSwapFileHeaders(true, true);
     }
 

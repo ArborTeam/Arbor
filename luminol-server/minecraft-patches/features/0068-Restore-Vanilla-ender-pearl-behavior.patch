@@ -1,0 +1,84 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 4 Oct 2025 01:50:21 +0800
+Subject: [PATCH] Restore Vanilla ender pearl behavior
+
+
+diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
+index 11e6197dec541b28733715f0d7eaa4c7b834d632..85042476c012782b92f6d2aa2f0bf9064d0e3a1d 100644
+--- a/net/minecraft/server/level/ServerPlayer.java
++++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -3345,11 +3345,19 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+     }
+ 
+     public void registerEnderPearl(ThrownEnderpearl enderPearl) {
+-        //this.enderPearls.add(enderPearl); // Folia - region threading - do not track ender pearls
++        // Luminol start - restore vanilla ender pearl behavior
++        if (me.earthme.luminol.config.modules.fixes.RestoreVanillaEnderPearlBehaviorConfig.enabled) {
++            this.enderPearls.add(enderPearl); // Folia - region threading - do not track ender pearls
++        }
++        // Luminol end - restore vanilla ender pearl behavior
+     }
+ 
+     public void deregisterEnderPearl(ThrownEnderpearl enderPearl) {
+-        //this.enderPearls.remove(enderPearl); // Folia - region threading - do not track ender pearls
++        // Luminol start - restore vanilla ender pearl behavior
++        if (me.earthme.luminol.config.modules.fixes.RestoreVanillaEnderPearlBehaviorConfig.enabled) {
++            this.enderPearls.add(enderPearl); // Folia - region threading - do not track ender pearls
++        }
++        // Luminol end - restore vanilla ender pearl behavior
+     }
+ 
+     public Set<ThrownEnderpearl> getEnderPearls() {
+diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
+index 4ef2816210f06082f2209c51d04aad6bb188232b..87656967282f16684adf7116e7e90b3cd115163a 100644
+--- a/net/minecraft/server/players/PlayerList.java
++++ b/net/minecraft/server/players/PlayerList.java
+@@ -663,7 +663,17 @@ public abstract class PlayerList {
+         for (ThrownEnderpearl thrownEnderpearl : player.getEnderPearls()) {
+             // Paper start - Allow using old ender pearl behavior
+             if (!thrownEnderpearl.level().paperConfig().misc.legacyEnderPearlBehavior) {
+-                thrownEnderpearl.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER, org.bukkit.event.entity.EntityRemoveEvent.Cause.PLAYER_QUIT); // CraftBukkit - add Bukkit remove cause
++                // Luminol start - restore vanilla ender pearl behavior
++                if (me.earthme.luminol.config.modules.fixes.RestoreVanillaEnderPearlBehaviorConfig.enabled) {
++                    io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueTickTaskQueue(
++                            thrownEnderpearl.level().getMinecraftWorld(), thrownEnderpearl.chunkPosition().x, thrownEnderpearl.chunkPosition().z, () -> {
++                                thrownEnderpearl.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER, org.bukkit.event.entity.EntityRemoveEvent.Cause.PLAYER_QUIT); // CraftBukkit - add Bukkit remove cause
++                            }
++                    );
++                } else {
++                    thrownEnderpearl.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER, org.bukkit.event.entity.EntityRemoveEvent.Cause.PLAYER_QUIT); // CraftBukkit - add Bukkit remove cause
++                }
++                // Luminol end - restore vanilla ender pearl behavior
+             }
+             // Paper end - Allow using old ender pearl behavior
+         }
+diff --git a/net/minecraft/world/entity/projectile/ThrownEnderpearl.java b/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
+index a2b3a744acca66c1d4b2b73512b69e411c2580e4..670abad87a0e826b3787b9d59128b8aeeb3539a6 100644
+--- a/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
++++ b/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
+@@ -53,10 +53,24 @@ public class ThrownEnderpearl extends ThrowableItemProjectile {
+ 
+     private void deregisterFromCurrentOwner() {
+         // Folia - region threading - we remove the registration logic, we do not need to fetch the owner
++        // Luminol start - restore vanilla ender pearl behavior
++        if (me.earthme.luminol.config.modules.fixes.RestoreVanillaEnderPearlBehaviorConfig.enabled) {
++            if (this.getOwner() instanceof ServerPlayer serverPlayer) {
++                serverPlayer.deregisterEnderPearl(this);
++            }
++        }
++        // Luminol end - restore vanilla ender pearl behavior
+     }
+ 
+     private void registerToCurrentOwner() {
+         // Folia - region threading - we remove the registration logic, we do not need to fetch the owner
++        // Luminol start - restore vanilla ender pearl behavior
++        if (me.earthme.luminol.config.modules.fixes.RestoreVanillaEnderPearlBehaviorConfig.enabled) {
++            if (this.getOwner() instanceof ServerPlayer serverPlayer) {
++                serverPlayer.deregisterEnderPearl(this);
++            }
++        }
++        // Luminol end - restore vanilla ender pearl behavior
+     }
+ 
+     @Nullable

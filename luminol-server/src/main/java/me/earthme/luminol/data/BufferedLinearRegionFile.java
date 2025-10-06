@@ -758,7 +758,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             this.hasData = true;
             this.length = newDataLength;
 
-            // data is smaller or its length equal to the local buffer we hold, write it directly
+            // data is smaller or its length equals to the local buffer we hold, write it directly
             if (newDataLength <= oldLength) {
                 long localOffset = this.offset;
                 while (newData.hasRemaining()) {

@@ -340,7 +340,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 continue;
             }
 
-            newSectorsToBeReplaced[i] = new Sector(i, -1, 0);
+            newSectorsToBeReplaced[i] = new Sector(i, 0, 0);
         }
 
         long newAcquiredIndex;
@@ -486,8 +486,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
         return (x & 31) + ((z & 31) << 5);
     }
 
-    private boolean hasData(int chunkOriginal) {
-        return this.sectors[chunkOriginal].hasData();
+    private boolean hasData(int chunkOrdinal) {
+        return this.sectors[chunkOrdinal].hasData();
     }
 
     private void writeChunk(int x, int z, @NotNull ByteBuffer data) throws IOException {

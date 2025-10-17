@@ -101,11 +101,11 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
 
     public long getLastWritten() {
-        return (long) LAST_WRITTEN_HANDLE.get(this);
+        return (long) LAST_WRITTEN_HANDLE.getVolatile(this);
     }
 
     public boolean shouldSync() {
-        return !((boolean) SYNCED_HANDLE.get(this));
+        return !((boolean) SYNCED_HANDLE.getVolatile(this));
     }
 
     public boolean softReadLock() {
@@ -134,7 +134,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         // the sync operation is just coping the data from swap file to the master file
         // so we could acquire read lock simply so that we won't block any other read operations
         if (!this.regionObjectLock.readLock().tryLock()) {
-            BEING_SYNCED_HANDLE.set(this, false); // mark as not being synced
+            BEING_SYNCED_HANDLE.setVolatile(this, false); // mark as not being synced
             return;
         }
 
@@ -146,7 +146,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             this.syncToMasterFile();
         } finally {
-            BEING_SYNCED_HANDLE.set(this, false); // mark as not being synced
+            BEING_SYNCED_HANDLE.setVolatile(this, false); // mark as not being synced
 
             this.regionObjectLock.readLock().unlock();
         }
@@ -478,8 +478,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void markAsToSync() {
-        SYNCED_HANDLE.set(this, false); // mark as unsynced
-        LAST_WRITTEN_HANDLE.set(this, System.nanoTime()); // update last written time
+        SYNCED_HANDLE.setVolatile(this, false); // mark as unsynced
+        LAST_WRITTEN_HANDLE.setVolatile(this, System.nanoTime()); // update last written time
     }
 
     private static int getChunkIndex(int x, int z) {

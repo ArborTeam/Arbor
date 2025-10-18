@@ -12,6 +12,10 @@ public class CommandConfig implements IConfigModule {
     @ConfigInfo(name = "enable_data_command")
     public static boolean data = false;
     @TransformedConfig(name = "enabled", directory = {"experiment", "force_enable_command_block_command_execution"})
-    @ConfigInfo(name = "enable_command_block")
+    @ConfigInfo(name = "enable_command_block", comments = """
+           Force to enable command blocks.
+           ATTENTION: WOULD CAUSE SERVER CRASHING AS SOME THREADING ISSUE!!!
+              DO NOT ENABLE UNLESS YOU KNOW WHAT YOU ARE DOING!!!
+            """)
     public static boolean commandBlock = false;
 }

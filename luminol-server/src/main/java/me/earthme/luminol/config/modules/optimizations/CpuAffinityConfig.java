@@ -3,10 +3,7 @@ package me.earthme.luminol.config.modules.optimizations;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.ConfigClassInfo;
-import me.earthme.luminol.config.flags.ConfigInfo;
-import me.earthme.luminol.config.flags.DoNotLoad;
-import me.earthme.luminol.config.flags.TransformedConfig;
+import me.earthme.luminol.config.flags.*;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import net.openhft.affinity.Affinity;
 import org.slf4j.Logger;
@@ -17,8 +14,10 @@ import java.util.List;
 @ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "cpu_affinity")
 public class CpuAffinityConfig implements IConfigModule {
     @TransformedConfig(name = "enabled", directory = {"misc", "cpu_affinity"})
+    @HotReloadUnsupported
     @ConfigInfo(name = "enabled")
     public static boolean cpuAffinityEnabled = false;
+    @HotReloadUnsupported
     @TransformedConfig(name = "enabled", directory = {"misc", "tickregion_affinity"})
     @ConfigInfo(name = "tickregion_affinity")
     public static List<String> tickRegionAffinity = Affinity.getAffinity()

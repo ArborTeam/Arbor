@@ -69,7 +69,7 @@ public class RegionFormatConfig implements IConfigModule {
 
     private static void checkCompressionLevel() {
         if (RegionFormatConfig.linearCompressionLevel > 23 || RegionFormatConfig.linearCompressionLevel < 1) {
-            MinecraftServer.LOGGER.error("Linear region compression level should be between 1 and 22 in config: {}", RegionFormatConfig.linearCompressionLevel);
+            MinecraftServer.LOGGER.error("Linear or BufferedLinear region compression level should be between 1 and 22 in config: {}", RegionFormatConfig.linearCompressionLevel);
             MinecraftServer.LOGGER.error("Falling back to compression level 1.");
             RegionFormatConfig.linearCompressionLevel = 1;
         }

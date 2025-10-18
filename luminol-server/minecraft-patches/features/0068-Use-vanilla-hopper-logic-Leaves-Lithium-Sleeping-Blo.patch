@@ -270,7 +270,7 @@ index b382665cc125b8b5c0938e5e55984e4bf91d37ff..2afaf6a3f18af7889f4f3b35cee9bbb5
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 3c1a9ef0e21a529000cbdbf19f478ae1f1e0768e..90c36bb87a761119edb376f3bd425d48d29bf36f 100644
+index 66a55e21731bc64fd3446a3706fba62c13bb4b10..34d802060e096c5acfbd9a66fab96c0e8c792fe1 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -308,7 +308,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -282,7 +282,7 @@ index 3c1a9ef0e21a529000cbdbf19f478ae1f1e0768e..90c36bb87a761119edb376f3bd425d48
      private final VecDeltaCodec packetPositionCodec = new VecDeltaCodec();
      public boolean hasImpulse;
      @Nullable
-@@ -4303,11 +4303,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4309,11 +4309,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      protected Entity transformForAsyncTeleport(ServerLevel destination, Vec3 pos, Float yaw, Float pitch, Vec3 velocity) {
@@ -296,7 +296,7 @@ index 3c1a9ef0e21a529000cbdbf19f478ae1f1e0768e..90c36bb87a761119edb376f3bd425d48
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
          this.postRemoveAfterChangingDimensions();
-@@ -6071,7 +6073,43 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6077,7 +6079,43 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box

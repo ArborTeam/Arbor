@@ -6,38 +6,44 @@ Subject: [PATCH] Fix off tickregion sync teleport
 Folis's teleportAsync implementation has some checks missing during the sync teleportation checks, if we are teleport to the edge of the tickregion, it is still asserting that we are in the same tickregion and moved us directly, but there is actually some logics is already touching the stuff out of current tickregion.So we added some new edge checks to the sync teleportation checks which will check the tickregion belonging in a shape of cycle which is in min(entity's bounding box + simulate distance, 6) of radius to fix that issue
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 868a3c395b0f86b7587e8aa844aacb2cabd2e971..b5113079f99dd40e8e3917fae66545707d556ed0 100644
+index 868a3c395b0f86b7587e8aa844aacb2cabd2e971..40036e5e63c7d10894a20f1083731769b86b96c7 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4222,6 +4222,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4222,6 +4222,27 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.resetStoredPositions();
      }
  
 +    // Luminol start - Fix sync teleport issue
-+    private boolean checkNearbyTickRegions(int destX, int destZ) {
++    private boolean checkTickRegionsForTeleportAsync(int destinationX, int destinationZ) {
 +        // Dumb end gateway search the chunks in radius of 5 chunks, so we need keep 6(5+1) by default check radius
-+        int sizeBx = Math.min(6, (int) (this.bb.maxX - this.bb.minX) + this.level.getCraftServer().getSimulationDistance());
-+        int sizeBz = Math.min(6, (int) (this.bb.maxZ - this.bb.minZ) + this.level.getCraftServer().getSimulationDistance());
++        final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistances viewDistances = ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemServerLevel)this.level).moonrise$getViewDistanceHolder().getViewDistances();
++        // we need also keep there has enough size for us to create chunk holders
++        // so that we could prevent some other unexpected things happening during the teleport
++        // also this action would observe folia's tickregion merging and splitting rules
++        final int viewDistance = viewDistances.loadViewDistance();
 +
-+        // check tick thread around these area
++        int sizeBx = Math.min(6, (int) (this.bb.maxX - this.bb.minX) + viewDistance);
++        int sizeBz = Math.min(6, (int) (this.bb.maxZ - this.bb.minZ) + viewDistance);
++
++        // check tick thread around this area
 +        return ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.level,
-+                (destX >> 4) - sizeBx,
-+                (destZ >> 4) - sizeBz,
-+                (destX >> 4) + sizeBx,
-+                (destZ >> 4) + sizeBz);
++                (destinationX >> 4) - sizeBx,
++                (destinationZ >> 4) - sizeBz,
++                (destinationX >> 4) + sizeBx,
++                (destinationZ >> 4) + sizeBz);
 +    }
 +    // Luminol end
 +
      protected final void transform(TeleportTransition telpeort) {
          PositionMoveRotation move = PositionMoveRotation.calculateAbsolute(
              PositionMoveRotation.of(this), PositionMoveRotation.of(telpeort), telpeort.relatives()
-@@ -4344,7 +4359,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4344,7 +4365,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          // check for same region
          if (destination == this.level()) {
              Vec3 currPos = this.position();
 -            if (
 +            // Luminol - Prevent entity sync teleported to the edge of tickregion
-+            if (this.checkNearbyTickRegions((int) pos.x, (int) pos.z) && // Luminol - Fix sync teleport issue
++            if (this.checkTickRegionsForTeleportAsync((int) pos.x, (int) pos.z) && // Luminol - Fix sync teleport issue
                  destination.regioniser.getRegionAtUnsynchronised(
                      ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkX(currPos), ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkZ(currPos)
                  ) == destination.regioniser.getRegionAtUnsynchronised(

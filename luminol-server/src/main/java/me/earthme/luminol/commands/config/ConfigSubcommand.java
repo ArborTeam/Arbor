@@ -6,11 +6,11 @@ import org.jetbrains.annotations.NotNull;
 import org.leavesmc.leaves.command.LiteralNode;
 
 public abstract class ConfigSubcommand extends LiteralNode {
-    protected final ConfigCommand father;
+    protected final ConfigCommand parent;
 
-    protected ConfigSubcommand(String name, ConfigCommand father) {
+    protected ConfigSubcommand(String name, ConfigCommand parent) {
         super(name);
-        this.father = father;
+        this.parent = parent;
     }
 
     @Override
@@ -19,6 +19,6 @@ public abstract class ConfigSubcommand extends LiteralNode {
     }
 
     protected boolean hasPermission(CommandSender sender) {
-        return father.hasPermission(sender, this.name);
+        return parent.hasPermission(sender, this.name);
     }
 }

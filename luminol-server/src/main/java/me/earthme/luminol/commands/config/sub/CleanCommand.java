@@ -15,10 +15,10 @@ import org.leavesmc.leaves.command.CommandContext;
 import java.util.concurrent.CompletableFuture;
 
 public class CleanCommand extends ConfigSubcommand {
-    public CleanCommand(ConfigCommand father) {
-        super("clean", father);
+    public CleanCommand(ConfigCommand parent) {
+        super("clean", parent);
         children(
-                new PathArgument(father)
+                new PathArgument(parent)
         );
     }
 
@@ -26,18 +26,18 @@ public class CleanCommand extends ConfigSubcommand {
     protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
         context.getSender().sendMessage(
                 Component
-                        .text("If you want to clean up useless items in the configuration file, please use /" + father.name + "config clean confirm")
+                        .text("If you want to clean up useless items in the configuration file, please use /" + parent.name + "config clean confirm")
                         .color(TextColor.color(255, 0, 0))
         );
         return true;
     }
 
     static class PathArgument extends ArgumentNode<String> {
-        protected final ConfigCommand father;
+        protected final ConfigCommand parent;
 
-        PathArgument(ConfigCommand father) {
+        PathArgument(ConfigCommand parent) {
             super("confirm", StringArgumentType.string());
-            this.father = father;
+            this.parent = parent;
         }
 
         @Override
@@ -52,12 +52,12 @@ public class CleanCommand extends ConfigSubcommand {
             if (!"confirm".equals(confirm)) {
                 context.getSender().sendMessage(
                         Component
-                                .text("Please use /" + father.name + "config clean confirm to confirm!")
+                                .text("Please use /" + parent.name + "config clean confirm to confirm!")
                                 .color(TextColor.color(255, 0, 0))
                 );
                 return true;
             }
-            father.config.clean();
+            parent.config.clean();
             context.getSender().sendMessage(
                     Component
                             .text("Clean up in the configuration file successfully!")

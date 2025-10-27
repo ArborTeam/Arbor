@@ -16,17 +16,17 @@ import java.util.concurrent.CompletableFuture;
 import static org.leavesmc.leaves.command.CommandUtils.getListClosestMatchingLast;
 
 public class ResetCommand extends ConfigSubcommand {
-    public ResetCommand(ConfigCommand father) {
-        super("reset", father);
-        children(new PathArgument(father));
+    public ResetCommand(ConfigCommand parent) {
+        super("reset", parent);
+        children(new PathArgument(parent));
     }
 
     private class PathArgument extends ArgumentNode<String> {
-        protected final ConfigCommand father;
+        protected final ConfigCommand parent;
 
-        PathArgument(ConfigCommand father) {
+        PathArgument(ConfigCommand parent) {
             super("path", StringArgumentType.string());
-            this.father = father;
+            this.parent = parent;
         }
 
         @Override
@@ -36,7 +36,7 @@ public class ResetCommand extends ConfigSubcommand {
             builder = builder.createOffset(builder.getInput().lastIndexOf(' ') + dotIndex + 2);
             for (String s : getListClosestMatchingLast(
                     path.substring(dotIndex + 1),
-                    father.config.completeConfigPath(path)
+                    parent.config.completeConfigPath(path)
             )) {
                 builder.suggest(s.substring(path.lastIndexOf('.') + 1));
             }
@@ -47,10 +47,10 @@ public class ResetCommand extends ConfigSubcommand {
         @Override
         protected boolean execute(@NotNull CommandContext context) {
             String path = context.getArgumentOrDefault(PathArgument.class, "");
-            father.config.resetConfig(path);
-            father.config.reloadAsync(true).thenAccept(nullValue -> context.getSender().sendMessage(
+            parent.config.resetConfig(path);
+            parent.config.reloadAsync(true).thenAccept(nullValue -> context.getSender().sendMessage(
                     Component
-                            .text("Reset Config " + path + " to " + father.config.getConfig(path) + " successfully!")
+                            .text("Reset Config " + path + " to " + parent.config.getConfig(path) + " successfully!")
                             .color(TextColor.color(0, 255, 0))
             ));
             return true;

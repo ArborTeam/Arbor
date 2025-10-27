@@ -15,10 +15,10 @@ import org.leavesmc.leaves.command.CommandContext;
 import java.util.concurrent.CompletableFuture;
 
 public class ResetCommentsCommand extends ConfigSubcommand {
-    public ResetCommentsCommand(ConfigCommand father) {
-        super("reset-comments", father);
+    public ResetCommentsCommand(ConfigCommand parent) {
+        super("reset-comments", parent);
         children(
-                new PathArgument(father)
+                new PathArgument(parent)
         );
     }
 
@@ -26,18 +26,18 @@ public class ResetCommentsCommand extends ConfigSubcommand {
     protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
         context.getSender().sendMessage(
                 Component
-                        .text("If you want to reset comments to default in the configuration file, please use /" + father.name + "config reset-comments confirm")
+                        .text("If you want to reset comments to default in the configuration file, please use /" + parent.name + "config reset-comments confirm")
                         .color(TextColor.color(255, 0, 0))
         );
         return true;
     }
 
     static class PathArgument extends ArgumentNode<String> {
-        protected final ConfigCommand father;
+        protected final ConfigCommand parent;
 
-        PathArgument(ConfigCommand father) {
+        PathArgument(ConfigCommand parent) {
             super("confirm", StringArgumentType.string());
-            this.father = father;
+            this.parent = parent;
         }
 
         @Override
@@ -52,12 +52,12 @@ public class ResetCommentsCommand extends ConfigSubcommand {
             if (!confirm.equals("confirm")) {
                 context.getSender().sendMessage(
                         Component
-                                .text("Please use /" + father.name + "config reset-comments confirm to confirm!")
+                                .text("Please use /" + parent.name + "config reset-comments confirm to confirm!")
                                 .color(TextColor.color(255, 0, 0))
                 );
                 return true;
             }
-            father.config.reloadAsync(false).thenAccept(nullValue -> context.getSender().sendMessage(
+            parent.config.reloadAsync(false).thenAccept(nullValue -> context.getSender().sendMessage(
                     Component
                             .text("Reset comments to default in the configuration file!")
                             .color(TextColor.color(0, 255, 0))

@@ -11,26 +11,26 @@ import org.leavesmc.leaves.command.CommandContext;
 import java.util.Arrays;
 
 public class SubmitCommand extends ConfigSubcommand {
-    public SubmitCommand(ConfigCommand father) {
-        super("submit", father);
+    public SubmitCommand(ConfigCommand parent) {
+        super("submit", parent);
         children(
-                new PathArgument(father)
+                new PathArgument(parent)
         );
     }
 
     private class PathArgument extends ArgumentNode<String> {
-        protected final ConfigCommand father;
+        protected final ConfigCommand parent;
 
-        PathArgument(ConfigCommand father) {
+        PathArgument(ConfigCommand parent) {
             super("path", StringArgumentType.greedyString());
-            this.father = father;
+            this.parent = parent;
         }
 
         @Override
         protected boolean execute(@NotNull CommandContext context) {
             String content = context.getRange().get(context.getInput());
             String[] args = org.apache.commons.lang3.StringUtils.split(content, ' ');
-            CommandDialog.processSubmit(context.getSender(), father.config, Arrays.copyOfRange(args, 2, args.length));
+            CommandDialog.processSubmit(context.getSender(), parent.config, Arrays.copyOfRange(args, 2, args.length));
             return true;
         }
     }

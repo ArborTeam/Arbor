@@ -9,13 +9,13 @@ import org.jetbrains.annotations.NotNull;
 import org.leavesmc.leaves.command.CommandContext;
 
 public class ReloadCommand extends ConfigSubcommand {
-    public ReloadCommand(ConfigCommand father) {
-        super("reload", father);
+    public ReloadCommand(ConfigCommand parent) {
+        super("reload", parent);
     }
 
     @Override
     protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
-        father.config.reloadAsync(true).thenAccept(nullValue -> context.getSender().sendMessage(
+        parent.config.reloadAsync(true).thenAccept(nullValue -> context.getSender().sendMessage(
                 Component
                         .text("Reloaded config file!")
                         .color(TextColor.color(0, 255, 0))

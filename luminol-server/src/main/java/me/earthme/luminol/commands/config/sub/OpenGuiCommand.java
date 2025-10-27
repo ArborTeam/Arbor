@@ -21,10 +21,10 @@ import java.util.concurrent.CompletableFuture;
 import static org.leavesmc.leaves.command.CommandUtils.getListClosestMatchingLast;
 
 public class OpenGuiCommand extends ConfigSubcommand {
-    public OpenGuiCommand(ConfigCommand father) {
-        super("open-gui", father);
+    public OpenGuiCommand(ConfigCommand parent) {
+        super("open-gui", parent);
         children(
-                new PathArgument(father)
+                new PathArgument(parent)
         );
     }
 
@@ -32,7 +32,7 @@ public class OpenGuiCommand extends ConfigSubcommand {
     protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
         if (context.getSender() instanceof CraftPlayer cPlayer) {
             final Player player = cPlayer.getHandle();
-            CommandDialog.openGui(player, father.name, father.config);
+            CommandDialog.openGui(player, parent.name, parent.config);
         } else {
             context.getSender().sendMessage(
                     Component
@@ -44,11 +44,11 @@ public class OpenGuiCommand extends ConfigSubcommand {
     }
 
     static class PathArgument extends ArgumentNode<String> {
-        protected final ConfigCommand father;
+        protected final ConfigCommand parent;
 
-        PathArgument(ConfigCommand father) {
+        PathArgument(ConfigCommand parent) {
             super("path", StringArgumentType.string());
-            this.father = father;
+            this.parent = parent;
         }
 
         @Override
@@ -56,7 +56,7 @@ public class OpenGuiCommand extends ConfigSubcommand {
             String path = context.getArgumentOrDefault(PathArgument.class, "");
             int dotIndex = path.lastIndexOf(".");
             builder = builder.createOffset(builder.getInput().lastIndexOf(' ') + dotIndex + 2);
-            List<String> list = father.config.completeConfigPath(path);
+            List<String> list = parent.config.completeConfigPath(path);
             list.add("full");
             for (String s : getListClosestMatchingLast(
                     path.substring(dotIndex + 1),
@@ -71,7 +71,7 @@ public class OpenGuiCommand extends ConfigSubcommand {
         protected boolean execute(@NotNull CommandContext context) {
             if (context.getSender() instanceof CraftPlayer cPlayer) {
                 final Player player = cPlayer.getHandle();
-                CommandDialog.openGui(player, father.name, father.config, context.getArgument(PathArgument.class));
+                CommandDialog.openGui(player, parent.name, parent.config, context.getArgument(PathArgument.class));
             } else {
                 context.getSender().sendMessage(
                         Component

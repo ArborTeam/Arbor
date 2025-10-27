@@ -51,7 +51,7 @@ jobs:
         run: ./gradlew --refresh-dependencies createMojmapPaperclipJar
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ env.project_id_b }} CI Artifacts
           path: luminol-server/build/libs/*-paperclip-*-mojmap.jar

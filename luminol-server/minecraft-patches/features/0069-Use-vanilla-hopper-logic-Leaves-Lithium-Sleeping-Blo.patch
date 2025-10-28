@@ -245,10 +245,10 @@ index 3092454bf7071deca75fecfc203072593fe5c7e7..90e888321b6e208163742c3f1f836433
          }
      }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 87377bba2ebdc0eba5b7b212d971994c35ca0b62..eb3aef1f5198592eda5dafe84b91271e861b4135 100644
+index b9b5e3dc5aa6a5502fb0d9c5ac61fed8183f9cb0..3207150a9bbe9f7bef66e416efdc9bb242b1ad17 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -2532,6 +2532,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2534,6 +2534,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
          for (TickingBlockEntity tickingBlockEntity : (Iterable<? extends net.minecraft.world.level.block.entity.TickingBlockEntity>)null) { // Folia - region threading
              BlockPos pos = tickingBlockEntity.getPos();

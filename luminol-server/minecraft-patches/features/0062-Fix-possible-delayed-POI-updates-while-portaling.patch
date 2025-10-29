@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mrhua269 <mrhua269@gmail.com>
+Date: Tue, 28 Oct 2025 23:19:33 +0800
+Subject: [PATCH] Fix possible delayed POI updates while portaling
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 40036e5e63c7d10894a20f1083731769b86b96c7..18fb0a564d5285a1882e0f5db47659a8c08ec010 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -4650,6 +4650,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+                             targetPos, portalCreateRadius + 32,
+                             ca.spottedleaf.concurrentutil.util.Priority.HIGH,
+                             (chunks2) -> {
++                                Runnable task = () ->{ // Luminol - Fix duplicated portals
+                                 // don't need the tickets anymore
+                                 // note: we expect removeTicketsAtLevel to add an unknown ticket for us automatically
+                                 // if the ticket level were to decrease
+@@ -4677,6 +4678,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+                                     destination.getPortalForcer().createPortal(targetPos, originalPortalDirection, null, portalCreateRadius).orElse(null);
+                                 // if it wasn't created, passing null is expected here
+                                 portalFound.complete(createdPortal);
++                                // Luminol start - Fix duplicated portals
++                                };
++                                if (!me.earthme.luminol.config.modules.fixes.PortalSearchConfig.delay1TaskIfFailedFirstCheck) {
++                                    task.run();
++                                    return;
++                                }
++                                io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(destination, targetPos.getX() >> 4, targetPos.getZ() >> 4, task);
++                                // Luminol end
+                             }
+                         );
+                     }

@@ -4,10 +4,11 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.*;
+import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
-import me.earthme.luminol.functions.GlobalServerBarManager;
-import me.earthme.luminol.functions.GlobalServerMemoryBar;
+import me.earthme.luminol.functions.bars.GlobalServerBarManager;
+import me.earthme.luminol.functions.bars.GlobalServerMemoryBar;
 import org.bukkit.Bukkit;
 import org.slf4j.Logger;
 
@@ -50,7 +51,7 @@ public class MembarConfig implements IConfigModule {
             display = EnumStatusBarDisplay.valueOf(displayString);
         }
 
-        GlobalServerMemoryBar membar = GlobalServerBarManager.get("memory");
+        GlobalServerMemoryBar membar = GlobalServerBarManager.get(EnumBarType.MEMORY);
         if (memoryBarEnabled) {
             membar.init();
         } else {
@@ -64,7 +65,7 @@ public class MembarConfig implements IConfigModule {
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        GlobalServerMemoryBar membar = GlobalServerBarManager.get("memory");
+        GlobalServerMemoryBar membar = GlobalServerBarManager.get(EnumBarType.MEMORY);
         membar.cancelBarUpdateTask();
         membar.runUnloadTask();
         Bukkit.getCommandMap().getKnownCommands().remove("luminol:membar");

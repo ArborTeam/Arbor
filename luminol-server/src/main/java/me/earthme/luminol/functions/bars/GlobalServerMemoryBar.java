@@ -1,4 +1,4 @@
-package me.earthme.luminol.functions;
+package me.earthme.luminol.functions.bars;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.earthme.luminol.config.modules.function.MembarConfig;

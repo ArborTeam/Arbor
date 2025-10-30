@@ -68,14 +68,14 @@ index b29604f06a07e8946c542db4f3dd9c44084e1392..4aaecc2da66004a6c71f0b80fdfeb31b
              this.lastServerStatus = nanos;
              this.status = this.buildServerStatus();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 5871d2e7a8c24281c93c11e7935f32666b6cb539..0b47b715ed76c2d6b9de19bc4a981021718948d8 100644
+index 5871d2e7a8c24281c93c11e7935f32666b6cb539..606faf38b90ce1f9867da8f94383ad0a6d927dd5 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -720,6 +720,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
  
      @Override
      public void stopServer() {
-+        me.earthme.luminol.functions.GlobalServerBarManager.cancelAll(); // Luminol - turn off all bars
++        me.earthme.luminol.functions.bars.GlobalServerBarManager.cancelAll(); // Luminol - turn off all bars
          super.stopServer();
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
          SkullBlockEntity.clear();

@@ -19,7 +19,7 @@ index 3318df90f90b6fd831d0a96450e54ae426865ab1..96213569af94fc12b2384207861469c3
      public RegionizedWorldData(final ServerLevel world) {
          this.world = world;
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index eb3aef1f5198592eda5dafe84b91271e861b4135..426f6aa6c88754fbdd1b3da645e1dbcb0b8ff496 100644
+index eb3aef1f5198592eda5dafe84b91271e861b4135..985ddea9d74a37f58f32a27375f6f7e6af0f2192 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -2394,11 +2394,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -27,7 +27,7 @@ index eb3aef1f5198592eda5dafe84b91271e861b4135..426f6aa6c88754fbdd1b3da645e1dbcb
          if (!Objects.equals(optional, optional1)) {
              BlockPos blockPos = pos.immutable();
 -            optional.ifPresent(holder -> io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4, () -> { // Folia - region threading
-+            final java.util.concurrent.Executor scheduler =  me.earthme.luminol.config.modules.fixes.PortalSearchConfig.instanPoiUpdatingForNetherPortal && ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this, pos.getX() >> 4, pos.getZ() >> 4) && this.getCurrentWorldData().instantPOIUpdating ? Runnable::run : task -> io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4, task); // Luminol - Fix nether portal fix // Luminol - Portal serach fixes
++            final java.util.concurrent.Executor scheduler =  me.earthme.luminol.config.modules.fixes.PortalSearchConfig.instantPoiUpdatingForNetherPortal && ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this, pos.getX() >> 4, pos.getZ() >> 4) && this.getCurrentWorldData().instantPOIUpdating ? Runnable::run : task -> io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4, task); // Luminol - Fix nether portal fix // Luminol - Portal serach fixes
 +            optional.ifPresent(holder -> /*io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4,*/scheduler.execute( () -> { // Folia - region threading // Luminol - Portal serach fixes
                  this.getPoiManager().remove(blockPos);
                  DebugPackets.sendPoiRemovedPacket(this, blockPos);

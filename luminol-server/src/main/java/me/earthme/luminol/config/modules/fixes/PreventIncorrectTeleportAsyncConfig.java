@@ -12,6 +12,7 @@ public class PreventIncorrectTeleportAsyncConfig implements IConfigModule {
             And this will reduce the crashes which caused by plugins(Residence etc.)
             But you should notice that it might break the compatibility with some plugins.""")
     public static boolean enabled = false;
+
     @ConfigInfo(name = "throw_when_caught")
     public static boolean throwWhenCaught = true;
 }

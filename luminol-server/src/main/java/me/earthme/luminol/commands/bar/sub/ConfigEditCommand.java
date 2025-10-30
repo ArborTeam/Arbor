@@ -3,8 +3,9 @@ package me.earthme.luminol.commands.bar.sub;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import me.earthme.luminol.config.ConfigManager;
 import me.earthme.luminol.config.ConfigsInstance;
-import me.earthme.luminol.functions.AbstractGlobalServerBar;
-import me.earthme.luminol.functions.GlobalServerBarManager;
+import me.earthme.luminol.enums.EnumBarType;
+import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
+import me.earthme.luminol.functions.bars.GlobalServerBarManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +34,7 @@ public class ConfigEditCommand extends LiteralNode {
             AbstractGlobalServerBar bar;
 
             try {
-                bar = GlobalServerBarManager.get(bar_name);
+                bar = GlobalServerBarManager.get(EnumBarType.valueOf(bar_name.toUpperCase()));
             } catch (IllegalArgumentException e) {
                 context.getSender().sendMessage(Component.text(e.getMessage()).color(TextColor.color(255, 0, 0)));
                 return true;

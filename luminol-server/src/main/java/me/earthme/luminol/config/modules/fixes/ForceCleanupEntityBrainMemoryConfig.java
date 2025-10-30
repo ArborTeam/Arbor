@@ -11,6 +11,7 @@ public class ForceCleanupEntityBrainMemoryConfig implements IConfigModule {
     @TransformedConfig(name = "enabled_for_entity", directory = {"optimizations", "enabled_for_entity"})
     @TransformedConfig(name = "enabled_for_entity", directory = {"experiment", "enabled_for_entity"})
     @ConfigInfo(name = "enabled_for_entity", comments = "When enabled, the entity's brain will clean the memory which is typed of entity and not belong to current tickregion")
+
     public static boolean enabledForEntity = false;
     @TransformedConfig(name = "enabled_for_block_pos", directory = {"optimizations", "enabled_for_block_pos"})
     @TransformedConfig(name = "enabled_for_block_pos", directory = {"experiment", "enabled_for_block_pos"})

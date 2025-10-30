@@ -4,10 +4,11 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.*;
+import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
-import me.earthme.luminol.functions.GlobalServerBarManager;
-import me.earthme.luminol.functions.GlobalServerTpsBar;
+import me.earthme.luminol.functions.bars.GlobalServerBarManager;
+import me.earthme.luminol.functions.bars.GlobalServerTpsBar;
 import org.bukkit.Bukkit;
 import org.slf4j.Logger;
 
@@ -62,7 +63,7 @@ public class TpsBarConfig implements IConfigModule {
             display = EnumStatusBarDisplay.valueOf(displayString);
         }
 
-        GlobalServerTpsBar tpsbar = GlobalServerBarManager.get("tps");
+        GlobalServerTpsBar tpsbar = GlobalServerBarManager.get(EnumBarType.TPS);
 
         if (tpsbarEnabled) {
             tpsbar.init();
@@ -77,7 +78,7 @@ public class TpsBarConfig implements IConfigModule {
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        GlobalServerTpsBar tpsbar = GlobalServerBarManager.get("tps");
+        GlobalServerTpsBar tpsbar = GlobalServerBarManager.get(EnumBarType.TPS);
         tpsbar.cancelBarUpdateTask();
         tpsbar.runUnloadTask();
         Bukkit.getCommandMap().getKnownCommands().remove("luminol:tpsbar");

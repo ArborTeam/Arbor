@@ -3,10 +3,12 @@ package me.earthme.luminol.config.modules.fixes;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
+import me.earthme.luminol.config.flags.TransformedConfig;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(category = EnumConfigCategory.FIXES, name = "fix_high_velocity_issue", directory = {"folia"})
+@ConfigClassInfo(category = EnumConfigCategory.FIXES, name = "fix_high_velocity_issue")
 public class FoliaEntityMovingFixConfig implements IConfigModule {
+    @TransformedConfig(name = "enabled", directory = {"fixes", "fix_high_velocity_issue", "folia"})
     @ConfigInfo(name = "enabled", comments =
             """
                     A simple fix of an issue on folia\s
@@ -15,6 +17,8 @@ public class FoliaEntityMovingFixConfig implements IConfigModule {
                     different tick regions, and it would\s
                     make the server crashed) but sometimes it might doesn't work""")
     public static boolean enabled = false;
+
+    @TransformedConfig(name = "warn_on_detected", directory = {"fixes", "fix_high_velocity_issue", "folia"})
     @ConfigInfo(name = "warn_on_detected")
     public static boolean warnOnDetected = true;
 }

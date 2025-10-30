@@ -1,4 +1,4 @@
-package me.earthme.luminol.functions;
+package me.earthme.luminol.functions.bars;
 
 import io.papermc.paper.threadedregions.ThreadedRegionizer;
 import io.papermc.paper.threadedregions.TickData;

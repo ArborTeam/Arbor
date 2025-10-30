@@ -4,10 +4,11 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.*;
+import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
-import me.earthme.luminol.functions.GlobalServerBarManager;
-import me.earthme.luminol.functions.GlobalServerRegionBar;
+import me.earthme.luminol.functions.bars.GlobalServerBarManager;
+import me.earthme.luminol.functions.bars.GlobalServerRegionBar;
 import org.bukkit.Bukkit;
 import org.slf4j.Logger;
 
@@ -50,7 +51,7 @@ public class RegionBarConfig implements IConfigModule {
             display = EnumStatusBarDisplay.valueOf(displayString);
         }
 
-        GlobalServerRegionBar regionbar = GlobalServerBarManager.get("region");
+        GlobalServerRegionBar regionbar = GlobalServerBarManager.get(EnumBarType.REGION);
         if (regionbarEnabled) {
             regionbar.init();
         } else {
@@ -64,7 +65,7 @@ public class RegionBarConfig implements IConfigModule {
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        GlobalServerRegionBar regionbar = GlobalServerBarManager.get("region");
+        GlobalServerRegionBar regionbar = GlobalServerBarManager.get(EnumBarType.REGION);
         regionbar.cancelBarUpdateTask();
         regionbar.runUnloadTask();
         Bukkit.getCommandMap().getKnownCommands().remove("luminol:regionbar");

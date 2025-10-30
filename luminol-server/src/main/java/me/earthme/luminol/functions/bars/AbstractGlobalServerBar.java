@@ -1,4 +1,4 @@
-package me.earthme.luminol.functions;
+package me.earthme.luminol.functions.bars;
 
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;

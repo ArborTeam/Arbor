@@ -1,0 +1,55 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mrhua269 <mrhua269@gmail.com>
+Date: Tue, 28 Oct 2025 23:19:33 +0800
+Subject: [PATCH] Fix possible delayed POI updates while portaling
+
+
+diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
+index 3318df90f90b6fd831d0a96450e54ae426865ab1..96213569af94fc12b2384207861469c3e0208931 100644
+--- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
++++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
+@@ -548,6 +548,9 @@ public final class RegionizedWorldData {
+     public final Map<Long, ChunkSectionInventoryEntityTracker> containerEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();
+     public final Map<Long, ChunkSectionItemEntityMovementTracker> itemEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();
+     // Luminol end
++    // Luminol start - Nether portal searach fixing
++    public boolean instantPOIUpdating = false;
++    // Luminol end
+ 
+     public RegionizedWorldData(final ServerLevel world) {
+         this.world = world;
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index eb3aef1f5198592eda5dafe84b91271e861b4135..426f6aa6c88754fbdd1b3da645e1dbcb0b8ff496 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -2394,11 +2394,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         Optional<Holder<PoiType>> optional1 = PoiTypes.forState(newState);
+         if (!Objects.equals(optional, optional1)) {
+             BlockPos blockPos = pos.immutable();
+-            optional.ifPresent(holder -> io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4, () -> { // Folia - region threading
++            final java.util.concurrent.Executor scheduler =  me.earthme.luminol.config.modules.fixes.PortalSearchConfig.instanPoiUpdatingForNetherPortal && ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this, pos.getX() >> 4, pos.getZ() >> 4) && this.getCurrentWorldData().instantPOIUpdating ? Runnable::run : task -> io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4, task); // Luminol - Fix nether portal fix // Luminol - Portal serach fixes
++            optional.ifPresent(holder -> /*io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4,*/scheduler.execute( () -> { // Folia - region threading // Luminol - Portal serach fixes
+                 this.getPoiManager().remove(blockPos);
+                 DebugPackets.sendPoiRemovedPacket(this, blockPos);
+             }));
+-            optional1.ifPresent(holder -> io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4, () -> { // Folia - region threading
++            optional1.ifPresent(holder -> /*io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4,*/scheduler.execute( () -> { // Folia - region threading // Luminol - Portal serach fixes
+                 // Paper start - Remove stale POIs
+                 if (optional.isEmpty() && this.getPoiManager().exists(blockPos, ignored -> true)) {
+                     this.getPoiManager().remove(blockPos);
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 34d802060e096c5acfbd9a66fab96c0e8c792fe1..f5539ca5964abb18124522a8aa7ce940517b2011 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -4718,9 +4718,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+                                 }
+ 
+                                 // we do not have the correct entity reference here
++                                destination.getCurrentWorldData().instantPOIUpdating = true; // Luminol - Portal serach fixes
+                                 BlockUtil.FoundRectangle createdPortal =
+                                     destination.getPortalForcer().createPortal(targetPos, originalPortalDirection, null, portalCreateRadius).orElse(null);
+                                 // if it wasn't created, passing null is expected here
++                                destination.getCurrentWorldData().instantPOIUpdating = false; // Luminol - Portal serach fixes
+                                 portalFound.complete(createdPortal);
+                             }
+                         );

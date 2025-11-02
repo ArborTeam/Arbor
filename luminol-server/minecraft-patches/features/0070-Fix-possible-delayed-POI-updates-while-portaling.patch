@@ -5,10 +5,10 @@ Subject: [PATCH] Fix possible delayed POI updates while portaling
 
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 3318df90f90b6fd831d0a96450e54ae426865ab1..96213569af94fc12b2384207861469c3e0208931 100644
+index 6435d54ad704252f0f43e52735d86dca9b9df6b0..158c1f5d965bc5951db56c6b1ad99f0d8ea71571 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-@@ -548,6 +548,9 @@ public final class RegionizedWorldData {
+@@ -540,6 +540,9 @@ public final class RegionizedWorldData {
      public final Map<Long, ChunkSectionInventoryEntityTracker> containerEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();
      public final Map<Long, ChunkSectionItemEntityMovementTracker> itemEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();
      // Luminol end

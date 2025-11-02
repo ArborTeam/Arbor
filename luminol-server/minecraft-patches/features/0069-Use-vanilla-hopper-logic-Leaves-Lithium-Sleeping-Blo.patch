@@ -8,7 +8,7 @@ This patch is based on Leaves(https://github.com/LeavesMC/Leaves)
 Original license: GPL3(https://github.com/LeavesMC/Leaves/blob/master/licenses/GPL.md)
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..3318df90f90b6fd831d0a96450e54ae426865ab1 100644
+index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..6435d54ad704252f0f43e52735d86dca9b9df6b0 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -63,6 +63,10 @@ import java.util.Map;
@@ -123,7 +123,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..3318df90f90b6fd831d0a96450e54ae4
              // connections
              for (final Connection conn : from.connections) {
                  final ServerPlayer player = conn.getPlayer();
-@@ -241,7 +315,18 @@ public final class RegionizedWorldData {
+@@ -241,7 +315,14 @@ public final class RegionizedWorldData {
  
              // tile entity ticking
              for (final TickingBlockEntity tileEntity : from.pendingBlockEntityTickers) {
@@ -133,17 +133,13 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..3318df90f90b6fd831d0a96450e54ae4
 +                BlockPos pos = tileEntity.getPos();
 +                // I knew this is awful but the jvm is more awful than this
 +                // XP
-+                if (pos == null) {
-+                    var baking = tileEntity.getLithiumSleepingBaked();
-+                    if (baking != null) {
-+                        pos = baking.getPos();
-+                    }
-+                }
++                TickingBlockEntity baking = tileEntity.getLithiumSleepingBaked();
++                pos = baking != null ? baking.getPos() : pos;
 +                // Luminol end
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -252,7 +337,18 @@ public final class RegionizedWorldData {
+@@ -252,7 +333,14 @@ public final class RegionizedWorldData {
                    //       marked as removed. So if there is no section, it's probably removed!
              }
              for (final TickingBlockEntity tileEntity : from.blockEntityTickers) {
@@ -153,17 +149,13 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..3318df90f90b6fd831d0a96450e54ae4
 +                BlockPos pos = tileEntity.getPos();
 +                // I knew this is awful but the jvm is more awful than this
 +                // XP
-+                if (pos == null) {
-+                    var baking = tileEntity.getLithiumSleepingBaked();
-+                    if (baking != null) {
-+                        pos = baking.getPos();
-+                    }
-+                }
++                TickingBlockEntity baking = tileEntity.getLithiumSleepingBaked();
++                pos = baking != null ? baking.getPos() : pos;
 +                // Luminol end
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -447,6 +543,11 @@ public final class RegionizedWorldData {
+@@ -447,6 +535,11 @@ public final class RegionizedWorldData {
      // Redstone
      public final alternate.current.wire.WireHandler wireHandler;
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;

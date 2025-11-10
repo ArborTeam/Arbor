@@ -9,6 +9,7 @@ import me.earthme.luminol.config.flags.*;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.utils.ClassLoadUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -34,7 +35,7 @@ public class ConfigsInstance {
     private final String pack;          // Used to find all classes
 
     // Storage collections
-    private final Set<IConfigModule> allInstanced = new HashSet<>();
+    private final Map<IConfigModule, Set<Exception>> allInstanced = new HashMap<>(); // add exception to map to store exceptions
     private final Map<String, Object> stagedConfigMap = new HashMap<>();
     private final Map<String, Object> defaultvalueMap = new HashMap<>();
     private final Map<String, String[]> suggestionsMap = new HashMap<>();
@@ -134,7 +135,7 @@ public class ConfigsInstance {
      * Run unload tasks for all modules
      */
     public void runUnloadTasks() {
-        for (IConfigModule module : allInstanced) {
+        for (IConfigModule module : allInstanced.keySet()) {
             module.onUnloaded(configFileInstance);
         }
     }
@@ -143,8 +144,8 @@ public class ConfigsInstance {
      * Finalize configuration loading by calling onLoaded for all modules
      */
     public void finalizeLoadConfig() {
-        for (IConfigModule module : allInstanced) {
-            module.onLoaded(configFileInstance);
+        for (Map.Entry<IConfigModule, Set<Exception>> entry : allInstanced.entrySet()) {
+            entry.getKey().onLoaded(configFileInstance, entry.getValue());
         }
         setupLatch();
     }
@@ -187,9 +188,14 @@ public class ConfigsInstance {
      * Load all configuration modules
      */
     private void loadAllModules(boolean keepComments) throws IllegalAccessException {
-        for (IConfigModule instanced : allInstanced) {
-            loadForSingle(instanced, keepComments);
+        Map<IConfigModule, Set<Exception>> stagedMap = new HashMap<>();
+        for (IConfigModule instanced : allInstanced.keySet()) {
+            Set<Exception> exceptions = loadForSingle(instanced, keepComments);
+            if (exceptions != null) {
+                stagedMap.put(instanced, exceptions);
+            }
         }
+        allInstanced.putAll(stagedMap);
     }
 
     /**
@@ -199,7 +205,7 @@ public class ConfigsInstance {
             InstantiationException, IllegalAccessException {
         for (Class<?> clazz : ClassLoadUtil.getClasses(pack)) {
             if (IConfigModule.class.isAssignableFrom(clazz)) {
-                allInstanced.add((IConfigModule) clazz.getConstructor().newInstance());
+                allInstanced.put((IConfigModule) clazz.getConstructor().newInstance(), null);
             }
         }
     }
@@ -207,10 +213,10 @@ public class ConfigsInstance {
     /**
      * Load configuration for a single module
      */
-    private void loadForSingle(@NotNull IConfigModule singleConfigModule, boolean keepComments) throws IllegalAccessException {
+    private @Nullable Set<Exception> loadForSingle(@NotNull IConfigModule singleConfigModule, boolean keepComments) {
         ConfigClassInfo configClassInfo = getConfigClassInfo(singleConfigModule);
         if (configClassInfo == null) {
-            return;
+            return null;
         }
 
         // Build configuration path and handle class comments
@@ -220,9 +226,15 @@ public class ConfigsInstance {
 
         // Process each field in the module
         Field[] fields = singleConfigModule.getClass().getDeclaredFields();
+        Set<Exception> exception = new HashSet<>();
         for (Field field : fields) {
-            processConfigField(field, singleConfigModule, category, keepComments);
+            try {
+                processConfigField(field, singleConfigModule, category, keepComments);
+            } catch (Exception e) {
+                exception.add(e);
+            }
         }
+        return exception.isEmpty() ? null : exception;
     }
 
     /**
@@ -282,7 +294,10 @@ public class ConfigsInstance {
         final String fullConfigKeyName = String.join(".", keys);
 
         field.setAccessible(true);
-        final Object currentValue = field.get(null);
+        Object currentValue = field.get(null);
+        if (currentValue instanceof Enum) {
+            currentValue = ((Enum<?>) currentValue).name();
+        }
         boolean removed = getConfigClassInfo(singleConfigModule).category() == EnumConfigCategory.REMOVED;
 
         // Store default value if not initialized
@@ -320,7 +335,10 @@ public class ConfigsInstance {
         }
 
         // Validate default value
-        final Object currentValue = field.get(null);
+        Object currentValue = field.get(null);
+        if (currentValue instanceof Enum) {
+            currentValue = ((Enum<?>) currentValue).name();
+        }
         if (currentValue == null) {
             throw new UnsupportedOperationException("Config " + configInfo.name() + "tried to add an null default value!");
         }
@@ -389,16 +407,19 @@ public class ConfigsInstance {
      */
     private void handleExistingConfig(Field field, String fullConfigKeyName,
                                       ConfigInfo configInfo, boolean doNotReload,
-                                      boolean keepComments) throws IllegalAccessException {
+                                      boolean keepComments) throws IllegalAccessException, IllegalFormatConversionException {
         // Handle existing configurations
         Object actuallyValue = getActualConfigValue(fullConfigKeyName);
+
+        IllegalFormatConversionException e0 = null;
 
         // Transform value if needed
         try {
             actuallyValue = tryTransform(field.get(null).getClass(), actuallyValue);
             configFileInstance.set(fullConfigKeyName, actuallyValue);
         } catch (IllegalFormatConversionException e) {
-            resetConfig(fullConfigKeyName);
+            if (configInfo.allowAutoReset()) resetConfig(fullConfigKeyName);
+            e0 = e;
             logger.error("Failed to transform config {}, reset to default!", fullConfigKeyName);
         }
 
@@ -420,6 +441,7 @@ public class ConfigsInstance {
                 suggestionsMap.put(fullConfigKeyName, commandSuggestions.suggest());
             }
         }
+        if (e0 != null) throw e0;
     }
 
     /**
@@ -586,10 +608,17 @@ public class ConfigsInstance {
                     value = Float.parseFloat(value.toString());
                 } else if (targetType == String.class) {
                     value = value.toString();
+                } else if (targetType.isEnum()) {
+                    String enumValue = value.toString();
+                    // ignore case to match enum
+                    value = Arrays.stream(targetType.getEnumConstants())
+                            .filter(e -> ((Enum<?>) e).name().equalsIgnoreCase(enumValue))
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalArgumentException("No enum constant " + targetType.getSimpleName() + "." + enumValue));
                 }
             } catch (Exception e) {
                 logger.error("Failed to transform value {}!", value);
-                throw new IllegalFormatConversionException((char) 0, targetType);
+                throw new IllegalFormatConversionExceptionWithOrigin((char) 0, targetType, value);
             }
         }
         return value;
@@ -839,6 +868,9 @@ public class ConfigsInstance {
             if (comment != null && !comment.isEmpty()) {
                 _key += SPLIT + comment;
             }
+        }
+        if (value instanceof Enum) {
+            value = ((Enum<?>) value).name();
         }
         result.put(_key, value);
     }

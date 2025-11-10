@@ -8,6 +8,9 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import org.apache.logging.log4j.Level;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 @ConfigClassInfo(category = EnumConfigCategory.MISC, name = "sentry")
 public class SentryConfig implements IConfigModule {
@@ -17,26 +20,17 @@ public class SentryConfig implements IConfigModule {
                     " Obtain from https://sentry.io/")
     public static String sentryDsn = "";
 
-    @CommandSuggestions(suggest = {"DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF", "TRACE", "ALL"})
+    @CommandSuggestions(suggest = {"OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "ALL"})
     @ConfigInfo(name = "log_level", comments = " Logs with a level higher than or equal to this level will be recorded.")
-    public static String logLevel = "WARN";
+    public static Level logLevel = Level.WARN;
 
     @ConfigInfo(name = "only_log_thrown", comments = " Only log with a Throwable will be recorded after enabling this.")
     public static boolean onlyLogThrown = true;
 
     @Override
-    public void onLoaded(CommentedFileConfig configInstance) {
-        String sentryEnvironment = System.getenv("SENTRY_DSN");
-
-        sentryDsn = sentryEnvironment != null && !sentryEnvironment.isBlank()
-                ? sentryEnvironment
-                : configInstance.getOrElse("sentry.dsn", sentryDsn);
-
-        logLevel = configInstance.getOrElse("sentry.log-level", logLevel);
-        onlyLogThrown = configInstance.getOrElse("sentry.only-log-thrown", onlyLogThrown);
-
+    public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
         if (sentryDsn != null && !sentryDsn.isBlank()) {
-            SentryManager.init(Level.getLevel(logLevel));
+            SentryManager.init(logLevel);
         }
     }
 }

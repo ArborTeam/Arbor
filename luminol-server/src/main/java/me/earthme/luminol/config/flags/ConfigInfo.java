@@ -10,4 +10,6 @@ public @interface ConfigInfo {
     String[] directory() default {};
 
     String comments() default "";
+
+    boolean allowAutoReset() default true;
 }

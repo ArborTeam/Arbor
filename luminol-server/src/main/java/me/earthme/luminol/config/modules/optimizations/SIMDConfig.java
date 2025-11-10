@@ -8,7 +8,10 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.enums.EnumConfigCategory;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+
+import java.util.Set;
 
 @ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "use_simd")
 public class SIMDConfig implements IConfigModule {
@@ -18,7 +21,7 @@ public class SIMDConfig implements IConfigModule {
     public static boolean enabled = true;
 
     @Override
-    public void onLoaded(CommentedFileConfig configInstance) {
+    public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
         if (!enabled) {
             return;
         }

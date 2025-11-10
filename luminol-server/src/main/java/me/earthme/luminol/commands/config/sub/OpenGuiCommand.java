@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import org.leavesmc.leaves.command.ArgumentNode;
 import org.leavesmc.leaves.command.CommandContext;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static org.leavesmc.leaves.command.CommandUtils.getListClosestMatchingLast;

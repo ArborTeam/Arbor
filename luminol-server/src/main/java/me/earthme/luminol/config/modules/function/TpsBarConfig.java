@@ -10,10 +10,11 @@ import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import me.earthme.luminol.functions.bars.GlobalServerBarManager;
 import me.earthme.luminol.functions.bars.GlobalServerTpsBar;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @ConfigClassInfo(category = EnumConfigCategory.FUNCTION, name = "tpsbar")
 public class TpsBarConfig implements IConfigModule {
@@ -37,32 +38,22 @@ public class TpsBarConfig implements IConfigModule {
     @TransformedConfig(name = "update_interval_ticks", directory = {"misc", "tpsbar"})
     @ConfigInfo(name = "update_interval_ticks")
     public static int updateInterval = 15;
-    @TransformedConfig(name = "display", directory = {"misc", "tpsbar"})
-    @CommandSuggestions(suggest = {"BOSS_BAR", "ACTION_BAR", "TAB_LIST"})
-    @ConfigInfo(name = "display")
-    public static String displayString = "BOSS_BAR";
     @TransformedConfig(name = "precision_of_tps_value", directory = {"misc", "tpsbar"})
     @ConfigInfo(name = "precision_of_tps_value")
     public static int precisionOfTPS = 2;
     @TransformedConfig(name = "precision_of_mspt_value", directory = {"misc", "tpsbar"})
     @ConfigInfo(name = "precision_of_mspt_value")
     public static int precisionOfMSPT = 2;
-
-    @DoNotLoad
+    @TransformedConfig(name = "display", directory = {"misc", "tpsbar"})
+    @CommandSuggestions(suggest = {"BOSS_BAR", "ACTION_BAR", "TAB_LIST"})
+    @ConfigInfo(name = "display")
     public static EnumStatusBarDisplay display = EnumStatusBarDisplay.BOSS_BAR;
 
     @DoNotLoad
     private static boolean inited = false;
 
     @Override
-    public void onLoaded(CommentedFileConfig configInstance) {
-        if (Arrays.stream(EnumStatusBarDisplay.values()).map(Enum::name).noneMatch(s -> s.equals(displayString))) {
-            logger.warn("Could not found display : {} ! Falling back to default", displayString);
-            display = EnumStatusBarDisplay.BOSS_BAR;
-        } else {
-            display = EnumStatusBarDisplay.valueOf(displayString);
-        }
-
+    public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
         GlobalServerTpsBar tpsbar = GlobalServerBarManager.get(EnumBarType.TPS);
 
         if (tpsbarEnabled) {

@@ -30,22 +30,21 @@ index 8a3a8b0fdf9545a41501dc992c6982d9c8ce7b66..3f412b08e7d40d577efb7be291dd1482
                  }
              }
 diff --git a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..9cbf1dab40c19a366a76d8d25b1eafa35225debd 100644
+index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..76ca3f8eea2bf13e198cc5c8af17bd9fbf92dbea 100644
 --- a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-@@ -28,6 +28,11 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+@@ -28,6 +28,10 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
          // CraftBukkit end
          BlockPos.MutableBlockPos mutableBlockPos = pos.mutable();
  
 +        // Luminol start - tripwire behavior modifier
 +        java.util.List<BlockPos> blockList1 = new java.util.ArrayList<>();
 +        java.util.List<BlockPos> blockList2 = new java.util.ArrayList<>();
-+        boolean flag21 = !java.util.Objects.equals(me.earthme.luminol.config.modules.function.TripwireBehaviorConfig.behaviorMode, "VANILLA20")
-+                && !java.util.Objects.equals(me.earthme.luminol.config.modules.function.TripwireBehaviorConfig.behaviorMode, "MIXED");
++        boolean flag21 = me.earthme.luminol.config.modules.function.TripwireBehaviorConfig.behaviorMode == me.earthme.luminol.enums.EnumTripwireBehavior.VANILLA21;
          for (int i = -2; i <= 2; i++) {
              for (int i1 = -2; i1 <= 2; i1++) {
                  for (int i2 = -1; i2 < 3; i2++) {
-@@ -35,7 +40,29 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+@@ -35,7 +39,29 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
                      Block block = i2 == -1 ? Blocks.OBSIDIAN : Blocks.AIR;
                      if (!blockList.getBlockState(blockPos).is(block)) { // CraftBukkit
                          if (dropBlocks) {
@@ -53,10 +52,10 @@ index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..9cbf1dab40c19a366a76d8d25b1eafa3
 +                            boolean flag = false;
 +                            if (me.earthme.luminol.config.modules.function.TripwireBehaviorConfig.enabled) {
 +                                switch (me.earthme.luminol.config.modules.function.TripwireBehaviorConfig.behaviorMode) {
-+                                    case "VANILLA20": {
++                                    case me.earthme.luminol.enums.EnumTripwireBehavior.VANILLA20: {
 +                                        flag = true;
 +                                    }
-+                                    case "MIXED": {
++                                    case me.earthme.luminol.enums.EnumTripwireBehavior.MIXED: {
 +                                        net.minecraft.world.level.block.state.BlockState state = level.getBlockState(blockPos);
 +                                        if (state.is(Blocks.TRIPWIRE)) {
 +                                            if (state.getValue(net.minecraft.world.level.block.TripWireBlock.DISARMED)) {
@@ -76,7 +75,7 @@ index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..9cbf1dab40c19a366a76d8d25b1eafa3
                          }
  
                          blockList.setBlock(blockPos, block.defaultBlockState(), 3); // CraftBukkit
-@@ -53,11 +80,30 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
+@@ -53,11 +79,30 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
              if (portalEvent.isCancelled()) return;
          }
  

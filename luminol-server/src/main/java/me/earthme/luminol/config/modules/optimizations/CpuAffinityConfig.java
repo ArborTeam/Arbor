@@ -6,10 +6,12 @@ import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.*;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import net.openhft.affinity.Affinity;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.BitSet;
 import java.util.List;
+import java.util.Set;
 
 @ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "cpu_affinity")
 public class CpuAffinityConfig implements IConfigModule {
@@ -33,7 +35,7 @@ public class CpuAffinityConfig implements IConfigModule {
     public static BitSet tickRegionAffinityBitSet;
 
     @Override
-    public void onLoaded(CommentedFileConfig configInstance) {
+    public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
         if (!cpuAffinityEnabled) return;
 
         tickRegionAffinityBitSet = parseAffinity(tickRegionAffinity);

@@ -3,18 +3,22 @@ package me.earthme.luminol.config.modules.function;
 import abomination.LinearRegionFile;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import me.earthme.luminol.config.IConfigModule;
+import me.earthme.luminol.config.IllegalFormatConversionExceptionWithOrigin;
 import me.earthme.luminol.config.flags.*;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumRegionFormat;
 import me.earthme.luminol.utils.BufferedLinearRegionFileFlusher;
 import net.minecraft.server.MinecraftServer;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 @ConfigClassInfo(category = EnumConfigCategory.FUNCTION, name = "region_format")
 public class RegionFormatConfig implements IConfigModule {
     @HotReloadUnsupported
     @TransformedConfig(name = "format", directory = {"misc", "region_format"})
-    @ConfigInfo(name = "format")
-    public static String format = "MCA";
+    @ConfigInfo(name = "format", allowAutoReset = false)
+    public static EnumRegionFormat regionFormat = EnumRegionFormat.MCA;
     @HotReloadUnsupported
     @TransformedConfig(name = "linear_compression_level", directory = {"misc", "region_format"})
     @ConfigInfo(name = "linear_compression_level")
@@ -41,17 +45,15 @@ public class RegionFormatConfig implements IConfigModule {
     @DoNotLoad
     public static BufferedLinearRegionFileFlusher blinearFlusher = null;
 
-    @DoNotLoad
-    public static EnumRegionFormat regionFormat;
-
     @Override
-    public void onLoaded(CommentedFileConfig configInstance) {
-        regionFormat = EnumRegionFormat.fromString(format.toUpperCase());
-
-        if (regionFormat == null) {
-            throw new RuntimeException("Invalid region format: " + format);
+    public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> exs) {
+        if (exs != null) {
+            for (Exception e : exs) {
+                if (e instanceof IllegalFormatConversionExceptionWithOrigin) {
+                    throw new RuntimeException("Invalid region format: " + ((IllegalFormatConversionExceptionWithOrigin) e).getOrigin().toString());
+                }
+            }
         }
-
         if (regionFormat == EnumRegionFormat.LINEAR_V2) {
             checkCompressionLevel();
 

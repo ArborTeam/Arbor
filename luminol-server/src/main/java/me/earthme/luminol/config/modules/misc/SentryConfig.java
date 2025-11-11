@@ -22,15 +22,24 @@ public class SentryConfig implements IConfigModule {
 
     @CommandSuggestions(suggest = {"OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "ALL"})
     @ConfigInfo(name = "log_level", comments = " Logs with a level higher than or equal to this level will be recorded.")
-    public static Level logLevel = Level.WARN;
+    public static String logLevel = "WARN";
 
     @ConfigInfo(name = "only_log_thrown", comments = " Only log with a Throwable will be recorded after enabling this.")
     public static boolean onlyLogThrown = true;
 
     @Override
-    public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
+    public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> exs) {
+        String sentryEnvironment = System.getenv("SENTRY_DSN");
+
+        sentryDsn = sentryEnvironment != null && !sentryEnvironment.isBlank()
+                ? sentryEnvironment
+                : configInstance.getOrElse("sentry.dsn", sentryDsn);
+
+        logLevel = configInstance.getOrElse("sentry.log-level", logLevel);
+        onlyLogThrown = configInstance.getOrElse("sentry.only-log-thrown", onlyLogThrown);
+
         if (sentryDsn != null && !sentryDsn.isBlank()) {
-            SentryManager.init(logLevel);
+            SentryManager.init(Level.getLevel(logLevel));
         }
     }
 }

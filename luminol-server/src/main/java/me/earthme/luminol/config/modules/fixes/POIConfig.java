@@ -7,8 +7,8 @@ import me.earthme.luminol.config.flags.TransformedConfig;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
 @ConfigClassInfo(category = EnumConfigCategory.FIXES, name = "portal_search_config")
-public class PortalSearchConfig implements IConfigModule {
+public class POIConfig implements IConfigModule {
     @TransformedConfig(name = "instan_poi_updating_for_nether_portal", directory = {"fixes", "portal_search_config"})
-    @ConfigInfo(name = "instant_poi_updating_for_nether_portal", comments = "If it enabled, it would force the poi update in this place call when the portal created. Would fix duplicated portals.")
-    public static boolean instantPoiUpdatingForNetherPortal = false;
+    @ConfigInfo(name = "instant_poi_updating", comments = "If it enabled, it would force the poi update in this place call when on target tickregion.")
+    public static boolean instantPoiUpdating = false;
 }

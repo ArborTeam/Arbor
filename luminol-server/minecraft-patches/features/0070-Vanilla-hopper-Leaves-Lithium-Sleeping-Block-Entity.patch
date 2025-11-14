@@ -1,14 +1,15 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <novau233@163.com>
-Date: Mon, 11 Aug 2025 06:35:15 +0000
-Subject: [PATCH] Use vanilla hopper logic & Leaves: Lithium Sleeping Block
- Entity
+From: mrhua269 <mrhua269@gmail.com>
+Date: Fri, 14 Nov 2025 18:20:00 +0800
+Subject: [PATCH] Vanilla hopper & Leaves Lithium Sleeping Block Entity
+ [Lithium Sleeping Block Entity] is a part from leaves
 
-This patch is based on Leaves(https://github.com/LeavesMC/Leaves)
-Original license: GPL3(https://github.com/LeavesMC/Leaves/blob/master/licenses/GPL.md)
+Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/minecraft-patches/features/0136-Lithium-Sleeping-Block-Entity.patch
+
+Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..6435d54ad704252f0f43e52735d86dca9b9df6b0 100644
+index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..6e27531126b4afddc26d7c5827e73379d632b6cd 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -63,6 +63,10 @@ import java.util.Map;
@@ -32,7 +33,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..6435d54ad704252f0f43e52735d86dca
 +                var key = entry.getKey();
 +                var tracker = entry.getValue();
 +
-+                if (!tracker.hasAnyUser()) {
++                if (!tracker.hasUser()) {
 +                    continue;
 +                }
 +
@@ -42,7 +43,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..6435d54ad704252f0f43e52735d86dca
 +                var key = entry.getKey();
 +                var tracker = entry.getValue();
 +
-+                if (!tracker.hasAnyUser()) {
++                if (!tracker.hasUser()) {
 +                    continue;
 +                }
 +
@@ -52,20 +53,13 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..6435d54ad704252f0f43e52735d86dca
              // connections
              for (final Connection conn : from.connections) {
                  into.connections.add(conn);
-@@ -113,14 +140,30 @@ public final class RegionizedWorldData {
+@@ -113,14 +140,16 @@ public final class RegionizedWorldData {
              // tile entity ticking
              for (final TickingBlockEntity tileEntityWrapped : from.pendingBlockEntityTickers) {
                  into.pendingBlockEntityTickers.add(tileEntityWrapped);
 -                final BlockEntity tileEntity = tileEntityWrapped.getTileEntity();
-+                BlockEntity tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - Lithium sleeping block entity
-+                // Luminol start - Lithium sleeping block entity
-+                if (tileEntity == null) {
-+                    var baked = tileEntityWrapped.getLithiumSleepingBaked();
-+                    if (baked != null) {
-+                        tileEntity = baked.getTileEntity();
-+                    }
-+                }
-+                // Luminol end
++                BlockEntity tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
++                if (tileEntity == null) tileEntity = tileEntityWrapped.getLithiumSlept().getTileEntity();  // Luminol - region threading for lithium sleeping block entity
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
                  }
@@ -73,19 +67,12 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..6435d54ad704252f0f43e52735d86dca
              for (final TickingBlockEntity tileEntityWrapped : from.blockEntityTickers) {
                  into.blockEntityTickers.add(tileEntityWrapped);
 -                final BlockEntity tileEntity = tileEntityWrapped.getTileEntity();
-+                BlockEntity tileEntity = tileEntityWrapped.getTileEntity();  // Luminol - Lithium sleeping block entity
-+                // Luminol start - Lithium sleeping block entity
-+                if (tileEntity == null) {
-+                    var baked = tileEntityWrapped.getLithiumSleepingBaked();
-+                    if (baked != null) {
-+                        tileEntity = baked.getTileEntity();
-+                    }
-+                }
-+                // Luminol end
++                BlockEntity tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
++                if (tileEntity == null) tileEntity = tileEntityWrapped.getLithiumSlept().getTileEntity();  // Luminol - region threading for lithium sleeping block entity
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
                  }
-@@ -165,6 +208,37 @@ public final class RegionizedWorldData {
+@@ -165,6 +194,37 @@ public final class RegionizedWorldData {
          public void split(final RegionizedWorldData from, final int chunkToRegionShift,
                            final Long2ReferenceOpenHashMap<RegionizedWorldData> regionToData,
                            final ReferenceOpenHashSet<RegionizedWorldData> dataSet) {
@@ -99,7 +86,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..6435d54ad704252f0f43e52735d86dca
 +                var pos = sectionPos.chunk();
 +
 +                // skip no user listeners
-+                if (!tracker.hasAnyUser()) {
++                if (!tracker.hasUser()) {
 +                    continue;
 +                }
 +
@@ -113,7 +100,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..6435d54ad704252f0f43e52735d86dca
 +                var pos = sectionPos.chunk();
 +
 +                // skip no user listeners
-+                if (!tracker.hasAnyUser()) {
++                if (!tracker.hasUser()) {
 +                    continue;
 +                }
 +
@@ -123,39 +110,31 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..6435d54ad704252f0f43e52735d86dca
              // connections
              for (final Connection conn : from.connections) {
                  final ServerPlayer player = conn.getPlayer();
-@@ -241,7 +315,14 @@ public final class RegionizedWorldData {
+@@ -240,8 +300,9 @@ public final class RegionizedWorldData {
+             from.fluidLevelTicks.split(chunkToRegionShift, levelTicksFluidRegionData);
  
              // tile entity ticking
-             for (final TickingBlockEntity tileEntity : from.pendingBlockEntityTickers) {
+-            for (final TickingBlockEntity tileEntity : from.pendingBlockEntityTickers) {
 -                final BlockPos pos = tileEntity.getPos();
-+                //final BlockPos pos = tileEntity.getPos();
-+                // Luminol start - Fix region threading with lithium
-+                BlockPos pos = tileEntity.getPos();
-+                // I knew this is awful but the jvm is more awful than this
-+                // XP
-+                TickingBlockEntity baking = tileEntity.getLithiumSleepingBaked();
-+                pos = baking != null ? baking.getPos() : pos;
-+                // Luminol end
++            for (final TickingBlockEntity tileEntity : from.pendingBlockEntityTickers) { // Luminol - region threading for lithium sleeping block entity
++                BlockPos pos = tileEntity.getPos(); // Luminol - region threading for lithium sleeping block entity
++                if (pos == null) pos = tileEntity.getLithiumSlept().getPos(); // Luminol - region threading for lithium sleeping block entity
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -252,7 +333,14 @@ public final class RegionizedWorldData {
+@@ -251,8 +312,9 @@ public final class RegionizedWorldData {
+                 } // else: when a chunk unloads, it does not actually _remove_ the tile entity from the list, it just gets
                    //       marked as removed. So if there is no section, it's probably removed!
              }
-             for (final TickingBlockEntity tileEntity : from.blockEntityTickers) {
+-            for (final TickingBlockEntity tileEntity : from.blockEntityTickers) {
 -                final BlockPos pos = tileEntity.getPos();
-+                //final BlockPos pos = tileEntity.getPos();
-+                // Luminol start - Fix region threading with lithium
-+                BlockPos pos = tileEntity.getPos();
-+                // I knew this is awful but the jvm is more awful than this
-+                // XP
-+                TickingBlockEntity baking = tileEntity.getLithiumSleepingBaked();
-+                pos = baking != null ? baking.getPos() : pos;
-+                // Luminol end
++            for (final TickingBlockEntity tileEntity : from.blockEntityTickers) { // Luminol - region threading for lithium sleeping block entity
++                BlockPos pos = tileEntity.getPos(); // Luminol - region threading for lithium sleeping block entity
++                if (pos == null) pos = tileEntity.getLithiumSlept().getPos(); // Luminol - region threading for lithium sleeping block entity
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -447,6 +535,11 @@ public final class RegionizedWorldData {
+@@ -447,6 +509,11 @@ public final class RegionizedWorldData {
      // Redstone
      public final alternate.current.wire.WireHandler wireHandler;
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;
@@ -237,10 +216,10 @@ index 3092454bf7071deca75fecfc203072593fe5c7e7..90e888321b6e208163742c3f1f836433
          }
      }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 87377bba2ebdc0eba5b7b212d971994c35ca0b62..eb3aef1f5198592eda5dafe84b91271e861b4135 100644
+index e1f58842a373a426c73909125c13f2ae61ee9656..923aca94520f456a13d4e4eb23e1499b3dbc920f 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -2532,6 +2532,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2533,6 +2533,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
          for (TickingBlockEntity tickingBlockEntity : (Iterable<? extends net.minecraft.world.level.block.entity.TickingBlockEntity>)null) { // Folia - region threading
              BlockPos pos = tickingBlockEntity.getPos();
@@ -262,10 +241,18 @@ index b382665cc125b8b5c0938e5e55984e4bf91d37ff..2afaf6a3f18af7889f4f3b35cee9bbb5
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 66a55e21731bc64fd3446a3706fba62c13bb4b10..34d802060e096c5acfbd9a66fab96c0e8c792fe1 100644
+index 66a55e21731bc64fd3446a3706fba62c13bb4b10..ea177b8ad7ebb25e3e2967c8ff3d36dc3dda6a1d 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -308,7 +308,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2,7 +2,6 @@ package net.minecraft.world.entity;
+ 
+ import com.google.common.collect.ImmutableList;
+ import com.google.common.collect.Lists;
+-import com.google.common.collect.Sets;
+ import com.google.common.collect.ImmutableList.Builder;
+ import com.mojang.logging.LogUtils;
+ import com.mojang.serialization.Codec;
+@@ -308,7 +307,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      private static final EntityDataAccessor<Boolean> DATA_NO_GRAVITY = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.BOOLEAN);
      protected static final EntityDataAccessor<Pose> DATA_POSE = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.POSE);
      public static final EntityDataAccessor<Integer> DATA_TICKS_FROZEN = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);
@@ -274,64 +261,46 @@ index 66a55e21731bc64fd3446a3706fba62c13bb4b10..34d802060e096c5acfbd9a66fab96c0e
      private final VecDeltaCodec packetPositionCodec = new VecDeltaCodec();
      public boolean hasImpulse;
      @Nullable
-@@ -4309,11 +4309,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4309,11 +4308,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      protected Entity transformForAsyncTeleport(ServerLevel destination, Vec3 pos, Float yaw, Float pitch, Vec3 velocity) {
-+        final boolean flag = this.level != destination; // Luminol - different world
++        final boolean toSameWorld = this.level != destination; // Luminol - region threading for sleeping block entity
          this.removeAfterChangingDimensions(); // remove before so that any CBEntity#getHandle call affects this entity before copying
  
          Entity copy = this.getType().create(destination, EntitySpawnReason.DIMENSION_TRAVEL);
          copy.restoreFrom(this);
          copy.transform(pos, yaw, pitch, velocity);
-+        if (flag) copy.notifyTrackersIfNeed(); // Luminol - redo notify trackers
++        if (toSameWorld) copy.notifyLithiumTrackerIfNeeded();// Luminol - region threading for sleeping block entity
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
          this.postRemoveAfterChangingDimensions();
-@@ -6077,7 +6079,43 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6077,6 +6078,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box
-+        this.notifyTrackersIfNeed();
-     }
-+    // Leaves start - Lithium Sleeping Block Entity
-+    public void notifyTrackersIfNeed() {
++        this.notifyLithiumTrackerIfNeeded(); // Luminol - Leaves lithium sleeping block entity
++    }
++    // Luminol start - split out sleeping block entity notify method from leaves's implementation
++    private void notifyLithiumTrackerIfNeeded() {
++        // Leaves start - Lithium Sleeping Block Entity
 +        if (!me.earthme.luminol.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled) return;
-+
-+        var currRegionizedWorldData = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegionizedWorldData();
-+        // no world data
-+        if (currRegionizedWorldData == null) return;
-+
-+        // has world data but not matched
-+        if (currRegionizedWorldData.world != this.level) return;
-+
++        var currentWorldData = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegionizedWorldData();
++        if (currentWorldData == null || currentWorldData.world != this.level) return;
 +        if (this instanceof ItemEntity) {
 +            long sectionKey = ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkSectionKey(this);
-+
-+            var tracker = currRegionizedWorldData.itemEntityMovementTrackerMap.get(sectionKey);
-+            if (tracker == null) {
-+                return;
-+            }
-+
-+            tracker.notifyAllListeners(currRegionizedWorldData.getRedstoneGameTime());
-+            return;
++            org.leavesmc.leaves.lithium.common.tracking.entity.ChunkSectionItemEntityMovementTracker tracker = currentWorldData.itemEntityMovementTrackerMap.get(sectionKey);
++            if (tracker != null) tracker.notifyAllListeners(currentWorldData.getRedstoneGameTime()); // Luminol - region threading for sleeping block entity
 +        }
-+
-+        if (this instanceof net.minecraft.world.entity.vehicle.ContainerEntity) {
++        else if (this instanceof net.minecraft.world.entity.vehicle.ContainerEntity) {
 +            long sectionKey = ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkSectionKey(this);
-+
-+            var tracker = currRegionizedWorldData.containerEntityMovementTrackerMap.get(sectionKey);
-+            if (tracker == null) {
-+                return;
-+            }
-+
-+            tracker.notifyAllListeners(currRegionizedWorldData.getRedstoneGameTime());
++            org.leavesmc.leaves.lithium.common.tracking.entity.ChunkSectionInventoryEntityTracker tracker = currentWorldData.containerEntityMovementTrackerMap.get(sectionKey);
++            if (tracker != null) tracker.notifyAllListeners(currentWorldData.getRedstoneGameTime());  // Luminol - region threading for sleeping block entity
 +        }
-+    }
-+    // Leaves end - Lithium Sleeping Block Entity
++        // Leaves end - Lithium Sleeping Block Entity
+     }
  
      public void checkDespawn() {
-     }
 diff --git a/net/minecraft/world/entity/item/ItemEntity.java b/net/minecraft/world/entity/item/ItemEntity.java
 index b745eb5d9c68547335247910ff2ae8d5fb36349c..fd4f1e63f980b6959fc80084651991f8f8bc6c34 100644
 --- a/net/minecraft/world/entity/item/ItemEntity.java
@@ -636,7 +605,7 @@ index 6154da1158756cff072d7e8cae10e20eafed1eec..33c3a5e39e8e1aa023baab76ef94f8ae
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 921d8c947b9401513d6168af4240f93d32296c7c..3a46cb424c8ea26386ed013cfc13aba36852a402 100644
+index 921d8c947b9401513d6168af4240f93d32296c7c..4986d6cd8e700c561162b1cd3cb38059171bea6e 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1512,7 +1512,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
@@ -644,21 +613,19 @@ index 921d8c947b9401513d6168af4240f93d32296c7c..3a46cb424c8ea26386ed013cfc13aba3
              if (tickingBlockEntity.isRemoved()) {
                  toRemove.add(tickingBlockEntity); // Paper - Fix MC-117075; use removeAll
 -            } else if (runsNormally && this.shouldTickBlocksAt(tickingBlockEntity.getPos())) {
-+            } else if (runsNormally && (me.earthme.luminol.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled ? this.shouldTickBlockPosFilterNull(tickingBlockEntity.getPos()) : this.shouldTickBlocksAt(tickingBlockEntity.getPos()))) { // Leaves - Lithium Sleeping Block Entity
++            } else if (runsNormally && this.shouldTickBlockPosFilterNull(tickingBlockEntity.getPos())) { // Leaves - Lithium Sleeping Block Entity
                  tickingBlockEntity.tick();
                  // Paper start - rewrite chunk system
                  if ((++tickedEntities & 7) == 0) {
-@@ -2204,4 +2204,27 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -2204,4 +2204,25 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
              return this.id;
          }
      }
 +
 +    // Leaves start - Lithium Sleeping Block Entity
-+    @Nullable
-+    public BlockEntity lithium$getLoadedExistingBlockEntity(@Nullable BlockPos pos) {
-+        if (pos == null) return null;
++    public BlockEntity lithium$getLoadedExistingBlockEntity(BlockPos pos) {
 +        if (!this.isOutsideBuildHeight(pos)) {
-+            if (ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this, pos, 1)) { // Luminol - use folia thread safe check because of unable to use thread check directly & remove this.isClientSide because we only have server side
++            if (this.isClientSide || ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this, pos)) { // Luminol - region threading for sleeping block entity
 +                ChunkAccess chunk = this.getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), ChunkStatus.FULL, false);
 +                if (chunk != null) {
 +                    return chunk.getBlockEntity(pos);
@@ -668,7 +635,7 @@ index 921d8c947b9401513d6168af4240f93d32296c7c..3a46cb424c8ea26386ed013cfc13aba3
 +        return null;
 +    }
 +
-+    private boolean shouldTickBlockPosFilterNull(@Nullable BlockPos pos) {
++    private boolean shouldTickBlockPosFilterNull(BlockPos pos) {
 +        if (pos == null) {
 +            return false;
 +        }
@@ -1043,7 +1010,7 @@ index 5a094257a31f0500278a706a418e1697f8810ffb..10b2cc20bbf3b70e4e09dbbe14b90506
 +    }
  }
 diff --git a/net/minecraft/world/level/block/entity/BlockEntity.java b/net/minecraft/world/level/block/entity/BlockEntity.java
-index 63ac5759a8a4b59297d5eb1abd362fb2a54353d7..376286ad4179fc524947b33fedfdacadba06a0b9 100644
+index 63ac5759a8a4b59297d5eb1abd362fb2a54353d7..4c5d8e02d92e805cea922ee9ab724b785a67e538 100644
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
 @@ -33,9 +33,17 @@ import net.minecraft.world.level.storage.TagValueOutput;
@@ -1063,7 +1030,7 @@ index 63ac5759a8a4b59297d5eb1abd362fb2a54353d7..376286ad4179fc524947b33fedfdacad
 +// Leaves end - Lithium Sleeping Block Entity
 +
 +public abstract class BlockEntity implements ComparatorTracker, SetBlockStateHandlingBlockEntity, SetChangedHandlingBlockEntity { // Leaves - Lithium Sleeping Block Entity
-+    //static final ThreadLocal<Boolean> IGNORE_TILE_UPDATES = ThreadLocal.withInitial(() -> Boolean.FALSE); // Paper - Perf: Optimize Hoppers // Folia - region threading // Luminol - Use vanilla hopper logic
++    //static final ThreadLocal<Boolean> IGNORE_TILE_UPDATES = ThreadLocal.withInitial(() -> Boolean.FALSE); // Paper - Perf: Optimize Hoppers // Folia - region threading // Luminol - vanilla hopper
      // CraftBukkit start - data containers
      private static final org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry();
      public final org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer persistentDataContainer;
@@ -1075,18 +1042,17 @@ index 63ac5759a8a4b59297d5eb1abd362fb2a54353d7..376286ad4179fc524947b33fedfdacad
      }
  
      private void validateBlockState(BlockState state) {
-@@ -234,9 +243,10 @@ public abstract class BlockEntity {
+@@ -234,8 +243,9 @@ public abstract class BlockEntity {
  
      public void setChanged() {
          if (this.level != null) {
 -            if (IGNORE_TILE_UPDATES.get().booleanValue()) return; // Paper - Perf: Optimize Hoppers // Folia - region threading
-+            //if (IGNORE_TILE_UPDATES.get().booleanValue()) return; // Paper - Perf: Optimize Hoppers // Folia - region threading // Luminol - Use vanilla hopper logic
++            //if (IGNORE_TILE_UPDATES.get().booleanValue()) return; // Paper - Perf: Optimize Hoppers // Folia - region threading // Luminol - vanilla hopper
              setChanged(this.level, this.worldPosition, this.blockState);
++            if (me.earthme.luminol.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled) lithium$handleSetChanged(); // Leaves - Lithium Sleeping Block Entity
          }
-+        if (me.earthme.luminol.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled) lithium$handleSetChanged(); // Leaves - Lithium Sleeping Block Entity
      }
  
-     protected static void setChanged(Level level, BlockPos pos, BlockState state) {
 @@ -268,7 +278,9 @@ public abstract class BlockEntity {
      }
  
@@ -1139,7 +1105,7 @@ index 63ac5759a8a4b59297d5eb1abd362fb2a54353d7..376286ad4179fc524947b33fedfdacad
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
-index 79a9f1c87de30cda479b55cf70fbc3219a3dcad4..4ef0fc722a5ec12df1334ed8275cedbde235a6b5 100644
+index 79a9f1c87de30cda479b55cf70fbc3219a3dcad4..6a646b768b7c0b2eaee65424fb59900ca24d6f24 100644
 --- a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 @@ -24,7 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
@@ -1167,15 +1133,16 @@ index 79a9f1c87de30cda479b55cf70fbc3219a3dcad4..4ef0fc722a5ec12df1334ed8275cedbd
              setChanged(level, pos, state);
          }
  
-@@ -167,6 +169,7 @@ public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements
+@@ -166,7 +168,7 @@ public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements
+             } else if (!isBrewable || !itemStack1.is(blockEntity.ingredient)) {
                  blockEntity.brewTime = 0;
              }
- 
+-
 +            if (me.earthme.luminol.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled) blockEntity.wakeUpNow(); // Leaves - Lithium Sleeping Block Entity
              setChanged(level, pos, state);
          } else if (isBrewable && blockEntity.fuel > 0) {
              blockEntity.fuel--;
-@@ -179,6 +182,7 @@ public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements
+@@ -179,6 +181,7 @@ public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements
              blockEntity.brewTime = event.getBrewingTime(); // 400 -> event.getTotalBrewTime() // Paper - use brewing time from event
              // CraftBukkit end
              blockEntity.ingredient = itemStack1.getItem();
@@ -1183,7 +1150,7 @@ index 79a9f1c87de30cda479b55cf70fbc3219a3dcad4..4ef0fc722a5ec12df1334ed8275cedbd
              setChanged(level, pos, state);
          }
  
-@@ -285,6 +289,7 @@ public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements
+@@ -285,6 +288,7 @@ public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements
          }
  
          this.fuel = input.getByteOr("Fuel", (byte)0);
@@ -1191,7 +1158,7 @@ index 79a9f1c87de30cda479b55cf70fbc3219a3dcad4..4ef0fc722a5ec12df1334ed8275cedbd
      }
  
      @Override
-@@ -331,4 +336,52 @@ public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements
+@@ -331,4 +335,52 @@ public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements
      protected AbstractContainerMenu createMenu(int id, Inventory player) {
          return new BrewingStandMenu(id, player, this, this.dataAccess);
      }
@@ -1612,24 +1579,20 @@ index 363d85c96bd3fb1a1945595df36e30bd6dd2fa4e..5f16810643b7567702b1101234571eaf
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5ab05ea910 100644
+index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..3fd172f82216fa35c36e5f563819a6f01ffd4ea4 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -27,8 +27,33 @@ import net.minecraft.world.level.block.state.BlockState;
+@@ -27,8 +27,29 @@ import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.storage.ValueInput;
  import net.minecraft.world.level.storage.ValueOutput;
  import net.minecraft.world.phys.AABB;
 -
 -public class HopperBlockEntity extends RandomizableContainerBlockEntity implements Hopper {
 +// Leaves start - Lithium Sleeping Block Entity
-+import java.util.Collections;
 +import java.util.Objects;
-+import net.minecraft.world.level.ChunkPos;
 +import net.minecraft.world.level.chunk.LevelChunk;
 +import net.minecraft.world.CompoundContainer;
 +import net.minecraft.server.level.ServerLevel;
-+import org.bukkit.craftbukkit.block.CraftBlock;
-+import org.leavesmc.leaves.lithium.api.inventory.LithiumCooldownReceivingInventory;
 +import org.leavesmc.leaves.lithium.api.inventory.LithiumInventory;
 +import org.leavesmc.leaves.lithium.common.block.entity.SleepingBlockEntity;
 +import org.leavesmc.leaves.lithium.common.block.entity.inventory_change_tracking.InventoryChangeListener;
@@ -1651,7 +1614,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
      public static final int MOVE_ITEM_SPEED = 8;
      public static final int HOPPER_CONTAINER_SIZE = 5;
      private static final int[][] CACHED_SLOTS = new int[54][];
-@@ -76,7 +101,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -76,7 +97,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      @Override
      public void updateTicks(final long fromTickOffset, final long fromRedstoneTimeOffset) {
          super.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
@@ -1660,7 +1623,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
              this.tickedGameTime += fromRedstoneTimeOffset;
          }
      }
-@@ -128,6 +153,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -128,6 +149,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      @Override
      public void setBlockState(BlockState blockState) {
@@ -1668,7 +1631,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
          super.setBlockState(blockState);
          this.facing = blockState.getValue(HopperBlock.FACING);
      }
-@@ -146,6 +172,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -146,6 +168,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
              boolean result = tryMoveItems(level, pos, state, blockEntity, () -> {
                  return suckInItems(level, blockEntity);
              });
@@ -1676,19 +1639,19 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
              if (!result && blockEntity.level.spigotConfig.hopperCheck > 1) {
                  blockEntity.setCooldown(blockEntity.level.spigotConfig.hopperCheck);
              }
-@@ -196,18 +223,26 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -196,18 +219,26 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
          } else {
              if (!blockEntity.isOnCooldown() && state.getValue(HopperBlock.ENABLED)) {
                  boolean flag = false;
 -                final int fullState = getFullState(blockEntity); // Paper - Perf: Optimize Hoppers
 -                if (fullState != HOPPER_EMPTY) { // Paper - Perf: Optimize Hoppers
-+                //final int fullState = getFullState(blockEntity); // Paper - Perf: Optimize Hoppers // Luminol - Use vanilla hopper logic
-+                if (!blockEntity.isEmpty()/*fullState != HOPPER_EMPTY*/) { // Paper - Perf: Optimize Hoppers // Luminol - Use vanilla hopper logic
++                // final int fullState = getFullState(blockEntity); // Paper - Perf: Optimize Hoppers  // Luminol - vanilla hopper
++                if (/*fullState != HOPPER_EMPTY*/!blockEntity.isEmpty()) { // Paper - Perf: Optimize Hoppers  // Luminol - vanilla hopper
                      flag = ejectItems(level, pos, blockEntity);
                  }
  
 -                if (fullState != HOPPER_IS_FULL || flag) { // Paper - Perf: Optimize Hoppers
-+                if (!blockEntity.inventoryFull()/*fullState != HOPPER_IS_FULL || flag*/) { // Paper - Perf: Optimize Hoppers // Luminol - Use vanilla hopper logic
++                if (/*fullState != HOPPER_IS_FULL || flag*/!blockEntity.inventoryFull()) { // Paper - Perf: Optimize Hoppers  // Luminol - vanilla hopper
                      flag |= validator.getAsBoolean(); // Paper - note: this is not a validator, it's what adds/sucks in items
                  }
  
@@ -1706,19 +1669,19 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
                      return true;
                  }
              }
-@@ -303,9 +338,9 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -303,9 +334,9 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
                  origItemStack.setCount(originalItemCount - movedItemCount + remainingItemCount);
              }
  
 -            IGNORE_TILE_UPDATES.set(true); // Folia - region threading
-+            // IGNORE_TILE_UPDATES.set(true); // Folia - region threading // Luminol - Use vanilla hopper logic
++            // IGNORE_TILE_UPDATES.set(true); // Folia - region threading // Luminol - vanilla hopper
              container.setItem(i, origItemStack);
 -            IGNORE_TILE_UPDATES.set(false); // Folia - region threading
-+            // IGNORE_TILE_UPDATES.set(false); // Folia - region threading // Luminol - Use vanilla hopper logic
++            //IGNORE_TILE_UPDATES.set(false); // Folia - region threading // Luminol - vanilla hopper
              container.setChanged();
              return true;
          }
-@@ -386,6 +421,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -386,6 +417,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      private static void applyCooldown(final Hopper hopper) {
          if (hopper instanceof HopperBlockEntity blockEntity && blockEntity.getLevel() != null) {
              blockEntity.setCooldown(blockEntity.getLevel().spigotConfig.hopperTransfer);
@@ -1726,7 +1689,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
          }
      }
  
-@@ -429,68 +465,78 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -429,67 +461,76 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      // Paper end - Perf: Optimize Hoppers
  
      private static boolean ejectItems(Level level, BlockPos pos, HopperBlockEntity blockEntity) {
@@ -1747,7 +1710,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
              if (isFullContainer(attachedContainer, opposite)) {
                  return false;
              } else {
--                // Paper start - Perf: Optimize Hoppers
+                 // Paper start - Perf: Optimize Hoppers
 -                return hopperPush(level, attachedContainer, opposite, blockEntity);
 -                //for (int i = 0; i < blockEntity.getContainerSize(); i++) {
 -                //    ItemStack item = blockEntity.getItem(i);
@@ -1800,10 +1763,8 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 -                //}
 -
 -                //return false;
--                // Paper end - Perf: Optimize Hoppers
-+                // Luminol start - Use vanilla hopper logic
-+                //// Paper start - Perf: Optimize Hoppers
-+                //return hopperPush(level, attachedContainer, opposite, blockEntity);
++                // Luminol start - vanilla hopper
++                // return hopperPush(level, attachedContainer, opposite, blockEntity);
 +                for (int i = 0; i < blockEntity.getContainerSize(); i++) {
 +                    ItemStack item = blockEntity.getItem(i);
 +                    if (!item.isEmpty()) {
@@ -1811,7 +1772,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +                        // CraftBukkit start - Call event when pushing items into other inventories
 +                        ItemStack original = item.copy();
 +                        org.bukkit.craftbukkit.inventory.CraftItemStack oitemstack = org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(
-+                                blockEntity.removeItem(i, level.spigotConfig.hopperAmount)
++                            blockEntity.removeItem(i, level.spigotConfig.hopperAmount)
 +                        ); // Spigot
 +
 +                        org.bukkit.inventory.Inventory destinationInventory;
@@ -1825,10 +1786,10 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +                        }
 +
 +                        org.bukkit.event.inventory.InventoryMoveItemEvent event = new org.bukkit.event.inventory.InventoryMoveItemEvent(
-+                                blockEntity.getOwner().getInventory(),
-+                                oitemstack,
-+                                destinationInventory,
-+                                true
++                            blockEntity.getOwner().getInventory(),
++                            oitemstack,
++                            destinationInventory,
++                            true
 +                        );
 +                        if (!event.callEvent()) {
 +                            blockEntity.setItem(i, original);
@@ -1855,12 +1816,10 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +                }
 +
 +                return false;
-+                //// Paper end - Perf: Optimize Hoppers
-+                // Luminol end
+                 // Paper end - Perf: Optimize Hoppers
              }
          }
-     }
-@@ -543,9 +589,17 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -543,10 +584,18 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
          io.papermc.paper.threadedregions.RegionizedWorldData worldData = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegionizedWorldData(); // Folia - region threading
          BlockPos blockPos = BlockPos.containing(hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ());
          BlockState blockState = level.getBlockState(blockPos);
@@ -1868,6 +1827,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +        Container sourceContainer = me.earthme.luminol.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled ? getExtractInventory(level, hopper, blockPos, blockState) : getSourceContainer(level, hopper, blockPos, blockState); // Leaves - Lithium Sleeping Block Entity
          if (sourceContainer != null) {
              Direction direction = Direction.DOWN;
+             worldData.skipPullModeEventFire = worldData.skipHopperEvents; // Paper - Perf: Optimize Hoppers // Folia - region threading
 +            // Leaves start - Lithium Sleeping Block Entity
 +            if (me.earthme.luminol.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled) {
 +                Boolean res = lithiumExtract(level, hopper, sourceContainer);
@@ -1876,15 +1836,10 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +                }
 +            }
 +            // Leaves end - Lithium Sleeping Block Entity
-             worldData.skipPullModeEventFire = worldData.skipHopperEvents; // Paper - Perf: Optimize Hoppers // Folia - region threading
  
              for (int i : getSlots(sourceContainer, direction)) {
-@@ -553,77 +607,76 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
-                     return true;
-                 }
-             }
--
--            return false;
+                 if (tryTakeInItemFromSlot(hopper, sourceContainer, i, direction, level)) { // Spigot
+@@ -558,7 +607,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
          } else {
              boolean flag = hopper.isGridAligned() && blockState.isCollisionShapeFullBlock(level, blockPos) && !blockState.is(BlockTags.DOES_NOT_BLOCK_HOPPERS);
              if (!flag) {
@@ -1893,18 +1848,10 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
                      if (addItem(hopper, itemEntity)) {
                          return true;
                      }
-                 }
-             }
--
--            return false;
-         }
-+        return false;
-     }
- 
-     private static boolean tryTakeInItemFromSlot(Hopper hopper, Container container, int slot, Direction direction, Level level) { // Spigot
+@@ -573,56 +622,57 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
          ItemStack item = container.getItem(slot);
          if (!item.isEmpty() && canTakeItemFromContainer(hopper, container, item, slot, direction)) {
--            // Paper start - Perf: Optimize Hoppers
+             // Paper start - Perf: Optimize Hoppers
 -            return hopperPull(level, hopper, container, item, slot);
 -            //int count = item.getCount();
 -            //// CraftBukkit start - Call event on collection of items from inventories into the hopper
@@ -1955,14 +1902,13 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 -            //    // Spigot end
 -            //    container.setItem(slot, item);
 -            //}
-+            // Luminol start - Use vanilla hopper logic
-+            //// Paper start - Perf: Optimize Hoppers
-+            //return hopperPull(level, hopper, container, item, slot);
++            // Luminol start - vanilla hopper
++            // return hopperPull(level, hopper, container, item, slot);
 +            int count = item.getCount();
 +            // CraftBukkit start - Call event on collection of items from inventories into the hopper
 +            ItemStack original = item.copy();
 +            org.bukkit.craftbukkit.inventory.CraftItemStack oitemstack = org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(
-+                    container.removeItem(slot, level.spigotConfig.hopperAmount) // Spigot
++                container.removeItem(slot, level.spigotConfig.hopperAmount) // Spigot
 +            );
 +
 +            org.bukkit.inventory.Inventory sourceInventory;
@@ -1976,10 +1922,10 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +            }
 +
 +            org.bukkit.event.inventory.InventoryMoveItemEvent event = new org.bukkit.event.inventory.InventoryMoveItemEvent(
-+                    sourceInventory,
-+                    oitemstack,
-+                    hopper.getOwner().getInventory(),
-+                    false
++                sourceInventory,
++                oitemstack,
++                hopper.getOwner().getInventory(),
++                false
 +            );
 +
 +            if (!event.callEvent()) {
@@ -2008,41 +1954,48 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +                container.setItem(slot, item);
 +            }
              // Paper end - Perf: Optimize Hoppers
-+            // Luminol end
          }
  
-         return false;
-@@ -695,9 +748,9 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -695,9 +745,9 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
                      stack = stack.split(destination.getMaxStackSize());
                  }
                  // Spigot end
 -                IGNORE_TILE_UPDATES.set(Boolean.TRUE); // Paper - Perf: Optimize Hoppers // Folia - region threading
-+                //IGNORE_TILE_UPDATES.set(Boolean.TRUE); // Paper - Perf: Optimize Hoppers // Folia - region threading // Luminol - Use vanilla hopper logic
++                //IGNORE_TILE_UPDATES.set(Boolean.TRUE); // Paper - Perf: Optimize Hoppers // Folia - region threading // Luminol - vanilla hopper
                  destination.setItem(slot, stack);
 -                IGNORE_TILE_UPDATES.set(Boolean.FALSE); // Paper - Perf: Optimize Hoppers // Folia - region threading
-+                //IGNORE_TILE_UPDATES.set(Boolean.FALSE); // Paper - Perf: Optimize Hoppers // Folia - region threading // Luminol - Use vanilla hopper logic
++                //IGNORE_TILE_UPDATES.set(Boolean.FALSE); // Paper - Perf: Optimize Hoppers // Folia - region threading // Luminol - vanilla hopper
                  stack = leftover; // Paper - Make hoppers respect inventory max stack size
                  flag = true;
              } else if (canMergeItems(item, stack)) {
-@@ -799,7 +852,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -728,7 +778,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+     // CraftBukkit start
+     @Nullable
+     private static Container runHopperInventorySearchEvent(
+-        Container container,
++        @Nullable Container container,
+         org.bukkit.craftbukkit.block.CraftBlock hopper,
+         org.bukkit.craftbukkit.block.CraftBlock searchLocation,
+         org.bukkit.event.inventory.HopperInventorySearchEvent.ContainerType containerType
+@@ -787,7 +837,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+ 
+     @Nullable
+     public static Container getContainerAt(Level level, BlockPos pos) {
+-        return getContainerAt(level, pos, level.getBlockState(pos), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, true); // Paper - Optimize hoppers
++        return getContainerAt(level, pos, level.getBlockState(pos), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, false); // Paper - Optimize hoppers  // Luminol - vanilla hopper
+     }
+ 
+     @Nullable
+@@ -799,7 +849,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      private static Container getContainerAt(Level level, BlockPos pos, BlockState state, double x, double y, double z, final boolean optimizeEntities) {
          // Paper end - Perf: Optimize Hoppers
          Container blockContainer = getBlockContainer(level, pos, state);
 -        if (blockContainer == null && (!optimizeEntities || !level.paperConfig().hopper.ignoreOccludingBlocks || !state.getBukkitMaterial().isOccluding())) { // Paper - Perf: Optimize Hoppers
-+        if (blockContainer == null /*&& (!optimizeEntities || !level.paperConfig().hopper.ignoreOccludingBlocks || !state.getBukkitMaterial().isOccluding())*/) { // Paper - Perf: Optimize Hoppers // Luminol - Use vanilla hopper logic
++        if (blockContainer == null /*&& (!optimizeEntities || !level.paperConfig().hopper.ignoreOccludingBlocks || !state.getBukkitMaterial().isOccluding())*/) { // Paper - Perf: Optimize Hoppers  // Luminol - vanilla hopper
              blockContainer = getEntityContainer(level, x, y, z);
          }
  
-@@ -832,7 +885,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
-     }
- 
-     private static boolean canMergeItems(ItemStack stack1, ItemStack stack2) {
--        return stack1.getCount() < stack1.getMaxStackSize() && ItemStack.isSameItemSameComponents(stack1, stack2); // Paper - Perf: Optimize Hoppers; used to return true for full itemstacks?!
-+        return stack1.getCount() <= stack1.getMaxStackSize() && ItemStack.isSameItemSameComponents(stack1, stack2); // Paper - Perf: Optimize Hoppers; used to return true for full itemstacks?! // Luminol - Use vanilla hopper logic
-     }
- 
-     @Override
-@@ -856,6 +909,19 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -856,6 +906,19 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      }
  
      public void setCooldown(int cooldownTime) {
@@ -2062,7 +2015,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
          this.cooldownTime = cooldownTime;
      }
  
-@@ -875,6 +941,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -875,6 +938,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      @Override
      protected void setItems(NonNullList<ItemStack> items) {
          this.items = items;
@@ -2070,7 +2023,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
      }
  
      public static void entityInside(Level level, BlockPos pos, BlockState state, Entity entity, HopperBlockEntity blockEntity) {
-@@ -889,4 +956,766 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -889,4 +953,760 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      protected AbstractContainerMenu createMenu(int id, Inventory player) {
          return new HopperMenu(id, player, this);
      }
@@ -2237,7 +2190,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +        LevelChunk.RebindableTickingBlockEntityWrapper tickWrapper = this.lithium$getTickWrapper();
 +        if (tickWrapper != null) {
 +            this.lithium$setSleepingTicker(tickWrapper.ticker);
-+            tickWrapper.slept = tickWrapper.ticker;
++            tickWrapper.setLithiumSlept(tickWrapper.ticker);
 +            tickWrapper.rebind(SleepingBlockEntity.SLEEPING_BLOCK_ENTITY_TICKER);
 +
 +            // Set the last tick time to max value, so other hoppers transferring into this hopper will set it to 7gt
@@ -2727,8 +2680,8 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +                        hopperBlockEntity.insertStackList.getOccupiedSlots() == 0 :
 +                        insertInventory.isEmpty();
 +
-+        var worldData = world.getCurrentWorldData();
-+        worldData.skipPushModeEventFire = worldData.skipHopperEvents;
++        var currentWorldData = world.getCurrentWorldData(); // Luminol - Region threading for lithium sleeping block entity
++        currentWorldData.skipPushModeEventFire = currentWorldData.skipHopperEvents; // Luminol
 +        //noinspection ConstantConditions
 +        if (!(hopperBlockEntity.insertInventory == insertInventory && hopperBlockEntity.insertStackList.getFullSlots() == hopperBlockEntity.insertStackList.size())) {
 +            Direction fromDirection = hopperBlockEntity.facing.getOpposite();
@@ -2736,7 +2689,7 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +            for (int i = 0; i < size; ++i) {
 +                ItemStack transferStack = hopperStackList.get(i);
 +                if (!transferStack.isEmpty()) {
-+                    if (!worldData.skipPushModeEventFire && canTakeItemFromContainer(insertInventory, hopperBlockEntity, transferStack, i, Direction.DOWN)) {
++                    if (!currentWorldData.skipPushModeEventFire && canTakeItemFromContainer(insertInventory, hopperBlockEntity, transferStack, i, Direction.DOWN)) { // Luminol
 +                        transferStack = callPushMoveEvent(insertInventory, transferStack, hopperBlockEntity);
 +                        if (transferStack == null) { // cancelled
 +                            break;
@@ -2790,14 +2743,14 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +            }
 +        }
 +
-+        var worldData = world.getCurrentWorldData();
++        var currentWorldData = world.getCurrentWorldData(); // Luminol - Region threading for lithium sleeping block entity
 +        int[] availableSlots = from instanceof WorldlyContainer ? ((WorldlyContainer) from).getSlotsForFace(Direction.DOWN) : null;
 +        int fromSize = availableSlots != null ? availableSlots.length : from.getContainerSize();
 +        for (int i = 0; i < fromSize; i++) {
 +            int fromSlot = availableSlots != null ? availableSlots[i] : i;
 +            ItemStack itemStack = fromStackList.get(fromSlot);
 +            if (!itemStack.isEmpty() && canTakeItemFromContainer(to, from, itemStack, fromSlot, Direction.DOWN)) {
-+                if (!worldData.skipPullModeEventFire) {
++                if (!currentWorldData.skipPullModeEventFire) { // Luminol
 +                    itemStack = callPullMoveEvent(to, from, itemStack);
 +                    if (itemStack == null) { // cancelled
 +                        return true;
@@ -2830,12 +2783,6 @@ index 25ad8bb4099fefaf51f38a8bba70ea3594d0d914..699bb3cc2b680a4ee438a88c05854e5a
 +        return false;
 +    }
 +    // Leaves end - Lithium Sleeping Block Entity
-+    // Luminol start - Lithium Sleeping Block Entity
-+    @Override
-+    public ChunkPos getPos() {
-+        return new ChunkPos(this.worldPosition.getX() >> 4, this.worldPosition.getZ() >> 4);
-+    }
-+    // Luminol end
  }
 diff --git a/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java b/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
 index ebea67223ce1d350087c73dff0cc3fe6d7b47ca0..5203e85b761122b01569221f22db55f7060d97ee 100644
@@ -2915,19 +2862,21 @@ index ebea67223ce1d350087c73dff0cc3fe6d7b47ca0..5203e85b761122b01569221f22db55f7
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/entity/TickingBlockEntity.java b/net/minecraft/world/level/block/entity/TickingBlockEntity.java
-index c8facee29ee08e0975528083f89b64f0b593957f..37baad367daf6f4b2355e86c0c24a149cc1c665c 100644
+index c8facee29ee08e0975528083f89b64f0b593957f..70fa4660caaafa00b6cb793dc26bda48ef7ada41 100644
 --- a/net/minecraft/world/level/block/entity/TickingBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TickingBlockEntity.java
-@@ -12,4 +12,11 @@ public interface TickingBlockEntity {
+@@ -12,4 +12,13 @@ public interface TickingBlockEntity {
      String getType();
  
      BlockEntity getTileEntity(); // Folia - region threading
 +
-+    // Luminol start - Fix region threading with lithium
++    // Luminol start - region threading for sleeping block entity
 +    @org.jetbrains.annotations.Nullable
-+    default TickingBlockEntity getLithiumSleepingBaked() {
++    default TickingBlockEntity getLithiumSlept() {
 +        return null;
 +    }
++
++    default void setLithiumSlept(@org.jetbrains.annotations.Nullable TickingBlockEntity slept) {}
 +    // Luminol end
  }
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
@@ -2952,7 +2901,7 @@ index 834e27ef2f7b342b074ff9e1e390e02f3ca1c399..e9749b66239d7562ecf22002bfbaa95d
      }
  
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 7add73f2dd957374661affebfa2b0102d99363f8..29788fedd54b8411c9c8872b4d83b037874fb5f0 100644
+index 7add73f2dd957374661affebfa2b0102d99363f8..f8bc2679d9eeaa5d179ab70a4cc5c97522bcc674 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -891,12 +891,14 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
@@ -2978,7 +2927,7 @@ index 7add73f2dd957374661affebfa2b0102d99363f8..29788fedd54b8411c9c8872b4d83b037
 -        private TickingBlockEntity ticker;
 +    public static class RebindableTickingBlockEntityWrapper implements TickingBlockEntity { // Leaves - default -> public
 +        public TickingBlockEntity ticker; // Leaves - private -> public
-+        @Nullable public TickingBlockEntity slept; // Luminol - fix region threading with lithium
++        @org.jetbrains.annotations.Nullable  private TickingBlockEntity slept; // Luminol - region threading for sleeping block entity
  
          RebindableTickingBlockEntityWrapper(TickingBlockEntity ticker) {
              this.ticker = ticker;
@@ -2989,15 +2938,20 @@ index 7add73f2dd957374661affebfa2b0102d99363f8..29788fedd54b8411c9c8872b4d83b037
              this.ticker = ticker;
          }
  
-@@ -1042,6 +1045,13 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -1042,6 +1045,18 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
          public String toString() {
              return this.ticker + " <wrapped>";
          }
 +
-+        // Luminol start - Fix region threading with lithium
++        // Luminol start - region threading for sleeping block entity
 +        @Override
-+        public @org.jetbrains.annotations.Nullable TickingBlockEntity getLithiumSleepingBaked() {
++        public @org.jetbrains.annotations.Nullable TickingBlockEntity getLithiumSlept() {
 +            return this.slept;
++        }
++
++        @Override
++        public void setLithiumSlept(@org.jetbrains.annotations.Nullable TickingBlockEntity slept) {
++            this.slept = slept;
 +        }
 +        // Luminol end
      }

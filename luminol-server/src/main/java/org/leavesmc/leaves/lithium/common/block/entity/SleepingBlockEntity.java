@@ -22,7 +22,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
-import org.jetbrains.annotations.NotNull;
 
 public interface SleepingBlockEntity {
     TickingBlockEntity SLEEPING_BLOCK_ENTITY_TICKER = new TickingBlockEntity() {
@@ -33,17 +32,14 @@ public interface SleepingBlockEntity {
             return false;
         }
 
-        @NotNull
         public BlockPos getPos() {
             return null;
         }
 
-        @NotNull
         public String getType() {
             return "<lithium_sleeping>";
         }
 
-        @NotNull
         @Override
         public BlockEntity getTileEntity() {
             return null;
@@ -67,8 +63,8 @@ public interface SleepingBlockEntity {
         if (tickWrapper == null) {
             return false;
         }
-        tickWrapper.slept = tickWrapper.ticker; // Luminol - fix region threading with lithium
         this.lithium$setSleepingTicker(tickWrapper.ticker);
+        tickWrapper.setLithiumSlept(tickWrapper.ticker);
         tickWrapper.rebind(SleepingBlockEntity.SLEEPING_BLOCK_ENTITY_TICKER);
         return true;
     }
@@ -80,8 +76,7 @@ public interface SleepingBlockEntity {
             sleepingTicker = tickWrapper.ticker;
         }
         Level world = ((BlockEntity) this).getLevel();
-        tickWrapper.slept = tickWrapper.ticker; // Luminol - fix region threading with lithium
-        tickWrapper.rebind(new SleepUntilTimeBlockEntityTickInvoker((BlockEntity) this, world.getRedstoneGameTime() + 1, sleepingTicker));
+        tickWrapper.rebind(new SleepUntilTimeBlockEntityTickInvoker((BlockEntity) this, world.getGameTime() + 1, sleepingTicker));
         this.lithium$setSleepingTicker(null);
     }
 
@@ -99,7 +94,7 @@ public interface SleepingBlockEntity {
         if (tickWrapper == null) {
             return;
         }
-        tickWrapper.slept = null; // Luminol - fix region threading with lithium
+        tickWrapper.setLithiumSlept(null);
         tickWrapper.rebind(delegate);
     }
 

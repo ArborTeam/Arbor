@@ -14,18 +14,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class ChunkSectionItemEntityMovementTracker extends ChunkSectionEntityMovementTracker {
-    private final Level level;
-
     public ChunkSectionItemEntityMovementTracker(long sectionKey, Level level) {
-        super(sectionKey);
-        this.level = level;
+        super(sectionKey, level);
     }
 
     @Override
     public void unregister() {
         this.userCount--;
         if (this.userCount <= 0) {
-            this.level.getCurrentWorldData().itemEntityMovementTrackerMap.remove(sectionKey);
+            this.level.getCurrentWorldData().itemEntityMovementTrackerMap.remove(this.sectionKey);
         }
     }
 
@@ -38,9 +35,12 @@ public class ChunkSectionItemEntityMovementTracker extends ChunkSectionEntityMov
         WorldSectionBox worldSectionBox = WorldSectionBox.entityAccessBox(world, interactionArea);
 
         if (worldSectionBox.chunkX1() == worldSectionBox.chunkX2() &&
-                worldSectionBox.chunkY1() == worldSectionBox.chunkY2() &&
-                worldSectionBox.chunkZ1() == worldSectionBox.chunkZ2()) {
-            return Collections.singletonList(registerAt(CoordinateUtils.getChunkSectionKey(worldSectionBox.chunkX1(), worldSectionBox.chunkY1(), worldSectionBox.chunkZ1()), world));
+            worldSectionBox.chunkY1() == worldSectionBox.chunkY2() &&
+            worldSectionBox.chunkZ1() == worldSectionBox.chunkZ2()) {
+            return Collections.singletonList(registerAt(
+                CoordinateUtils.getChunkSectionKey(worldSectionBox.chunkX1(), worldSectionBox.chunkY1(), worldSectionBox.chunkZ1()),
+                world
+            ));
         }
 
         List<ChunkSectionItemEntityMovementTracker> trackers = new ArrayList<>();
@@ -58,10 +58,16 @@ public class ChunkSectionItemEntityMovementTracker extends ChunkSectionEntityMov
 
     private static @NotNull ChunkSectionItemEntityMovementTracker registerAt(long key, Level level) {
         ChunkSectionItemEntityMovementTracker tracker = level.getCurrentWorldData().itemEntityMovementTrackerMap.computeIfAbsent(
-                key,
-                k -> new ChunkSectionItemEntityMovementTracker(key, level)
+            key,
+            k -> new ChunkSectionItemEntityMovementTracker(key, level)
         );
         tracker.register();
         return tracker;
     }
+
+    // Luminol start - region threading for lithium sleeping block entity
+    public boolean hasUser() {
+        return this.userCount > 0;
+    }
+    // Luminol end
 }

@@ -53,10 +53,10 @@ public class LithiumDoubleInventory extends CompoundContainer implements Lithium
         if (vanillaFirst != vanillaSecond && vanillaFirst instanceof LithiumInventory first && vanillaSecond instanceof LithiumInventory second) {
             LithiumDoubleInventory newDoubleInventory = new LithiumDoubleInventory(first, second);
             LithiumDoubleStackList doubleStackList = LithiumDoubleStackList.getOrCreate(
-                    newDoubleInventory,
-                    InventoryHelper.getLithiumStackList(first),
-                    InventoryHelper.getLithiumStackList(second),
-                    newDoubleInventory.getMaxStackSize()
+                newDoubleInventory,
+                InventoryHelper.getLithiumStackList(first),
+                InventoryHelper.getLithiumStackList(second),
+                newDoubleInventory.getMaxStackSize()
             );
             newDoubleInventory.doubleStackList = doubleStackList;
             return doubleStackList.doubleInventory;

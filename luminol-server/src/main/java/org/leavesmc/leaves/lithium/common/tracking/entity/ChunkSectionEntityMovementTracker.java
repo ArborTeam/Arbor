@@ -1,6 +1,7 @@
 package org.leavesmc.leaves.lithium.common.tracking.entity;
 
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -9,18 +10,16 @@ public abstract class ChunkSectionEntityMovementTracker {
     protected long lastChangeTime = 0;
     protected final ReferenceOpenHashSet<ChunkSectionEntityMovementListener> listeners = new ReferenceOpenHashSet<>();
     protected final long sectionKey;
+    protected final Level level;
     protected int userCount = 0;
 
-    public ChunkSectionEntityMovementTracker(long sectionKey) {
+    public ChunkSectionEntityMovementTracker(long sectionKey, Level level) {
+        this.level = level;
         this.sectionKey = sectionKey;
     }
 
     public void register() {
         this.userCount++;
-    }
-
-    public boolean hasAnyUser() {
-        return this.userCount > 0;
     }
 
     public abstract void unregister();

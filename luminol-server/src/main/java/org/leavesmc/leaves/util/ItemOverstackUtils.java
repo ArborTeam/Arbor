@@ -1,3 +1,20 @@
+/*
+ * This file is part of Leaves (https://github.com/LeavesMC/Leaves)
+ *
+ * Leaves is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Leaves is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Leaves. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.leavesmc.leaves.util;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
@@ -20,8 +37,8 @@ import java.util.Optional;
 public class ItemOverstackUtils {
 
     private static final List<ItemUtil> overstackUtils = List.of(
-        new ShulkerBox(),
-        new CurseEnchantedBook()
+            new ShulkerBox(),
+            new CurseEnchantedBook()
     );
 
     public static int getItemStackMaxCount(ItemStack stack) {
@@ -138,17 +155,17 @@ public class ItemOverstackUtils {
         public boolean tryStackItems(ItemEntity self, ItemEntity other) {
             ItemStack selfStack = self.getItem();
             if (!isEnabled() ||
-                !(selfStack.getItem() instanceof net.minecraft.world.item.BlockItem blockItem) ||
-                !(blockItem.getBlock() instanceof net.minecraft.world.level.block.ShulkerBoxBlock)
+                    !(selfStack.getItem() instanceof net.minecraft.world.item.BlockItem blockItem) ||
+                    !(blockItem.getBlock() instanceof net.minecraft.world.level.block.ShulkerBoxBlock)
             ) {
                 return false;
             }
 
             ItemStack otherStack = other.getItem();
             if (selfStack.getItem() == otherStack.getItem()
-                && shulkerBoxCheck(selfStack, otherStack)
-                && selfStack.getCount() != /*org.leavesmc.leaves.LeavesConfig.modify.shulkerBox.stackableShulkerBoxes*/ 1) {  // Luminol
-                int amount = Math.min(otherStack.getCount(), /*org.leavesmc.leaves.LeavesConfig.modify.shulkerBox.stackableShulkerBoxes*/1  - selfStack.getCount()); // Luminol
+                    && shulkerBoxCheck(selfStack, otherStack)
+                    && selfStack.getCount() != /*org.leavesmc.leaves.LeavesConfig.modify.shulkerBox.stackableShulkerBoxes*/ 1) {  // Luminol
+                int amount = Math.min(otherStack.getCount(), /*org.leavesmc.leaves.LeavesConfig.modify.shulkerBox.stackableShulkerBoxes*/1 - selfStack.getCount()); // Luminol
 
                 selfStack.grow(amount);
                 self.setItem(selfStack);
@@ -170,7 +187,7 @@ public class ItemOverstackUtils {
         @Override
         public int getMaxServerStackCount(ItemStack stack) {
             if (isEnabled() && stack.getItem() instanceof BlockItem bi &&
-                bi.getBlock() instanceof ShulkerBoxBlock && (/*LeavesConfig.modify.shulkerBox.sameNbtStackable ||*/ shulkerBoxNoItem(stack))) {  // Luminol
+                    bi.getBlock() instanceof ShulkerBoxBlock && (/*LeavesConfig.modify.shulkerBox.sameNbtStackable ||*/ shulkerBoxNoItem(stack))) {  // Luminol
                 // return LeavesConfig.modify.shulkerBox.stackableShulkerBoxes;  // Luminol
                 return 1; // Luminol
             }
@@ -185,7 +202,7 @@ public class ItemOverstackUtils {
                 return false;
             }
             return enchantments.enchantments().containsKey(Enchantment.BINDING_CURSE) ||
-                enchantments.enchantments().containsKey(Enchantment.VANISHING_CURSE);
+                    enchantments.enchantments().containsKey(Enchantment.VANISHING_CURSE);
         }
 
         @Override

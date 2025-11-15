@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: mrhua269 <mrhua269@gmail.com>
 Date: Tue, 28 Oct 2025 23:19:33 +0800
-Subject: [PATCH] Fix possible delayed POI updates while portaling
+Subject: [PATCH] Fix possible delayed POI updates while block updating
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 87377bba2ebdc0eba5b7b212d971994c35ca0b62..e1f58842a373a426c73909125c13f2ae61ee9656 100644
+index 87377bba2ebdc0eba5b7b212d971994c35ca0b62..83c6361fc5d745f80b101f18f4079473510d6cee 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -2394,11 +2394,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -13,13 +13,13 @@ index 87377bba2ebdc0eba5b7b212d971994c35ca0b62..e1f58842a373a426c73909125c13f2ae
          if (!Objects.equals(optional, optional1)) {
              BlockPos blockPos = pos.immutable();
 -            optional.ifPresent(holder -> io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4, () -> { // Folia - region threading
-+            final java.util.concurrent.Executor scheduler =  me.earthme.luminol.config.modules.fixes.POIConfig.instantPoiUpdating && ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this, pos.getX() >> 4, pos.getZ() >> 4) ? Runnable::run : task -> io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4, task); // Luminol - Fix nether portal fix // Luminol - Portal serach fixes
-+            optional.ifPresent(holder -> /*io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4,*/scheduler.execute( () -> { // Folia - region threading // Luminol - Portal serach fixes
++            final java.util.concurrent.Executor scheduler = this.regionizedBlockableEventLoop.asExecutor(pos, me.earthme.luminol.config.modules.fixes.POIConfig.instantPoiUpdating); // Luminol - Option to do instant POI updates
++            optional.ifPresent(holder -> /*io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4,*/scheduler.execute( () -> { // Folia - region threading // Luminol - Option to do instant POI updates
                  this.getPoiManager().remove(blockPos);
                  DebugPackets.sendPoiRemovedPacket(this, blockPos);
              }));
 -            optional1.ifPresent(holder -> io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4, () -> { // Folia - region threading
-+            optional1.ifPresent(holder -> /*io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4,*/scheduler.execute( () -> { // Folia - region threading // Luminol - Portal serach fixes
++            optional1.ifPresent(holder -> /*io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueChunkTask(this, blockPos.getX() >> 4, blockPos.getZ() >> 4,*/scheduler.execute( () -> { // Folia - region threading // Luminol - Option to do instant POI updates
                  // Paper start - Remove stale POIs
                  if (optional.isEmpty() && this.getPoiManager().exists(blockPos, ignored -> true)) {
                      this.getPoiManager().remove(blockPos);

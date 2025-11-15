@@ -5,10 +5,10 @@ Subject: [PATCH] Add config to disable entity tick catchers
 
 
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 2049990edf0280d2b74b7284b32e78678a5ca6db..921d8c947b9401513d6168af4240f93d32296c7c 100644
+index 69d838a549ede999bb7e83641380c9f6afb91ea8..b2aee3194b71b5f2da71c1260b18fd87d0bdc825 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1533,6 +1533,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -1534,6 +1534,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
          try {
              consumerEntity.accept(entity);
          } catch (Throwable var6) {

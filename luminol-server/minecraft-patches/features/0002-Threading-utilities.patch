@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mrhua269 <mrhua269@gmail.com>
+Date: Sat, 15 Nov 2025 14:03:43 +0800
+Subject: [PATCH] Threading utilities
+
+
+diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
+index 2049990edf0280d2b74b7284b32e78678a5ca6db..69d838a549ede999bb7e83641380c9f6afb91ea8 100644
+--- a/net/minecraft/world/level/Level.java
++++ b/net/minecraft/world/level/Level.java
+@@ -130,6 +130,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+     private final ResourceKey<Level> dimension;
+     private final RegistryAccess registryAccess;
+     private final DamageSources damageSources;
++    public final me.earthme.luminol.utils.thread.RegionizedBlockableEventLoop regionizedBlockableEventLoop = new me.earthme.luminol.utils.thread.RegionizedBlockableEventLoop(this); // Luminol - Threading utilies
+     private final java.util.concurrent.atomic.AtomicLong subTickCount = new java.util.concurrent.atomic.AtomicLong(); //private long subTickCount; // Folia - region threading
+ 
+     // CraftBukkit start

@@ -216,7 +216,7 @@ index 3092454bf7071deca75fecfc203072593fe5c7e7..90e888321b6e208163742c3f1f836433
          }
      }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index e1f58842a373a426c73909125c13f2ae61ee9656..923aca94520f456a13d4e4eb23e1499b3dbc920f 100644
+index 83c6361fc5d745f80b101f18f4079473510d6cee..e220a7c92159378b5991670963cb13e5e9bc4431 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -2533,6 +2533,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -605,10 +605,10 @@ index 6154da1158756cff072d7e8cae10e20eafed1eec..33c3a5e39e8e1aa023baab76ef94f8ae
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 921d8c947b9401513d6168af4240f93d32296c7c..4986d6cd8e700c561162b1cd3cb38059171bea6e 100644
+index b2aee3194b71b5f2da71c1260b18fd87d0bdc825..4eb08dc3b3d7ed8716d7e37313512c8bc5e4e393 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1512,7 +1512,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -1513,7 +1513,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
              // Spigot end
              if (tickingBlockEntity.isRemoved()) {
                  toRemove.add(tickingBlockEntity); // Paper - Fix MC-117075; use removeAll
@@ -617,7 +617,7 @@ index 921d8c947b9401513d6168af4240f93d32296c7c..4986d6cd8e700c561162b1cd3cb38059
                  tickingBlockEntity.tick();
                  // Paper start - rewrite chunk system
                  if ((++tickedEntities & 7) == 0) {
-@@ -2204,4 +2204,25 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -2205,4 +2205,25 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
              return this.id;
          }
      }

@@ -12,12 +12,14 @@ import java.util.concurrent.Executor;
 
 /**
  * We use this to simplify scheduling tasks to the correct regionized thread for folia
+ *
  * @param level the level it is owned by
  */
 public record RegionizedBlockableEventLoop(Level level) {
 
     /**
      * Check if we are on the target region thread
+     *
      * @param chunkX chunkX
      * @param chunkZ chunkZ
      * @return true if we are on the target region thread
@@ -28,6 +30,7 @@ public record RegionizedBlockableEventLoop(Level level) {
 
     /**
      * Check if we are on the target region thread
+     *
      * @param pos the block position
      * @return true if we are on the target region thread
      */
@@ -36,10 +39,11 @@ public record RegionizedBlockableEventLoop(Level level) {
     }
 
     /**
-     *  Create an executor for task executing on the target region thread
-     * @param chunkX chunkX
-     * @param chunkZ chunkZ
-     * @param chunkTask if true, the tasks off-main will go to chunk task queue, otherwise tick task queue
+     * Create an executor for task executing on the target region thread
+     *
+     * @param chunkX                   chunkX
+     * @param chunkZ                   chunkZ
+     * @param chunkTask                if true, the tasks off-main will go to chunk task queue, otherwise tick task queue
      * @param executeImmediateIfOnMain if false, tasks will always be scheduled, even if we are on the target thread
      * @return the executor
      */
@@ -53,8 +57,9 @@ public record RegionizedBlockableEventLoop(Level level) {
 
     /**
      * Create an executor for task executing on the target region thread
-     * @param pos the block position
-     * @param chunkTask if true, the tasks off-main will go to chunk task queue, otherwise tick task queue
+     *
+     * @param pos                      the block position
+     * @param chunkTask                if true, the tasks off-main will go to chunk task queue, otherwise tick task queue
      * @param executeImmediateIfOnMain if false, tasks will always be scheduled, even if we are on the target thread
      * @return the executor
      */
@@ -69,7 +74,8 @@ public record RegionizedBlockableEventLoop(Level level) {
 
     /**
      * Create an executor for task executing on the target region thread which is almost acting like the vanilla BlockableEventLoop
-     * @param pos the block position
+     *
+     * @param pos       the block position
      * @param chunkTask if true, the tasks off-main will go to chunk task queue, otherwise tick task queue
      * @return the executor
      */
@@ -80,8 +86,9 @@ public record RegionizedBlockableEventLoop(Level level) {
 
     /**
      * Create an executor for task executing on the target region thread which is almost acting like the vanilla BlockableEventLoop
-     * @param chunkX chunkX
-     * @param chunkZ chunkZ
+     *
+     * @param chunkX    chunkX
+     * @param chunkZ    chunkZ
      * @param chunkTask if true, the tasks off-main will go to chunk task queue, otherwise tick task queue
      * @return the executor
      */

@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Helvetica Volubi <suisuroru@blue-millennium.fun>
 Date: Sat, 24 May 2025 01:25:10 +0800
-Subject: [PATCH] Leaves Fix SculkCatalyst exp skip
+Subject: [PATCH] Leaves: Fix SculkCatalyst exp skip
 
 Co-authored by: violetc <58360096+s-yh-china@users.noreply.github.com>
 As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/ea91106ae57fc4cc14e2e0225009cf9919072f7f/leaves-api/paper-patches/features/0007-Fix-SculkCatalyst-exp-skip.patch)

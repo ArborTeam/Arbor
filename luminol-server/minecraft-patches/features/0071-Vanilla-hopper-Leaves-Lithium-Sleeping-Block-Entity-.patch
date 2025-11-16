@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: mrhua269 <mrhua269@gmail.com>
 Date: Fri, 14 Nov 2025 18:20:00 +0800
-Subject: [PATCH] Vanilla hopper & Leaves Lithium Sleeping Block Entity
+Subject: [PATCH] Vanilla hopper & Leaves: Lithium Sleeping Block Entity
  [Lithium Sleeping Block Entity] is a part from leaves
 
 Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/minecraft-patches/features/0136-Lithium-Sleeping-Block-Entity.patch
@@ -9,26 +9,10 @@ Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..00da04d993d62d3ab67135ab1a9d9e3fbe51590a 100644
+index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..f3d07efc347ff3cd06011484af0e75b5d93e6ec7 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-@@ -22,7 +22,6 @@ import net.minecraft.network.chat.MutableComponent;
- import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
- import net.minecraft.server.MinecraftServer;
- import net.minecraft.server.level.ChunkHolder;
--import net.minecraft.server.level.ServerChunkCache;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.server.level.ServerPlayer;
- import net.minecraft.server.network.ServerGamePacketListenerImpl;
-@@ -33,7 +32,6 @@ import net.minecraft.world.entity.ai.village.VillageSiege;
- import net.minecraft.world.entity.item.ItemEntity;
- import net.minecraft.world.level.BlockEventData;
- import net.minecraft.world.level.ChunkPos;
--import net.minecraft.world.level.Explosion;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.NaturalSpawner;
- import net.minecraft.world.level.ServerExplosion;
-@@ -63,6 +61,10 @@ import java.util.Map;
+@@ -63,6 +63,10 @@ import java.util.Map;
  import java.util.Set;
  import java.util.function.Consumer;
  import java.util.function.Predicate;
@@ -39,7 +23,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..00da04d993d62d3ab67135ab1a9d9e3f
  
  public final class RegionizedWorldData {
  
-@@ -73,6 +75,29 @@ public final class RegionizedWorldData {
+@@ -73,6 +77,29 @@ public final class RegionizedWorldData {
      public static final RegionizedData.RegioniserCallback<RegionizedWorldData> REGION_CALLBACK = new RegionizedData.RegioniserCallback<>() {
          @Override
          public void merge(final RegionizedWorldData from, final RegionizedWorldData into, final long fromTickOffset) {
@@ -69,7 +53,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..00da04d993d62d3ab67135ab1a9d9e3f
              // connections
              for (final Connection conn : from.connections) {
                  into.connections.add(conn);
-@@ -111,16 +136,18 @@ public final class RegionizedWorldData {
+@@ -111,16 +138,18 @@ public final class RegionizedWorldData {
              from.fluidLevelTicks.merge(into.fluidLevelTicks, fromRedstoneTimeOffset);
  
              // tile entity ticking
@@ -92,7 +76,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..00da04d993d62d3ab67135ab1a9d9e3f
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
                  }
-@@ -165,6 +192,37 @@ public final class RegionizedWorldData {
+@@ -165,6 +194,37 @@ public final class RegionizedWorldData {
          public void split(final RegionizedWorldData from, final int chunkToRegionShift,
                            final Long2ReferenceOpenHashMap<RegionizedWorldData> regionToData,
                            final ReferenceOpenHashSet<RegionizedWorldData> dataSet) {
@@ -130,7 +114,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..00da04d993d62d3ab67135ab1a9d9e3f
              // connections
              for (final Connection conn : from.connections) {
                  final ServerPlayer player = conn.getPlayer();
-@@ -240,8 +298,9 @@ public final class RegionizedWorldData {
+@@ -240,8 +300,9 @@ public final class RegionizedWorldData {
              from.fluidLevelTicks.split(chunkToRegionShift, levelTicksFluidRegionData);
  
              // tile entity ticking
@@ -142,7 +126,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..00da04d993d62d3ab67135ab1a9d9e3f
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -251,8 +310,9 @@ public final class RegionizedWorldData {
+@@ -251,8 +312,9 @@ public final class RegionizedWorldData {
                  } // else: when a chunk unloads, it does not actually _remove_ the tile entity from the list, it just gets
                    //       marked as removed. So if there is no section, it's probably removed!
              }
@@ -154,7 +138,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..00da04d993d62d3ab67135ab1a9d9e3f
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -447,6 +507,11 @@ public final class RegionizedWorldData {
+@@ -447,6 +509,11 @@ public final class RegionizedWorldData {
      // Redstone
      public final alternate.current.wire.WireHandler wireHandler;
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;
@@ -261,18 +245,10 @@ index b382665cc125b8b5c0938e5e55984e4bf91d37ff..2afaf6a3f18af7889f4f3b35cee9bbb5
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 66a55e21731bc64fd3446a3706fba62c13bb4b10..ea177b8ad7ebb25e3e2967c8ff3d36dc3dda6a1d 100644
+index 66a55e21731bc64fd3446a3706fba62c13bb4b10..38092dcc3dedc6c855e5598126be47f892223547 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -2,7 +2,6 @@ package net.minecraft.world.entity;
- 
- import com.google.common.collect.ImmutableList;
- import com.google.common.collect.Lists;
--import com.google.common.collect.Sets;
- import com.google.common.collect.ImmutableList.Builder;
- import com.mojang.logging.LogUtils;
- import com.mojang.serialization.Codec;
-@@ -308,7 +307,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -308,7 +308,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      private static final EntityDataAccessor<Boolean> DATA_NO_GRAVITY = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.BOOLEAN);
      protected static final EntityDataAccessor<Pose> DATA_POSE = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.POSE);
      public static final EntityDataAccessor<Integer> DATA_TICKS_FROZEN = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);
@@ -281,7 +257,7 @@ index 66a55e21731bc64fd3446a3706fba62c13bb4b10..ea177b8ad7ebb25e3e2967c8ff3d36dc
      private final VecDeltaCodec packetPositionCodec = new VecDeltaCodec();
      public boolean hasImpulse;
      @Nullable
-@@ -4309,11 +4308,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4309,11 +4309,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      protected Entity transformForAsyncTeleport(ServerLevel destination, Vec3 pos, Float yaw, Float pitch, Vec3 velocity) {
@@ -295,7 +271,7 @@ index 66a55e21731bc64fd3446a3706fba62c13bb4b10..ea177b8ad7ebb25e3e2967c8ff3d36dc
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
          this.postRemoveAfterChangingDimensions();
-@@ -6077,6 +6078,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -6077,6 +6079,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box

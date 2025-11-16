@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <mrhua269@gmail.com>
 Date: Thu, 12 Jun 2025 08:00:15 +0800
-Subject: [PATCH] Purpur Lobotomize stuck villagers
+Subject: [PATCH] Purpur: Lobotomize stuck villagers
 
 Co-authored by: William Blake Galbreath <Blake.Galbreath@GMail.com>
 As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/purpur-server/minecraft-patches/features/0001-Ridables.patch)

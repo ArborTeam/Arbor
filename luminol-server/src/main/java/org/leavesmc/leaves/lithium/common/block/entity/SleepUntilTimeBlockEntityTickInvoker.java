@@ -21,15 +21,25 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import org.jetbrains.annotations.NotNull;
 
-public record SleepUntilTimeBlockEntityTickInvoker(BlockEntity sleepingBlockEntity, long sleepUntilTickExclusive,
-                                                   TickingBlockEntity delegate) implements TickingBlockEntity {
+public class SleepUntilTimeBlockEntityTickInvoker implements TickingBlockEntity {
+
+    private final BlockEntity sleepingBlockEntity;
+    private long sleepTicks;
+    private final TickingBlockEntity delegate;
+
+    public SleepUntilTimeBlockEntityTickInvoker(BlockEntity sleepingBlockEntity, long sleepTicks, TickingBlockEntity delegate) {
+        this.sleepingBlockEntity = sleepingBlockEntity;
+        this.sleepTicks = sleepTicks;
+        this.delegate = delegate;
+    }
 
     @Override
     public void tick() {
         //noinspection ConstantConditions
-        long tickTime = this.sleepingBlockEntity.getLevel().getRedstoneGameTime(); // Luminol - Regionized threading for sleeping block entity
-        if (tickTime >= this.sleepUntilTickExclusive) {
+        this.sleepTicks--;
+        if (this.sleepTicks <= 0) {
             ((SleepingBlockEntity) this.sleepingBlockEntity).setTicker(this.delegate);
             this.delegate.tick();
         }
@@ -41,17 +51,20 @@ public record SleepUntilTimeBlockEntityTickInvoker(BlockEntity sleepingBlockEnti
     }
 
     @Override
+    @NotNull
     public BlockPos getPos() {
         return this.sleepingBlockEntity.getBlockPos();
     }
 
     @Override
+    @NotNull
     public String getType() {
         //noinspection ConstantConditions
         return BlockEntityType.getKey(this.sleepingBlockEntity.getType()).toString();
     }
 
     @Override
+    @NotNull
     public BlockEntity getTileEntity() {
         return this.sleepingBlockEntity;
     }

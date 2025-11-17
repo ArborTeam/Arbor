@@ -68,4 +68,8 @@ public abstract class ChunkSectionEntityMovementTracker {
         }
         setChanged(time);
     }
+
+    public void updateTicks(final long fromTickOffset, final long fromRedstoneTimeOffset) {
+        this.lastChangeTime += fromRedstoneTimeOffset;
+    }
 }

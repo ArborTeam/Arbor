@@ -26,7 +26,6 @@ public class CommandDialog {
     }
 
     public static void openGui(Player player, String name, ConfigsInstance config, String prefix) {
-        int dotCount = prefix.length() - prefix.replace(".", "").length();
         if (prefix.equals("full")) {
             player.openDialog(
                     DialogUtil.createHolder(
@@ -38,14 +37,25 @@ public class CommandDialog {
             return;
         }
 
-        if ((!prefix.isEmpty() && !prefix.endsWith("."))
-                || (config.completeConfigPath(prefix, dotCount + 1).size()
-                == config.completeConfigPath(prefix, dotCount + 2).size())
-                || (config.completeConfigPath(prefix, dotCount + 1).isEmpty())) {
+        // Check if we should display single config items
+        if (!prefix.isEmpty() && !prefix.endsWith(".")) {
             List<String> list = config.getSingleConfig(prefix);
-            if (list.isEmpty() && !prefix.endsWith(".")) {
-                prefix += ".";
-            } else {
+            if (!list.isEmpty()) {
+                player.openDialog(
+                        DialogUtil.createHolder(
+                                name + "config",
+                                config.getDataWithComment(list),
+                                name + "config submit ",
+                                config.SPLIT
+                        ));
+                return;
+            }
+            // If no direct matches, try with appended dot
+            prefix += ".";
+        } else if (!prefix.isEmpty()) {
+            // For paths ending with ".", check if they have direct config values
+            List<String> list = config.getSingleConfig(prefix.substring(0, prefix.length() - 1));
+            if (!list.isEmpty()) {
                 player.openDialog(
                         DialogUtil.createHolder(
                                 name + "config",
@@ -57,26 +67,30 @@ public class CommandDialog {
             }
         }
 
+        // Get all possible paths at current level
         List<String> keyList = config.completeConfigPath(prefix);
         DialogUtil.DialogBuilder builder = new DialogUtil.DialogBuilder();
+
+        // Add navigation buttons for each sub-path
         for (String key : keyList) {
-            if (config.completeConfigPath(key, dotCount + 1).size()
-                    == config.completeConfigPath(key, dotCount + 2).size()) {
-                if (config.completeConfigPath(key, -1).size() != config.completeConfigPath(key, dotCount + 1).size()
-                        || config.completeConfigPath(key, dotCount + 1).isEmpty()) {
-                    continue;
-                }
+            // Check if this key has children
+            List<String> childPaths = config.completeConfigPath(key + ".");
+
+            // Always create button if there are child paths or if it's a valid config node
+            if (!childPaths.isEmpty() || !config.getSingleConfig(key).isEmpty()) {
+                String raw = name + "config open-gui " + key + ".$(missing)";
+                StringTemplate template = StringTemplate.fromString(raw);
+                CommandTemplate commandTemplate = new CommandTemplate(new ParsedTemplate(raw, template));
+                builder.addButton(
+                        DialogUtil.createButton(
+                                Component.translatable(key),
+                                300,
+                                Optional.of(commandTemplate)
+                        ));
             }
-            String raw = name + "config open-gui " + key + ".$(missing)";
-            StringTemplate template = StringTemplate.fromString(raw);
-            CommandTemplate commandTemplate = new CommandTemplate(new ParsedTemplate(raw, template));
-            builder.addButton(
-                    DialogUtil.createButton(
-                            Component.translatable(key),
-                            300,
-                            Optional.of(commandTemplate)
-                    ));
         }
+
+        // Add "Show all configs" button at root level
         if (prefix.isEmpty()) {
             String raw = name + "config open-gui full$(missing)";
             StringTemplate template = StringTemplate.fromString(raw);
@@ -88,18 +102,23 @@ public class CommandDialog {
                             Optional.of(commandTemplate)
                     ));
         }
-        List<String> singleConfigs = config.getSingleConfig(prefix);
-        if (!singleConfigs.isEmpty()) {
-            String raw = name + "config open-gui " + prefix.substring(0, prefix.length() - 1) + "$(missing)";
-            StringTemplate template = StringTemplate.fromString(raw);
-            CommandTemplate commandTemplate = new CommandTemplate(new ParsedTemplate(raw, template));
-            builder.addButton(
-                    DialogUtil.createButton(
-                            Component.translatable("Show options at this level"),
-                            300,
-                            Optional.of(commandTemplate)
-                    ));
+
+        // Add "Show options at this level" button if there are single configs
+        if (prefix.endsWith(".")) {
+            List<String> singleConfigs = config.getSingleConfig(prefix.substring(0, prefix.length() - 1));
+            if (!singleConfigs.isEmpty()) {
+                String raw = name + "config open-gui " + prefix.substring(0, prefix.length() - 1) + "$(missing)";
+                StringTemplate template = StringTemplate.fromString(raw);
+                CommandTemplate commandTemplate = new CommandTemplate(new ParsedTemplate(raw, template));
+                builder.addButton(
+                        DialogUtil.createButton(
+                                Component.translatable("Show options at this level"),
+                                300,
+                                Optional.of(commandTemplate)
+                        ));
+            }
         }
+
         builder.setTitle(name + "config")
                 .setPause(false)
                 .setColumns(1);

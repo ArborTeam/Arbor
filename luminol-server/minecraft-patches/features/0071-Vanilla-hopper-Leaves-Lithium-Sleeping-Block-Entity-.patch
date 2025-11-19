@@ -9,7 +9,7 @@ Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..d2e0127a72eb0e38e8119aa0f5916355373baf9c 100644
+index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..d0de3b22f6cef6eb213b7ff688a514a67f84fbcf 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -63,6 +63,10 @@ import java.util.Map;
@@ -65,7 +65,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..d2e0127a72eb0e38e8119aa0f5916355
                  into.pendingBlockEntityTickers.add(tileEntityWrapped);
 -                final BlockEntity tileEntity = tileEntityWrapped.getTileEntity();
 +                BlockEntity tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
-+                if (tileEntityWrapped.getLithiumSlept() != null) tileEntityWrapped.getLithiumSlept().updateTicksForLithium(fromRedstoneTimeOffset); // Luminol - region threading for lithium sleeping block entity
++                tileEntityWrapped.updateTicksForLithium(fromRedstoneTimeOffset); // Luminol - region threading for lithium sleeping block entity
 +                if (tileEntity == null && (tileEntityWrapped = tileEntityWrapped.getLithiumSlept()) != null) tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
@@ -76,7 +76,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..d2e0127a72eb0e38e8119aa0f5916355
                  into.blockEntityTickers.add(tileEntityWrapped);
 -                final BlockEntity tileEntity = tileEntityWrapped.getTileEntity();
 +                BlockEntity tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
-+                if (tileEntityWrapped.getLithiumSlept() != null) tileEntityWrapped.getLithiumSlept().updateTicksForLithium(fromRedstoneTimeOffset); // Luminol - region threading for lithium sleeping block entity
++                tileEntityWrapped.updateTicksForLithium(fromRedstoneTimeOffset); // Luminol - region threading for lithium sleeping block entity
 +                if (tileEntity == null && (tileEntityWrapped = tileEntityWrapped.getLithiumSlept()) != null) tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
@@ -2904,7 +2904,7 @@ index 834e27ef2f7b342b074ff9e1e390e02f3ca1c399..e9749b66239d7562ecf22002bfbaa95d
      }
  
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 7add73f2dd957374661affebfa2b0102d99363f8..f8bc2679d9eeaa5d179ab70a4cc5c97522bcc674 100644
+index 7add73f2dd957374661affebfa2b0102d99363f8..0d906776e10605ecfe7c681dbf313cf25080d2e8 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -891,12 +891,14 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
@@ -2941,7 +2941,7 @@ index 7add73f2dd957374661affebfa2b0102d99363f8..f8bc2679d9eeaa5d179ab70a4cc5c975
              this.ticker = ticker;
          }
  
-@@ -1042,6 +1045,18 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -1042,6 +1045,26 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
          public String toString() {
              return this.ticker + " <wrapped>";
          }
@@ -2956,6 +2956,14 @@ index 7add73f2dd957374661affebfa2b0102d99363f8..f8bc2679d9eeaa5d179ab70a4cc5c975
 +        public void setLithiumSlept(@org.jetbrains.annotations.Nullable TickingBlockEntity slept) {
 +            this.slept = slept;
 +        }
++
++        @Override
++        public void updateTicksForLithium(long redstoneGameTimeOffset) {
++            if (this.ticker != null) {
++                this.ticker.updateTicksForLithium(redstoneGameTimeOffset);
++            }
++        }
++
 +        // Luminol end
      }
  

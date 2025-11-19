@@ -9,7 +9,7 @@ Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..4d1b73dbaf9822ee860052b0e17dac5df97dfff3 100644
+index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..d0de3b22f6cef6eb213b7ff688a514a67f84fbcf 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -63,6 +63,10 @@ import java.util.Map;
@@ -56,7 +56,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..4d1b73dbaf9822ee860052b0e17dac5d
              // connections
              for (final Connection conn : from.connections) {
                  into.connections.add(conn);
-@@ -111,16 +141,18 @@ public final class RegionizedWorldData {
+@@ -111,16 +141,20 @@ public final class RegionizedWorldData {
              from.fluidLevelTicks.merge(into.fluidLevelTicks, fromRedstoneTimeOffset);
  
              // tile entity ticking
@@ -65,6 +65,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..4d1b73dbaf9822ee860052b0e17dac5d
                  into.pendingBlockEntityTickers.add(tileEntityWrapped);
 -                final BlockEntity tileEntity = tileEntityWrapped.getTileEntity();
 +                BlockEntity tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
++                tileEntityWrapped.updateTicksForLithium(fromRedstoneTimeOffset); // Luminol - region threading for lithium sleeping block entity
 +                if (tileEntity == null && (tileEntityWrapped = tileEntityWrapped.getLithiumSlept()) != null) tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
@@ -75,11 +76,12 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..4d1b73dbaf9822ee860052b0e17dac5d
                  into.blockEntityTickers.add(tileEntityWrapped);
 -                final BlockEntity tileEntity = tileEntityWrapped.getTileEntity();
 +                BlockEntity tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
++                tileEntityWrapped.updateTicksForLithium(fromRedstoneTimeOffset); // Luminol - region threading for lithium sleeping block entity
 +                if (tileEntity == null && (tileEntityWrapped = tileEntityWrapped.getLithiumSlept()) != null) tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
                  }
-@@ -165,6 +197,37 @@ public final class RegionizedWorldData {
+@@ -165,6 +199,37 @@ public final class RegionizedWorldData {
          public void split(final RegionizedWorldData from, final int chunkToRegionShift,
                            final Long2ReferenceOpenHashMap<RegionizedWorldData> regionToData,
                            final ReferenceOpenHashSet<RegionizedWorldData> dataSet) {
@@ -117,7 +119,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..4d1b73dbaf9822ee860052b0e17dac5d
              // connections
              for (final Connection conn : from.connections) {
                  final ServerPlayer player = conn.getPlayer();
-@@ -240,8 +303,9 @@ public final class RegionizedWorldData {
+@@ -240,8 +305,9 @@ public final class RegionizedWorldData {
              from.fluidLevelTicks.split(chunkToRegionShift, levelTicksFluidRegionData);
  
              // tile entity ticking
@@ -129,7 +131,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..4d1b73dbaf9822ee860052b0e17dac5d
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -251,8 +315,9 @@ public final class RegionizedWorldData {
+@@ -251,8 +317,9 @@ public final class RegionizedWorldData {
                  } // else: when a chunk unloads, it does not actually _remove_ the tile entity from the list, it just gets
                    //       marked as removed. So if there is no section, it's probably removed!
              }
@@ -141,7 +143,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..4d1b73dbaf9822ee860052b0e17dac5d
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -447,6 +512,11 @@ public final class RegionizedWorldData {
+@@ -447,6 +514,11 @@ public final class RegionizedWorldData {
      // Redstone
      public final alternate.current.wire.WireHandler wireHandler;
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;
@@ -2861,10 +2863,10 @@ index ebea67223ce1d350087c73dff0cc3fe6d7b47ca0..5203e85b761122b01569221f22db55f7
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/entity/TickingBlockEntity.java b/net/minecraft/world/level/block/entity/TickingBlockEntity.java
-index c8facee29ee08e0975528083f89b64f0b593957f..70fa4660caaafa00b6cb793dc26bda48ef7ada41 100644
+index c8facee29ee08e0975528083f89b64f0b593957f..47d1032e224e1b946ccf67a0a744661e98366295 100644
 --- a/net/minecraft/world/level/block/entity/TickingBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TickingBlockEntity.java
-@@ -12,4 +12,13 @@ public interface TickingBlockEntity {
+@@ -12,4 +12,15 @@ public interface TickingBlockEntity {
      String getType();
  
      BlockEntity getTileEntity(); // Folia - region threading
@@ -2876,6 +2878,8 @@ index c8facee29ee08e0975528083f89b64f0b593957f..70fa4660caaafa00b6cb793dc26bda48
 +    }
 +
 +    default void setLithiumSlept(@org.jetbrains.annotations.Nullable TickingBlockEntity slept) {}
++
++    default void updateTicksForLithium(long redstoneGameTimeOffset) {}
 +    // Luminol end
  }
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java

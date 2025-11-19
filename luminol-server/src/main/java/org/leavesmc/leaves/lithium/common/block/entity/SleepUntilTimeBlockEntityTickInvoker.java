@@ -26,20 +26,20 @@ import org.jetbrains.annotations.NotNull;
 public class SleepUntilTimeBlockEntityTickInvoker implements TickingBlockEntity {
 
     private final BlockEntity sleepingBlockEntity;
-    private long sleepTicks;
+    private long sleepUntilTickExclusive;
     private final TickingBlockEntity delegate;
 
-    public SleepUntilTimeBlockEntityTickInvoker(BlockEntity sleepingBlockEntity, long sleepTicks, TickingBlockEntity delegate) {
+    public SleepUntilTimeBlockEntityTickInvoker(BlockEntity sleepingBlockEntity, long sleepUntilTickExclusive, TickingBlockEntity delegate) {
         this.sleepingBlockEntity = sleepingBlockEntity;
-        this.sleepTicks = sleepTicks;
+        this.sleepUntilTickExclusive = sleepUntilTickExclusive;
         this.delegate = delegate;
     }
 
     @Override
     public void tick() {
         //noinspection ConstantConditions
-        this.sleepTicks--;
-        if (this.sleepTicks <= 0) {
+        long tickTime = this.sleepingBlockEntity.getLevel().getRedstoneGameTime(); // Luminol - Regionized threading for sleeping block entity
+        if (tickTime >= this.sleepUntilTickExclusive) {
             ((SleepingBlockEntity) this.sleepingBlockEntity).setTicker(this.delegate);
             this.delegate.tick();
         }
@@ -67,5 +67,10 @@ public class SleepUntilTimeBlockEntityTickInvoker implements TickingBlockEntity 
     @NotNull
     public BlockEntity getTileEntity() {
         return this.sleepingBlockEntity;
+    }
+
+    @Override
+    public void updateTicksForLithium(long redstoneGameTimeOffset) {
+        this.sleepUntilTickExclusive += redstoneGameTimeOffset;
     }
 }

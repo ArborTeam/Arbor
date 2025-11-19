@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: mrhua269 <mrhua269@gmail.com>
 Date: Fri, 14 Nov 2025 18:20:00 +0800
-Subject: [PATCH] Vanilla hopper & Leaves: Lithium Sleeping Block Entity
+Subject: [PATCH] Vanilla hopper & Leaves Lithium Sleeping Block Entity
  [Lithium Sleeping Block Entity] is a part from leaves
 
 Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/minecraft-patches/features/0136-Lithium-Sleeping-Block-Entity.patch
@@ -9,7 +9,7 @@ Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..f3d07efc347ff3cd06011484af0e75b5d93e6ec7 100644
+index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..4d1b73dbaf9822ee860052b0e17dac5df97dfff3 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -63,6 +63,10 @@ import java.util.Map;
@@ -23,12 +23,13 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..f3d07efc347ff3cd06011484af0e75b5
  
  public final class RegionizedWorldData {
  
-@@ -73,6 +77,29 @@ public final class RegionizedWorldData {
+@@ -73,6 +77,32 @@ public final class RegionizedWorldData {
      public static final RegionizedData.RegioniserCallback<RegionizedWorldData> REGION_CALLBACK = new RegionizedData.RegioniserCallback<>() {
          @Override
          public void merge(final RegionizedWorldData from, final RegionizedWorldData into, final long fromTickOffset) {
 +            // Luminol start - Lithium sleeping block entity
 +            // lithium listeners
++            final long fromRedstoneTimeOffsetForLithiumTracker = into.redstoneTime - from.redstoneTime;
 +            for (var entry : from.containerEntityMovementTrackerMap.entrySet()) {
 +                var key = entry.getKey();
 +                var tracker = entry.getValue();
@@ -37,6 +38,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..f3d07efc347ff3cd06011484af0e75b5
 +                    continue;
 +                }
 +
++                tracker.updateTicks(fromTickOffset, fromRedstoneTimeOffsetForLithiumTracker);
 +                into.containerEntityMovementTrackerMap.put(key, tracker);
 +            }
 +            for (var entry : from.itemEntityMovementTrackerMap.entrySet()) {
@@ -47,13 +49,14 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..f3d07efc347ff3cd06011484af0e75b5
 +                    continue;
 +                }
 +
++                tracker.updateTicks(fromTickOffset, fromRedstoneTimeOffsetForLithiumTracker);
 +                into.itemEntityMovementTrackerMap.put(key, tracker);
 +            }
 +            // Luminol end
              // connections
              for (final Connection conn : from.connections) {
                  into.connections.add(conn);
-@@ -111,16 +138,18 @@ public final class RegionizedWorldData {
+@@ -111,16 +141,18 @@ public final class RegionizedWorldData {
              from.fluidLevelTicks.merge(into.fluidLevelTicks, fromRedstoneTimeOffset);
  
              // tile entity ticking
@@ -76,7 +79,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..f3d07efc347ff3cd06011484af0e75b5
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
                  }
-@@ -165,6 +194,37 @@ public final class RegionizedWorldData {
+@@ -165,6 +197,37 @@ public final class RegionizedWorldData {
          public void split(final RegionizedWorldData from, final int chunkToRegionShift,
                            final Long2ReferenceOpenHashMap<RegionizedWorldData> regionToData,
                            final ReferenceOpenHashSet<RegionizedWorldData> dataSet) {
@@ -114,7 +117,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..f3d07efc347ff3cd06011484af0e75b5
              // connections
              for (final Connection conn : from.connections) {
                  final ServerPlayer player = conn.getPlayer();
-@@ -240,8 +300,9 @@ public final class RegionizedWorldData {
+@@ -240,8 +303,9 @@ public final class RegionizedWorldData {
              from.fluidLevelTicks.split(chunkToRegionShift, levelTicksFluidRegionData);
  
              // tile entity ticking
@@ -126,7 +129,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..f3d07efc347ff3cd06011484af0e75b5
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -251,8 +312,9 @@ public final class RegionizedWorldData {
+@@ -251,8 +315,9 @@ public final class RegionizedWorldData {
                  } // else: when a chunk unloads, it does not actually _remove_ the tile entity from the list, it just gets
                    //       marked as removed. So if there is no section, it's probably removed!
              }
@@ -138,7 +141,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..f3d07efc347ff3cd06011484af0e75b5
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -447,6 +509,11 @@ public final class RegionizedWorldData {
+@@ -447,6 +512,11 @@ public final class RegionizedWorldData {
      // Redstone
      public final alternate.current.wire.WireHandler wireHandler;
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;

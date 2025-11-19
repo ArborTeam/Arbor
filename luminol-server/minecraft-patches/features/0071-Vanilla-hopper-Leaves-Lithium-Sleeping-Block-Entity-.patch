@@ -9,7 +9,7 @@ Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..d0de3b22f6cef6eb213b7ff688a514a67f84fbcf 100644
+index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..d2e0127a72eb0e38e8119aa0f5916355373baf9c 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -63,6 +63,10 @@ import java.util.Map;
@@ -65,7 +65,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..d0de3b22f6cef6eb213b7ff688a514a6
                  into.pendingBlockEntityTickers.add(tileEntityWrapped);
 -                final BlockEntity tileEntity = tileEntityWrapped.getTileEntity();
 +                BlockEntity tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
-+                tileEntityWrapped.updateTicksForLithium(fromRedstoneTimeOffset); // Luminol - region threading for lithium sleeping block entity
++                if (tileEntityWrapped.getLithiumSlept() != null) tileEntityWrapped.getLithiumSlept().updateTicksForLithium(fromRedstoneTimeOffset); // Luminol - region threading for lithium sleeping block entity
 +                if (tileEntity == null && (tileEntityWrapped = tileEntityWrapped.getLithiumSlept()) != null) tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
@@ -76,7 +76,7 @@ index 8c4d89c47fd176d584d3dbd0e3325f69b5e847c3..d0de3b22f6cef6eb213b7ff688a514a6
                  into.blockEntityTickers.add(tileEntityWrapped);
 -                final BlockEntity tileEntity = tileEntityWrapped.getTileEntity();
 +                BlockEntity tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
-+                tileEntityWrapped.updateTicksForLithium(fromRedstoneTimeOffset); // Luminol - region threading for lithium sleeping block entity
++                if (tileEntityWrapped.getLithiumSlept() != null) tileEntityWrapped.getLithiumSlept().updateTicksForLithium(fromRedstoneTimeOffset); // Luminol - region threading for lithium sleeping block entity
 +                if (tileEntity == null && (tileEntityWrapped = tileEntityWrapped.getLithiumSlept()) != null) tileEntity = tileEntityWrapped.getTileEntity(); // Luminol - region threading for lithium sleeping block entity
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);

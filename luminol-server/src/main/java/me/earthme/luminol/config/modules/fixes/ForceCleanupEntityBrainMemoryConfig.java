@@ -18,6 +18,6 @@ public class ForceCleanupEntityBrainMemoryConfig implements IConfigModule {
     @ConfigInfo(name = "enabled_for_block_pos", comments = "When enabled, the entity's brain will clean the memory which is typed of block_pos and not belong to current tickregion")
     public static boolean enabledForBlockPos = false;
 
-    @ConfigInfo(name = "enabled_for_block_pos", comments = "When enabled, the entity's brain will clean the memory which is typed of position_tracker and not belong to current tickregion")
+    @ConfigInfo(name = "enabled_for_position_tracker", comments = "When enabled, the entity's brain will clean the memory which is typed of position_tracker and not belong to current tickregion")
     public static boolean enabledForPositionTracker = false;
 }

@@ -6,6 +6,35 @@ Subject: [PATCH] Fix a series issue around entity memory typed GlobalPos and
 
 Fixes the issue remained by the memory cleaning fix due to that there is a little complex relationship in these memories, and we need to manual patch them
 
+diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
+index ff17bda274989d6b94cea280378a6e5de4f84d4b..91a206e9e4ac3887ed1d079f7f1c97b397fd140d 100644
+--- a/net/minecraft/world/entity/ai/Brain.java
++++ b/net/minecraft/world/entity/ai/Brain.java
+@@ -443,6 +443,24 @@ public class Brain<E extends LivingEntity> {
+                         continue;
+                     }
+                 }
++
++                //type: position_tracker and walk_target
++                if (me.earthme.luminol.config.modules.fixes.ForceCleanupEntityBrainMemoryConfig.enabledForPositionTracker) {
++                    net.minecraft.world.entity.ai.behavior.PositionTracker tracker = null;
++                    
++                    if (value instanceof net.minecraft.world.entity.ai.behavior.PositionTracker positionTracker) {
++                        tracker = positionTracker;
++                    }
++
++                    if (value instanceof net.minecraft.world.entity.ai.memory.WalkTarget walkTarget) {
++                        tracker = walkTarget.getTarget();
++                    }
++                    
++                    if (tracker != null && !tracker.checkThread(owner.level())) {
++                        this.eraseMemory(entry.getKey());
++                        continue;
++                    }
++                }
+                 // Luminol end
+ 
+                 if (expirableValue.hasExpired()) {
 diff --git a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 index 2664d72c3b6906d0505df2e63c0e5075eba9461b..f03c3c512ea48c2a89eebae62484922d28e4f831 100644
 --- a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
@@ -22,6 +51,49 @@ index 2664d72c3b6906d0505df2e63c0e5075eba9461b..f03c3c512ea48c2a89eebae62484922d
          WalkTarget walkTarget = new WalkTarget(positionTracker, speedModifier, closeEnoughDist);
          entity.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, positionTracker);
          entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, walkTarget);
+diff --git a/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java b/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java
+index 6fde2ee43aae483c4adf4d9cebe21e7091244414..e1d101edbab800ede00fb74d6f382d1a9ff85bfb 100644
+--- a/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java
++++ b/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java
+@@ -37,4 +37,11 @@ public class BlockPosTracker implements PositionTracker {
+     public String toString() {
+         return "BlockPosTracker{blockPos=" + this.blockPos + ", centerPosition=" + this.centerPosition + "}";
+     }
++
++    // Luminol start - Fix a series issue around entity memory typed GlobalPos and WalkTarget
++    @Override
++    public boolean checkThread(net.minecraft.world.level.Level currOwnedByLevel) {
++        return ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(currOwnedByLevel, this.blockPos);
++    }
++    // Luminol end
+ }
+diff --git a/net/minecraft/world/entity/ai/behavior/EntityTracker.java b/net/minecraft/world/entity/ai/behavior/EntityTracker.java
+index 091cc074d51ce8ab5bd7e58836519ac1e700679a..9fa82bc66afb2c1ddca78b2fe25fa1c3e2d7314a 100644
+--- a/net/minecraft/world/entity/ai/behavior/EntityTracker.java
++++ b/net/minecraft/world/entity/ai/behavior/EntityTracker.java
+@@ -55,4 +55,11 @@ public class EntityTracker implements PositionTracker {
+     public String toString() {
+         return "EntityTracker for " + this.entity;
+     }
++
++    // Luminol start - Fix a series issue around entity memory typed GlobalPos and WalkTarget
++    @Override
++    public boolean checkThread(net.minecraft.world.level.Level currOwnedByLevel) {
++        return ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.entity);
++    }
++    // Luminol end
+ }
+diff --git a/net/minecraft/world/entity/ai/behavior/PositionTracker.java b/net/minecraft/world/entity/ai/behavior/PositionTracker.java
+index b259b2cdc54b48ac023f027774218c010aefb149..c88283c66601f1dc5171d4ae13ecefe09812a137 100644
+--- a/net/minecraft/world/entity/ai/behavior/PositionTracker.java
++++ b/net/minecraft/world/entity/ai/behavior/PositionTracker.java
+@@ -10,4 +10,6 @@ public interface PositionTracker {
+     BlockPos currentBlockPosition();
+ 
+     boolean isVisibleBy(LivingEntity entity);
++
++    boolean checkThread(net.minecraft.world.level.Level currOwnedByLevel); // Luminol - Fix a series issue around entity memory typed GlobalPos and WalkTarget
+ }
 diff --git a/net/minecraft/world/entity/ai/behavior/SleepInBed.java b/net/minecraft/world/entity/ai/behavior/SleepInBed.java
 index bc6a5cacd67d46e0beb97adf30d98c1034be1a44..dd35eef062c36a409b6d3e701664db504c4c7631 100644
 --- a/net/minecraft/world/entity/ai/behavior/SleepInBed.java

@@ -5,7 +5,7 @@ Subject: [PATCH] Improved Server Health Report
 
 
 diff --git a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
-index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..45cdc5c62bf7c6da1e97e2396bc1402dab02701e 100644
+index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..8f8ffbdabaf2129c214115ae33b55536f71e78dd 100644
 --- a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
 +++ b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
 @@ -24,6 +24,11 @@ import org.bukkit.command.CommandSender;

@@ -5,7 +5,7 @@ Subject: [PATCH] Improved Server Health Report
 
 
 diff --git a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
-index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..1039a786c1243f2a4eae4d50edb83c7272d244ba 100644
+index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..45cdc5c62bf7c6da1e97e2396bc1402dab02701e 100644
 --- a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
 +++ b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
 @@ -24,6 +24,11 @@ import org.bukkit.command.CommandSender;
@@ -73,12 +73,43 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..1039a786c1243f2a4eae4d50edb83c72
          final TextComponent.Builder lowestRegionsBuilder = Component.text();
  
          if (sender instanceof Player) {
-@@ -277,8 +304,14 @@ public final class CommandServerHealth extends Command {
+@@ -245,7 +272,8 @@ public final class CommandServerHealth extends Command {
+             final int yLoc = 80;
+             final String location = "[w:'" + world.getWorld().getName() + "'," + centerBlockX + "," + yLoc + "," + centerBlockZ + "]";
+             final Component line = Component.text()
+-                .append(Component.text(" - ", LIST, TextDecoration.BOLD))
++                // Luminol start - improve server health report
++                .append(Component.text(" -> ", LIST, TextDecoration.BOLD))
+                 .append(Component.text("Region around block ", PRIMARY))
+                 .append(Component.text(location, INFORMATION))
+                 .append(Component.text(":\n", PRIMARY))
+@@ -261,6 +289,7 @@ public final class CommandServerHealth extends Command {
+                 .append(Component.text("    ", PRIMARY))
+                 .append(formatRegionStats(region.getData().getRegionStats(), (i + 1) != len))
+                 .build()
++                // Luminol end - improve server health report
+ 
+                 .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/minecraft:execute as @s in " + world.getWorld().getKey().toString() + " run tp " + centerBlockX + ".5 " + yLoc + " " + centerBlockZ + ".5"))
+                 .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Click to teleport to " + location, SECONDARY)));
+@@ -270,47 +299,61 @@ public final class CommandServerHealth extends Command {
+ 
+         sender.sendMessage(
+             Component.text()
+-                .append(Component.text("Server Health Report\n", HEADER, TextDecoration.BOLD))
++                .append(Component.text("Server Health Report\n", PRIMARY, TextDecoration.BOLD)) // Luminol - improve server health report
+ 
+-                .append(Component.text(" - ", LIST, TextDecoration.BOLD))
++                // Luminol start - improve server health report
++                .append(Component.text(" -> ", LIST, TextDecoration.BOLD))
+                 .append(Component.text("Online Players: ", PRIMARY))
                  .append(Component.text(Bukkit.getOnlinePlayers().size() + "\n", INFORMATION))
  
-                 .append(Component.text(" - ", LIST, TextDecoration.BOLD))
+-                .append(Component.text(" - ", LIST, TextDecoration.BOLD))
 -                .append(Component.text("Total regions: ", PRIMARY))
 -                .append(Component.text(regions.size() + "\n", INFORMATION))
+-
+-                .append(Component.text(" - ", LIST, TextDecoration.BOLD))
++                .append(Component.text(" -> ", LIST, TextDecoration.BOLD))
 +                .append(Component.text("Regions: ", PRIMARY))
 +                // Luminol start - improve server health report
 +                .append(Component.text(regions.size(), INFORMATION))
@@ -87,51 +118,69 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..1039a786c1243f2a4eae4d50edb83c72
 +                .append(Component.text(" | Entities: ", PRIMARY))
 +                .append(Component.text(NO_DECIMAL_PLACES.get().format(totalEntities) + "\n", INFORMATION))
 +                // Luminol end - improve server health report
- 
-                 .append(Component.text(" - ", LIST, TextDecoration.BOLD))
++
++                .append(Component.text(" -> ", LIST, TextDecoration.BOLD))
                  .append(Component.text("Utilisation: ", PRIMARY))
-@@ -288,23 +321,29 @@ public final class CommandServerHealth extends Command {
+                 .append(Component.text(ONE_DECIMAL_PLACES.get().format(totalUtil * 100.0), CommandUtil.getUtilisationColourRegion(totalUtil / (double)maxThreadCount)))
+                 .append(Component.text("% / ", PRIMARY))
+                 .append(Component.text(ONE_DECIMAL_PLACES.get().format(maxThreadCount * 100.0), INFORMATION))
                  .append(Component.text("%\n", PRIMARY))
  
-                 .append(Component.text(" - ", LIST, TextDecoration.BOLD))
+-                .append(Component.text(" - ", LIST, TextDecoration.BOLD))
 -                .append(Component.text("Load rate: ", PRIMARY))
 -                .append(Component.text(TWO_DECIMAL_PLACES.get().format(loadRate) + ", ", INFORMATION))
 -                .append(Component.text("Gen rate: ", PRIMARY))
 -                .append(Component.text(TWO_DECIMAL_PLACES.get().format(genRate) + "\n", INFORMATION))
+-
+-                .append(Component.text(" - ", LIST, TextDecoration.BOLD))
+-                .append(Component.text("Lowest Region TPS: ", PRIMARY))
+-                .append(Component.text(TWO_DECIMAL_PLACES.get().format(minTps) + "\n", CommandUtil.getColourForTPS(minTps)))
+-
+-
+-                .append(Component.text(" - ", LIST, TextDecoration.BOLD))
+-                .append(Component.text("Median Region TPS: ", PRIMARY))
+-                .append(Component.text(TWO_DECIMAL_PLACES.get().format(medianTps) + "\n", CommandUtil.getColourForTPS(medianTps)))
+-
+-                .append(Component.text(" - ", LIST, TextDecoration.BOLD))
+-                .append(Component.text("Highest Region TPS: ", PRIMARY))
++                .append(Component.text(" -> ", LIST, TextDecoration.BOLD))
 +                .append(Component.text("Chunk IO: ", PRIMARY))
 +                .append(Component.text("load ", PRIMARY))
 +                .append(Component.text(TWO_DECIMAL_PLACES.get().format(loadRate) + "/s", INFORMATION))
 +                .append(Component.text(" | gen ", PRIMARY))
 +                .append(Component.text(TWO_DECIMAL_PLACES.get().format(genRate) + "/s\n", INFORMATION))
- 
++
 +                // Luminol start - improve server health report
-                 .append(Component.text(" - ", LIST, TextDecoration.BOLD))
--                .append(Component.text("Lowest Region TPS: ", PRIMARY))
--                .append(Component.text(TWO_DECIMAL_PLACES.get().format(minTps) + "\n", CommandUtil.getColourForTPS(minTps)))
--
++                .append(Component.text(" -> ", LIST, TextDecoration.BOLD))
 +                .append(Component.text("Memory: ", PRIMARY))
 +                .append(Component.text(usedMemory + "MB / " + maxMemory + "MB (" + freeMemory + "MB free)\n", INFORMATION))
 +                // Luminol end - improve server health report
- 
-                 .append(Component.text(" - ", LIST, TextDecoration.BOLD))
--                .append(Component.text("Median Region TPS: ", PRIMARY))
--                .append(Component.text(TWO_DECIMAL_PLACES.get().format(medianTps) + "\n", CommandUtil.getColourForTPS(medianTps)))
++
++                .append(Component.text(" -> ", LIST, TextDecoration.BOLD))
 +                .append(Component.text("Region TPS: ", PRIMARY))
 +                .append(Component.text("min ", INFORMATION))
 +                .append(Component.text(TWO_DECIMAL_PLACES.get().format(minTps), CommandUtil.getColourForTPS(minTps)))
-+                .append(Component.text(" | median ", INFORMATION))
++                .append(Component.text(" | median ", INFORMATION)) // Luminol
 +                .append(Component.text(TWO_DECIMAL_PLACES.get().format(medianTps), CommandUtil.getColourForTPS(medianTps)))
 +                .append(Component.text(" | max ", INFORMATION))
-+                .append(Component.text(TWO_DECIMAL_PLACES.get().format(maxTps) + "\n", CommandUtil.getColourForTPS(maxTps)))
+                 .append(Component.text(TWO_DECIMAL_PLACES.get().format(maxTps) + "\n", CommandUtil.getColourForTPS(maxTps)))
  
-                 .append(Component.text(" - ", LIST, TextDecoration.BOLD))
--                .append(Component.text("Highest Region TPS: ", PRIMARY))
--                .append(Component.text(TWO_DECIMAL_PLACES.get().format(maxTps) + "\n", CommandUtil.getColourForTPS(maxTps)))
+-                .append(Component.text("Highest ", HEADER, TextDecoration.BOLD))
+-                .append(Component.text(Integer.toString(lowestRegionsCount), INFORMATION, TextDecoration.BOLD))
+-                .append(Component.text(" utilisation regions\n", HEADER, TextDecoration.BOLD))
++                .append(Component.text(" -> ", LIST, TextDecoration.BOLD))
 +                .append(Component.text("Most loaded regions\n", PRIMARY, TextDecoration.BOLD))
++
++                .append(Component.text("Highest ", PRIMARY, TextDecoration.BOLD)) // Luminol
++                .append(Component.text(Integer.toString(lowestRegionsCount), PRIMARY, TextDecoration.BOLD)) // Luminol
++                .append(Component.text(" utilisation regions\n", PRIMARY, TextDecoration.BOLD))
  
-                 .append(Component.text("Highest ", HEADER, TextDecoration.BOLD))
-                 .append(Component.text(Integer.toString(lowestRegionsCount), INFORMATION, TextDecoration.BOLD))
-@@ -361,4 +400,4 @@ public final class CommandServerHealth extends Command {
+                 .append(lowestRegionsBuilder.build())
++                // Luminol end - arrow bullets and aligned colours
+                 .build()
+         );
+ 
+@@ -361,4 +404,4 @@ public final class CommandServerHealth extends Command {
          }
          return new ArrayList<>();
      }

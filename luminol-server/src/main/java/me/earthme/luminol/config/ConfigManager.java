@@ -6,7 +6,9 @@ import me.earthme.luminol.config.flags.TransformedConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -55,6 +57,7 @@ public class ConfigManager {
     }
 
     private static void acceptTransformedConfigs() {
+        Set<ConfigsInstance> toReload = new HashSet<>();
         for (Map.Entry<TransformedConfig, String[]> entry : needTransformedConfigs.entrySet()) {
             String[] config = entry.getValue();
             TransformedConfig transformedConfig = entry.getKey();
@@ -87,9 +90,10 @@ public class ConfigManager {
 
                 if (success) origin.removeConfig(oldConfigKeyName, transformedConfig.directory());
             }
-            origin.saveConfigs();
-            target.saveConfigs();
+            toReload.add(target);
+            toReload.add(origin);
         }
+        toReload.forEach(ConfigsInstance::saveConfigs);
         needTransformedConfigs.clear(); // free space when all done
     }
 }

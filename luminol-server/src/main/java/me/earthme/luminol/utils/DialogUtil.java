@@ -11,6 +11,7 @@ import net.minecraft.server.dialog.body.DialogBody;
 import net.minecraft.server.dialog.input.BooleanInput;
 import net.minecraft.server.dialog.input.NumberRangeInput;
 import net.minecraft.server.dialog.input.TextInput;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 
@@ -60,7 +61,14 @@ public class DialogUtil {
     }
 
     public static MultiActionDialog createDialog(String title, Map<String, Object> map, String commandPrefix, @Nullable String split) {
-        DialogBuilder builder = new DialogBuilder();
+        return addInputs(map, commandPrefix, split, new DialogBuilder())
+                .setTitle(title)
+                .setPause(false)
+                .setColumns(1)
+                .build();
+    }
+
+    public static DialogBuilder addInputs(Map<String, Object> map, String commandPrefix, @Nullable String split, @NotNull DialogBuilder builder) {
         JSONObject valueBuilder = new JSONObject();
         boolean _bl = split != null && !split.isEmpty();
         Set<String> usedKeys = new HashSet<>();
@@ -137,11 +145,7 @@ public class DialogUtil {
                         Optional.empty()
                 ));
 
-        builder.setTitle(title)
-                .setPause(false)
-                .setColumns(1);
-
-        return builder.build();
+        return builder;
     }
 
     public static Input createCheckbox(String label, String key, boolean value, String trueText, String falseText) {

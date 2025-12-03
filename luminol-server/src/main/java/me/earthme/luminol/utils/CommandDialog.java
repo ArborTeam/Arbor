@@ -37,48 +37,21 @@ public class CommandDialog {
             return;
         }
 
-        // Check if we should display single config items
-        if (!prefix.isEmpty() && !prefix.endsWith(".")) {
-            List<String> list = config.getSingleConfig(prefix);
-            if (!list.isEmpty()) {
-                player.openDialog(
-                        DialogUtil.createHolder(
-                                name + "config",
-                                config.getDataWithComment(list),
-                                name + "config submit ",
-                                config.SPLIT
-                        ));
-                return;
-            }
-            // If no direct matches, try with appended dot
-            prefix += ".";
-        } else if (!prefix.isEmpty()) {
-            // For paths ending with ".", check if they have direct config values
-            List<String> list = config.getSingleConfig(prefix.substring(0, prefix.length() - 1));
-            if (!list.isEmpty()) {
-                player.openDialog(
-                        DialogUtil.createHolder(
-                                name + "config",
-                                config.getDataWithComment(list),
-                                name + "config submit ",
-                                config.SPLIT
-                        ));
-                return;
-            }
-        }
-
         // Get all possible paths at current level
-        List<String> keyList = config.completeConfigPath(prefix);
+        List<String> keyList = config.completeConfigPath(prefix.isEmpty() ? prefix :prefix + ".");
+        List<String> keySingleConfigs = config.getSingleConfig(prefix);
+        keyList.removeAll(keySingleConfigs);
         DialogUtil.DialogBuilder builder = new DialogUtil.DialogBuilder();
 
         // Add navigation buttons for each sub-path
         for (String key : keyList) {
-            // Check if this key has children
+            // Check if this key has children or is a valid config node
             List<String> childPaths = config.completeConfigPath(key + ".");
+            List<String> childKeySingleConfigs = config.getSingleConfig(key);
 
             // Always create button if there are child paths or if it's a valid config node
-            if (!childPaths.isEmpty() || !config.getSingleConfig(key).isEmpty()) {
-                String raw = name + "config open-gui " + key + ".$(missing)";
+            if (!childPaths.isEmpty() || !childKeySingleConfigs.isEmpty()) {
+                String raw = name + "config open-gui " + key + "$(missing)";
                 StringTemplate template = StringTemplate.fromString(raw);
                 CommandTemplate commandTemplate = new CommandTemplate(new ParsedTemplate(raw, template));
                 builder.addButton(
@@ -89,6 +62,13 @@ public class CommandDialog {
                         ));
             }
         }
+
+        DialogUtil.addInputs(
+                config.getDataWithComment(keySingleConfigs),
+                name + "config submit ",
+                config.SPLIT,
+                builder
+        );
 
         // Add "Show all configs" button at root level
         if (prefix.isEmpty()) {
@@ -101,22 +81,6 @@ public class CommandDialog {
                             300,
                             Optional.of(commandTemplate)
                     ));
-        }
-
-        // Add "Show options at this level" button if there are single configs
-        if (prefix.endsWith(".")) {
-            List<String> singleConfigs = config.getSingleConfig(prefix.substring(0, prefix.length() - 1));
-            if (!singleConfigs.isEmpty()) {
-                String raw = name + "config open-gui " + prefix.substring(0, prefix.length() - 1) + "$(missing)";
-                StringTemplate template = StringTemplate.fromString(raw);
-                CommandTemplate commandTemplate = new CommandTemplate(new ParsedTemplate(raw, template));
-                builder.addButton(
-                        DialogUtil.createButton(
-                                Component.translatable("Show options at this level"),
-                                300,
-                                Optional.of(commandTemplate)
-                        ));
-            }
         }
 
         builder.setTitle(name + "config")

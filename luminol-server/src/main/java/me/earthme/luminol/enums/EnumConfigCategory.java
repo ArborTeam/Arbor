@@ -6,6 +6,7 @@ public enum EnumConfigCategory {
     MISC("misc"),                     // unknown classify features
     FUNCTION("function"),             // new functions
     EXPERIMENT("experiment"),         // experimental features
+    UNSUPPORTED("unsupported"),       // features we do not want anyone to use
     REMOVED("removed");               // removed config
 
     private final String baseKeyName;

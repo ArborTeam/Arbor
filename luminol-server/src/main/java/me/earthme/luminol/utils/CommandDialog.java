@@ -38,7 +38,7 @@ public class CommandDialog {
         }
 
         // Get all possible paths at current level
-        List<String> keyList = config.completeConfigPath(prefix.isEmpty() ? prefix :prefix + ".");
+        List<String> keyList = config.completeConfigPath(prefix.isEmpty() ? prefix : prefix + ".");
         List<String> keySingleConfigs = config.getSingleConfig(prefix);
         keyList.removeAll(keySingleConfigs);
         DialogUtil.DialogBuilder builder = new DialogUtil.DialogBuilder();

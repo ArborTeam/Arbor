@@ -60,6 +60,18 @@ jobs:
         if: github.event_name != 'pull_request'
         run: sh scripts/SetENV.sh
 
+      - name: Clone Harebell
+        if: github.event_name != 'pull_request'
+        run: |
+          git clone --depth 1 --branch Luminol https://github.com/MenthaMC/Harebell.git harebell
+
+      - name: Build Harebell
+        if: github.event_name != 'pull_request'
+        working-directory: harebell
+        run: |
+          chmod +x gradlew
+          ./gradlew --refresh-dependencies shadowJar
+
       - name: Check If Release Exists
         if: github.event_name != 'pull_request' && env.flag_release == 'true'
         run: |
@@ -123,7 +135,9 @@ jobs:
             > ${{ github.ref_name }}
             ### Commit Message
             ${{ env.commit_msg }}
-          artifacts: ${{ env.jar_dir }}
+          artifacts: |
+            ${{ env.jar_dir }}
+            harebell/build/libs/harebell.jar
           generateReleaseNotes: true
           prerelease: ${{ env.pre }}
           makeLatest: ${{ env.make_latest }}
@@ -144,7 +158,9 @@ jobs:
             > ${{ github.ref_name }}
             ### Commit Message
             ${{ env.commit_msg }}
-          artifacts: ${{ env.jar_dir }}
+          artifacts: |
+            ${{ env.jar_dir }}
+            harebell/build/libs/harebell.jar
           generateReleaseNotes: true
           prerelease: ${{ env.pre }}
           makeLatest: ${{ env.make_latest }}

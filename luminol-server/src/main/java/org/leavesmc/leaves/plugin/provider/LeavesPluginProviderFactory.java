@@ -42,6 +42,9 @@ import java.util.logging.Logger;
 public class LeavesPluginProviderFactory implements PluginTypeFactory<PaperPluginParent, LeavesPluginMeta> {
     @Override
     public PaperPluginParent build(JarFile file, LeavesPluginMeta configuration, Path source) {
+        if (!configuration.isFoliaSupported()) {
+            throw new RuntimeException("Could not load plugin '" + configuration.getDisplayName() + "' as it is not marked as supporting Folia!");
+        }
         Logger jul = PaperPluginLogger.getLogger(configuration);
         ComponentLogger logger = ComponentLogger.logger(jul.getName());
         PluginProviderContext context = PluginProviderContextImpl.create(configuration, logger, source);

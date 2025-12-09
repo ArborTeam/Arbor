@@ -1,25 +1,21 @@
 package me.earthme.luminol.config.modules.function;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.mojang.logging.LogUtils;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.*;
 import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
+import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
 import me.earthme.luminol.functions.bars.GlobalServerBarManager;
-import me.earthme.luminol.functions.bars.GlobalServerMemoryBar;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Set;
 
 @ConfigClassInfo(category = EnumConfigCategory.FUNCTION, name = "membar")
 public class MembarConfig implements IConfigModule {
-    @DoNotLoad
-    private static final Logger logger = LogUtils.getLogger();
     @TransformedConfig(name = "enabled", directory = {"misc", "membar"})
     @ConfigInfo(name = "enabled")
     public static boolean memoryBarEnabled = false;
@@ -42,7 +38,7 @@ public class MembarConfig implements IConfigModule {
 
     @Override
     public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
-        GlobalServerMemoryBar membar = GlobalServerBarManager.get(EnumBarType.MEMORY);
+        AbstractGlobalServerBar membar = GlobalServerBarManager.get(EnumBarType.MEMORY);
         if (memoryBarEnabled) {
             membar.init();
         } else {
@@ -56,7 +52,7 @@ public class MembarConfig implements IConfigModule {
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        GlobalServerMemoryBar membar = GlobalServerBarManager.get(EnumBarType.MEMORY);
+        AbstractGlobalServerBar membar = GlobalServerBarManager.get(EnumBarType.MEMORY);
         membar.cancelBarUpdateTask();
         membar.runUnloadTask();
         Bukkit.getCommandMap().getKnownCommands().remove("luminol:membar");

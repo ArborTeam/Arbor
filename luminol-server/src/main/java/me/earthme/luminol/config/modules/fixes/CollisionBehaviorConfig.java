@@ -19,6 +19,7 @@ public class CollisionBehaviorConfig implements IConfigModule {
                     BLOCK_SHAPE_VANILLA
                     PAPER""")
     public static EnumCollisionBehaviorMode behaviorMode = EnumCollisionBehaviorMode.BLOCK_SHAPE_VANILLA;
+
     @TransformedConfig(name = "vanilla_fluid_pushing", directory = {"misc", "vanilla_fluid_pushing"})
     @ConfigInfo(name = "vanilla_fluid_pushing")
     public static boolean vanillaFluidPushing = false;

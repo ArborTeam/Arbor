@@ -5,10 +5,10 @@ Subject: [PATCH] Add tpsbar with chunkhot membar and region bar
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index 400e632208d133a3f49fc7f14bceb48a1026769b..631bec0adee5b01bfb931c25195b949eaf2efd27 100644
+index 09baa8c13a56e0f503815a436042b7b79b1698e4..ea6f7b18796fe94e8b7c382c672ca2aa7aabe6b8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-@@ -422,4 +422,12 @@ public class CraftChunk implements Chunk {
+@@ -408,4 +408,12 @@ public class CraftChunk implements Chunk {
      static {
          Arrays.fill(FULL_LIGHT, (byte) 0xFF);
      }
@@ -22,10 +22,10 @@ index 400e632208d133a3f49fc7f14bceb48a1026769b..631bec0adee5b01bfb931c25195b949e
 +    // KioCG end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 82d2309f2bc7e9d1e989f4b4212e360b47aa533f..7e98c7c419236f5f8cb544272085f4695141ae68 100644
+index 76d9bf5090e7a452c328fb7c8cf4dcde0fe713f9..cd6fcdb08d6941367611e84102390d20e678ce95 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2320,6 +2320,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2170,6 +2170,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              handle.newLevel = data.getIntOr("newLevel", 0);
              handle.expToDrop = data.getIntOr("expToDrop", 0);
              handle.keepLevel = data.getBooleanOr("keepLevel", false);
@@ -41,9 +41,9 @@ index 82d2309f2bc7e9d1e989f4b4212e360b47aa533f..7e98c7c419236f5f8cb544272085f469
          });
      }
  
-@@ -2337,6 +2346,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2187,6 +2196,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          data.putLong("lastPlayed", System.currentTimeMillis());
-         data.putString("lastKnownName", handle.getScoreboardName());
+         data.putString("lastKnownName", handle.getGameProfile().name());
  
 +        //Luminol start - Tpsbar
 +        data.putBoolean("tpsbarVisible",handle.isTpsBarVisible);
@@ -57,9 +57,9 @@ index 82d2309f2bc7e9d1e989f4b4212e360b47aa533f..7e98c7c419236f5f8cb544272085f469
          // Paper start - persist for use in offline save data
          ValueOutput paper = output.child("Paper");
          paper.putLong("LastLogin", handle.loginTime);
-@@ -3527,4 +3545,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
-     public PlayerGameConnection getConnection() {
-         return this.getHandle().connection.playerGameConnection;
+@@ -3371,4 +3389,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+             entity.remove();
+         }
      }
 +
 +    // KioCG start - ChunkHot

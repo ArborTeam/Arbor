@@ -8,10 +8,10 @@ As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18
 Licensed under: MIT (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/LICENSE)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
-index 83575ea52471378f5363da19115873ba98317d40..2adc863cfc3a5110ef91e24ed6caa02ec582ce77 100644
+index 5d640445b54c71867e286fb12ada04536acda014..5d0971c7dfe59933fae3d20b2a308ad2e1bfbd7f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
-@@ -259,4 +259,11 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
+@@ -244,4 +244,11 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
      public void restock() {
          getHandle().restock();
      }

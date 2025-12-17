@@ -7,10 +7,10 @@ As part of: Leaf
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/GPL-3.0.txt)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index 631bec0adee5b01bfb931c25195b949eaf2efd27..2871e097d05e972fe8e3f8d9923e44e13efba639 100644
+index ea6f7b18796fe94e8b7c382c672ca2aa7aabe6b8..1e9460851cf59be3c131428b0e81c93b4b773e0d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-@@ -196,7 +196,12 @@ public class CraftChunk implements Chunk {
+@@ -193,7 +193,12 @@ public class CraftChunk implements Chunk {
      @Override
      public boolean isSlimeChunk() {
          // 987234911L is taken from Slime when seeing if a slime can spawn in a chunk
@@ -25,10 +25,10 @@ index 631bec0adee5b01bfb931c25195b949eaf2efd27..2871e097d05e972fe8e3f8d9923e44e1
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 17190446f7db57343b9cd05c84e3338307dc9c98..4dde33c872d463bf17ba03e926de90e6988444b2 100644
+index 2b36205c1a8718649450cc32e3674313d603b373..92de192c7b420ebb4510354f347003127595e141 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1363,7 +1363,11 @@ public final class CraftServer implements Server {
+@@ -1268,7 +1268,11 @@ public final class CraftServer implements Server {
              registryAccess = levelDataAndDimensions.dimensions().dimensionsRegistryAccess();
          } else {
              LevelSettings levelSettings;

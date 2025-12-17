@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand to Luminol
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index 90a5178b5025378197b69514d782de5d6090cb6b..22c038e6556d9911e1eaedf71d7b86843af89c16 100644
+index 08745a35b1ce8cc56d970472088de3cd17b9e43a..fcdfd4f6de5e1c2d5e80c7f3d8cb0b33a62d257d 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
 @@ -593,7 +593,7 @@ public class Metrics {
@@ -96,7 +96,7 @@ index 10a0be7a4db1a51579d113d279af7a9effe7f438..4ada790812957657d580cb748077c496
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 7675acdca2162e403f4ff523bcdd6efe0cb42d49..30969198b4738e56af6c041962b2a90c45c41c36 100644
+index 5bd6da467a1f536eb56c93ea00f98050cfaa36d0..12235d1d22d71d976ef581c0ee4e541258a81257 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -231,7 +231,7 @@ public class Main {
@@ -108,21 +108,8 @@ index 7675acdca2162e403f4ff523bcdd6efe0cb42d49..30969198b4738e56af6c041962b2a90c
                          // Paper end
                      }
                  }
-diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index e9b6ca3aa25e140467ae866d572483050ea3fa0e..9699d7dcca5cf67f50ad05c0e875de424a4e00c5 100644
---- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-+++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-@@ -11,7 +11,7 @@ public final class Versioning {
-     public static String getBukkitVersion() {
-         String result = "Unknown-Version";
- 
--        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/dev.folia/folia-api/pom.properties"); // Folia
-+        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/me.earthme.luminol/luminol-api/pom.properties"); // Folia //Luminol
-         Properties properties = new Properties();
- 
-         if (stream != null) {
 diff --git a/src/main/java/org/spigotmc/WatchdogThread.java b/src/main/java/org/spigotmc/WatchdogThread.java
-index eafdb55d7418606dbca0b3bc4787501fed872c0a..89fa733ab3fe455d00e34b1bc1d320fdd76ba335 100644
+index 3e73e674823b34879572135eaa6ab47807c29023..a86dca9ece35f98f750a42db4f72d6d9db6c8fa6 100644
 --- a/src/main/java/org/spigotmc/WatchdogThread.java
 +++ b/src/main/java/org/spigotmc/WatchdogThread.java
 @@ -80,9 +80,10 @@ public class WatchdogThread extends ca.spottedleaf.moonrise.common.util.TickThre

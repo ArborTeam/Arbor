@@ -5,10 +5,10 @@ Subject: [PATCH] Rebrand to Luminol
 
 
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index fd3553bdc1c3cdbf6aa3dc00e0a4987f8eaa4fb8..cf72cb8b418239b56c755486b03a321672e16bc3 100644
+index 094d2d528cb74b8f1d277cd780bba7f438dbe764..2d5309cc9386ef1bddf0bd4e153269fea1e75d60 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -109,6 +109,7 @@ public class Main {
+@@ -105,6 +105,7 @@ public class Main {
                  JvmProfiler.INSTANCE.start(Environment.SERVER);
              }
  
@@ -17,10 +17,10 @@ index fd3553bdc1c3cdbf6aa3dc00e0a4987f8eaa4fb8..cf72cb8b418239b56c755486b03a3216
              Bootstrap.bootStrap();
              Bootstrap.validate();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index d8bab0ba6e2374fb74f3fa9f7db802f442240414..ad637e13b9c550c30dff51a216d482b0b72c2089 100644
+index 3d8290b952e4341211ef8e669372bf7ea1c4bf62..7e514cd4aa55f9b9950d76a7d14dd7945b6eba96 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -171,6 +171,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -261,6 +261,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
          this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
          // Paper end - initialize global and world-defaults configuration

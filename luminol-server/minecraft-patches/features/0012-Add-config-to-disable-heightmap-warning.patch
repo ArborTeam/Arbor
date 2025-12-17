@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mrhua269 <mrhua269@gmail.com>
+Date: Wed, 17 Dec 2025 22:47:17 +0800
+Subject: [PATCH] Add config to disable heightmap warning
+
+
+diff --git a/net/minecraft/world/level/levelgen/Heightmap.java b/net/minecraft/world/level/levelgen/Heightmap.java
+index 25c537496ccea6fe27111b21fe2e47b3f6a914a1..5018ab443a20a45ff51ddbbf56950eec30e3cd39 100644
+--- a/net/minecraft/world/level/levelgen/Heightmap.java
++++ b/net/minecraft/world/level/levelgen/Heightmap.java
+@@ -128,7 +128,8 @@ public class Heightmap {
+         if (raw.length == data.length) {
+             System.arraycopy(data, 0, raw, 0, data.length);
+         } else {
+-            LOGGER.warn("Ignoring heightmap data for chunk {}, size does not match; expected: {}, got: {}", chunk.getPos(), raw.length, data.length);
++            if (!me.earthme.luminol.config.modules.misc.DisableWarningConfig.disableHeightmapWarning) // Luminol - Config for height warning
++             LOGGER.warn("Ignoring heightmap data for chunk {}, size does not match; expected: {}, got: {}", chunk.getPos(), raw.length, data.length);
+             primeHeightmaps(chunk, EnumSet.of(type));
+         }
+     }

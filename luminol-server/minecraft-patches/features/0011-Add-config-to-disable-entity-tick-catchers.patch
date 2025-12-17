@@ -1,16 +1,16 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <wangxyper@163.com>
-Date: Sun, 12 Jan 2025 10:35:13 +0800
+From: mrhua269 <mrhua269@gmail.com>
+Date: Wed, 17 Dec 2025 22:46:23 +0800
 Subject: [PATCH] Add config to disable entity tick catchers
 
 
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 69d838a549ede999bb7e83641380c9f6afb91ea8..b2aee3194b71b5f2da71c1260b18fd87d0bdc825 100644
+index 479ffd150e9d015a04c5f09f000f04c028af5ba9..e6798d53db8f14514437764663cb8e8e657054f7 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1534,6 +1534,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -1480,6 +1480,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          try {
-             consumerEntity.accept(entity);
+             action.accept(entity);
          } catch (Throwable var6) {
 +            if (me.earthme.luminol.config.modules.experiment.DisableEntityCatchConfig.enabled) throw var6; // Luminol
              // Paper start - Prevent block entity and entity crashes

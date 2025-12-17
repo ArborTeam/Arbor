@@ -7,10 +7,10 @@ Subject: [PATCH] Add config for entity to clean memory value which is not
 Folia does not fully get the entity AI patched correctly, like some memories in entity's brain is still exists when switched dimension or teleported to the new tickregion, which entity is still accessing in the next tick then it will trigger the async catcher, which lead the entity go disappear and throw an exception in the console.In this patch, if this function is turned on, the server will clean the memory that doesn't belong to the entity's tickregion before ticking any behaviors, which can simply fix that.
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index 3eb1362e6597faa21b27c9d1611d64a236491f98..c589e18b68e45d5991291db3a0bdd833588ce945 100644
+index 11432097b02ddc8c8a2c0e29e9a5bd03c82dd1d4..c83dee968b441d9d1b0b0ad89b2ae584f2b2503a 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
-@@ -408,7 +408,7 @@ public class Brain<E extends LivingEntity> {
+@@ -405,7 +405,7 @@ public class Brain<E extends LivingEntity> {
      }
  
      public void tick(ServerLevel level, E entity) {
@@ -19,7 +19,7 @@ index 3eb1362e6597faa21b27c9d1611d64a236491f98..c589e18b68e45d5991291db3a0bdd833
          this.tickSensors(level, entity);
          this.startEachNonRunningBehavior(level, entity);
          this.tickEachRunningBehavior(level, entity);
-@@ -420,10 +420,31 @@ public class Brain<E extends LivingEntity> {
+@@ -417,10 +417,31 @@ public class Brain<E extends LivingEntity> {
          }
      }
  

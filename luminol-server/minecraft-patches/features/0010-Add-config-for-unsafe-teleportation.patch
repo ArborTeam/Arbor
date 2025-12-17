@@ -1,23 +1,23 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <wangxyper@163.com>
-Date: Sun, 12 Jan 2025 10:23:13 +0800
+From: mrhua269 <mrhua269@gmail.com>
+Date: Wed, 17 Dec 2025 22:45:40 +0800
 Subject: [PATCH] Add config for unsafe teleportation
 
 
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 34e31fa13e5107f13e166f694fafe58e306330ae..c444c4b7dc8454abd257030a8c59b9b22b9013d9 100644
+index 8009dfe104d53ebfc10f0eb86e955d21831dbffc..5842e7932bf21192f3f6be66d66b3a88858cbfcd 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -70,7 +70,7 @@ public class FallingBlockEntity extends Entity {
+@@ -69,7 +69,7 @@ public class FallingBlockEntity extends Entity {
+     public int fallDamageMax = 40;
      public float fallDamagePerDistance = 0.0F;
-     @Nullable
-     public CompoundTag blockData;
+     public @Nullable CompoundTag blockData;
 -    public boolean forceTickAfterTeleportToDuplicate;
 +    public boolean forceTickAfterTeleportToDuplicate = me.earthme.luminol.config.modules.fixes.UnsafeTeleportationConfig.enabled; // Luminol - Unsafe teleportation
      protected static final EntityDataAccessor<BlockPos> DATA_START_POS = SynchedEntityData.defineId(FallingBlockEntity.class, EntityDataSerializers.BLOCK_POS);
      public boolean autoExpire = true; // Paper - Expand FallingBlock API
  
-@@ -387,7 +387,7 @@ public class FallingBlockEntity extends Entity {
+@@ -384,7 +384,7 @@ public class FallingBlockEntity extends Entity {
          ResourceKey<Level> resourceKey1 = this.level().dimension();
          boolean flag = (resourceKey1 == Level.END || resourceKey == Level.END) && resourceKey1 != resourceKey;
          Entity entity = super.teleport(teleportTransition);
@@ -27,10 +27,10 @@ index 34e31fa13e5107f13e166f694fafe58e306330ae..c444c4b7dc8454abd257030a8c59b9b2
      }
  }
 diff --git a/net/minecraft/world/level/block/EndPortalBlock.java b/net/minecraft/world/level/block/EndPortalBlock.java
-index 6e495b2c4176d5a30ea911f8e44a22655df92ef6..cd12e35d784c8ac4737fa617d2e78cef6606299f 100644
+index 6bff1704203c2de91eb01bda5220f4ea4d49c6ec..c300f5d029740d43909bb7426f587f691f73b395 100644
 --- a/net/minecraft/world/level/block/EndPortalBlock.java
 +++ b/net/minecraft/world/level/block/EndPortalBlock.java
-@@ -69,6 +69,11 @@ public class EndPortalBlock extends BaseEntityBlock implements Portal {
+@@ -70,6 +70,11 @@ public class EndPortalBlock extends BaseEntityBlock implements Portal {
                  if (level.paperConfig().misc.disableEndCredits) {serverPlayer.seenCredits = true; return;} // Paper - Option to disable end credits
                  serverPlayer.showEndCredits();
              } else {

@@ -5,10 +5,10 @@ Subject: [PATCH] Add back read-only datapack command
 
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index e05f75b6bbd48d6fb7379926d68d5f8ed6014be9..11697e65a7f7871920ca7bad37de07f78a3da1f8 100644
+index cbae76022254970f0f8771449f4702cd5975dbbb..b4976ac6a609c24a43375d6c945e2412b00ab627 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
-@@ -192,7 +192,7 @@ public class Commands {
+@@ -203,7 +203,7 @@ public class Commands {
          if(me.earthme.luminol.config.modules.experiment.CommandConfig.data) {
              DataCommands.register(this.dispatcher); // Folia - region threading - TODO
          }
@@ -18,13 +18,13 @@ index e05f75b6bbd48d6fb7379926d68d5f8ed6014be9..11697e65a7f7871920ca7bad37de07f7
          DefaultGameModeCommands.register(this.dispatcher);
          //DialogCommand.register(this.dispatcher, context); // Folia - region threading - TODO
 diff --git a/net/minecraft/server/commands/DataPackCommand.java b/net/minecraft/server/commands/DataPackCommand.java
-index 3eaa9c85d06f6ecc8ed639d8befa861439390eb7..a5032b34752061d61fd9ddb4db828d35e403f5e7 100644
+index 8c530eef0e416d8b96f190ada358d77d34dbc8ac..bb36fa4559cdfe82079af1c39516239119ff06f4 100644
 --- a/net/minecraft/server/commands/DataPackCommand.java
 +++ b/net/minecraft/server/commands/DataPackCommand.java
 @@ -98,7 +98,7 @@ public class DataPackCommand {
          dispatcher.register(
              Commands.literal("datapack")
-                 .requires(Commands.hasPermission(2))
+                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 -                .then(
 +                /*.then( // Luminol - Add back read-only datapack command
                      Commands.literal("enable")

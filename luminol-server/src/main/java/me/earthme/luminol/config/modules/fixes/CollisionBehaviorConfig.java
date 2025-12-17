@@ -22,5 +22,7 @@ public class CollisionBehaviorConfig implements IConfigModule {
 
     @TransformedConfig(name = "vanilla_fluid_pushing", directory = {"misc", "vanilla_fluid_pushing"})
     @ConfigInfo(name = "vanilla_fluid_pushing")
+    // Maybe we should remove it because paper have updated moonrise, and moonrise has fixed this
+    // TODO: Check if this is still needed
     public static boolean vanillaFluidPushing = false;
 }

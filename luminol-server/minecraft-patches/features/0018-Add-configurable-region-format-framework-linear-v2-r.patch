@@ -184,7 +184,7 @@ index c6adcb44bc96eaeba74bfc228a6a61765b1628e7..f64cdadedea8a89aa360aac66e59a89a
          try (DataInputStream out = new DataInputStream(new java.io.BufferedInputStream(new java.util.zip.InflaterInputStream(Files.newInputStream(file))))) {
              return net.minecraft.nbt.NbtIo.read((java.io.DataInput) out);
 diff --git a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 1e9e061ec694ad64fc2724b83a66dfec7e069a43..5088868087fde255f9d534b2d15168e9c530cd2b 100644
+index 1e9e061ec694ad64fc2724b83a66dfec7e069a43..46efd139238765ff058ac48cdab9d28a50973455 100644
 --- a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -19,7 +19,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
@@ -312,7 +312,7 @@ index 1e9e061ec694ad64fc2724b83a66dfec7e069a43..5088868087fde255f9d534b2d15168e9
      }
  
 -    @org.jetbrains.annotations.Contract("_, false -> !null") @Nullable private RegionFile getRegionFile(ChunkPos chunkPos, boolean existingOnly) throws IOException { // CraftBukkit
-+    @org.jetbrains.annotations.Contract("_, false -> !null") @Nullable private abomination.IRegionFile getRegionFile(ChunkPos chunkPos, boolean existingOnly) throws IOException { // CraftBukkit
++    @org.jetbrains.annotations.Contract("_, false -> !null") private abomination.@Nullable IRegionFile getRegionFile(ChunkPos chunkPos, boolean existingOnly) throws IOException { // CraftBukkit
          // Paper start - rewrite chunk system
          if (existingOnly) {
              return this.moonrise$getRegionFileIfExists(chunkPos.x, chunkPos.z);

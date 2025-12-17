@@ -1,0 +1,88 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <novau233@163.com>
+Date: Fri, 25 Jul 2025 13:29:22 +0000
+Subject: [PATCH] Prevent teleprotAsync calls in move events
+
+
+diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 051b7ffd904b19d53cc8629b9971a29afdbf338e..718a10b442997c8225a7de27ff92c1f36b809a9e 100644
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -717,7 +717,9 @@ public class ServerGamePacketListenerImpl
+ 
+                     Location oldTo = to.clone();
+                     PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
++                    this.player.blockTeleportAsync = true; // Luminol - Prevent teleprotAsync calls during move events
+                     this.cserver.getPluginManager().callEvent(event);
++                    this.player.blockTeleportAsync = false; // Luminol - Prevent teleprotAsync calls during move events
+ 
+                     // If the event is cancelled we move the player back to their old location.
+                     if (event.isCancelled()) {
+@@ -1711,7 +1713,9 @@ public class ServerGamePacketListenerImpl
+ 
+                                         Location oldTo = to.clone();
+                                         PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
++                                        this.player.blockTeleportAsync = true; // Luminol - Prevent teleprotAsync calls during move events
+                                         this.cserver.getPluginManager().callEvent(event);
++                                        this.player.blockTeleportAsync = false; // Luminol - Prevent teleprotAsync calls during move events
+ 
+                                         // If the event is cancelled we move the player back to their old location.
+                                         if (event.isCancelled()) {
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index d30e579cd6acec0f4e27fc6225b8c97fb221e917..5b333b130fac129569d600bd63df1b6c3bca82bf 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -4390,12 +4390,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+             teleportTarget.cause(), teleportFlags, teleportComplete
+         );
+     }
++    // Luminol start - Prevent teleprotAsync calls in move events
++    public boolean blockTeleportAsync = false;
++    // Luminol end
+ 
+     public final boolean teleportAsync(ServerLevel destination, Vec3 pos, Float yaw, Float pitch, Vec3 velocity,
+                                        org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause, long teleportFlags,
+                                        java.util.function.Consumer<Entity> teleportComplete) {
+         ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread(this, "Cannot teleport entity async");
+ 
++        // Luminol start - Prevent teleprotAsync calls in move events
++        if (this.blockTeleportAsync && me.earthme.luminol.config.modules.fixes.PreventIncorrectTeleportAsyncConfig.enabled) {
++            if (me.earthme.luminol.config.modules.fixes.PreventIncorrectTeleportAsyncConfig.throwWhenCaught) {
++                throw new IllegalStateException("Call teleportAsync during move events!");
++            }
++
++            LOGGER.error("Calling teleportAsync during move events!", new Throwable());
++            return false;
++        }
++        // Luminol end
+         if (!ServerLevel.isInSpawnableBounds(new BlockPos(ca.spottedleaf.moonrise.common.util.CoordinateUtils.getBlockX(pos), ca.spottedleaf.moonrise.common.util.CoordinateUtils.getBlockY(pos), ca.spottedleaf.moonrise.common.util.CoordinateUtils.getBlockZ(pos)))) {
+             return false;
+         }
+diff --git a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
+index 6b337848d91cc4f24655d053bc69b0cd22447dda..fc1b3501114108d0166256c514a225337955e461 100644
+--- a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
++++ b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
+@@ -282,7 +282,9 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
+ 
+         if (this.lastLocation != null && !this.lastLocation.equals(to)) {
+             org.bukkit.event.vehicle.VehicleMoveEvent event = new org.bukkit.event.vehicle.VehicleMoveEvent(vehicle, this.lastLocation, to);
++            this.blockTeleportAsync = true; // Luminol - Prevent teleprotAsync calls during move events
+             event.callEvent();
++            this.blockTeleportAsync = false; // Luminol - Prevent teleprotAsync calls during move events
+         }
+         this.lastLocation = vehicle.getLocation();
+         // CraftBukkit end
+diff --git a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
+index 1123ec0038552e0b40774f4a433ff325695ea071..cce9213bd1ad544871b085d32d615175e6e887dd 100644
+--- a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
++++ b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
+@@ -307,7 +307,9 @@ public abstract class AbstractMinecart extends VehicleEntity {
+         new org.bukkit.event.vehicle.VehicleUpdateEvent(vehicle).callEvent();
+ 
+         if (!from.equals(to)) {
++            this.blockTeleportAsync = true; // Luminol - Prevent teleprotAsync calls during move events
+             new org.bukkit.event.vehicle.VehicleMoveEvent(vehicle, from, to).callEvent();
++            this.blockTeleportAsync = false; // Luminol - Prevent teleprotAsync calls during move events
+         }
+         // CraftBukkit end
+         this.updateInWaterStateAndDoFluidPushing();

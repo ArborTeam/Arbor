@@ -8,23 +8,23 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/4ade1001e4dd19c47d95
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/world/level/block/state/pattern/BlockPattern.java b/net/minecraft/world/level/block/state/pattern/BlockPattern.java
-index f7bb979f08634a7e1b77c59040f59fb5e11aafa5..3cad7d6bca9af77bace18bfd7cc013ac22be4075 100644
+index f834d487136627c07c893b8d68a6929ed46f20b9..7278bd208552b860145dc2d68fe84014c3508610 100644
 --- a/net/minecraft/world/level/block/state/pattern/BlockPattern.java
 +++ b/net/minecraft/world/level/block/state/pattern/BlockPattern.java
-@@ -59,7 +59,7 @@ public class BlockPattern {
+@@ -57,7 +57,7 @@ public class BlockPattern {
+         return this.matches(pos, finger, thumb, loadingCache);
      }
  
-     @Nullable
--    private BlockPattern.BlockPatternMatch matches(BlockPos pos, Direction finger, Direction thumb, LoadingCache<BlockPos, BlockInWorld> cache) {
-+    public BlockPattern.BlockPatternMatch matches(BlockPos pos, Direction finger, Direction thumb, LoadingCache<BlockPos, BlockInWorld> cache) { // Leaves - private -> public
+-    private BlockPattern.@Nullable BlockPatternMatch matches(BlockPos pos, Direction finger, Direction thumb, LoadingCache<BlockPos, BlockInWorld> cache) {
++    public BlockPattern.@Nullable BlockPatternMatch matches(BlockPos pos, Direction finger, Direction thumb, LoadingCache<BlockPos, BlockInWorld> cache) { // Leaves - private -> public
          for (int i = 0; i < this.width; i++) {
              for (int i1 = 0; i1 < this.height; i1++) {
                  for (int i2 = 0; i2 < this.depth; i2++) {
 diff --git a/net/minecraft/world/level/dimension/end/EndDragonFight.java b/net/minecraft/world/level/dimension/end/EndDragonFight.java
-index 23072c9ced73311954863592b0458c9662a551aa..ad1d1c3e1204e40c813c44d9da7909ed123dcd4c 100644
+index 2b3f2cd92d9dbb3f05f80de198a2160bf4a6ed9a..efe387576cfd4e1bf5ef38ded0babc7b911567e1 100644
 --- a/net/minecraft/world/level/dimension/end/EndDragonFight.java
 +++ b/net/minecraft/world/level/dimension/end/EndDragonFight.java
-@@ -279,8 +279,68 @@ public class EndDragonFight {
+@@ -276,7 +276,67 @@ public class EndDragonFight {
          return false;
      }
  
@@ -33,8 +33,7 @@ index 23072c9ced73311954863592b0458c9662a551aa..ad1d1c3e1204e40c813c44d9da7909ed
 +    private int cachePortalChunkIteratorZ = -8;
 +    private int cachePortalOriginIteratorY = -1;
 +
-     @Nullable
-     public BlockPattern.BlockPatternMatch findExitPortal() {
+     public BlockPattern.@Nullable BlockPatternMatch findExitPortal() {
 +        if (me.earthme.luminol.config.modules.optimizations.OptimizedDragonRespawnConfig.optimizedRespawn) {
 +            int i, j;
 +            for (i = cachePortalChunkIteratorX; i <= 8; ++i) {
@@ -93,7 +92,7 @@ index 23072c9ced73311954863592b0458c9662a551aa..ad1d1c3e1204e40c813c44d9da7909ed
          ChunkPos chunkPos = new ChunkPos(this.origin);
  
          for (int i = -8 + chunkPos.x; i <= 8 + chunkPos.x; i++) {
-@@ -583,6 +643,11 @@ public class EndDragonFight {
+@@ -578,6 +638,11 @@ public class EndDragonFight {
      }
  
      public boolean respawnDragon(List<EndCrystal> crystals) { // CraftBukkit - return boolean

@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mrhua269 <mrhua269@gmail.com>
+Date: Sat, 23 Aug 2025 19:49:51 +0800
+Subject: [PATCH] Pufferfish: Reduce projectile chunk loading
+
+A part of Pufferfish(https://github.com/Pufferfish-gg/Pufferfish)
+Co-authored-by: Paul Sauve <paul@technove.co>
+Original patch: https://github.com/pufferfish-gg/Pufferfish/blob/ver/1.21/pufferfish-server/minecraft-patches/features/0006-Reduce-projectile-chunk-loading.patch
+Original license(GPL-3.0): https://github.com/pufferfish-gg/Pufferfish/blob/ver/1.21/PATCH-LICENSE
+
+diff --git a/net/minecraft/world/entity/projectile/Projectile.java b/net/minecraft/world/entity/projectile/Projectile.java
+index ce9d3bb182d8f1b90236492f92a0a10eb1d901f1..650724a806a18da2439f43d3c180ecffa0fc40d5 100644
+--- a/net/minecraft/world/entity/projectile/Projectile.java
++++ b/net/minecraft/world/entity/projectile/Projectile.java
+@@ -50,6 +50,36 @@ public abstract class Projectile extends Entity implements TraceableEntity {
+         super(type, level);
+     }
+ 
++    // Pufferfish start
++    private static final ThreadLocal<Long> loadedThisTick = ThreadLocal.withInitial(() -> 0L);
++    private static final ThreadLocal<Long> loadedTick = ThreadLocal.withInitial(() -> 0L);
++
++    private int loadedLifetime = 0;
++    @Override
++    public void setPos(double x, double y, double z) {
++        long currentTick = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegion().getData().getCurrentTick();
++        if (loadedTick.get() != currentTick) {
++            loadedTick.set(currentTick);
++            loadedThisTick.set(0L);
++        }
++        int previousX = Mth.floor(this.getX()) >> 4, previousZ = Mth.floor(this.getZ()) >> 4;
++        int newX = Mth.floor(x) >> 4, newZ = Mth.floor(z) >> 4;
++        if (previousX != newX || previousZ != newZ) {
++            boolean isLoaded = ((net.minecraft.server.level.ServerChunkCache) this.level().getChunkSource()).getChunkAtIfLoadedImmediately(newX, newZ) != null;
++            if (!isLoaded) {
++                if (Projectile.loadedThisTick.get() > me.earthme.luminol.config.modules.optimizations.ProjectileChunkReduceConfig.maxProjectileLoadsPerTick) {
++                    if (++this.loadedLifetime > me.earthme.luminol.config.modules.optimizations.ProjectileChunkReduceConfig.maxProjectileLoadsPerProjectile) {
++                        this.discard();
++                    }
++                    return;
++                }
++                Projectile.loadedThisTick.set(Projectile.loadedThisTick.get() + 1);
++            }
++        }
++        super.setPos(x, y, z);
++    }
++    // Pufferfish end
++
+     protected void setOwner(@Nullable EntityReference<Entity> owner) {
+         this.owner = owner;
+         this.refreshProjectileSource(false); // Paper

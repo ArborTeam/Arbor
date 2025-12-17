@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mrhua269 <mrhua269@gmail.com>
+Date: Fri, 29 Aug 2025 10:54:44 +0800
+Subject: [PATCH] Fix unpatched task returning of
+ ServerConfigurationPacketListenerImpl#disconnectAsync
+
+Inspired by https://github.com/CraftCanvasMC/Canvas/blob/ver/1.21.8/canvas-server/minecraft-patches/sources/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java.patch
+but Canvas loses its main thread checks so fixed that btw
+
+diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+index 00eec818bfd7d1a7442e6bd2fa531f4a4e872101..6b41a9543aeebb7d2f7d744f69fd02e37e3c3766 100644
+--- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+@@ -303,13 +303,14 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+     // Paper start
+     @Override
+     public void disconnectAsync(final net.minecraft.network.DisconnectionDetails disconnectionInfo) {
+-        if (this.cserver.isPrimaryThread()) {
++        if (io.papermc.paper.threadedregions.RegionizedServer.isGlobalTickThread()) { // Luminol - Fix unpatched task returning of ServerConfigurationPacketListenerImpl#disconnectAsync
+             this.disconnect(disconnectionInfo);
+             return;
+         }
+ 
+         this.connection.setReadOnly();
+-        this.server.scheduleOnMain(() -> {
++        // this.server.scheduleOnMain(() -> { // Luminol - Fix unpatched task returning of ServerConfigurationPacketListenerImpl#disconnectAsync
++        io.papermc.paper.threadedregions.RegionizedServer.getInstance().addTask(() -> { // Luminol - Fix unpatched task returning of ServerConfigurationPacketListenerImpl#disconnectAsync
+             this.disconnect(disconnectionInfo); // Currently you cannot cancel disconnect during the config stage
+         });
+     }

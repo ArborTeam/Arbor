@@ -5,10 +5,10 @@ Subject: [PATCH] Async protocol switching optimization
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 3161dbf57cae0c934809bea816b87546bc230907..66ec0424a46dcd49cf44467357d80b1a2d84d3b2 100644
+index 50486e2b284919e7b1bf7710e3378d8060a00634..b4d6ddf02e72378022cc0a7cb6f8137fff3fa4f9 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -373,6 +373,116 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -349,6 +349,116 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          }
      }
  
@@ -126,12 +126,12 @@ index 3161dbf57cae0c934809bea816b87546bc230907..66ec0424a46dcd49cf44467357d80b1a
          this.validateListener(protocolInfo, packetInfo);
          if (protocolInfo.flow() != this.getReceiving()) {
 diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index 884b7b8c4581742a1ca965d453773dc10b76d5f9..e8f0c81b31569d610fb88f10d93c4e68fb5a24a1 100644
+index 2cc3dd1f267ae78d3aacb84509d4bf668235688f..00eec818bfd7d1a7442e6bd2fa531f4a4e872101 100644
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-@@ -158,8 +158,9 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+@@ -190,8 +190,9 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
      public void handleConfigurationFinished(ServerboundFinishConfigurationPacket packet) {
-         PacketUtils.ensureRunningOnSameThread(packet, this, this.server);
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor());
          this.finishCurrentTask(JoinWorldTask.TYPE);
 -        this.connection.setupOutboundProtocol(GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess())));
 +        // this.connection.setupOutboundProtocol(GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess()))); // Luminol - Async protocol switch - move down
@@ -139,10 +139,10 @@ index 884b7b8c4581742a1ca965d453773dc10b76d5f9..e8f0c81b31569d610fb88f10d93c4e68
 +        Runnable afterSwitch = () -> { // Luminol - Async protocol switch
          try {
              PlayerList playerList = this.server.getPlayerList();
-             if (playerList.getPlayer(this.gameProfile.getId()) != null) {
-@@ -247,6 +248,18 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
-             this.connection.send(new ClientboundDisconnectPacket(DISCONNECT_REASON_INVALID_DATA));
-             this.connection.disconnect(DISCONNECT_REASON_INVALID_DATA);
+             if (playerList.getPlayer(this.gameProfile.id()) != null) {
+@@ -237,6 +238,18 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+             LOGGER.error("Couldn't place player in world", (Throwable)var4);
+             this.disconnect(DISCONNECT_REASON_INVALID_DATA);
          }
 +        // Luminol start - Async protocol switch
 +        };
@@ -160,10 +160,10 @@ index 884b7b8c4581742a1ca965d453773dc10b76d5f9..e8f0c81b31569d610fb88f10d93c4e68
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index b489756075906f4a46fc36a57aca6c71ad5383fe..cd873b03c553ba42b85b6165f99f5d4fba34ec3b 100644
+index 204764c924e92049da6da4674c37e14b8612af92..fa606528000b14ecd0939d4b53fabf8a8df81af3 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2785,7 +2785,7 @@ public class ServerGamePacketListenerImpl
+@@ -2825,7 +2825,7 @@ public class ServerGamePacketListenerImpl
          // removed from the world
          // Folia end - rewrite login process - fix bad ordering of this field write - move after removed from world
          try { // Folia - rewrite login process - move connection ownership to global region
@@ -172,7 +172,7 @@ index b489756075906f4a46fc36a57aca6c71ad5383fe..cd873b03c553ba42b85b6165f99f5d4f
          this.removePlayerFromWorld();
          } finally { // Folia start - rewrite login process - move connection ownership to global region
              io.papermc.paper.threadedregions.RegionizedWorldData worldData = this.player.level().getCurrentWorldData();
-@@ -2794,7 +2794,13 @@ public class ServerGamePacketListenerImpl
+@@ -2834,7 +2834,13 @@ public class ServerGamePacketListenerImpl
          } // Folia end - rewrite login process - move connection ownership to global region
          this.waitingForSwitchToConfig = true; // Folia - rewrite login process - fix bad ordering of this field write - moved down
          this.send(ClientboundStartConfigurationPacket.INSTANCE);
@@ -186,7 +186,7 @@ index b489756075906f4a46fc36a57aca6c71ad5383fe..cd873b03c553ba42b85b6165f99f5d4f
      }
  
      @Override
-@@ -3631,12 +3637,25 @@ public class ServerGamePacketListenerImpl
+@@ -3684,12 +3690,25 @@ public class ServerGamePacketListenerImpl
              throw new IllegalStateException("Client acknowledged config, but none was requested");
          } else {
              final ServerConfigurationPacketListenerImpl listener = new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())); // Paper
@@ -214,12 +214,12 @@ index b489756075906f4a46fc36a57aca6c71ad5383fe..cd873b03c553ba42b85b6165f99f5d4f
      }
  
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index d114935b0879f5d83ad6c03395d565b6b92c6679..7a19bbcc74205035dee111d3fff53446bf2aad04 100644
+index c56d7bff7627ce58c0fd55ef18f4f090a8dc6459..84ef80df897bbd9f1370885bd760b44c7c03f6ff 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -414,14 +414,35 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -418,14 +418,35 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      public void handleLoginAcknowledgement(ServerboundLoginAcknowledgedPacket packet) {
-         net.minecraft.network.protocol.PacketUtils.ensureRunningOnSameThread(packet, this, this.server); // CraftBukkit
+         net.minecraft.network.protocol.PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor()); // CraftBukkit
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.PROTOCOL_SWITCHING, "Unexpected login acknowledgement packet");
 -        this.connection.setupOutboundProtocol(ConfigurationProtocols.CLIENTBOUND);
 +        /*this.connection.setupOutboundProtocol(ConfigurationProtocols.CLIENTBOUND); // Luminol - Async protocol switch - Rewrite
@@ -255,37 +255,37 @@ index d114935b0879f5d83ad6c03395d565b6b92c6679..7a19bbcc74205035dee111d3fff53446
  
      @Override
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 976a8982a0b0a9ae459cf08e13d69031d4238eca..482f6e26556377891bb682cdcc73193bc997a67d 100644
+index 2dcd7ece555d2343cc734097831787d29309f070..cccb80bef30c8d0e7f8659db47fbbff909590095 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -342,10 +342,12 @@ public abstract class PlayerList {
-             // only after setting the connection listener to game type, add the connection to this regions list
-             serverLevel.getCurrentWorldData().connections.add(connection);
-             // Folia end - rewrite login process
-+            if (!me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) { // Luminol - Async protocol switch // we will run async switch once these main thread logics became done
-             connection.setupInboundProtocol(
-                 GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess()), serverGamePacketListenerImpl),
-                 serverGamePacketListenerImpl
+@@ -235,10 +235,12 @@ public abstract class PlayerList {
+         // only after setting the connection listener to game type, add the connection to this regions list
+         serverLevel.getCurrentWorldData().connections.add(connection);
+         // Folia end - rewrite login process
++        if (!me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) { // Luminol - Async protocol switch // we will run async switch once these main thread logics became done
+         connection.setupInboundProtocol(
+             GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess()), serverGamePacketListenerImpl),
+             serverGamePacketListenerImpl
+         );
++        } // Luminol - Async protocol switch
+         serverGamePacketListenerImpl.suspendFlushing();
+         GameRules gameRules = serverLevel.getGameRules();
+         boolean flag = gameRules.get(GameRules.IMMEDIATE_RESPAWN);
+@@ -401,6 +403,17 @@ public abstract class PlayerList {
              );
-+            } // Luminol - Async protocol switch
-             GameRules gameRules = serverLevel.getGameRules();
-             boolean _boolean = gameRules.getBoolean(GameRules.RULE_DO_IMMEDIATE_RESPAWN);
-             boolean _boolean1 = gameRules.getBoolean(GameRules.RULE_REDUCEDDEBUGINFO);
-@@ -497,6 +499,17 @@ public abstract class PlayerList {
-                 );
-             }
-             // Paper end - Send empty chunk
-+            // Luminol start - Async protocol switch
-+            if (me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) {
-+                // auto read will be enabled once the async switch is done
-+                connection.setupInboundProtocolAsync(
-+                        GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess()), serverGamePacketListenerImpl),
-+                        serverGamePacketListenerImpl,
-+                        null, // we don't need do anything more
-+                        true // start auto read which we have disabled in configuration handler
-+                );
-+            }
-+            // Luminol end
          }
+         // Paper end - Send empty chunk
++        // Luminol start - Async protocol switch
++        if (me.earthme.luminol.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) {
++            // auto read will be enabled once the async switch is done
++            connection.setupInboundProtocolAsync(
++                    GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess()), serverGamePacketListenerImpl),
++                    serverGamePacketListenerImpl,
++                    null, // we don't need do anything more
++                    true // start auto read which we have disabled in configuration handler
++            );
++        }
++        // Luminol end
      }
  
+     public void updateEntireScoreboard(ServerScoreboard scoreboard, ServerPlayer player) {

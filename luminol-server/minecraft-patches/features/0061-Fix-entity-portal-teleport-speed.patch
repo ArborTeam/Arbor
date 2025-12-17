@@ -1,0 +1,67 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Sun, 27 Apr 2025 14:26:01 +0800
+Subject: [PATCH] Fix entity portal-teleport speed
+
+
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index 1924a20bea5aae4f3e098ba1675ca8e7d8663c1d..f9da52bcc7f51426ab1a5d007a5cd5a11ddde9c5 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -1436,7 +1436,27 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         if (levelChunk != null) levelChunk.getChunkHot().startTicking(); try { // KioCG
+         try {
+         // Folia end - profiler
++        // Luminol start - Entity portal-teleport speed fix
+         if (isActive) { // Paper - EAR 2
++            if (!(entity instanceof Player) && entity.teleportTickType == 2) { // Luminol - after portal compensate tick
++                entity.tick();
++                entity.tick();
++                entity.teleportTickType = 0;
++                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
++                    return;
++                }
++                if (entity.handlePortal()) {
++                    return;
++                }
++            } else if (!(entity instanceof Player) && entity.teleportTickType == 1) { // Luminol - portal teleport only
++                entity.teleportTickType++;
++                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
++                    return;
++                }
++                if (entity.handlePortal()) {
++                    return;
++                }
++            } else {
+         entity.tick();
+         // Folia start - region threading
+         if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
+@@ -1447,6 +1467,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+             // portalled
+             return;
+         }
++        }
++        // Luminol end - Entity portal-teleport speed fix
+         // Folia end - region threading
+         } else {entity.inactiveTick();} // Paper - EAR 2
+         profilerFiller.pop();
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 16ecbb01ce7c15d7e52aa315b779ac2681c776c8..c553f9375f686815397fa5d783d52905b285014f 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -373,6 +373,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+     public long activatedTick = Integer.MIN_VALUE;
+     public boolean isTemporarilyActive;
+     public long activatedImmunityTick = Integer.MIN_VALUE;
++    public int teleportTickType = 0;// Luminol - Entity portal-teleport speed fix
+ 
+     public void inactiveTick() {
+     }
+@@ -3509,6 +3510,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+         } else {
+             if (this.portalProcess == null || !this.portalProcess.isSamePortal(portal)) {
+                 this.portalProcess = new PortalProcessor(portal, pos.immutable());
++                this.teleportTickType = 1; // Luminol - Entity portal-teleport speed fix
+             } else if (!this.portalProcess.isInsidePortalThisTick()) {
+                 this.portalProcess.updateEntryPosition(pos.immutable());
+                 this.portalProcess.setAsInsidePortalThisTick(true);

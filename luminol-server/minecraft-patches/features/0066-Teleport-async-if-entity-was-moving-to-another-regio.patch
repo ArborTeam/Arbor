@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <wangxyper@163.com>
+Date: Sun, 12 Jan 2025 10:53:41 +0800
+Subject: [PATCH] Teleport async if entity was moving to another region at once
+
+On folia, entity usually cannot move out of the tickregion, but sometimes it actually does(like some end pearl gun that can shoot an end pearl to the block faraway than 10000 blocks even more). To fix this, we added a temporary fix which teleport these entities to the destination instead running its move logics so that we could ensure anything is under control.But one thing need to consider is that teleportAsync is actually calling halfway of the entity tick and there is still something running when teleportAsync called, which is actually modified the entity in another thread, so there is still need an improvement
+
+Reference from : https://github.com/KaiijuMC/Kaiiju/blob/ver/1.20.1/patches/server/0040-Teleport-async-if-we-cannot-move-entity-off-main.patch
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 5b333b130fac129569d600bd63df1b6c3bca82bf..bf8813c728fdbeb90bf80a486d564bd649d1b8fc 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -1130,6 +1130,10 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+ 
+     private boolean boundingBoxChanged = false; // Gale - VMP - skip entity move if movement is zero
+ 
++    //Luminol start - Fix large pos moving
++    private volatile boolean preventMoving = false;
++    //Luminol end
++
+     public void move(MoverType type, Vec3 movement) {
+         // Gale start - VMP - skip entity move if movement is zero
+         if (!this.boundingBoxChanged && movement.equals(Vec3.ZERO)) {
+@@ -1145,6 +1149,32 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+             this.moveStartZ = this.getZ();
+             this.moveVector = movement;
+         }
++        //Luminol start - Fix high position moving
++        if (me.earthme.luminol.config.modules.fixes.FoliaEntityMovingFixConfig.enabled && ca.spottedleaf.moonrise.common.util.TickThread.isTickThread()){ //Except the threads because it may be called by the chunk system worker thread
++            var finalPosition = movement.add(this.position);
++            if (this.preventMoving || Double.isNaN(finalPosition.x) || Double.isNaN(finalPosition.y) || Double.isNaN(finalPosition.z)){
++                return;
++            }
++
++            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(((ServerLevel) this.level),finalPosition)){
++                this.preventMoving = true;
++                this.teleportAsync(
++                        (ServerLevel) this.level(),
++                        finalPosition,
++                        this.getYRot(), this.getXRot(),
++                        null, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN,
++                        Entity.TELEPORT_FLAG_LOAD_CHUNK | Entity.TELEPORT_FLAG_TELEPORT_PASSENGERS,
++                        result -> {
++                            this.preventMoving = false;
++                        }
++                );
++                if (me.earthme.luminol.config.modules.fixes.FoliaEntityMovingFixConfig.warnOnDetected){
++                    LOGGER.warn("Entity {} with entityId {} has tried moving to another region!",this.type.getCategory().getName(),this.getId());
++                }
++                return;
++            }
++        }
++        //Luminol end
+         try {
+         // Paper end - detailed watchdog information
+         if (this.noPhysics) {

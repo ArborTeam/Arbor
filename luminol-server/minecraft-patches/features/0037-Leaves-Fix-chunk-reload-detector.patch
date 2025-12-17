@@ -8,10 +8,10 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/c5f18b7864206cea4411
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index e96d4dee14c05f2fa329bfb1588ec795d4e3d730..2d4c68b01cc1508a1a4715a91316a7db80d4efa2 100644
+index 3a817c92147bb78c60238f3ddc1644b721aed7a2..1d418d4a07d47479a5a551f871abc0c1162e63e3 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -370,7 +370,7 @@ public class ServerEntity {
+@@ -352,7 +352,7 @@ public class ServerEntity {
              if (!list.isEmpty()) {
                  consumer.accept(new ClientboundSetEquipmentPacket(this.entity.getId(), list, true)); // Paper - data sanitization
              }

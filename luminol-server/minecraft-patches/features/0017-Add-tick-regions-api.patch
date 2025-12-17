@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <wangxyper@163.com>
-Date: Mon, 27 Jan 2025 13:01:55 +0800
+From: mrhua269 <mrhua269@gmail.com>
+Date: Wed, 17 Dec 2025 23:11:08 +0800
 Subject: [PATCH] Add tick regions api
 
 
@@ -42,10 +42,10 @@ index 604385af903845d966382ad0a4168798e4ed4a0e..45aa5484b1cdb317ed55f1b001dbfe13
          }
  
 diff --git a/io/papermc/paper/threadedregions/TickRegions.java b/io/papermc/paper/threadedregions/TickRegions.java
-index 988fe74578065c9464f5639e5cc6af79619edef5..bfb39cbf1ba58d02da7e35300eb95872747506e8 100644
+index 7f3bd370ee505d0f66281cdbd87d9dd43b936bb8..30feb7a900027653bea6ba99331df9ab59859174 100644
 --- a/io/papermc/paper/threadedregions/TickRegions.java
 +++ b/io/papermc/paper/threadedregions/TickRegions.java
-@@ -134,6 +134,7 @@ public final class TickRegions implements ThreadedRegionizer.RegionCallbacks<Tic
+@@ -135,6 +135,7 @@ public final class TickRegions implements ThreadedRegionizer.RegionCallbacks<Tic
          private final AtomicInteger entityCount = new AtomicInteger();
          private final AtomicInteger playerCount = new AtomicInteger();
          private final AtomicInteger chunkCount = new AtomicInteger();
@@ -53,7 +53,7 @@ index 988fe74578065c9464f5639e5cc6af79619edef5..bfb39cbf1ba58d02da7e35300eb95872
  
          public int getEntityCount() {
              return this.entityCount.get();
-@@ -183,6 +184,7 @@ public final class TickRegions implements ThreadedRegionizer.RegionCallbacks<Tic
+@@ -184,6 +185,7 @@ public final class TickRegions implements ThreadedRegionizer.RegionCallbacks<Tic
          private final RegionStats regionStats;
  
          public volatile ca.spottedleaf.leafprofiler.RegionizedProfiler.Handle profiler; // Folia - profiler

@@ -1,22 +1,15 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Bacteriawa <A3167717663@hotmail.com>
-Date: Tue, 14 Oct 2025 00:28:47 +0800
+From: mrhua269 <mrhua269@gmail.com>
+Date: Wed, 17 Dec 2025 23:21:52 +0800
 Subject: [PATCH] Improved Server Health Report
 
+Co-authored-by: Bacteriawa <A3167717663@hotmail.com>
 
 diff --git a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
-index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..2de0f538a5253a10e353e639e739361030b6ba02 100644
+index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..26545bff53141394b4ef4b7e23771c7aff8de49f 100644
 --- a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
 +++ b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
-@@ -1,7 +1,6 @@
- package io.papermc.paper.threadedregions.commands;
- 
- import io.papermc.paper.threadedregions.RegionizedServer;
--import io.papermc.paper.threadedregions.RegionizedWorldData;
- import io.papermc.paper.threadedregions.ThreadedRegionizer;
- import io.papermc.paper.threadedregions.TickData;
- import io.papermc.paper.threadedregions.TickRegionScheduler;
-@@ -24,11 +23,17 @@ import org.bukkit.command.CommandSender;
+@@ -23,11 +23,17 @@ import org.bukkit.command.CommandSender;
  import org.bukkit.craftbukkit.CraftWorld;
  import org.bukkit.entity.Entity;
  import org.bukkit.entity.Player;
@@ -34,7 +27,7 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..2de0f538a5253a10e353e639e7393610
  
  public final class CommandServerHealth extends Command {
  
-@@ -45,7 +50,7 @@ public final class CommandServerHealth extends Command {
+@@ -44,7 +50,7 @@ public final class CommandServerHealth extends Command {
      private static final TextColor HEADER = TextColor.color(79, 164, 240);
      private static final TextColor PRIMARY = TextColor.color(48, 145, 237);
      private static final TextColor SECONDARY = TextColor.color(104, 177, 240);
@@ -43,7 +36,7 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..2de0f538a5253a10e353e639e7393610
      private static final TextColor LIST = TextColor.color(33, 97, 188);
  
      public CommandServerHealth() {
-@@ -55,33 +60,50 @@ public final class CommandServerHealth extends Command {
+@@ -54,33 +60,50 @@ public final class CommandServerHealth extends Command {
          this.setPermission("bukkit.command.tps");
      }
  
@@ -110,7 +103,7 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..2de0f538a5253a10e353e639e7393610
          if (region == null) {
              sender.sendMessage(Component.text("You are not in a region currently", NamedTextColor.RED));
              return true;
-@@ -105,25 +127,17 @@ public final class CommandServerHealth extends Command {
+@@ -104,25 +127,17 @@ public final class CommandServerHealth extends Command {
          final double tps1m = report1m.tpsData().segmentAll().average();
          final double mspt1m = report1m.timePerTickData().segmentAll().average() / 1.0E6;
  
@@ -145,7 +138,7 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..2de0f538a5253a10e353e639e7393610
  
          sender.sendMessage(line);
  
-@@ -144,7 +158,7 @@ public final class CommandServerHealth extends Command {
+@@ -143,7 +158,7 @@ public final class CommandServerHealth extends Command {
          }
  
          final List<ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData>> regions =
@@ -154,7 +147,7 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..2de0f538a5253a10e353e639e7393610
  
          for (final World bukkitWorld : Bukkit.getWorlds()) {
              final ServerLevel world = ((CraftWorld)bukkitWorld).getHandle();
-@@ -163,6 +177,18 @@ public final class CommandServerHealth extends Command {
+@@ -162,6 +177,18 @@ public final class CommandServerHealth extends Command {
          final long currTime = System.nanoTime();
          final TickData.TickReportData globalTickReport = RegionizedServer.getGlobalTickData().getTickReport15s(currTime);
  
@@ -173,7 +166,7 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..2de0f538a5253a10e353e639e7393610
          for (final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region : regions) {
              final TickData.TickReportData report = region.getData().getRegionSchedulingHandle().getTickReport15s(currTime);
              tpsByRegion.add(report == null ? 20.0 : report.tpsData().segmentAll().average());
-@@ -174,31 +200,27 @@ public final class CommandServerHealth extends Command {
+@@ -173,31 +200,27 @@ public final class CommandServerHealth extends Command {
          final double loadRate = ca.spottedleaf.moonrise.patches.chunk_system.scheduling.task.ChunkFullTask.loadRate(currTime);
  
          totalUtil += globalTickReport.utilisation();
@@ -207,7 +200,7 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..2de0f538a5253a10e353e639e7393610
              regionsBelowThreshold.add(new ObjectObjectImmutablePair<>(regions.get(i), report));
          }
  
-@@ -207,11 +229,18 @@ public final class CommandServerHealth extends Command {
+@@ -206,11 +229,18 @@ public final class CommandServerHealth extends Command {
              final TickData.TickReportData report2 = p2.right();
              final double util1 = report1 == null ? 0.0 : report1.utilisation();
              final double util2 = report2 == null ? 0.0 : report2.utilisation();
@@ -228,7 +221,7 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..2de0f538a5253a10e353e639e7393610
          final TextComponent.Builder lowestRegionsBuilder = Component.text();
  
          if (sender instanceof Player) {
-@@ -219,23 +248,18 @@ public final class CommandServerHealth extends Command {
+@@ -218,23 +248,18 @@ public final class CommandServerHealth extends Command {
          }
          for (int i = 0, len = Math.min(lowestRegionsCount, regionsBelowThreshold.size()); i < len; ++i) {
              final ObjectObjectImmutablePair<ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData>, TickData.TickReportData>
@@ -257,7 +250,7 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..2de0f538a5253a10e353e639e7393610
              final int centerBlockX = ((chunkCenter.x << 4) | 7);
              final int centerBlockZ = ((chunkCenter.z << 4) | 7);
              final double util = report.utilisation();
-@@ -243,75 +267,102 @@ public final class CommandServerHealth extends Command {
+@@ -242,75 +267,102 @@ public final class CommandServerHealth extends Command {
              final double mspt = report.timePerTickData().segmentAll().average() / 1.0E6;
  
              final int yLoc = 80;
@@ -423,7 +416,7 @@ index 5e6b490ee58a90fd7c02fa09093830c0d9c67f6b..2de0f538a5253a10e353e639e7393610
          );
  
          return true;
-@@ -361,4 +412,4 @@ public final class CommandServerHealth extends Command {
+@@ -360,4 +412,4 @@ public final class CommandServerHealth extends Command {
          }
          return new ArrayList<>();
      }

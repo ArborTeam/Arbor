@@ -1,15 +1,15 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <mrhua269@gmail.com>
-Date: Thu, 24 Apr 2025 23:11:13 +0800
+From: mrhua269 <mrhua269@gmail.com>
+Date: Wed, 17 Dec 2025 23:20:06 +0800
 Subject: [PATCH] Fix off tickregion sync teleport
 
 Folis's teleportAsync implementation has some checks missing during the sync teleportation checks, if we are teleport to the edge of the tickregion, it is still asserting that we are in the same tickregion and moved us directly, but there is actually some logics is already touching the stuff out of current tickregion.So we added some new edge checks to the sync teleportation checks which will check the tickregion belonging in a shape of cycle which is in min(entity's bounding box + simulate distance, 6) of radius to fix that issue
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 868a3c395b0f86b7587e8aa844aacb2cabd2e971..40036e5e63c7d10894a20f1083731769b86b96c7 100644
+index cc78afeea96f6b56f6829e2fb608b0955faf5ec2..805768a25bc5ca05dc7230efe5b88d482331ee0a 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4222,6 +4222,27 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4303,6 +4303,27 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          this.resetStoredPositions();
      }
  
@@ -37,7 +37,7 @@ index 868a3c395b0f86b7587e8aa844aacb2cabd2e971..40036e5e63c7d10894a20f1083731769
      protected final void transform(TeleportTransition telpeort) {
          PositionMoveRotation move = PositionMoveRotation.calculateAbsolute(
              PositionMoveRotation.of(this), PositionMoveRotation.of(telpeort), telpeort.relatives()
-@@ -4344,7 +4365,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4425,7 +4446,8 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          // check for same region
          if (destination == this.level()) {
              Vec3 currPos = this.position();

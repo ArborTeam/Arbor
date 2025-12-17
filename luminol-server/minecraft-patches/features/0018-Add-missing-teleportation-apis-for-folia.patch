@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <wangxyper@163.com>
-Date: Fri, 31 Jan 2025 20:28:45 +0800
+From: mrhua269 <mrhua269@gmail.com>
+Date: Wed, 17 Dec 2025 23:12:53 +0800
 Subject: [PATCH] Add missing teleportation apis for folia
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 886299f6a69e57286b6acbee416b552163f2c5b2..af0a5766ff344bdaa602a6ee35726fef41fbb95d 100644
+index 3c5cde60a89d6f9c07547e67e32c2b7857dc70e4..89ea003dae8f7e6d652fb431bb72793fa24fb441 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1648,6 +1648,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1737,6 +1737,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      if (respawnComplete != null) {
                          respawnComplete.accept(ServerPlayer.this);
                      }
@@ -19,10 +19,10 @@ index 886299f6a69e57286b6acbee416b552163f2c5b2..af0a5766ff344bdaa602a6ee35726fef
              );
          });
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 7d026161ef0290405bdf86b4e5d6b6f0ca5f6556..8361652ba69e9112f4ac2b81bb8b59ff43eeddfc 100644
+index 65ac1e2e2fa5511a16abdd78310e4afd2edc624d..b140af24a482f876624b21eff9902004e9fbe3c3 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4309,6 +4309,31 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4396,6 +4396,31 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          }
  
          // TODO any events that can modify go HERE
@@ -54,7 +54,7 @@ index 7d026161ef0290405bdf86b4e5d6b6f0ca5f6556..8361652ba69e9112f4ac2b81bb8b59ff
  
          // check for same region
          if (destination == this.level()) {
-@@ -4425,7 +4450,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4512,7 +4537,18 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              // we just select the spawn position
              case END: {
                  if (destination.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.END) {
@@ -74,12 +74,10 @@ index 7d026161ef0290405bdf86b4e5d6b6f0ca5f6556..8361652ba69e9112f4ac2b81bb8b59ff
                      // need to load chunks so we can create the platform
                      destination.moonrise$loadChunksAsync(
                          targetPos, 16, // load 16 blocks to be safe from block physics
-@@ -4446,7 +4482,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
-                         }
+@@ -4534,6 +4570,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
                      );
                  } else {
--                    BlockPos spawnPos = destination.getSharedSpawnPos();
-+                    BlockPos spawnPos = destination.getSharedSpawnPos(); // Luminol - Rename
+                     BlockPos spawnPos = destination.getRespawnData().pos();
 +                    // Luminol start - Add missing teleportation apis
 +                    final org.bukkit.Location orginalPortalLocation = io.papermc.paper.util.MCUtil.toLocation(origin, originPortal);
 +                    final org.bukkit.Location targetPortalLocation = io.papermc.paper.util.MCUtil.toLocation(destination, spawnPos);
@@ -94,7 +92,7 @@ index 7d026161ef0290405bdf86b4e5d6b6f0ca5f6556..8361652ba69e9112f4ac2b81bb8b59ff
                      // need to load chunk for heightmap
                      destination.moonrise$loadChunksAsync(
                          spawnPos, 0,
-@@ -4497,8 +4544,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4584,8 +4631,18 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
  
                  WorldBorder destinationBorder = destination.getWorldBorder();
                  double dimensionScale = net.minecraft.world.level.dimension.DimensionType.getTeleportationScale(origin.dimensionType(), destination.dimensionType());
@@ -114,7 +112,7 @@ index 7d026161ef0290405bdf86b4e5d6b6f0ca5f6556..8361652ba69e9112f4ac2b81bb8b59ff
                  ca.spottedleaf.concurrentutil.completable.CallbackCompletable<BlockUtil.FoundRectangle> portalFound
                      = new ca.spottedleaf.concurrentutil.completable.CallbackCompletable<>();
  
-@@ -4635,6 +4692,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4722,6 +4779,15 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          if (!this.canPortalAsync(destination, takePassengers)) {
              return false;
          }
@@ -130,7 +128,7 @@ index 7d026161ef0290405bdf86b4e5d6b6f0ca5f6556..8361652ba69e9112f4ac2b81bb8b59ff
  
          Vec3 initialPosition = this.position();
          ChunkPos initialPositionChunk = new ChunkPos(
-@@ -4702,6 +4768,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4789,6 +4855,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
                      if (teleportComplete != null) {
                          teleportComplete.accept(teleported);
                      }
@@ -139,10 +137,10 @@ index 7d026161ef0290405bdf86b4e5d6b6f0ca5f6556..8361652ba69e9112f4ac2b81bb8b59ff
              );
          });
 diff --git a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-index 12b9a6c16501cb0c01983c44bb247071ce675274..2dbf5064f0353b5d60d75573dc9724c3c42a25fe 100644
+index 23f1b6dc3b43b12c868070c3d6b803d426ec8623..12dc85d740b621e161c5f4a8979baacd9020ac6d 100644
 --- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-@@ -193,6 +193,18 @@ public class TheEndGatewayBlockEntity extends TheEndPortalBlockEntity {
+@@ -192,6 +192,18 @@ public class TheEndGatewayBlockEntity extends TheEndPortalBlockEntity {
              portalTile.trySearchForExit(portalWorld, portalPos);
              return false;
          }

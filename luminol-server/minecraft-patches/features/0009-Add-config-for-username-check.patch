@@ -5,10 +5,10 @@ Subject: [PATCH] Add config for username check
 
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 91ba46925961ea1deb5b92a063115b7d7e4341fc..d114935b0879f5d83ad6c03395d565b6b92c6679 100644
+index 4fe9bfcf75db1b5401776711a5cccde9e1feb743..c56d7bff7627ce58c0fd55ef18f4f090a8dc6459 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -157,7 +157,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -159,7 +159,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      public void handleHello(ServerboundHelloPacket packet) {
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
          // Paper start - Validate usernames
@@ -18,26 +18,26 @@ index 91ba46925961ea1deb5b92a063115b7d7e4341fc..d114935b0879f5d83ad6c03395d565b6
              && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.performUsernameValidation
              && !this.iKnowThisMayNotBeTheBestIdeaButPleaseDisableUsernameValidation) {
              Validate.validState(StringUtil.isReasonablePlayerName(packet.name()), "Invalid characters in username");
-diff --git a/net/minecraft/server/players/GameProfileCache.java b/net/minecraft/server/players/GameProfileCache.java
-index 066f84df5c31242ab542932f1e243369d0e766e2..144a2644c15f276f02bb3be859dc5d05a677ac55 100644
---- a/net/minecraft/server/players/GameProfileCache.java
-+++ b/net/minecraft/server/players/GameProfileCache.java
-@@ -75,7 +75,7 @@ public class GameProfileCache {
+diff --git a/net/minecraft/server/players/CachedUserNameToIdResolver.java b/net/minecraft/server/players/CachedUserNameToIdResolver.java
+index 6d3f496881492ac67465746984d6ef8302750305..345bdb0ff82b8cd8c63e5ff1f2dabb68a1e54b77 100644
+--- a/net/minecraft/server/players/CachedUserNameToIdResolver.java
++++ b/net/minecraft/server/players/CachedUserNameToIdResolver.java
+@@ -67,7 +67,7 @@ public class CachedUserNameToIdResolver implements UserNameToIdResolver {
      }
  
-     private static Optional<GameProfile> lookupGameProfile(GameProfileRepository profileRepo, String name) {
+     private Optional<NameAndId> lookupGameProfile(GameProfileRepository profileRepository, String name) {
 -        if (!StringUtil.isValidPlayerName(name)) {
-+        if (!StringUtil.isValidPlayerName(name, false)) { // Luminol - Add config for username check - Directly return, skip unnecessary following logic
-             return createUnknownProfile(name);
++        if (!StringUtil.isValidPlayerName(name, false)) {
+             return this.createUnknownProfile(name);
          } else {
              final boolean shouldLookup = !org.apache.commons.lang3.StringUtils.isBlank(name)  // Paper - Don't lookup a profile with a blank name
 diff --git a/net/minecraft/util/StringUtil.java b/net/minecraft/util/StringUtil.java
-index 77947e6915facee44588943fcd3e5b513de37e77..d9f95c5cf4bd2946244c153db0fd21c8d51ae20d 100644
+index bd57f9a4224fc236cccecfd13b03f27d20ed15e9..f626ab1d73170e6b170925745aaa7c00cf023c16 100644
 --- a/net/minecraft/util/StringUtil.java
 +++ b/net/minecraft/util/StringUtil.java
 @@ -62,8 +62,14 @@ public class StringUtil {
-     public static boolean isAllowedChatCharacter(char character) {
-         return character != 167 && character >= ' ' && character != 127;
+     public static boolean isAllowedChatCharacter(int codePoint) {
+         return codePoint != 167 && codePoint >= 32 && codePoint != 127;
      }
 +    // Luminol start - Add config for username checks
 +    public static boolean isValidPlayerName(String username){

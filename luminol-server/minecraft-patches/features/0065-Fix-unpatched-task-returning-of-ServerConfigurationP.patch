@@ -1,16 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: mrhua269 <mrhua269@gmail.com>
-Date: Wed, 17 Dec 2025 23:20:53 +0800
-Subject: [PATCH] Fix unpatched task returning of 
+Date: Fri, 29 Aug 2025 10:54:44 +0800
+Subject: [PATCH] Fix unpatched task returning of
  ServerConfigurationPacketListenerImpl#disconnectAsync
 
-Based on https://github.com/CraftCanvasMC/Canvas/blob/ver/1.21.8/canvas-server/minecraft-patches/sources/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java.patch
+Inspired by https://github.com/CraftCanvasMC/Canvas/blob/ver/1.21.8/canvas-server/minecraft-patches/sources/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java.patch
+but Canvas loses its main thread checks so fixed that btw
 
 diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index 2cc3dd1f267ae78d3aacb84509d4bf668235688f..097b404e5b5c4b0ad91507b7d64d6f78235d2537 100644
+index e8f0c81b31569d610fb88f10d93c4e68fb5a24a1..c7f96531ed25c2ddb014da0a822329c65ee34c95 100644
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-@@ -290,13 +290,14 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+@@ -292,13 +292,14 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
      // Paper start
      @Override
      public void disconnectAsync(final net.minecraft.network.DisconnectionDetails disconnectionInfo) {

@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: mrhua269 <mrhua269@gmail.com>
-Date: Wed, 17 Dec 2025 22:46:23 +0800
+From: MrHua269 <wangxyper@163.com>
+Date: Sun, 12 Jan 2025 10:35:13 +0800
 Subject: [PATCH] Add config to disable entity tick catchers
 
 
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 479ffd150e9d015a04c5f09f000f04c028af5ba9..e6798d53db8f14514437764663cb8e8e657054f7 100644
+index add91e2b01826c3810d15f8346a5dff2fc78b96c..4a23ec4f07f334fd076efd93da2ec1073ed1611b 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1480,6 +1480,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

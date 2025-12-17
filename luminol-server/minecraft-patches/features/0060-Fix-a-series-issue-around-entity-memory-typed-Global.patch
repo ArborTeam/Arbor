@@ -1,16 +1,16 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: mrhua269 <mrhua269@gmail.com>
-Date: Wed, 17 Dec 2025 23:19:30 +0800
-Subject: [PATCH] Fix a series issue around entity memory typed GlobalPos and 
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sat, 8 Mar 2025 09:55:40 +0800
+Subject: [PATCH] Fix a series issue around entity memory typed GlobalPos and
  WalkTarget
 
 Fixes the issue remained by the memory cleaning fix due to that there is a little complex relationship in these memories, and we need to manual patch them
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index c83dee968b441d9d1b0b0ad89b2ae584f2b2503a..bf926dd712e9e95ac2bb9f908e34b1c76e1adf10 100644
+index ff17bda274989d6b94cea280378a6e5de4f84d4b..91a206e9e4ac3887ed1d079f7f1c97b397fd140d 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
-@@ -440,6 +440,24 @@ public class Brain<E extends LivingEntity> {
+@@ -443,6 +443,24 @@ public class Brain<E extends LivingEntity> {
                          continue;
                      }
                  }
@@ -36,7 +36,7 @@ index c83dee968b441d9d1b0b0ad89b2ae584f2b2503a..bf926dd712e9e95ac2bb9f908e34b1c7
  
                  if (expirableValue.hasExpired()) {
 diff --git a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
-index f952fdc9892d9b0392f30841f2c8264fef9de77b..90d6d08f811e8c81586053874991e32ca5d75adf 100644
+index 2664d72c3b6906d0505df2e63c0e5075eba9461b..54ef04bfeaa97b4e93efbbf9095145f6704e991d 100644
 --- a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 +++ b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 @@ -69,6 +69,11 @@ public class BehaviorUtils {
@@ -134,7 +134,7 @@ index 36a9887f8be04c5c3fda6d926d819a9e5b2a79f2..5681592bdeb050d875c4c5d0dfaf6e01
                  return Optional.of(new BlockPosTracker(globalPos.pos().above()));
              }
 diff --git a/net/minecraft/world/entity/animal/sniffer/Sniffer.java b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
-index a4d60a0dddabd7981d2db28af6b1d88d64d6e806..e7aadeee3282204dd4db25670c6d4f6d95f80ef8 100644
+index 6a9f31c1f39cc14ad7b5ae3af85908bc7a4caae4..34fea93dddfe0b947eb2517dd083ca842d19a0c6 100644
 --- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 +++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 @@ -268,7 +268,17 @@ public class Sniffer extends Animal {

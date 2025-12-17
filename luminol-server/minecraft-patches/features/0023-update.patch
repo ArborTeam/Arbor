@@ -1,14 +1,15 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: mrhua269 <mrhua269@gmail.com>
-Date: Wed, 17 Dec 2025 23:12:53 +0800
-Subject: [PATCH] Add missing teleportation apis for folia
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Wed, 17 Dec 2025 18:48:57 +0800
+Subject: [PATCH] update
 
+stage: fix paper-api patches & paper-server patches
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 3c5cde60a89d6f9c07547e67e32c2b7857dc70e4..89ea003dae8f7e6d652fb431bb72793fa24fb441 100644
+index a3abaf3d3a1e06b02a70a172d07f0b7f2de9f80a..2bfb5603bb353183df776c99ccdfe16a507c5b3c 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1737,6 +1737,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1766,6 +1766,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      if (respawnComplete != null) {
                          respawnComplete.accept(ServerPlayer.this);
                      }
@@ -19,7 +20,7 @@ index 3c5cde60a89d6f9c07547e67e32c2b7857dc70e4..89ea003dae8f7e6d652fb431bb72793f
              );
          });
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 65ac1e2e2fa5511a16abdd78310e4afd2edc624d..b140af24a482f876624b21eff9902004e9fbe3c3 100644
+index 28a1890a52c974d2bf04ccbd25154f1b8d84cbe7..823c0a40be88471678f2abb41a974313f9007d92 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4396,6 +4396,31 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -54,12 +55,10 @@ index 65ac1e2e2fa5511a16abdd78310e4afd2edc624d..b140af24a482f876624b21eff9902004
  
          // check for same region
          if (destination == this.level()) {
-@@ -4512,7 +4537,18 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
-             // we just select the spawn position
+@@ -4513,6 +4538,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              case END: {
                  if (destination.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.END) {
--                    BlockPos targetPos = ServerLevel.END_SPAWN_POINT;
-+                    BlockPos targetPos = ServerLevel.END_SPAWN_POINT; // Luminol - Rename
+                     BlockPos targetPos = ServerLevel.END_SPAWN_POINT;
 +                    // Luminol start - Add missing teleportation apis
 +                    final org.bukkit.Location orginalPortalLocation = io.papermc.paper.util.MCUtil.toLocation(origin, originPortal);
 +                    final org.bukkit.Location targetPortalLocation = io.papermc.paper.util.MCUtil.toLocation(destination, targetPos);
@@ -92,21 +91,19 @@ index 65ac1e2e2fa5511a16abdd78310e4afd2edc624d..b140af24a482f876624b21eff9902004
                      // need to load chunk for heightmap
                      destination.moonrise$loadChunksAsync(
                          spawnPos, 0,
-@@ -4584,8 +4631,18 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
- 
+@@ -4585,7 +4632,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
                  WorldBorder destinationBorder = destination.getWorldBorder();
                  double dimensionScale = net.minecraft.world.level.dimension.DimensionType.getTeleportationScale(origin.dimensionType(), destination.dimensionType());
--                BlockPos targetPos = destination.getWorldBorder().clampToBounds(this.getX() * dimensionScale, this.getY(), this.getZ() * dimensionScale);
-+                BlockPos targetPos = destination.getWorldBorder().clampToBounds(this.getX() * dimensionScale, this.getY(), this.getZ() * dimensionScale); // Luminol - Rename
+                 BlockPos targetPos = destination.getWorldBorder().clampToBounds(this.getX() * dimensionScale, this.getY(), this.getZ() * dimensionScale);
 +                // Luminol start - Add missing teleportation apis
 +                final org.bukkit.Location orginalPortalLocation = io.papermc.paper.util.MCUtil.toLocation(origin, originPortal);
 +                final org.bukkit.Location targetPortalLocation = io.papermc.paper.util.MCUtil.toLocation(destination, targetPos);
-+
+ 
 +                final me.earthme.luminol.api.portal.PortalLocateEvent portalLocateEvent = new me.earthme.luminol.api.portal.PortalLocateEvent(
 +                        orginalPortalLocation,
 +                        targetPortalLocation
 +                );
- 
++
 +                portalLocateEvent.callEvent();
 +                // Luminol end
                  ca.spottedleaf.concurrentutil.completable.CallbackCompletable<BlockUtil.FoundRectangle> portalFound

@@ -1,18 +1,18 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: mrhua269 <mrhua269@gmail.com>
-Date: Wed, 17 Dec 2025 22:40:47 +0800
+Date: Sat, 15 Nov 2025 14:03:43 +0800
 Subject: [PATCH] Threading utilities
 
 
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 6809547216f9767d600cc4bf0bff43d572161417..479ffd150e9d015a04c5f09f000f04c028af5ba9 100644
+index 6809547216f9767d600cc4bf0bff43d572161417..add91e2b01826c3810d15f8346a5dff2fc78b96c 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -137,6 +137,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -136,6 +136,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+     private final RegistryAccess registryAccess;
      private final DamageSources damageSources;
      private final PalettedContainerFactory palettedContainerFactory;
-     private final java.util.concurrent.atomic.AtomicLong subTickCount = new java.util.concurrent.atomic.AtomicLong(); //private long subTickCount; // Folia - region threading
 +    public final me.earthme.luminol.utils.thread.RegionizedBlockableEventLoop regionizedBlockableEventLoop = new me.earthme.luminol.utils.thread.RegionizedBlockableEventLoop(this); // Luminol - Threading utilies
+     private final java.util.concurrent.atomic.AtomicLong subTickCount = new java.util.concurrent.atomic.AtomicLong(); //private long subTickCount; // Folia - region threading
  
      // CraftBukkit start
-     public final io.papermc.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray

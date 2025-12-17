@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: mrhua269 <mrhua269@gmail.com>
-Date: Wed, 17 Dec 2025 23:15:07 +0800
+From: MrHua269 <wangxyper@163.com>
+Date: Sun, 12 Jan 2025 11:07:08 +0800
 Subject: [PATCH] Kaiiju: Entity tick and removal limiter
 
 Co-authored by: Xymb <xymb@endcrystal.me>
@@ -8,7 +8,7 @@ As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2e
 Licensed under: GPL-3.0 (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/LICENSE)
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 30a3a09247c6229580a4e0a5bc8a496ace5b8a2c..421b62d0ccbb30805a4866ef318c62d6dabc19a0 100644
+index 01ea2e7133a41f1a75169c7e3edbd528b268412b..8c4d89c47fd176d584d3dbd0e3325f69b5e847c3 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -357,6 +357,7 @@ public final class RegionizedWorldData {
@@ -20,10 +20,10 @@ index 30a3a09247c6229580a4e0a5bc8a496ace5b8a2c..421b62d0ccbb30805a4866ef318c62d6
      // block ticking
      private final ObjectLinkedOpenHashSet<BlockEventData> blockEvents = new ObjectLinkedOpenHashSet<>();
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 32c08288e0564ae7c23cd30ec6a72cbe5ac8e4a4..b5104105c2b3ac1a95a24674de698424fa932fb2 100644
+index 55f3497503e3317d765abb0bd4a9a620f63cd240..7b7c72f14ae966ef142d68615b2f88ba42a079f5 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -844,6 +844,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -807,6 +807,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
  
              profiler.startTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.ACTIVATE_ENTITIES); try { // Folia - profiler
@@ -31,7 +31,7 @@ index 32c08288e0564ae7c23cd30ec6a72cbe5ac8e4a4..b5104105c2b3ac1a95a24674de698424
              io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
              } finally { profiler.stopTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.ACTIVATE_ENTITIES); } // Folia - profiler
              profiler.startTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.ENTITY_TICK); try { // Folia - profiler
-@@ -865,6 +866,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -828,6 +829,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
                                          entity.stopRiding();
                                      }
@@ -45,11 +45,11 @@ index 32c08288e0564ae7c23cd30ec6a72cbe5ac8e4a4..b5104105c2b3ac1a95a24674de698424
  
                                      profilerFiller.push("tick");
                                      this.guardEntityTick(this::tickNonPassenger, entity);
-@@ -874,6 +882,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -837,6 +845,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                          }
                      }
                  );
 +                if (dev.kaiijumc.kaiiju.KaiijuEntityLimits.enabled) regionizedWorldData.entityThrottler.tickLimiterFinish(regionizedWorldData); // Kaiiju
              } finally { profiler.stopTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.ENTITY_TICK); } // Folia - profiler
-             profilerFiller.popPush("blockEntities");
+             profilerFiller.pop();
              profiler.startTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.TILE_ENTITY); try { // Folia - profiler

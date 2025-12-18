@@ -20,7 +20,7 @@ index a3abaf3d3a1e06b02a70a172d07f0b7f2de9f80a..2bfb5603bb353183df776c99ccdfe16a
              );
          });
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 28a1890a52c974d2bf04ccbd25154f1b8d84cbe7..823c0a40be88471678f2abb41a974313f9007d92 100644
+index 28a1890a52c974d2bf04ccbd25154f1b8d84cbe7..606e3f5a6f78b4e7de00f0282e963ebea5db1059 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4396,6 +4396,31 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -125,14 +125,6 @@ index 28a1890a52c974d2bf04ccbd25154f1b8d84cbe7..823c0a40be88471678f2abb41a974313
  
          Vec3 initialPosition = this.position();
          ChunkPos initialPositionChunk = new ChunkPos(
-@@ -4789,6 +4855,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
-                     if (teleportComplete != null) {
-                         teleportComplete.accept(teleported);
-                     }
-+                    // Kaiiju end
-                 }
-             );
-         });
 diff --git a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 index 23f1b6dc3b43b12c868070c3d6b803d426ec8623..12dc85d740b621e161c5f4a8979baacd9020ac6d 100644
 --- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java

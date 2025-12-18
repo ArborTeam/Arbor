@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <wangxyper@163.com>
-Date: Sun, 12 Jan 2025 11:04:12 +0800
+From: mrhua269 <mrhua269@gmail.com>
+Date: Thu, 18 Dec 2025 22:50:24 +0800
 Subject: [PATCH] Kaiiju: Vanilla end portal teleportation
 
 Co-authored by: Sofiane H. Djerbi <46628754+kugge@users.noreply.github.com>
@@ -8,7 +8,7 @@ As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2e
 Licensed under: GPL-3.0 (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/LICENSE)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index b757263fc2e5a67606635962b0a2a1f9990ddbfd..16ecbb01ce7c15d7e52aa315b779ac2681c776c8 100644
+index 0d9b01733e02451e732719ede8c55c7e0d0583ee..16ecbb01ce7c15d7e52aa315b779ac2681c776c8 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4561,14 +4561,18 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -63,7 +63,7 @@ index b757263fc2e5a67606635962b0a2a1f9990ddbfd..16ecbb01ce7c15d7e52aa315b779ac26
  
          Vec3 initialPosition = this.position();
          ChunkPos initialPositionChunk = new ChunkPos(
-@@ -4859,8 +4871,12 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4859,9 +4871,14 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
                          info.postTeleportTransition().onTransition(teleported);
                      }
  
@@ -75,5 +75,7 @@ index b757263fc2e5a67606635962b0a2a1f9990ddbfd..16ecbb01ce7c15d7e52aa315b779ac26
 +                    if (tpComplete != null){
 +                        tpComplete.accept(teleported);
                      }
-                     // Kaiiju end
++                    // Kaiiju end
                  }
+             );
+         });

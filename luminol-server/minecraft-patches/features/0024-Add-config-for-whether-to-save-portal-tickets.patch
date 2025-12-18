@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for whether to save portal tickets
 
 
 diff --git a/net/minecraft/server/level/TicketType.java b/net/minecraft/server/level/TicketType.java
-index f94f2b752f2c70a7731c28e8a1af9eec0d3a8410..c628ef11aaed69aa602baafba9f250cff31aa775 100644
+index f94f2b752f2c70a7731c28e8a1af9eec0d3a8410..df70cbe105b24d5e0ac5ddbf19ddea931d4a74bb 100644
 --- a/net/minecraft/server/level/TicketType.java
 +++ b/net/minecraft/server/level/TicketType.java
 @@ -60,7 +60,7 @@ public final class TicketType<T> implements ca.spottedleaf.moonrise.patches.chun
@@ -13,7 +13,7 @@ index f94f2b752f2c70a7731c28e8a1af9eec0d3a8410..c628ef11aaed69aa602baafba9f250cf
      public static final TicketType PLAYER_SIMULATION = register("player_simulation", NO_TIMEOUT, FLAG_SIMULATION | FLAG_KEEP_DIMENSION_ACTIVE);
      public static final TicketType FORCED = register("forced", NO_TIMEOUT, FLAG_PERSIST | FLAG_LOADING | FLAG_SIMULATION | FLAG_KEEP_DIMENSION_ACTIVE);
 -    public static final TicketType PORTAL = register("portal", 300L, FLAG_PERSIST | FLAG_LOADING | FLAG_SIMULATION | FLAG_KEEP_DIMENSION_ACTIVE);
-+    public static final TicketType PORTAL = register("portal", 300L, me.earthme.luminol.config.modules.misc.SavePortalTicketsConfig.doSave ? FLAG_PERSIST | FLAG_LOADING | FLAG_SIMULATION | FLAG_KEEP_DIMENSION_ACTIVE : FLAG_PERSIST | FLAG_LOADING | FLAG_SIMULATION | FLAG_KEEP_DIMENSION_ACTIVE | FLAG_CAN_EXPIRE_IF_UNLOADED);
++    public static final TicketType PORTAL = register("portal", 300L, me.earthme.luminol.config.modules.misc.SavePortalTicketsConfig.doSave ? FLAG_PERSIST | FLAG_LOADING | FLAG_SIMULATION | FLAG_KEEP_DIMENSION_ACTIVE : FLAG_LOADING | FLAG_SIMULATION | FLAG_KEEP_DIMENSION_ACTIVE);
      public static final TicketType ENDER_PEARL = register("ender_pearl", 40L, FLAG_LOADING | FLAG_SIMULATION | FLAG_KEEP_DIMENSION_ACTIVE);
      public static final TicketType UNKNOWN = register("unknown", 1L, FLAG_CAN_EXPIRE_IF_UNLOADED | FLAG_LOADING);
      public static final TicketType PLUGIN = register("plugin", 0L, FLAG_LOADING | FLAG_SIMULATION); // CraftBukkit

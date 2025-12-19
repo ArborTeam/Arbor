@@ -47,7 +47,8 @@ public record RegionizedBlockableEventLoop(Level level) {
      * @param executeImmediateIfOnMain if false, tasks will always be scheduled, even if we are on the target thread
      * @return the executor
      */
-    public Executor asExecutor(int chunkX, int chunkZ, boolean chunkTask, boolean executeImmediateIfOnMain) {
+    @Contract(pure = true)
+    public @NotNull Executor asExecutor(int chunkX, int chunkZ, boolean chunkTask, boolean executeImmediateIfOnMain) {
         if (executeImmediateIfOnMain) {
             return this.asExecutor(chunkX, chunkZ, chunkTask);
         }

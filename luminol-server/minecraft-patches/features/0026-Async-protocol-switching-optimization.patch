@@ -5,113 +5,126 @@ Subject: [PATCH] Async protocol switching optimization
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 50486e2b284919e7b1bf7710e3378d8060a00634..b4d6ddf02e72378022cc0a7cb6f8137fff3fa4f9 100644
+index 50486e2b284919e7b1bf7710e3378d8060a00634..d5e604bf18a223aa434bc9f78274e1f3ff7f203d 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -349,6 +349,116 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -349,6 +349,129 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          }
      }
  
 +    // Luminol start - async protocol switcher
-+    public <T extends PacketListener> void setupInboundProtocolAsync(ProtocolInfo<T> protocolInfo, T packetInfo, @Nullable Runnable callback, boolean releaseAutoRead) {
-+        this.validateListener(protocolInfo, packetInfo);
-+        if (protocolInfo.flow() != this.getReceiving()) {
-+            throw new IllegalStateException("Invalid inbound protocol: " + protocolInfo.id());
++    public <T extends PacketListener> void setupInboundProtocolAsync(
++            ProtocolInfo<T> protocol,
++            T packetListener,
++            @Nullable Runnable callback,
++            boolean resumeAutoReading
++    ) {
++        this.validateListener(protocol, packetListener);
++        if (protocol.flow() != this.getReceiving()) {
++            throw new IllegalStateException("Invalid inbound protocol: " + protocol.id());
 +        } else {
-+            this.packetListener = packetInfo;
++            this.packetListener = packetListener;
 +            this.disconnectListener = null;
 +
-+            UnconfiguredPipelineHandler.InboundConfigurationTask inboundConfigurationTask = UnconfiguredPipelineHandler.setupInboundProtocol(protocolInfo);
-+            BundlerInfo bundlerInfo = protocolInfo.bundlerInfo();
++            UnconfiguredPipelineHandler.InboundConfigurationTask configMessage = UnconfiguredPipelineHandler.setupInboundProtocol(protocol);
++            BundlerInfo bundlerInfo = protocol.bundlerInfo();
 +            if (bundlerInfo != null) {
-+                PacketBundlePacker packetBundlePacker = new PacketBundlePacker(bundlerInfo);
-+                inboundConfigurationTask = inboundConfigurationTask.andThen(context -> context.pipeline().addAfter("decoder", "bundler", packetBundlePacker));
++                PacketBundlePacker newBundler = new PacketBundlePacker(bundlerInfo);
++                configMessage = configMessage.andThen(context -> context.pipeline().addAfter("decoder", "bundler", newBundler));
 +            }
 +
 +            // Here we could execute it in event loop async to prevent waiting io task on main
-+            this.channel.config().setAutoRead(false); // stop reading new packets to prevent some packets came into pipeline too early
-+            final UnconfiguredPipelineHandler.InboundConfigurationTask finalInboundConfigurationTask = inboundConfigurationTask;
-+            Runnable writeTask = () -> {
-+                final ChannelFuture future = this.channel.writeAndFlush(finalInboundConfigurationTask);
++            // stop reading new packets to prevent some packets came into pipeline too early
++            this.channel.config().setAutoRead(false);
 +
-+                future.addListener(orginalFuture -> {
-+                    try {
-+                        if (orginalFuture.isSuccess()) {
-+                            if (callback != null) callback.run(); // retire callback if there have one
-+                            return;
-+                        }
-+
-+                        final Throwable ex = orginalFuture.cause();
-+
-+                        // here we process our exceptions like that blocking one
-+                        if (ex instanceof ClosedChannelException) {
-+                            LOGGER.info("Connection closed during protocol change");
-+                        } else {
-+                            this.channel.pipeline().fireExceptionCaught(ex);
-+                        }
-+                    }finally {
-+                        if (releaseAutoRead) {
-+                            this.channel.config().setAutoRead(true);
-+                            this.channel.read();
-+                        }
++            // do our configuration task
++            final UnconfiguredPipelineHandler.InboundConfigurationTask finalInboundConfigurationTask = configMessage;
++            Runnable toExecute = () -> this.channel.writeAndFlush(finalInboundConfigurationTask).addListener(future -> {
++                try {
++                    if (future.isSuccess()) {
++                        if (callback != null) callback.run(); // retire callback if there have one
++                        return;
 +                    }
-+                });
-+            };
 +
++                    final Throwable ex = future.cause();
++
++                    // here we process our exceptions like that blocking one
++                    if (ex instanceof ClosedChannelException) {
++                        LOGGER.info("Connection closed during protocol change");
++                    } else {
++                        this.channel.pipeline().fireExceptionCaught(ex);
++                    }
++                }finally {
++                    // reset auto back and resume reading if needed
++                    if (resumeAutoReading) {
++                        this.channel.config().setAutoRead(true);
++                        this.channel.read();
++                    }
++                }
++            });
++
++            // we need to do this inside the event loop
 +            if (!this.channel.eventLoop().inEventLoop()) {
-+                this.channel.eventLoop().execute(writeTask);
++                this.channel.eventLoop().execute(toExecute);
 +                return;
 +            }
 +
-+            writeTask.run();
++            toExecute.run();
 +        }
 +    }
 +
-+    public void setupOutboundProtocolAsync(ProtocolInfo<?> protocolInfo, @Nullable Runnable callback, boolean releaseAutoRead) {
-+        if (protocolInfo.flow() != this.getSending()) {
-+            throw new IllegalStateException("Invalid outbound protocol: " + protocolInfo.id());
++    public void setupOutboundProtocolAsync(
++            ProtocolInfo<?> protocol,
++            @Nullable Runnable callback,
++            boolean resumeAutoReading
++    ) {
++        if (protocol.flow() != this.getSending()) {
++            throw new IllegalStateException("Invalid outbound protocol: " + protocol.id());
 +        } else {
-+            UnconfiguredPipelineHandler.OutboundConfigurationTask outboundConfigurationTask = UnconfiguredPipelineHandler.setupOutboundProtocol(protocolInfo);
-+            BundlerInfo bundlerInfo = protocolInfo.bundlerInfo();
++            UnconfiguredPipelineHandler.OutboundConfigurationTask configMessage = UnconfiguredPipelineHandler.setupOutboundProtocol(protocol);
++            BundlerInfo bundlerInfo = protocol.bundlerInfo();
 +            if (bundlerInfo != null) {
-+                PacketBundleUnpacker packetBundleUnpacker = new PacketBundleUnpacker(bundlerInfo);
-+                outboundConfigurationTask = outboundConfigurationTask.andThen(
-+                        context -> context.pipeline().addAfter("encoder", "unbundler", packetBundleUnpacker)
++                PacketBundleUnpacker newUnbundler = new PacketBundleUnpacker(bundlerInfo);
++                configMessage = configMessage.andThen(
++                        context -> context.pipeline().addAfter("encoder", "unbundler", newUnbundler)
 +                );
 +            }
 +
-+            boolean flag = protocolInfo.id() == ConnectionProtocol.LOGIN;
++            boolean isLoginProtocol = protocol.id() == ConnectionProtocol.LOGIN;
 +
 +            // Here we could execute it in event loop async to prevent waiting io task on main
-+            this.channel.config().setAutoRead(false); // stop reading new packets to prevent some packets came into pipeline too early
-+            final UnconfiguredPipelineHandler.OutboundConfigurationTask finalOutboundConfigurationTask = outboundConfigurationTask;
-+            final Runnable writeTask = () -> {
-+                final ChannelFuture future = this.channel.writeAndFlush(finalOutboundConfigurationTask.andThen(context -> this.sendLoginDisconnect = flag));
++            // stop reading new packets to prevent some packets came into pipeline too early
++            this.channel.config().setAutoRead(false);
 +
-+                future.addListener(orginalFuture -> {
-+                    try {
-+                        if (orginalFuture.isSuccess()) {
-+                            if (callback != null) callback.run(); // retire callback if there have one
-+                            return;
-+                        }
-+
-+                        final Throwable ex = orginalFuture.cause();
-+
-+                        // here we process our exceptions like that blocking one
-+                        if (ex instanceof ClosedChannelException) {
-+                            LOGGER.info("Connection closed during protocol change");
-+                        } else {
-+                            this.channel.pipeline().fireExceptionCaught(ex);
-+                        }
-+                    }finally {
-+                        if (releaseAutoRead) {
-+                            this.channel.config().setAutoRead(true);
-+                            this.channel.read(); // read once
-+                        }
++            // do our configuration task
++            final UnconfiguredPipelineHandler.OutboundConfigurationTask finalOutboundConfigurationTask = configMessage;
++            final Runnable writeTask = () -> this.channel.writeAndFlush(
++                    finalOutboundConfigurationTask.andThen(context -> this.sendLoginDisconnect = isLoginProtocol)
++            ).addListener(future -> {
++                try {
++                    if (future.isSuccess()) {
++                        if (callback != null) callback.run(); // retire callback if there have one
++                        return;
 +                    }
-+                });
-+            };
 +
++                    final Throwable ex = future.cause();
++
++                    // here we process our exceptions like that blocking one
++                    if (ex instanceof ClosedChannelException) {
++                        LOGGER.info("Connection closed during protocol change");
++                    } else {
++                        this.channel.pipeline().fireExceptionCaught(ex);
++                    }
++                }finally {
++                    // reset auto back and resume reading if needed
++                    if (resumeAutoReading) {
++                        this.channel.config().setAutoRead(true);
++                        this.channel.read(); // read once
++                    }
++                }
++            });
++
++            // we need to do this inside the event loop
 +            if (!this.channel.eventLoop().inEventLoop()) {
 +                this.channel.eventLoop().execute(writeTask);
 +                return;
@@ -214,7 +227,7 @@ index 204764c924e92049da6da4674c37e14b8612af92..fa606528000b14ecd0939d4b53fabf8a
      }
  
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index c56d7bff7627ce58c0fd55ef18f4f090a8dc6459..84ef80df897bbd9f1370885bd760b44c7c03f6ff 100644
+index c56d7bff7627ce58c0fd55ef18f4f090a8dc6459..23362841919443e70d99f9f8226c6f0e22823c4c 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -418,14 +418,35 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -249,7 +262,7 @@ index c56d7bff7627ce58c0fd55ef18f4f090a8dc6459..84ef80df897bbd9f1370885bd760b44c
 +
 +        this.connection.setupInboundProtocolAsync(ConfigurationProtocols.SERVERBOUND, serverConfigurationPacketListenerImpl, () -> {
 +            this.connection.setupOutboundProtocolAsync(ConfigurationProtocols.CLIENTBOUND, afterSwitch, true); // start auto read when everything is ready
-+        }, false);
++        }, false); // we will resume auto reading once the outbound protocol is also setup
 +        // Luminol end
      }
  

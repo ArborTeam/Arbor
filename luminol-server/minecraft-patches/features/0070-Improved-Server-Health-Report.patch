@@ -5,55 +5,34 @@ Subject: [PATCH] Improved Server Health Report
 
 
 diff --git a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
-index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..26545bff53141394b4ef4b7e23771c7aff8de49f 100644
+index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..d1bd2ad461d1e5b061378c3990addef9a847dab9 100644
 --- a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
 +++ b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
-@@ -23,11 +23,17 @@ import org.bukkit.command.CommandSender;
- import org.bukkit.craftbukkit.CraftWorld;
- import org.bukkit.entity.Entity;
- import org.bukkit.entity.Player;
-+
+@@ -28,6 +28,14 @@ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.List;
+ import java.util.Locale;
++// Luminol start - Improved Server Health Report
++import java.util.concurrent.TimeUnit;
 +import java.lang.management.ManagementFactory;
 +import java.lang.management.MemoryMXBean;
 +import java.lang.management.MemoryUsage;
 +import java.lang.management.RuntimeMXBean;
- import java.text.DecimalFormat;
- import java.util.ArrayList;
- import java.util.Arrays;
- import java.util.List;
- import java.util.Locale;
-+import java.util.concurrent.TimeUnit;
++import org.jetbrains.annotations.NotNull;
++// Luminol end
  
  public final class CommandServerHealth extends Command {
  
-@@ -44,7 +50,7 @@ public final class CommandServerHealth extends Command {
+@@ -44,7 +52,7 @@ public final class CommandServerHealth extends Command {
      private static final TextColor HEADER = TextColor.color(79, 164, 240);
      private static final TextColor PRIMARY = TextColor.color(48, 145, 237);
      private static final TextColor SECONDARY = TextColor.color(104, 177, 240);
 -    private static final TextColor INFORMATION = TextColor.color(145, 198, 243);
-+    private static final TextColor INFORMATION = TextColor.color(180, 220, 255);
++    private static final TextColor INFORMATION = TextColor.color(180, 220, 255); // Luminol start - Improved Server Health Report
      private static final TextColor LIST = TextColor.color(33, 97, 188);
  
      public CommandServerHealth() {
-@@ -54,33 +60,50 @@ public final class CommandServerHealth extends Command {
-         this.setPermission("bukkit.command.tps");
-     }
- 
-+    private static String formatUptime(long uptimeMillis) {
-+        long days = TimeUnit.MILLISECONDS.toDays(uptimeMillis);
-+        long hours = TimeUnit.MILLISECONDS.toHours(uptimeMillis) % 24;
-+        long minutes = TimeUnit.MILLISECONDS.toMinutes(uptimeMillis) % 60;
-+        long seconds = TimeUnit.MILLISECONDS.toSeconds(uptimeMillis) % 60;
-+
-+        StringBuilder sb = new StringBuilder();
-+        if (days > 0) sb.append(days).append("d ");
-+        if (hours > 0) sb.append(hours).append("h ");
-+        if (minutes > 0) sb.append(minutes).append("m ");
-+        sb.append(seconds).append("s");
-+
-+        return sb.toString();
-+    }
-+
+@@ -57,30 +65,32 @@ public final class CommandServerHealth extends Command {
      private static Component formatRegionInfo(final String prefix, final double util, final double mspt, final double tps,
                                                final boolean newline) {
          return Component.text()
@@ -102,7 +81,7 @@ index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..26545bff53141394b4ef4b7e23771c7a
          if (region == null) {
              sender.sendMessage(Component.text("You are not in a region currently", NamedTextColor.RED));
              return true;
-@@ -104,25 +127,17 @@ public final class CommandServerHealth extends Command {
+@@ -104,25 +114,17 @@ public final class CommandServerHealth extends Command {
          final double tps1m = report1m.tpsData().segmentAll().average();
          final double mspt1m = report1m.timePerTickData().segmentAll().average() / 1.0E6;
  
@@ -137,7 +116,7 @@ index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..26545bff53141394b4ef4b7e23771c7a
  
          sender.sendMessage(line);
  
-@@ -143,7 +158,7 @@ public final class CommandServerHealth extends Command {
+@@ -143,7 +145,7 @@ public final class CommandServerHealth extends Command {
          }
  
          final List<ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData>> regions =
@@ -146,7 +125,7 @@ index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..26545bff53141394b4ef4b7e23771c7a
  
          for (final World bukkitWorld : Bukkit.getWorlds()) {
              final ServerLevel world = ((CraftWorld)bukkitWorld).getHandle();
-@@ -162,6 +177,18 @@ public final class CommandServerHealth extends Command {
+@@ -162,6 +164,18 @@ public final class CommandServerHealth extends Command {
          final long currTime = System.nanoTime();
          final TickData.TickReportData globalTickReport = RegionizedServer.getGlobalTickData().getTickReport15s(currTime);
  
@@ -165,7 +144,7 @@ index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..26545bff53141394b4ef4b7e23771c7a
          for (final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region : regions) {
              final TickData.TickReportData report = region.getData().getRegionSchedulingHandle().getTickReport15s(currTime);
              tpsByRegion.add(report == null ? 20.0 : report.tpsData().segmentAll().average());
-@@ -173,31 +200,27 @@ public final class CommandServerHealth extends Command {
+@@ -173,31 +187,27 @@ public final class CommandServerHealth extends Command {
          final double loadRate = ca.spottedleaf.moonrise.patches.chunk_system.scheduling.task.ChunkFullTask.loadRate(currTime);
  
          totalUtil += globalTickReport.utilisation();
@@ -199,7 +178,7 @@ index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..26545bff53141394b4ef4b7e23771c7a
              regionsBelowThreshold.add(new ObjectObjectImmutablePair<>(regions.get(i), report));
          }
  
-@@ -206,11 +229,18 @@ public final class CommandServerHealth extends Command {
+@@ -206,11 +216,18 @@ public final class CommandServerHealth extends Command {
              final TickData.TickReportData report2 = p2.right();
              final double util1 = report1 == null ? 0.0 : report1.utilisation();
              final double util2 = report2 == null ? 0.0 : report2.utilisation();
@@ -220,7 +199,7 @@ index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..26545bff53141394b4ef4b7e23771c7a
          final TextComponent.Builder lowestRegionsBuilder = Component.text();
  
          if (sender instanceof Player) {
-@@ -218,23 +248,18 @@ public final class CommandServerHealth extends Command {
+@@ -218,23 +235,18 @@ public final class CommandServerHealth extends Command {
          }
          for (int i = 0, len = Math.min(lowestRegionsCount, regionsBelowThreshold.size()); i < len; ++i) {
              final ObjectObjectImmutablePair<ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData>, TickData.TickReportData>
@@ -249,7 +228,7 @@ index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..26545bff53141394b4ef4b7e23771c7a
              final int centerBlockX = ((chunkCenter.x << 4) | 7);
              final int centerBlockZ = ((chunkCenter.z << 4) | 7);
              final double util = report.utilisation();
-@@ -242,75 +267,102 @@ public final class CommandServerHealth extends Command {
+@@ -242,75 +254,102 @@ public final class CommandServerHealth extends Command {
              final double mspt = report.timePerTickData().segmentAll().average() / 1.0E6;
  
              final int yLoc = 80;
@@ -267,12 +246,12 @@ index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..26545bff53141394b4ef4b7e23771c7a
 -                .append(Component.text(" MSPT at ", PRIMARY))
 -                .append(Component.text(TWO_DECIMAL_PLACES.get().format(tps), CommandUtil.getColourForTPS(tps)))
 -                .append(Component.text(" TPS\n", PRIMARY))
--
++            final String location = world.getWorld().getName() + " (" + centerBlockX + ", " + centerBlockZ + ")";
+ 
 -                .append(Component.text("    ", PRIMARY))
 -                .append(formatRegionStats(region.getData().getRegionStats(), (i + 1) != len))
 -                .build()
-+            final String location = world.getWorld().getName() + " (" + centerBlockX + ", " + centerBlockZ + ")";
- 
+-
 -                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/minecraft:execute as @s in " + world.getWorld().getKey().toString() + " run tp " + centerBlockX + ".5 " + yLoc + " " + centerBlockZ + ".5"))
 -                .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Click to teleport to " + location, SECONDARY)));
 +            final Component line = Component.text()
@@ -415,10 +394,27 @@ index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..26545bff53141394b4ef4b7e23771c7a
          );
  
          return true;
-@@ -360,4 +412,4 @@ public final class CommandServerHealth extends Command {
+@@ -360,4 +399,21 @@ public final class CommandServerHealth extends Command {
          }
          return new ArrayList<>();
      }
 -}
 \ No newline at end of file
++
++    // Luminol start - Improved Server Health Report
++    private static @NotNull String formatUptime(long uptimeMillis) {
++        long days = TimeUnit.MILLISECONDS.toDays(uptimeMillis);
++        long hours = TimeUnit.MILLISECONDS.toHours(uptimeMillis) % 24;
++        long minutes = TimeUnit.MILLISECONDS.toMinutes(uptimeMillis) % 60;
++        long seconds = TimeUnit.MILLISECONDS.toSeconds(uptimeMillis) % 60;
++
++        StringBuilder sb = new StringBuilder();
++        if (days > 0) sb.append(days).append("d ");
++        if (hours > 0) sb.append(hours).append("h ");
++        if (minutes > 0) sb.append(minutes).append("m ");
++        sb.append(seconds).append("s");
++
++        return sb.toString();
++    }
++    // Luminol end
 +}

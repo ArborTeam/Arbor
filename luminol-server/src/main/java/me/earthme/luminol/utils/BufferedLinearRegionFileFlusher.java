@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import me.earthme.luminol.data.BufferedLinearRegionFile;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -21,6 +22,10 @@ public class BufferedLinearRegionFileFlusher implements Runnable {
     private final long flushOfWriteTimeoutMs;
 
     public BufferedLinearRegionFileFlusher(int nIoThreads, long checkIntervalMs, long flushOfWriteTimeoutMs) {
+        Validate.isTrue(nIoThreads > 0, "Number of I/O threads must > 0!");
+        Validate.isTrue(checkIntervalMs > 0, "Check interval must > 0");
+        Validate.isTrue(flushOfWriteTimeoutMs > 0, "Flush of write timeout must > 0");
+
         this.ioWorkerPool = Executors.newFixedThreadPool(nIoThreads, new ThreadFactoryBuilder()
                 .setNameFormat("BufferedLinearRegionFile I/O Worker %d")
                 .setDaemon(true)

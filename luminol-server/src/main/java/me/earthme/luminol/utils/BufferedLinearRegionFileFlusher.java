@@ -3,12 +3,11 @@ package me.earthme.luminol.utils;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import me.earthme.luminol.data.BufferedLinearRegionFile;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
@@ -16,7 +15,7 @@ import java.util.concurrent.*;
 public class BufferedLinearRegionFileFlusher implements Runnable {
     private static final Logger logger = LogUtils.getLogger();
 
-    private final Set<BufferedLinearRegionFile> inManagement = new ObjectLinkedOpenHashSet<>();
+    private final Set<BufferedLinearRegionFile> inManagement = new ObjectArraySet<>();
     private final ScheduledFuture<?> flusherChecker;
     private final Executor ioWorkerPool;
     private final long flushOfWriteTimeoutMs;
@@ -48,11 +47,7 @@ public class BufferedLinearRegionFileFlusher implements Runnable {
         final BufferedLinearRegionFile[] copied;
 
         synchronized (this) {
-            copied = Arrays.copyOf(
-                    this.inManagement.toArray(new BufferedLinearRegionFile[0]),
-                    this.inManagement.size(),
-                    BufferedLinearRegionFile[].class
-            );
+            copied = this.inManagement.toArray(new BufferedLinearRegionFile[0]);
         }
 
         final List<BufferedLinearRegionFile> toRemove = new ObjectArrayList<>();

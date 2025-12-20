@@ -39,11 +39,19 @@ public class BufferedLinearRegionFileFlusher implements Runnable {
         this.flushOfWriteTimeoutMs = flushOfWriteTimeoutMs;
     }
 
-    public void shutdown() throws InterruptedException {
+    public void shutdown() {
         this.flusherChecker.cancel(false);
 
         ((ExecutorService) this.ioWorkerPool).shutdown();
-        while (!((ExecutorService) this.ioWorkerPool).awaitTermination(100, TimeUnit.MILLISECONDS)) ;
+        for (;;) {
+            try {
+                if (((ExecutorService) this.ioWorkerPool).awaitTermination(100, TimeUnit.MILLISECONDS)) {
+                    break;
+                }
+            }catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     @Override

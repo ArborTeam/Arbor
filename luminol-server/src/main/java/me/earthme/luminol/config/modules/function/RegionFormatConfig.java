@@ -66,6 +66,8 @@ public class RegionFormatConfig implements IConfigModule {
             blinearFlusher = new BufferedLinearRegionFileFlusher(blinearIoThreadCount, 20, blinearIoFlushDelayMs);
 
             checkCompressionLevel();
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> blinearFlusher.shutdown()));
         }
     }
 

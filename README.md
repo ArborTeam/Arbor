@@ -45,7 +45,7 @@ git clone https://github.com/LuminolMC/Luminol.git
 cd Luminol
 
 # 应用补丁并构建 Paperclip JAR
-./gradlew applyAllPatches && ./gradlew createMojmapPaperclipJar
+chmod 755 ./scripts/setup_and_build.sh && ./scripts/setup_and_build.sh
 ```
 
 构建完成后，您可以在 `luminol-server/build/libs` 目录中找到生成的 JAR 文件。

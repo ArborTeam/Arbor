@@ -1,3 +1,3 @@
 #!/bin/sh
 echo "Setting up projects"
-./gradlew applyAllPatches
+./gradlew --refresh-dependencies applyAllPatches

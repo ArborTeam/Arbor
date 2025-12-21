@@ -44,11 +44,8 @@ jobs:
       - name: Configure Git User Details
         run: git config --global user.email "ci@luminolmc.com" && git config --global user.name "LuminolMC CI"
 
-      - name: Apply All Patches
-        run: ./gradlew --refresh-dependencies applyAllPatches
-
-      - name: Build Paperclip Jar
-        run: ./gradlew --refresh-dependencies createMojmapPaperclipJar
+      - name: Build All
+        run: chmod 755 ./scripts/setup_and_build.sh && ./scripts/setup_and_build.sh
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v6

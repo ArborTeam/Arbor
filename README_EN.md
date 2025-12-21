@@ -46,7 +46,7 @@ git clone https://github.com/LuminolMC/Luminol.git
 cd Luminol
 
 # Apply patches and build Paperclip JAR
-./gradlew applyAllPatches && ./gradlew createMojmapPaperclipJar
+chmod 755 ./scripts/setup_and_build.sh && ./scripts/setup_and_build.sh
 ```
 
 After building, you can find the generated JAR file in the `build/libs` directory.

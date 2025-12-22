@@ -22,10 +22,10 @@ index 09baa8c13a56e0f503815a436042b7b79b1698e4..ea6f7b18796fe94e8b7c382c672ca2aa
 +    // KioCG end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 76d9bf5090e7a452c328fb7c8cf4dcde0fe713f9..cd6fcdb08d6941367611e84102390d20e678ce95 100644
+index 0d26a26d15de61031c6277e1671a3992dbf52f2d..260a1d23dd1d8505fbbf49f3164090956b4f1c25 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2170,6 +2170,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2197,6 +2197,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              handle.newLevel = data.getIntOr("newLevel", 0);
              handle.expToDrop = data.getIntOr("expToDrop", 0);
              handle.keepLevel = data.getBooleanOr("keepLevel", false);
@@ -41,7 +41,7 @@ index 76d9bf5090e7a452c328fb7c8cf4dcde0fe713f9..cd6fcdb08d6941367611e84102390d20
          });
      }
  
-@@ -2187,6 +2196,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2214,6 +2223,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          data.putLong("lastPlayed", System.currentTimeMillis());
          data.putString("lastKnownName", handle.getGameProfile().name());
  
@@ -57,7 +57,7 @@ index 76d9bf5090e7a452c328fb7c8cf4dcde0fe713f9..cd6fcdb08d6941367611e84102390d20
          // Paper start - persist for use in offline save data
          ValueOutput paper = output.child("Paper");
          paper.putLong("LastLogin", handle.loginTime);
-@@ -3371,4 +3389,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -3398,4 +3416,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              entity.remove();
          }
      }

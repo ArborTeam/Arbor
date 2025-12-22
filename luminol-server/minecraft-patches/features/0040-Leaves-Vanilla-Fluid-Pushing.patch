@@ -8,10 +8,10 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/d4854b69b2775f6d0929
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 1088ec665e9790b1d47ada5d6102be6d955596eb..0d9b01733e02451e732719ede8c55c7e0d0583ee 100644
+index 6aa8eb742fccb072228e346e59c29ab725c8714f..4b9dbbe33203c121fb5aeac062eaaac3fd105c9f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -5649,8 +5649,82 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -5651,8 +5651,82 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          return Mth.lerp(partialTick, this.yRotO, this.yRot);
      }
  

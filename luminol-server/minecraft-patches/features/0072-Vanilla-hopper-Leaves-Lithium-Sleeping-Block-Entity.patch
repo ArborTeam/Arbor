@@ -1,18 +1,18 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: mrhua269 <mrhua269@gmail.com>
-Date: Fri, 14 Nov 2025 18:20:00 +0800
-Subject: [PATCH] Vanilla hopper & Leaves Lithium Sleeping Block Entity
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 22 Dec 2025 15:44:59 +0800
+Subject: [PATCH] Vanilla hopper & Leaves Lithium Sleeping Block Entity 
  [Lithium Sleeping Block Entity] is a part from leaves
 
 Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/minecraft-patches/features/0136-Lithium-Sleeping-Block-Entity.patch
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 421b62d0ccbb30805a4866ef318c62d6dabc19a0..918bd1f48156940bc85bfb399adf593b9805bb08 100644
+index b974742a0fb2dc18cfc9a61159ab0a2567a4dca4..56e09b99c2901882483c5f2b3216bf0a11406e2e 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-@@ -63,6 +63,10 @@ import java.util.Map;
- import java.util.Set;
+@@ -61,6 +61,10 @@ import java.util.Set;
+ import java.util.concurrent.CopyOnWriteArrayList;
  import java.util.function.Consumer;
  import java.util.function.Predicate;
 +// Luminol start - imports for lithium sleeping block entity
@@ -22,7 +22,7 @@ index 421b62d0ccbb30805a4866ef318c62d6dabc19a0..918bd1f48156940bc85bfb399adf593b
  
  public final class RegionizedWorldData {
  
-@@ -73,6 +77,32 @@ public final class RegionizedWorldData {
+@@ -71,6 +75,32 @@ public final class RegionizedWorldData {
      public static final RegionizedData.RegioniserCallback<RegionizedWorldData> REGION_CALLBACK = new RegionizedData.RegioniserCallback<>() {
          @Override
          public void merge(final RegionizedWorldData from, final RegionizedWorldData into, final long fromTickOffset) {
@@ -55,7 +55,7 @@ index 421b62d0ccbb30805a4866ef318c62d6dabc19a0..918bd1f48156940bc85bfb399adf593b
              // connections
              for (final Connection conn : from.connections) {
                  into.connections.add(conn);
-@@ -111,16 +141,20 @@ public final class RegionizedWorldData {
+@@ -110,16 +140,20 @@ public final class RegionizedWorldData {
              from.fluidLevelTicks.merge(into.fluidLevelTicks, fromRedstoneTimeOffset);
  
              // tile entity ticking
@@ -80,7 +80,7 @@ index 421b62d0ccbb30805a4866ef318c62d6dabc19a0..918bd1f48156940bc85bfb399adf593b
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
                  }
-@@ -165,6 +199,37 @@ public final class RegionizedWorldData {
+@@ -164,6 +198,37 @@ public final class RegionizedWorldData {
          public void split(final RegionizedWorldData from, final int chunkToRegionShift,
                            final Long2ReferenceOpenHashMap<RegionizedWorldData> regionToData,
                            final ReferenceOpenHashSet<RegionizedWorldData> dataSet) {
@@ -142,7 +142,7 @@ index 421b62d0ccbb30805a4866ef318c62d6dabc19a0..918bd1f48156940bc85bfb399adf593b
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -447,6 +514,11 @@ public final class RegionizedWorldData {
+@@ -448,6 +515,11 @@ public final class RegionizedWorldData {
      // Redstone
      public final alternate.current.wire.WireHandler wireHandler;
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;
@@ -152,8 +152,8 @@ index 421b62d0ccbb30805a4866ef318c62d6dabc19a0..918bd1f48156940bc85bfb399adf593b
 +    public final Map<Long, ChunkSectionItemEntityMovementTracker> itemEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();
 +    // Luminol end
  
-     public RegionizedWorldData(final ServerLevel world) {
-         this.world = world;
+     public final TickRegions.TickRegionData regionData;
+ 
 diff --git a/net/minecraft/core/NonNullList.java b/net/minecraft/core/NonNullList.java
 index ede0a5403739a2cf8bf101d7b12748c8acce87f5..21e6190ae894a73cde27c6321c602acab2098cc0 100644
 --- a/net/minecraft/core/NonNullList.java
@@ -249,7 +249,7 @@ index 6489b47810b0431c350098d574469bbe0adcd726..b63cecafd841b97a694f6d2610141dcd
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index bf8813c728fdbeb90bf80a486d564bd649d1b8fc..486d492087d870c38eb7a9c2169b842885748510 100644
+index f4ae8e858ced5f37cf6852188f0d5099b443e4f0..532a628de2d5eda29b503274bc323d71a57cf1cb 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -310,7 +310,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -261,7 +261,7 @@ index bf8813c728fdbeb90bf80a486d564bd649d1b8fc..486d492087d870c38eb7a9c2169b8428
      private final VecDeltaCodec packetPositionCodec = new VecDeltaCodec();
      public boolean needsSync;
      public @Nullable PortalProcessor portalProcess;
-@@ -4399,11 +4399,13 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4401,11 +4401,13 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      }
  
      protected Entity transformForAsyncTeleport(ServerLevel destination, Vec3 pos, Float yaw, Float pitch, Vec3 velocity) {
@@ -275,7 +275,7 @@ index bf8813c728fdbeb90bf80a486d564bd649d1b8fc..486d492087d870c38eb7a9c2169b8428
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
          this.postRemoveAfterChangingDimensions();
-@@ -6137,6 +6139,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -6139,6 +6141,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box
@@ -605,7 +605,7 @@ index 8adf67ce0781a54af76ad54d7df51af48e2ff810..5489302acb5bceac2cae71079a8356b4
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 4a23ec4f07f334fd076efd93da2ec1073ed1611b..c2f4e554a7839861733cfa1fccfc96ff5d2b93f2 100644
+index edd2eb0ff9e9720f3631b480fe5d1310a6c292de..ce785694d7a27bc198dbda61a2dff48f22e453e3 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1460,7 +1460,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

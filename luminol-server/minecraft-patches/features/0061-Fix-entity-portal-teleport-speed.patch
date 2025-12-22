@@ -46,7 +46,7 @@ index 1924a20bea5aae4f3e098ba1675ca8e7d8663c1d..f9da52bcc7f51426ab1a5d007a5cd5a1
          } else {entity.inactiveTick();} // Paper - EAR 2
          profilerFiller.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 16ecbb01ce7c15d7e52aa315b779ac2681c776c8..c553f9375f686815397fa5d783d52905b285014f 100644
+index 9009ae708533d63067c8cc358e2863c0e9d999a8..23a5346e4ca3a027d5f066c35b5a0de4c9e5b5df 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -373,6 +373,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -57,7 +57,7 @@ index 16ecbb01ce7c15d7e52aa315b779ac2681c776c8..c553f9375f686815397fa5d783d52905
  
      public void inactiveTick() {
      }
-@@ -3509,6 +3510,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -3511,6 +3512,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          } else {
              if (this.portalProcess == null || !this.portalProcess.isSamePortal(portal)) {
                  this.portalProcess = new PortalProcessor(portal, pos.immutable());

@@ -173,7 +173,7 @@ index 2cc3dd1f267ae78d3aacb84509d4bf668235688f..00eec818bfd7d1a7442e6bd2fa531f4a
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 204764c924e92049da6da4674c37e14b8612af92..fa606528000b14ecd0939d4b53fabf8a8df81af3 100644
+index a75b683e419c819ea3bac966e601bfaa0c2e732b..4a0674d510f8b61b440887d25d97e175053c7033 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2825,7 +2825,7 @@ public class ServerGamePacketListenerImpl
@@ -227,10 +227,10 @@ index 204764c924e92049da6da4674c37e14b8612af92..fa606528000b14ecd0939d4b53fabf8a
      }
  
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index c56d7bff7627ce58c0fd55ef18f4f090a8dc6459..23362841919443e70d99f9f8226c6f0e22823c4c 100644
+index af111b5734cbdcfac6cbc7907f03acaa09294e36..43fddb41c666898493c01610b12060878574ab78 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -418,14 +418,35 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -428,14 +428,35 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      public void handleLoginAcknowledgement(ServerboundLoginAcknowledgedPacket packet) {
          net.minecraft.network.protocol.PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor()); // CraftBukkit
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.PROTOCOL_SWITCHING, "Unexpected login acknowledgement packet");
@@ -268,7 +268,7 @@ index c56d7bff7627ce58c0fd55ef18f4f090a8dc6459..23362841919443e70d99f9f8226c6f0e
  
      @Override
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 2dcd7ece555d2343cc734097831787d29309f070..cccb80bef30c8d0e7f8659db47fbbff909590095 100644
+index 9eff0ae2bc1024ecddb646faf767d969bb8950e8..a6d28357e7aaea9bb144ffe2c15045ac04d4d34f 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -235,10 +235,12 @@ public abstract class PlayerList {

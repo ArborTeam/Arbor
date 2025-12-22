@@ -19,10 +19,10 @@ index a3abaf3d3a1e06b02a70a172d07f0b7f2de9f80a..2bfb5603bb353183df776c99ccdfe16a
              );
          });
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 28a1890a52c974d2bf04ccbd25154f1b8d84cbe7..606e3f5a6f78b4e7de00f0282e963ebea5db1059 100644
+index 106555259d62356299f19ea493702faffcd6a4ba..671068cd57bfab4bea7cd63f1574151333849a58 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4396,6 +4396,31 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4398,6 +4398,31 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          }
  
          // TODO any events that can modify go HERE
@@ -54,7 +54,7 @@ index 28a1890a52c974d2bf04ccbd25154f1b8d84cbe7..606e3f5a6f78b4e7de00f0282e963ebe
  
          // check for same region
          if (destination == this.level()) {
-@@ -4513,6 +4538,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4515,6 +4540,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              case END: {
                  if (destination.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.END) {
                      BlockPos targetPos = ServerLevel.END_SPAWN_POINT;
@@ -72,7 +72,7 @@ index 28a1890a52c974d2bf04ccbd25154f1b8d84cbe7..606e3f5a6f78b4e7de00f0282e963ebe
                      // need to load chunks so we can create the platform
                      destination.moonrise$loadChunksAsync(
                          targetPos, 16, // load 16 blocks to be safe from block physics
-@@ -4534,6 +4570,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4536,6 +4572,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
                      );
                  } else {
                      BlockPos spawnPos = destination.getRespawnData().pos();
@@ -90,7 +90,7 @@ index 28a1890a52c974d2bf04ccbd25154f1b8d84cbe7..606e3f5a6f78b4e7de00f0282e963ebe
                      // need to load chunk for heightmap
                      destination.moonrise$loadChunksAsync(
                          spawnPos, 0,
-@@ -4585,7 +4632,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4587,7 +4634,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
                  WorldBorder destinationBorder = destination.getWorldBorder();
                  double dimensionScale = net.minecraft.world.level.dimension.DimensionType.getTeleportationScale(origin.dimensionType(), destination.dimensionType());
                  BlockPos targetPos = destination.getWorldBorder().clampToBounds(this.getX() * dimensionScale, this.getY(), this.getZ() * dimensionScale);
@@ -108,7 +108,7 @@ index 28a1890a52c974d2bf04ccbd25154f1b8d84cbe7..606e3f5a6f78b4e7de00f0282e963ebe
                  ca.spottedleaf.concurrentutil.completable.CallbackCompletable<BlockUtil.FoundRectangle> portalFound
                      = new ca.spottedleaf.concurrentutil.completable.CallbackCompletable<>();
  
-@@ -4722,6 +4779,15 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4724,6 +4781,15 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          if (!this.canPortalAsync(destination, takePassengers)) {
              return false;
          }

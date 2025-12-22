@@ -1,20 +1,22 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
-Date: Tue, 9 Nov 2077 00:00:00 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Mon, 22 Dec 2025 15:40:35 +0800
 Subject: [PATCH] Add config for cpu affinity
 
 
 diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-index e7a1a4cd49c65296e3235b9ba1eeaa28c5a275d2..0457f0bd825c2d2287dc5ec9f81f0a266c30a869 100644
+index a121c71e953eff821cb1655045b60221deed46b1..e3df94bfd26b118cb8a7bdece75d611aaf27c606 100644
 --- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
 +++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-@@ -51,6 +51,25 @@ public final class TickRegionScheduler {
+@@ -65,7 +65,26 @@ public final class TickRegionScheduler {
  
              @Override
              public Thread newThread(final Runnable run) {
+-                final Thread ret = new TickThreadRunner(this.threadGroup, run, "Folia Region Scheduler Thread #" + this.idGenerator.getAndIncrement());
 +                // Luminol start - cpu affinity
++                final Runnable actualRun;
 +                if (me.earthme.luminol.config.modules.optimizations.CpuAffinityConfig.cpuAffinityEnabled) {
-+                    Runnable affinityRunnable = new Runnable() {
++                    actualRun = new Runnable() {
 +                        private boolean affinitySet = false;
 +
 +                        @Override
@@ -26,11 +28,11 @@ index e7a1a4cd49c65296e3235b9ba1eeaa28c5a275d2..0457f0bd825c2d2287dc5ec9f81f0a26
 +                            run.run();
 +                        }
 +                    };
-+                    final Thread ret = new TickThreadRunner(affinityRunnable, "Region Scheduler Thread #" + this.idGenerator.getAndIncrement());
-+                    ret.setUncaughtExceptionHandler(TickRegionScheduler.this::uncaughtException);
-+                    return ret;
++                } else {
++                    actualRun = run;
 +                }
 +                // Luminol end - cpu affinity
-                 final Thread ret = new TickThreadRunner(run, "Region Scheduler Thread #" + this.idGenerator.getAndIncrement());
++                final Thread ret = new TickThreadRunner(this.threadGroup, actualRun, "Folia Region Scheduler Thread #" + this.idGenerator.getAndIncrement());
                  ret.setUncaughtExceptionHandler(TickRegionScheduler.this::uncaughtException);
                  return ret;
+             }

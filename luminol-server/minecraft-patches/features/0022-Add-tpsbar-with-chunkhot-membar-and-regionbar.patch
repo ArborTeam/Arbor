@@ -17,7 +17,7 @@ index 874ffbcc0263ded98462a9fd2529e9a877ab8900..4850428ea33c89732b4dede6d8c73136
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index d8e895ef68c2934d009274ec8e03fdcb119d0a1a..63433183b76bad5bfad899baab1dd54ce048c986 100644
+index 6a9a1e49f38a5895f7f98662174249369d77802f..ccd059fe87c3476b04e8ee7e1cff619d8471a226 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1741,7 +1741,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -185,10 +185,10 @@ index 75f80787966cdda6f51f55a8f6cb22183fbf91ea..68bd96ab0ffc68be593e4e94c1bea7a7
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 65ac1e2e2fa5511a16abdd78310e4afd2edc624d..28a1890a52c974d2bf04ccbd25154f1b8d84cbe7 100644
+index d5b2e0dd392b13e63d0b6a9ac335611cdfe420fe..106555259d62356299f19ea493702faffcd6a4ba 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -6275,4 +6275,6 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -6277,4 +6277,6 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          return ((ServerLevel) this.level()).isPositionEntityTicking(this.blockPosition());
      }
      // Paper end - Expose entity id counter

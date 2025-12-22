@@ -8,7 +8,7 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index fa606528000b14ecd0939d4b53fabf8a8df81af3..051b7ffd904b19d53cc8629b9971a29afdbf338e 100644
+index 4a0674d510f8b61b440887d25d97e175053c7033..2a1480a414e71d5215748f6be7b30d0f744266af 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -633,7 +633,7 @@ public class ServerGamePacketListenerImpl

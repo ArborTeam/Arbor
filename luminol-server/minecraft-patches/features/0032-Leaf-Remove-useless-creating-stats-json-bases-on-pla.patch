@@ -9,7 +9,7 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40
 Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/MIT.txt)
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index a6d28357e7aaea9bb144ffe2c15045ac04d4d34f..fe58993c3fb98189141120f849c7750ce1e24ebd 100644
+index bbe7b262a3a9cbd10b286de5f7e8da1bd0f20b44..d2b2bf35b3f5704f3bca94d0fe3b70206c2fbf96 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -1289,6 +1289,8 @@ public abstract class PlayerList {

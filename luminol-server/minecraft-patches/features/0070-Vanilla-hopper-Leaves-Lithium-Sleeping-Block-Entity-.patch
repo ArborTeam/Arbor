@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Bacteriawa <A3167717663@hotmail.com>
 Date: Mon, 22 Dec 2025 15:44:59 +0800
-Subject: [PATCH] Vanilla hopper & Leaves Lithium Sleeping Block Entity 
+Subject: [PATCH] Vanilla hopper & Leaves Lithium Sleeping Block Entity
  [Lithium Sleeping Block Entity] is a part from leaves
 
 Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/minecraft-patches/features/0136-Lithium-Sleeping-Block-Entity.patch
@@ -452,7 +452,7 @@ index 79541b56a07d10de450f63945d0849a7f320da6c..c3eea44d2f45284965fbb758d1f9cb3f
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/inventory/AbstractContainerMenu.java b/net/minecraft/world/inventory/AbstractContainerMenu.java
-index c8cbde0499641418bd56aa38443dcb6e4af8f624..b090b74c845cd5944c9a8e35e899ad35063770d3 100644
+index 5be0f260197103264b33cf8a58980455b2b34ec6..995e9d3f70ff8200601b7b1eef4418d1d20fc7c6 100644
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
 @@ -895,6 +895,7 @@ public abstract class AbstractContainerMenu {

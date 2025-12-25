@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: mrhua269 <mrhua269@gmail.com>
-Date: Tue, 28 Oct 2025 23:19:33 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Thu, 25 Dec 2025 14:41:22 +0800
 Subject: [PATCH] Fix possible delayed POI updates while block updating
 
 

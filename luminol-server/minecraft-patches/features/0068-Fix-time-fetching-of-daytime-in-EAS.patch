@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mrhua269 <mrhua269@gmail.com>
+Date: Thu, 25 Dec 2025 22:36:25 +0800
+Subject: [PATCH] Fix time fetching of daytime in EAS
+
+
+diff --git a/net/minecraft/world/attribute/EnvironmentAttributeSystem.java b/net/minecraft/world/attribute/EnvironmentAttributeSystem.java
+index 309dfbf987988413a26602d67261f7f1da9371dc..e380b44213c384a505c7f6fa5a99c761b33be67d 100644
+--- a/net/minecraft/world/attribute/EnvironmentAttributeSystem.java
++++ b/net/minecraft/world/attribute/EnvironmentAttributeSystem.java
+@@ -62,7 +62,20 @@ public class EnvironmentAttributeSystem implements EnvironmentAttributeReader {
+     static void addDefaultLayers(EnvironmentAttributeSystem.Builder builder, Level level) {
+         RegistryAccess registryAccess = level.registryAccess();
+         BiomeManager biomeManager = level.getBiomeManager();
+-        LongSupplier longSupplier = level::getDayTime;
++        // LongSupplier longSupplier = level::getDayTime; // Luminol - Fix time fetching of daytime in EAS
++        // Luminol start - Fix time fetching of daytime in EAS
++        LongSupplier longSupplier = () -> {
++            var worldData = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegionizedWorldData();
++
++            // no world data of ours or we are not in world
++            if (worldData == null || worldData.world != level) {
++                return level.getLevelData().getDayTime();
++            }
++
++            // have the data of ours and in world
++            return worldData.getTickData().dayTime();
++        };
++        // Luminol end
+         addDimensionLayer(builder, level.dimensionType());
+         addBiomeLayer(builder, registryAccess.lookupOrThrow(Registries.BIOME), biomeManager);
+         level.dimensionType().timelines().forEach(holder -> builder.addTimelineLayer((Holder<Timeline>)holder, longSupplier));

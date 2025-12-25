@@ -5,10 +5,10 @@ Subject: [PATCH] Fix time fetching of daytime in EAS
 
 
 diff --git a/net/minecraft/world/attribute/EnvironmentAttributeSystem.java b/net/minecraft/world/attribute/EnvironmentAttributeSystem.java
-index 309dfbf987988413a26602d67261f7f1da9371dc..e380b44213c384a505c7f6fa5a99c761b33be67d 100644
+index 309dfbf987988413a26602d67261f7f1da9371dc..e8b9ea1be37954ad0f8913addb6ddc2c6feddf77 100644
 --- a/net/minecraft/world/attribute/EnvironmentAttributeSystem.java
 +++ b/net/minecraft/world/attribute/EnvironmentAttributeSystem.java
-@@ -62,7 +62,20 @@ public class EnvironmentAttributeSystem implements EnvironmentAttributeReader {
+@@ -62,7 +62,24 @@ public class EnvironmentAttributeSystem implements EnvironmentAttributeReader {
      static void addDefaultLayers(EnvironmentAttributeSystem.Builder builder, Level level) {
          RegistryAccess registryAccess = level.registryAccess();
          BiomeManager biomeManager = level.getBiomeManager();
@@ -16,6 +16,10 @@ index 309dfbf987988413a26602d67261f7f1da9371dc..e380b44213c384a505c7f6fa5a99c761
 +        // LongSupplier longSupplier = level::getDayTime; // Luminol - Fix time fetching of daytime in EAS
 +        // Luminol start - Fix time fetching of daytime in EAS
 +        LongSupplier longSupplier = () -> {
++            // we use this to fetch day time manual as this has some cases that calling those function during
++            // an entity teleportation (we are pointing to the destination world, and it's different form our current)
++            // This should be return a correct daytime even if the original getting logic of
++            // day time of current region is failed
 +            var worldData = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegionizedWorldData();
 +
 +            // no world data of ours or we are not in world

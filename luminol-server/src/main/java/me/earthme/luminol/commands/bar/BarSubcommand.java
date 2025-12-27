@@ -1,8 +1,8 @@
 package me.earthme.luminol.commands.bar;
 
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.earthme.luminol.commands.bar.sub.ConfigEditCommand;
 import me.earthme.luminol.commands.bar.sub.ToggleCommand;
-import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.leavesmc.leaves.command.CommandNode;

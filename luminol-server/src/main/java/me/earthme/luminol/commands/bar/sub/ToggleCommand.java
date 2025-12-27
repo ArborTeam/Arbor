@@ -1,21 +1,20 @@
 package me.earthme.luminol.commands.bar.sub;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.PaperCommands;
 import me.earthme.luminol.commands.bar.BarCommand;
 import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
 import me.earthme.luminol.functions.bars.GlobalServerBarManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -128,18 +127,16 @@ public class ToggleCommand extends LiteralNode {
 
     @SuppressWarnings("unchecked")
     public void register() { // register for old version command
-        MinecraftServer.getServer()
-                .getCommands()
-                .getDispatcher()
-                .register((LiteralArgumentBuilder<CommandSourceStack>) compile0());
-        Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
+        PaperCommands.INSTANCE.setValid();
+        PaperCommands.INSTANCE.getDispatcher().register((LiteralArgumentBuilder<io.papermc.paper.command.brigadier.CommandSourceStack>) compile0());
+        PaperCommands.INSTANCE.invalidate();
+        Bukkit.getOnlinePlayers().forEach(org.bukkit.entity.Player::updateCommands);
     }
 
-    public void unregister() {
-        CommandDispatcher<CommandSourceStack> dispatcher = MinecraftServer.getServer()
-                .getCommands()
-                .getDispatcher();
-        dispatcher.getRoot().removeCommand(getOldName());
-        Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
+    public void unregister() { // unregister for old version command
+        PaperCommands.INSTANCE.setValid();
+        PaperCommands.INSTANCE.getDispatcher().getRoot().removeCommand(getOldName());
+        PaperCommands.INSTANCE.invalidate();
+        Bukkit.getOnlinePlayers().forEach(org.bukkit.entity.Player::updateCommands);
     }
 }

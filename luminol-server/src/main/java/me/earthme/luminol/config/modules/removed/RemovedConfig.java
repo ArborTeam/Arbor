@@ -8,6 +8,8 @@ import me.earthme.luminol.enums.EnumConfigCategory;
 
 @ConfigClassInfo(category = EnumConfigCategory.REMOVED, name = "removed_config")
 public class RemovedConfig implements IConfigModule {
+    @TransformedConfig(name = "vanilla_fluid_pushing", directory = {"fixes", "collision_behavior"}, transform = false)
+    @TransformedConfig(name = "vanilla_fluid_pushing", directory = {"misc", "vanilla_fluid_pushing"}, transform = false)
     @TransformedConfig(name = "useAlternateKeepAlive", directory = {"optimizations", "alternative_keepalive_handling"}, transform = false)
     @TransformedConfig(name = "enabled", directory = {"experiment", "enable_tick_command"}, transform = false)
     @TransformedConfig(name = "barrel_rows", directory = {"misc", "container_expansion"}, transform = false)

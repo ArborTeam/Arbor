@@ -249,7 +249,7 @@ index 6489b47810b0431c350098d574469bbe0adcd726..b63cecafd841b97a694f6d2610141dcd
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index f4ae8e858ced5f37cf6852188f0d5099b443e4f0..532a628de2d5eda29b503274bc323d71a57cf1cb 100644
+index 8c3f78b8b5e4dea796d8cca8a964132ad6093bf4..4d1de02dbc804a32aaa1d2eef8e8368300412af2 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -310,7 +310,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -275,7 +275,7 @@ index f4ae8e858ced5f37cf6852188f0d5099b443e4f0..532a628de2d5eda29b503274bc323d71
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
          this.postRemoveAfterChangingDimensions();
-@@ -6139,6 +6141,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -6065,6 +6067,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box

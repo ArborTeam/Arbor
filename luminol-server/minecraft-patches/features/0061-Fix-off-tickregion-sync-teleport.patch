@@ -6,7 +6,7 @@ Subject: [PATCH] Fix off tickregion sync teleport
 Folis's teleportAsync implementation has some checks missing during the sync teleportation checks, if we are teleport to the edge of the tickregion, it is still asserting that we are in the same tickregion and moved us directly, but there is actually some logics is already touching the stuff out of current tickregion.So we added some new edge checks to the sync teleportation checks which will check the tickregion belonging in a shape of cycle which is in min(entity's bounding box + simulate distance, 6) of radius to fix that issue
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 23a5346e4ca3a027d5f066c35b5a0de4c9e5b5df..9574fbe74dd388b3060b8601e6c52215272b1468 100644
+index 87d4a3e8f071a1a315faa9c4a431854a2ea98ada..d2d84d5ec24c7f66fb869428b42313c416d463ff 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4314,6 +4314,27 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name

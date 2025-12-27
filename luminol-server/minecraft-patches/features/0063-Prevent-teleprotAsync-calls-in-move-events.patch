@@ -29,7 +29,7 @@ index 2a1480a414e71d5215748f6be7b30d0f744266af..39b937dcce11cf20ecb2b7bf314a5f99
                                          // If the event is cancelled we move the player back to their old location.
                                          if (event.isCancelled()) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 9574fbe74dd388b3060b8601e6c52215272b1468..7a9bd5dec2f7faf73d23ae13b896bbaa8ccfbab4 100644
+index d2d84d5ec24c7f66fb869428b42313c416d463ff..f3d2e655924019d928dd7fdc3c8ecf6e96e486bb 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4392,12 +4392,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name

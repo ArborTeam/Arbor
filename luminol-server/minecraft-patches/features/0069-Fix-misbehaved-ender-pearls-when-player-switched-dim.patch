@@ -18,7 +18,7 @@ index 7d8c528a76e6a95d27368bc459d654c6ef66dd8f..53292b78036849a4bd0ff8539aea3858
              if (entity instanceof ServerPlayer serverPlayer
 -                && !entity.isAlive()
 +                // && !entity.isAlive() // Luminol - Fix misbehaved ender pearls when player switched dimension
-+                && entity.getBukkitEntity().taskScheduler.isRetired() // Luminol - Fix misbehaved ender pearls when player switched dimension
++                && (entity.getBukkitEntity().taskScheduler.isRetired() || serverPlayer.getHealth() <= 0.0D) // Luminol - Fix misbehaved ender pearls when player switched dimension
                  && !serverPlayer.wonGame
                  && serverPlayer.level().getGameRules().get(GameRules.ENDER_PEARLS_VANISH_ON_DEATH)) {
                  this.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause

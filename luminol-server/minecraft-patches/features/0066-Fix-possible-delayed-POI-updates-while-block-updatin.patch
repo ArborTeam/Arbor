@@ -5,7 +5,7 @@ Subject: [PATCH] Fix possible delayed POI updates while block updating
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index f9da52bcc7f51426ab1a5d007a5cd5a11ddde9c5..18ab2895292764fa929d6ee4986c15ca3eb37fae 100644
+index d8f135640bf816d9c7d9458eabcd18b4c6ee5c5e..fb1f6fde9a41c34c30a1ad5715aababb0927d10f 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -2473,11 +2473,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -23,3 +23,29 @@ index f9da52bcc7f51426ab1a5d007a5cd5a11ddde9c5..18ab2895292764fa929d6ee4986c15ca
                  // Paper start - Remove stale POIs
                  if (optional.isEmpty() && this.getPoiManager().exists(blockPos, ignored -> true)) {
                      this.getPoiManager().remove(blockPos);
+diff --git a/net/minecraft/world/entity/npc/villager/Villager.java b/net/minecraft/world/entity/npc/villager/Villager.java
+index 3d481566c2625db58313865d8e950385983f190b..dffce5f184c0b11a6eb929a822a5971accb59cd8 100644
+--- a/net/minecraft/world/entity/npc/villager/Villager.java
++++ b/net/minecraft/world/entity/npc/villager/Villager.java
+@@ -734,8 +734,9 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+             this.brain.getMemory(moduleType).ifPresent(pos -> {
+                 ServerLevel level = server.getLevel(pos.dimension());
+                 if (level != null) {
+-                    io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueTickTaskQueue( // Folia - region threading
+-                            level, pos.pos().getX() >> 4, pos.pos().getZ() >> 4, () -> { // Folia - region threading
++                    level.regionizedBlockableEventLoop.asExecutor(pos.pos(), false, true).execute(() -> { // Luminol - Fix possible delayed POI updates while block updating
++                    /*io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueTickTaskQueue( // Folia - region threading // Luminol - Fix possible delayed POI updates while block updating
++                            level, pos.pos().getX() >> 4, pos.pos().getZ() >> 4, () -> { // Folia - region threading*/ // Luminol - Fix possible delayed POI updates while block updating
+                     PoiManager poiManager = level.getPoiManager();
+                     Optional<Holder<PoiType>> type = poiManager.getType(pos.pos());
+                     BiPredicate<Villager, Holder<PoiType>> biPredicate = POI_MEMORIES.get(moduleType);
+@@ -743,7 +744,8 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+                         poiManager.release(pos.pos());
+                         level.debugSynchronizers().updatePoi(pos.pos());
+                     }
+-                    }); // Folia - region threading
++                    // }); // Folia - region threading // Luminol - Fix possible delayed POI updates while block updating
++                    }); // Luminol - Fix possible delayed POI updates while block updating
+                 }
+             });
+         }

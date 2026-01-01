@@ -5,7 +5,7 @@ Subject: [PATCH] Add config to modify tripwire behavior
 
 
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index be5878ef2fcf4e1920d7330864592e546dd559c8..42a5e9a7f5d604e4821a116ba13319df052faf97 100644
+index 292fe41967db74884e5937cb125f1e022ccfb6bd..42a5e9a7f5d604e4821a116ba13319df052faf97 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -199,10 +199,17 @@ public class TripWireHookBlock extends Block {
@@ -14,7 +14,7 @@ index be5878ef2fcf4e1920d7330864592e546dd559c8..42a5e9a7f5d604e4821a116ba13319df
                      if (blockState2 != null) {
 -                        BlockState blockState3 = level.getBlockState(blockPos1);
 -                        if (blockState3.is(Blocks.TRIPWIRE) || blockState3.is(Blocks.TRIPWIRE_HOOK)) {
--                            if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !blockState3.is(Blocks.TRIPWIRE))  level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, flag2), 3); // Paper - prevent tripwire from updating
+-                            if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !blockState3.is(Blocks.TRIPWIRE))  level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, flag2), Block.UPDATE_ALL); // Paper - prevent tripwire from updating
 +                        // Luminol start - tripwire and tripwireHook dupe
 +                        if (me.earthme.luminol.config.modules.function.TripwireBehaviorConfig.enabled) {
 +                            level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, flag2), 3);
@@ -30,7 +30,7 @@ index be5878ef2fcf4e1920d7330864592e546dd559c8..42a5e9a7f5d604e4821a116ba13319df
                  }
              }
 diff --git a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..76ca3f8eea2bf13e198cc5c8af17bd9fbf92dbea 100644
+index 2fa0b230ab631e71645022e881779b9625fdfb0d..20b3bba2135e3abf2b2a4d294875749c007872ad 100644
 --- a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 @@ -28,6 +28,10 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
@@ -74,7 +74,7 @@ index 49b810ae9d9a8d0718a5f8c512e15a5573ed04fd..76ca3f8eea2bf13e198cc5c8af17bd9f
 +                            else blockList.destroyBlock(blockPos, true, null); // CraftBukkit
                          }
  
-                         blockList.setBlock(blockPos, block.defaultBlockState(), 3); // CraftBukkit
+                         blockList.setBlock(blockPos, block.defaultBlockState(), Block.UPDATE_ALL); // CraftBukkit
 @@ -53,11 +79,30 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {
              if (portalEvent.isCancelled()) return;
          }

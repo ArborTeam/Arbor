@@ -5,7 +5,7 @@ Subject: [PATCH] Async protocol switching optimization
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 50486e2b284919e7b1bf7710e3378d8060a00634..d5e604bf18a223aa434bc9f78274e1f3ff7f203d 100644
+index 1efe83262ba0cfdc0e529c387661643cb3709052..9f444988d40208a1bfa9f147ef80489f81115e93 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -349,6 +349,129 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -173,10 +173,10 @@ index 2cc3dd1f267ae78d3aacb84509d4bf668235688f..00eec818bfd7d1a7442e6bd2fa531f4a
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a75b683e419c819ea3bac966e601bfaa0c2e732b..4a0674d510f8b61b440887d25d97e175053c7033 100644
+index ccf2a4e6f612c417d636055cb8f19491d74ec7db..9dfbcbdaed9fa4d5a456cc301923131e84f49c66 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2825,7 +2825,7 @@ public class ServerGamePacketListenerImpl
+@@ -2845,7 +2845,7 @@ public class ServerGamePacketListenerImpl
          // removed from the world
          // Folia end - rewrite login process - fix bad ordering of this field write - move after removed from world
          try { // Folia - rewrite login process - move connection ownership to global region
@@ -185,7 +185,7 @@ index a75b683e419c819ea3bac966e601bfaa0c2e732b..4a0674d510f8b61b440887d25d97e175
          this.removePlayerFromWorld();
          } finally { // Folia start - rewrite login process - move connection ownership to global region
              io.papermc.paper.threadedregions.RegionizedWorldData worldData = this.player.level().getCurrentWorldData();
-@@ -2834,7 +2834,13 @@ public class ServerGamePacketListenerImpl
+@@ -2854,7 +2854,13 @@ public class ServerGamePacketListenerImpl
          } // Folia end - rewrite login process - move connection ownership to global region
          this.waitingForSwitchToConfig = true; // Folia - rewrite login process - fix bad ordering of this field write - moved down
          this.send(ClientboundStartConfigurationPacket.INSTANCE);
@@ -199,7 +199,7 @@ index a75b683e419c819ea3bac966e601bfaa0c2e732b..4a0674d510f8b61b440887d25d97e175
      }
  
      @Override
-@@ -3684,12 +3690,25 @@ public class ServerGamePacketListenerImpl
+@@ -3713,12 +3719,25 @@ public class ServerGamePacketListenerImpl
              throw new IllegalStateException("Client acknowledged config, but none was requested");
          } else {
              final ServerConfigurationPacketListenerImpl listener = new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())); // Paper

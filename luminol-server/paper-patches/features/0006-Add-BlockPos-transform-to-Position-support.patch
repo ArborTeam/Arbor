@@ -5,10 +5,10 @@ Subject: [PATCH] Add BlockPos transform to Position support
 
 
 diff --git a/src/main/java/io/papermc/paper/util/MCUtil.java b/src/main/java/io/papermc/paper/util/MCUtil.java
-index fdcf3f70637ee9ae20b40a831e8108a3aa368cf8..f537083bd44b19296b48d73f99ad71c0c9cc3141 100644
+index 2c7a90f7cc0dbd5e87444f0e0e03d5b1a55934d4..ab9c69ad1b8ef59050b47cb32d47cbe658260757 100644
 --- a/src/main/java/io/papermc/paper/util/MCUtil.java
 +++ b/src/main/java/io/papermc/paper/util/MCUtil.java
-@@ -164,6 +164,12 @@ public final class MCUtil {
+@@ -180,6 +180,12 @@ public final class MCUtil {
          return CraftLocation.toBukkit(pos, world);
      }
  

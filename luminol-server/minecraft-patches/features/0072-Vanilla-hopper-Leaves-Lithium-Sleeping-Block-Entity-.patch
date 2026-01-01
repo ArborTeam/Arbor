@@ -224,7 +224,7 @@ index 6f01763c178324dd1741b996cd21cb9c23795b71..a794da4d2376e7e19993471b1510ccd0
          }
      }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 18ab2895292764fa929d6ee4986c15ca3eb37fae..a60c70550c217bccda6695dc7b7165de8e97e5cd 100644
+index fb1f6fde9a41c34c30a1ad5715aababb0927d10f..9d67814ca9079126b6c587c62c8abd36d953e2a4 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -2613,6 +2613,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -249,7 +249,7 @@ index 6489b47810b0431c350098d574469bbe0adcd726..b63cecafd841b97a694f6d2610141dcd
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 8c3f78b8b5e4dea796d8cca8a964132ad6093bf4..4d1de02dbc804a32aaa1d2eef8e8368300412af2 100644
+index d52a99e545e3ac331bdf7185bdebfb65153c2f34..d03795cd025dd36363002770b7a6a47676ffa6bf 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -310,7 +310,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -452,10 +452,10 @@ index 79541b56a07d10de450f63945d0849a7f320da6c..c3eea44d2f45284965fbb758d1f9cb3f
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/inventory/AbstractContainerMenu.java b/net/minecraft/world/inventory/AbstractContainerMenu.java
-index 5be0f260197103264b33cf8a58980455b2b34ec6..995e9d3f70ff8200601b7b1eef4418d1d20fc7c6 100644
+index 4ecfd7c52b4df8af21502633242fb0e77e7e8821..3b1c6a2397950ceb167890961b635cc69aaf8950 100644
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
-@@ -895,6 +895,7 @@ public abstract class AbstractContainerMenu {
+@@ -891,6 +891,7 @@ public abstract class AbstractContainerMenu {
          } else {
              float f = 0.0F;
  
@@ -464,7 +464,7 @@ index 5be0f260197103264b33cf8a58980455b2b34ec6..995e9d3f70ff8200601b7b1eef4418d1
                  ItemStack item = container.getItem(i);
                  if (!item.isEmpty()) {
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index 8adf67ce0781a54af76ad54d7df51af48e2ff810..5489302acb5bceac2cae71079a8356b455cf1304 100644
+index 8660c37560442153787e854a0e95bdd81c1bc152..ed2971b54afbebe37a7ff61798778a4249b79856 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
 @@ -101,8 +101,12 @@ import org.apache.commons.lang3.function.TriConsumer;
@@ -605,7 +605,7 @@ index 8adf67ce0781a54af76ad54d7df51af48e2ff810..5489302acb5bceac2cae71079a8356b4
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index edd2eb0ff9e9720f3631b480fe5d1310a6c292de..ce785694d7a27bc198dbda61a2dff48f22e453e3 100644
+index ab24fe3ba245457db37eb7922c85dd478a47ed55..0efa6fd27af5552d5a2264ebba4ed2fa5c3833af 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1460,7 +1460,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -644,7 +644,7 @@ index edd2eb0ff9e9720f3631b480fe5d1310a6c292de..ce785694d7a27bc198dbda61a2dff48f
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/ComposterBlock.java b/net/minecraft/world/level/block/ComposterBlock.java
-index 9d513d7d6a1b9a3b4574253ed3946fa30a443c98..d86bd6fa0d225b1a6c698d33cea3c70398f6c25f 100644
+index 429e833ffe7c89d7b0ca7515dbd82ffc1ce8d60d..334d2b48d1cf569037cac53c55843f9090bdaab5 100644
 --- a/net/minecraft/world/level/block/ComposterBlock.java
 +++ b/net/minecraft/world/level/block/ComposterBlock.java
 @@ -411,7 +411,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
@@ -758,7 +758,7 @@ index 6789dd6c6f9c1683bcf0abb20319ccd6775e613c..3c349b4216d934068c26017820884593
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-index d4f817c543a7e1b9da00908e01d52677443f3811..8176c0b35852fb0753339a92f1bbae41a5ae6782 100644
+index c8bfa1eeb847d6d9972d2f6625cc1f60063713d4..9346f2deca8eeca29fa2fced416247fd1609249e 100644
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 @@ -40,7 +40,7 @@ import net.minecraft.world.level.storage.ValueOutput;
@@ -2894,7 +2894,7 @@ index c5953d5751e655e121e459aaab35e7719948e69e..10f9f617123e7ef582707038230f4335
      }
  
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 28c19b09aceccf010584759f94eff897706dc93b..173a55715b9c459eeb93cdc065c69e64fc704b43 100644
+index 3cd1224e20b15b77681e2de4ff601724c559557e..435acf0fe5e80ca371d1145befc2cfaa917a89e3 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -921,12 +921,14 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot

@@ -8,7 +8,7 @@ Some of changes from: Leaves (https://github.com/LeavesMC/Leaves/blob/6a2b9ee6b3
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index c26e81b07f1ea6d0820147da35cc8555fd83f75c..50486e2b284919e7b1bf7710e3378d8060a00634 100644
+index c26e81b07f1ea6d0820147da35cc8555fd83f75c..1efe83262ba0cfdc0e529c387661643cb3709052 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -257,8 +257,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -17,13 +17,13 @@ index c26e81b07f1ea6d0820147da35cc8555fd83f75c..50486e2b284919e7b1bf7710e3378d80
                  }
 -                if (this.allPacketCounts != null ||
 -                    io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.containsKey(packet.getClass())) {
-+                if (!me.earthme.luminol.config.modules.optimizations.PaperPacketLimiterConfig.forceDisable && (this.allPacketCounts != null || // Luminol - Add config to force disable the packet limiter of Paper
++                if (!me.earthme.luminol.config.modules.misc.PaperPacketLimiterConfig.forceDisable && (this.allPacketCounts != null || // Luminol - Add config to force disable the packet limiter of Paper
 +                    io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.containsKey(packet.getClass()))) { // Luminol - Add config to force disable the packet limiter of Paper
                      long time = System.nanoTime();
                      synchronized (PACKET_LIMIT_LOCK) {
                          if (this.allPacketCounts != null) {
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 070d1c2652471f531c95821685c133feecce6e29..a75b683e419c819ea3bac966e601bfaa0c2e732b 100644
+index f94b1c00cf52f9391c503e860160c8f780406888..ccf2a4e6f612c417d636055cb8f19491d74ec7db 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -864,7 +864,7 @@ public class ServerGamePacketListenerImpl
@@ -31,32 +31,32 @@ index 070d1c2652471f531c95821685c133feecce6e29..a75b683e419c819ea3bac966e601bfaa
          // PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level()); // Paper - AsyncTabCompleteEvent; run this async
          // CraftBukkit start
 -        if (!this.tabSpamThrottler.isIncrementAndUnderThreshold() && !this.server.getPlayerList().isOp(this.player.nameAndId()) && !this.server.isSingleplayerOwner(this.player.nameAndId())) { // Paper - configurable tab spam limits
-+        if (!me.earthme.luminol.config.modules.optimizations.PaperPacketLimiterConfig.forceDisable && !this.tabSpamThrottler.isIncrementAndUnderThreshold() && !this.server.getPlayerList().isOp(this.player.nameAndId()) && !this.server.isSingleplayerOwner(this.player.nameAndId())) { // Paper - configurable tab spam limits // Leaves - can disable
++        if (!me.earthme.luminol.config.modules.misc.PaperPacketLimiterConfig.forceDisable && !this.tabSpamThrottler.isIncrementAndUnderThreshold() && !this.server.getPlayerList().isOp(this.player.nameAndId()) && !this.server.isSingleplayerOwner(this.player.nameAndId())) { // Paper - configurable tab spam limits // Leaves - can disable
              this.disconnectAsync(Component.translatable("disconnect.spam"), org.bukkit.event.player.PlayerKickEvent.Cause.SPAM); // Paper - Kick event cause // Paper - add proper async disconnect
              return;
          }
-@@ -2083,6 +2083,7 @@ public class ServerGamePacketListenerImpl
-     private static int getSpamThreshold() { return io.papermc.paper.configuration.GlobalConfiguration.get().spamLimiter.incomingPacketThreshold; } // Paper - Configurable threshold
+@@ -2082,6 +2082,7 @@ public class ServerGamePacketListenerImpl
+     private long lastLimitedPacket = -1;
  
      private boolean checkLimit(long timestamp) {
-+        if (me.earthme.luminol.config.modules.optimizations.PaperPacketLimiterConfig.forceDisable) return true; // Leaves - disable
-         if (this.lastLimitedPacket != -1 && timestamp - this.lastLimitedPacket < getSpamThreshold() && this.limitedPackets++ >= 8) { // Paper - Configurable threshold; raise packet limit to 8
-             return false;
++        if (me.earthme.luminol.config.modules.misc.PaperPacketLimiterConfig.forceDisable) return true; // Leaves - disable
+         if (!io.papermc.paper.configuration.GlobalConfiguration.get().spamLimiter.incomingPacketThreshold.enabled()) {
+             return true;
          }
-@@ -2622,6 +2623,7 @@ public class ServerGamePacketListenerImpl
+@@ -2642,6 +2643,7 @@ public class ServerGamePacketListenerImpl
  
      // Spigot start - spam exclusions
      private void detectRateSpam(String message) {
-+        if (me.earthme.luminol.config.modules.optimizations.PaperPacketLimiterConfig.forceDisable) return; // Leaves - disable
++        if (me.earthme.luminol.config.modules.misc.PaperPacketLimiterConfig.forceDisable) return; // Leaves - disable
          // CraftBukkit start - replaced with thread safe throttle
          if (org.spigotmc.SpigotConfig.enableSpamExclusions) {
              for (String exclude : org.spigotmc.SpigotConfig.spamExclusions) {
-@@ -3377,7 +3379,7 @@ public class ServerGamePacketListenerImpl
+@@ -3406,7 +3408,7 @@ public class ServerGamePacketListenerImpl
      @Override
      public void handlePlaceRecipe(ServerboundPlaceRecipePacket packet) {
          // Paper start - auto recipe limit
 -        if (!org.bukkit.Bukkit.isPrimaryThread()) {
-+        if (!me.earthme.luminol.config.modules.optimizations.PaperPacketLimiterConfig.forceDisable && !org.bukkit.Bukkit.isPrimaryThread()) { // Leaves - can disable
++        if (!me.earthme.luminol.config.modules.misc.PaperPacketLimiterConfig.forceDisable && !org.bukkit.Bukkit.isPrimaryThread()) { // Leaves - can disable
              if (!this.recipeSpamPackets.isIncrementAndUnderThreshold()) {
                  this.disconnectAsync(net.minecraft.network.chat.Component.translatable("disconnect.spam"), org.bukkit.event.player.PlayerKickEvent.Cause.SPAM); // Paper - kick event cause // Paper - add proper async disconnect
                  return;

@@ -64,7 +64,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private FileChannel swapFileChannel;
 
     private final byte compressionLevel;
-    private final LinearMasterFileFrameParser frameParser = new LinearMasterFileFrameParser();
+    private final LinearMasterFileParser masterFileParser = new LinearMasterFileParser();
     private final CompressingOps compressingOps = new CompressingOps();
 
     // managed by VarHandles following
@@ -159,7 +159,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
 
         try {
-            this.frameParser.writeMainFile(this.masterFilePath);
+            this.masterFileParser.writeMainFile(this.masterFilePath);
         } catch (Exception e) {
             // set back
             SYNCED_HANDLE.setVolatile(this, false);
@@ -169,7 +169,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void loadSwapDataFromMasterFile() throws IOException {
-        this.frameParser.parseMainFile(this.masterFilePath);
+        this.masterFileParser.parseMainFile(this.masterFilePath);
     }
 
     private void initSwapFile() throws IOException {
@@ -833,7 +833,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
     }
 
-    private class LinearMasterFileFrameParser {
+    private class LinearMasterFileParser {
         private void parseBufferedLinear(@NotNull DataInputStream ioStream, Path file) throws IOException {
             final byte version = ioStream.readByte();
             if (version != MASTER_FILE_VERSION)

@@ -266,56 +266,66 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void flushInternal() throws IOException {
-        if (this.isClosedRaw()) {
-            return;
-        }
-
-        // save headers
-        this.writeSwapFileHeaders(true, false);
-
-        long spareSize = this.swapFileChannel.size();
-
-        spareSize -= this.headerSize();
-        for (Sector sector : this.sectors) {
-            // skip no data sectors
-            if (!sector.hasData()) {
-                continue;
+        this.regionObjectLock.writeLock().lock();
+        try {
+            if (this.isClosedRaw()) {
+                return;
             }
 
-            spareSize -= sector.length;
-        }
+            // save headers
+            this.writeSwapFileHeaders(true, false);
 
-        long sectorSize = 0;
-        for (Sector sector : this.sectors) {
-            // skip no data sectors
-            if (!sector.hasData()) {
-                continue;
+            long spareSize = this.swapFileChannel.size();
+
+            spareSize -= this.headerSize();
+            for (Sector sector : this.sectors) {
+                // skip no data sectors
+                if (!sector.hasData()) {
+                    continue;
+                }
+
+                spareSize -= sector.length;
             }
 
-            sectorSize += sector.length;
-        }
+            long sectorSize = 0;
+            for (Sector sector : this.sectors) {
+                // skip no data sectors
+                if (!sector.hasData()) {
+                    continue;
+                }
 
-        boolean compacted = false;
-        // try auto compact to clean the garbage area
-        if (spareSize > SWAP_FILE_AUTO_COMPACT_SIZE && (double) spareSize > ((double) sectorSize) * SWAP_FILE_AUTO_COMPACT_PERCENT) {
-            compacted = true;
-            this.compactSwapFile();
-        }
+                sectorSize += sector.length;
+            }
 
-        // prevent syncing after compact because it could be time costing sometimes
-        if (!Files.exists(this.masterFilePath) && !compacted) {
-            this.syncToMasterFile();
+            boolean compacted = false;
+            // try auto compact to clean the garbage area
+            if (spareSize > SWAP_FILE_AUTO_COMPACT_SIZE && (double) spareSize > ((double) sectorSize) * SWAP_FILE_AUTO_COMPACT_PERCENT) {
+                compacted = true;
+                this.compactSwapFile();
+            }
+
+            // prevent syncing after compact because it could be time costing sometimes
+            if (!Files.exists(this.masterFilePath) && !compacted) {
+                this.syncToMasterFile();
+            }
+        }finally {
+            this.regionObjectLock.writeLock().unlock();
         }
     }
 
     private void closeInternal() throws IOException {
-        this.markClosed();
-
+        this.regionObjectLock.writeLock().lock();
         try {
-            this.writeSwapFileHeaders(true, true);
-            this.syncToMasterFile();
-        } finally {
-            this.swapFileChannel.close();
+            this.markClosed();
+
+            try {
+                this.writeSwapFileHeaders(true, true);
+                this.syncToMasterFile();
+            } finally {
+                this.swapFileChannel.close();
+            }
+        }finally {
+            this.regionObjectLock.writeLock().unlock();
         }
     }
 
@@ -444,10 +454,16 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void writeChunkDataRaw(int chunkOrdinal, ByteBuffer chunkData, boolean skipSync) throws IOException {
-        final Sector sector = this.sectors[chunkOrdinal];
-        final ByteBuffer committed = this.compressingOps.commitSectionData(chunkData);
+        final ByteBuffer committed = this.compressingOps.commitSectionData(chunkData); // run compression out of lock
 
-        sector.store(committed, this.swapFileChannel);
+        this.regionObjectLock.writeLock().lock();
+        try {
+            final Sector sector = this.sectors[chunkOrdinal];
+
+            sector.store(committed, this.swapFileChannel);
+        }finally {
+            this.regionObjectLock.writeLock().unlock();
+        }
 
         if (skipSync) {
             return;
@@ -457,23 +473,36 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private @Nullable ByteBuffer readChunkDataRaw(int chunkOrdinal) throws IOException {
-        final Sector sector = this.sectors[chunkOrdinal];
+        final ByteBuffer raw;
 
-        if (!sector.hasData()) {
-            return null;
+        this.regionObjectLock.readLock().lock();
+        try {
+            final Sector sector = this.sectors[chunkOrdinal];
+
+            if (!sector.hasData()) {
+                return null;
+            }
+
+            raw = sector.read(this.swapFileChannel);
+        }finally {
+            this.regionObjectLock.readLock().unlock();
         }
-
-        final ByteBuffer raw = sector.read(this.swapFileChannel);
 
         return this.compressingOps.fromCommitedSection(raw);
     }
 
     private void clearChunkData(int chunkOrdinal) throws IOException {
-        final Sector sector = this.sectors[chunkOrdinal];
+        this.regionObjectLock.writeLock().lock();
+        try {
+            final Sector sector = this.sectors[chunkOrdinal];
 
-        sector.clear();
+            sector.clear();
 
-        this.writeSwapFileHeaders(true, false);
+            this.writeSwapFileHeaders(true, false);
+        }finally {
+            this.regionObjectLock.writeLock().unlock();
+        }
+
         this.markAsToSync();
     }
 
@@ -487,7 +516,12 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private boolean hasData(int chunkOrdinal) {
-        return this.sectors[chunkOrdinal].hasData();
+        this.regionObjectLock.readLock().lock();
+        try {
+            return this.sectors[chunkOrdinal].hasData();
+        }finally {
+            this.regionObjectLock.readLock().unlock();
+        }
     }
 
     private void writeChunk(int x, int z, @NotNull ByteBuffer data) throws IOException {
@@ -547,28 +581,18 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     @Override
     public DataInputStream getChunkDataInputStream(@NotNull ChunkPos pos) throws IOException {
-        this.regionObjectLock.readLock().lock();
-        try {
-            final ByteBuffer data = this.readChunk(pos.x, pos.z);
+        final ByteBuffer data = this.readChunk(pos.x, pos.z);
 
-            if (data == null) {
-                return null;
-            }
-
-            return new DataInputStream(new ByteBufferInputStream(data));
-        } finally {
-            this.regionObjectLock.readLock().unlock();
+        if (data == null) {
+            return null;
         }
+
+        return new DataInputStream(new ByteBufferInputStream(data));
     }
 
     @Override
     public boolean doesChunkExist(@NotNull ChunkPos pos) {
-        this.regionObjectLock.readLock().lock();
-        try {
-            return this.hasData(getChunkIndex(pos.x, pos.z));
-        } finally {
-            this.regionObjectLock.readLock().unlock();
-        }
+        return this.hasData(getChunkIndex(pos.x, pos.z));
     }
 
     @Override
@@ -578,32 +602,17 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     @Override
     public void clear(@NotNull ChunkPos pos) throws IOException {
-        this.regionObjectLock.writeLock().lock();
-        try {
-            this.clearChunkData(getChunkIndex(pos.x, pos.z));
-        } finally {
-            this.regionObjectLock.writeLock().unlock();
-        }
+        this.clearChunkData(getChunkIndex(pos.x, pos.z));
     }
 
     @Override
     public boolean hasChunk(@NotNull ChunkPos pos) {
-        this.regionObjectLock.readLock().lock();
-        try {
-            return this.hasData(getChunkIndex(pos.x, pos.z));
-        } finally {
-            this.regionObjectLock.readLock().unlock();
-        }
+        return this.hasData(getChunkIndex(pos.x, pos.z));
     }
 
     @Override
     public void write(@NotNull ChunkPos pos, ByteBuffer buf) throws IOException {
-        this.regionObjectLock.writeLock().lock();
-        try {
-            this.writeChunk(pos.x, pos.z, buf);
-        } finally {
-            this.regionObjectLock.writeLock().unlock();
-        }
+        this.writeChunk(pos.x, pos.z, buf);
     }
 
     // MCC 的玩意,这东西也用不上给Linear了()
@@ -640,22 +649,12 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     @Override
     public void flush() throws IOException {
-        this.regionObjectLock.writeLock().lock();
-        try {
-            this.flushInternal();
-        } finally {
-            this.regionObjectLock.writeLock().unlock();
-        }
+        this.flushInternal();
     }
 
     @Override
     public void close() throws IOException {
-        this.regionObjectLock.writeLock().lock();
-        try {
-            this.closeInternal();
-        } finally {
-            this.regionObjectLock.writeLock().unlock();
-        }
+        this.closeInternal();
     }
 
     public static class ByteBufferInputStream extends InputStream {
@@ -823,15 +822,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
         @Override
         public void close() throws IOException {
-            BufferedLinearRegionFile.this.regionObjectLock.writeLock().lock();
-            try {
-                ByteBuffer bytebuffer = ByteBuffer.wrap(this.buf, 0, this.count);
+            ByteBuffer bytebuffer = ByteBuffer.wrap(this.buf, 0, this.count);
 
-                BufferedLinearRegionFile.this.writeChunk(this.pos.x, this.pos.z, bytebuffer);
-                BufferedLinearRegionFile.this.flushInternal();
-            } finally {
-                BufferedLinearRegionFile.this.regionObjectLock.writeLock().unlock();
-            }
+            BufferedLinearRegionFile.this.writeChunk(this.pos.x, this.pos.z, bytebuffer);
+            BufferedLinearRegionFile.this.flushInternal();
         }
     }
 

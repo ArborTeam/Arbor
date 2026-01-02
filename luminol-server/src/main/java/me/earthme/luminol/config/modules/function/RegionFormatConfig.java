@@ -54,6 +54,7 @@ public class RegionFormatConfig implements IConfigModule {
                 }
             }
         }
+
         if (regionFormat == EnumRegionFormat.LINEAR_V2) {
             checkCompressionLevel();
 
@@ -67,6 +68,7 @@ public class RegionFormatConfig implements IConfigModule {
 
             checkCompressionLevel();
 
+            // we don't need to consider that it will be reloaded more than once as this config is unreloadable
             Runtime.getRuntime().addShutdownHook(new Thread(() -> blinearFlusher.shutdown()));
         }
     }

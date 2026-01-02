@@ -35,14 +35,14 @@ public class TpsBarConfig implements IConfigModule {
     @ConfigInfo(name = "update_interval_ticks")
     public static int updateInterval = 15;
     @TransformedConfig(name = "precision_of_tps_value", directory = {"misc", "tpsbar"})
-    @ConfigInfo(name = "precision_of_tps_value")
+    @ConfigInfo(name = "precision_of_tps_value", comments = "Example(if tps is 20.00000000)(value -> result): 2 -> 20.00, 1 -> 20.0")
     public static int precisionOfTPS = 2;
     @TransformedConfig(name = "precision_of_mspt_value", directory = {"misc", "tpsbar"})
-    @ConfigInfo(name = "precision_of_mspt_value")
+    @ConfigInfo(name = "precision_of_mspt_value", comments = "Example(if mspt is 20.00000000)(value -> result): 2 -> 20.00, 1 -> 20.0")
     public static int precisionOfMSPT = 2;
     @TransformedConfig(name = "display", directory = {"misc", "tpsbar"})
     @CommandSuggestions(suggest = {"BOSS_BAR", "ACTION_BAR", "TAB_LIST"})
-    @ConfigInfo(name = "display")
+    @ConfigInfo(name = "display", comments = "Available displays: BOSS_BAR, ACTION_BAR, TAB_LIST")
     public static EnumStatusBarDisplay display = EnumStatusBarDisplay.BOSS_BAR;
 
     @DoNotLoad

@@ -30,7 +30,7 @@ public class RegionBarConfig implements IConfigModule {
     public static int updateInterval = 15;
     @CommandSuggestions(suggest = {"BOSS_BAR", "ACTION_BAR", "TAB_LIST"})
     @TransformedConfig(name = "display", directory = {"misc", "regionbar"})
-    @ConfigInfo(name = "display")
+    @ConfigInfo(name = "display", comments = "Available displays: BOSS_BAR, ACTION_BAR, TAB_LIST")
     public static EnumStatusBarDisplay display = EnumStatusBarDisplay.BOSS_BAR;
 
     @DoNotLoad

@@ -350,6 +350,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 continue;
             }
 
+            // note:
+            // we reset length to 0 and this would make length <= newLength(which is >= 0) is always true.
+            // so that the following write operation wouldn't override the data of other sectors
+            // see the write method in Sector class
             newSectorsToBeReplaced[i] = new Sector(i, 0, 0);
         }
 
@@ -391,7 +395,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             // delete the target temp file
             Files.deleteIfExists(targetTemp);
             // fast-fail
-            this.markClosed(); // prevent new writing & sync opeartions
+            this.markClosed(); // prevent new writing & sync operations
             throw new IOException("Failed to compact swap file!", ex);
         }
 

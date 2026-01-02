@@ -308,7 +308,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             if (!Files.exists(this.masterFilePath) && !compacted) {
                 this.syncToMasterFile();
             }
-        }finally {
+        } finally {
             this.regionObjectLock.writeLock().unlock();
         }
     }
@@ -324,7 +324,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             } finally {
                 this.swapFileChannel.close();
             }
-        }finally {
+        } finally {
             this.regionObjectLock.writeLock().unlock();
         }
     }
@@ -461,7 +461,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             final Sector sector = this.sectors[chunkOrdinal];
 
             sector.store(committed, this.swapFileChannel);
-        }finally {
+        } finally {
             this.regionObjectLock.writeLock().unlock();
         }
 
@@ -484,7 +484,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
 
             raw = sector.read(this.swapFileChannel);
-        }finally {
+        } finally {
             this.regionObjectLock.readLock().unlock();
         }
 
@@ -499,7 +499,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             sector.clear();
 
             this.writeSwapFileHeaders(true, false);
-        }finally {
+        } finally {
             this.regionObjectLock.writeLock().unlock();
         }
 
@@ -519,7 +519,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.regionObjectLock.readLock().lock();
         try {
             return this.sectors[chunkOrdinal].hasData();
-        }finally {
+        } finally {
             this.regionObjectLock.readLock().unlock();
         }
     }

@@ -81,6 +81,12 @@ public class SetCommand extends ConfigSubcommand {
                 if (suggestions == null) {
                     if (value instanceof Boolean) {
                         builder.suggest(String.valueOf(!(Boolean) value));
+                    } else if (value instanceof Enum<?> enumValue) {
+                        Enum<?>[] values = enumValue.getClass().getEnumConstants();
+                        for (Enum<?> enumValue1 : values) {
+                            if (enumValue1 == value) continue;
+                            builder.suggest(enumValue1.name());
+                        }
                     }
                 } else {
                     for (String s : suggestions) {

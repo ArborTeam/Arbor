@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for vanilla random
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 7fc26d8d17970d58f3bb0ca4849005ef7a7abb28..d5b2e0dd392b13e63d0b6a9ac335611cdfe420fe 100644
+index 3df00628e64f55f86095f4b7d35a116515e49628..e8078c48a235c543cab7f856b6efecfd4307c8a0 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -283,7 +283,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name

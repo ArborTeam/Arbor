@@ -18,10 +18,10 @@ index b31b55f00e2ce1bd6c1011fe852bd1dbb37de524..75c36cbf86e56d4993169688a13f22cc
      }
  
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index d03795cd025dd36363002770b7a6a47676ffa6bf..1eee289eb288698a419f6c89e81c0acd9e63e1bd 100644
+index 0dbb6093e519dae45fc2fdb9bdbb6c33ff567ce7..ff176dc4d21febf56eadeb99d23eb881eded9288 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4407,6 +4407,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4386,6 +4386,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          Entity copy = this.getType().create(destination, EntitySpawnReason.DIMENSION_TRAVEL);
          copy.restoreFrom(this);
          copy.transform(pos, yaw, pitch, velocity);

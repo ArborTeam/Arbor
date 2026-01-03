@@ -21,7 +21,7 @@ index f834d487136627c07c893b8d68a6929ed46f20b9..7278bd208552b860145dc2d68fe84014
              for (int i1 = 0; i1 < this.height; i1++) {
                  for (int i2 = 0; i2 < this.depth; i2++) {
 diff --git a/net/minecraft/world/level/dimension/end/EndDragonFight.java b/net/minecraft/world/level/dimension/end/EndDragonFight.java
-index 2b3f2cd92d9dbb3f05f80de198a2160bf4a6ed9a..efe387576cfd4e1bf5ef38ded0babc7b911567e1 100644
+index fb0cc5e5b461b3b887b948b92fdd9564d1ee4c20..ba8f9c2fc775813db2751fafbcdc33de2161fb18 100644
 --- a/net/minecraft/world/level/dimension/end/EndDragonFight.java
 +++ b/net/minecraft/world/level/dimension/end/EndDragonFight.java
 @@ -276,7 +276,67 @@ public class EndDragonFight {

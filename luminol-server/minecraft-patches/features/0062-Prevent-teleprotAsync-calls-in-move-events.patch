@@ -5,7 +5,7 @@ Subject: [PATCH] Prevent teleprotAsync calls in move events
 
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 2a1480a414e71d5215748f6be7b30d0f744266af..39b937dcce11cf20ecb2b7bf314a5f99a4bd8837 100644
+index 1c86dc0dce103c11760936424ac85554efa11aa6..e32d0756b50abd9ac814a7f5a9c9fde341baab39 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -717,7 +717,9 @@ public class ServerGamePacketListenerImpl
@@ -29,10 +29,10 @@ index 2a1480a414e71d5215748f6be7b30d0f744266af..39b937dcce11cf20ecb2b7bf314a5f99
                                          // If the event is cancelled we move the player back to their old location.
                                          if (event.isCancelled()) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index d2d84d5ec24c7f66fb869428b42313c416d463ff..f3d2e655924019d928dd7fdc3c8ecf6e96e486bb 100644
+index 4799b1d644a45ec5dca5c4e2006e220c26e47f4d..d204e6154ee61734b1ce40272d6fd8eecdb90dec 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4392,12 +4392,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4371,12 +4371,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              teleportTarget.cause(), teleportFlags, teleportComplete
          );
      }

@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <wangxyper@163.com>
-Date: Fri, 31 Jan 2025 20:28:45 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Sat, 3 Jan 2026 14:35:56 +0800
 Subject: [PATCH] Add missing teleportation event APIs for folia
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index a3abaf3d3a1e06b02a70a172d07f0b7f2de9f80a..2bfb5603bb353183df776c99ccdfe16a507c5b3c 100644
+index b4d8eeab0aa8b6200726ec895771acce2bfbf2e5..0fba55672b21ca9b7ce5c824ccd9ca87b0cb053b 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1766,6 +1766,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -19,7 +19,7 @@ index a3abaf3d3a1e06b02a70a172d07f0b7f2de9f80a..2bfb5603bb353183df776c99ccdfe16a
              );
          });
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 106555259d62356299f19ea493702faffcd6a4ba..671068cd57bfab4bea7cd63f1574151333849a58 100644
+index b52a745ce1f7fac9a0d93bc3c9f66cb256efaf15..ff4dfdd1269a99e9799e61edf3c27b051e8e2b92 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4398,6 +4398,31 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -53,8 +53,8 @@ index 106555259d62356299f19ea493702faffcd6a4ba..671068cd57bfab4bea7cd63f15741513
 +        // Luminol end
  
          // check for same region
-         if (destination == this.level()) {
-@@ -4515,6 +4540,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+         if (destination == this.level()
+@@ -4508,6 +4533,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              case END: {
                  if (destination.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.END) {
                      BlockPos targetPos = ServerLevel.END_SPAWN_POINT;
@@ -72,7 +72,7 @@ index 106555259d62356299f19ea493702faffcd6a4ba..671068cd57bfab4bea7cd63f15741513
                      // need to load chunks so we can create the platform
                      destination.moonrise$loadChunksAsync(
                          targetPos, 16, // load 16 blocks to be safe from block physics
-@@ -4536,6 +4572,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4529,6 +4565,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
                      );
                  } else {
                      BlockPos spawnPos = destination.getRespawnData().pos();
@@ -90,7 +90,7 @@ index 106555259d62356299f19ea493702faffcd6a4ba..671068cd57bfab4bea7cd63f15741513
                      // need to load chunk for heightmap
                      destination.moonrise$loadChunksAsync(
                          spawnPos, 0,
-@@ -4587,7 +4634,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4580,7 +4627,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
                  WorldBorder destinationBorder = destination.getWorldBorder();
                  double dimensionScale = net.minecraft.world.level.dimension.DimensionType.getTeleportationScale(origin.dimensionType(), destination.dimensionType());
                  BlockPos targetPos = destination.getWorldBorder().clampToBounds(this.getX() * dimensionScale, this.getY(), this.getZ() * dimensionScale);
@@ -108,7 +108,7 @@ index 106555259d62356299f19ea493702faffcd6a4ba..671068cd57bfab4bea7cd63f15741513
                  ca.spottedleaf.concurrentutil.completable.CallbackCompletable<BlockUtil.FoundRectangle> portalFound
                      = new ca.spottedleaf.concurrentutil.completable.CallbackCompletable<>();
  
-@@ -4724,6 +4781,15 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4717,6 +4774,15 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          if (!this.canPortalAsync(destination, takePassengers)) {
              return false;
          }

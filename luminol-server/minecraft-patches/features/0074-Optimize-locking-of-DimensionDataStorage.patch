@@ -1,0 +1,99 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mrhua269 <mrhua269@gmail.com>
+Date: Sat, 3 Jan 2026 23:01:44 +0800
+Subject: [PATCH] Optimize locking of DimensionDataStorage
+
+replace hashmap with synchronized with concurrent hashmap
+
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index 9d67814ca9079126b6c587c62c8abd36d953e2a4..b1fb62488e3ae2fb2d6adc97d933d98452b2a484 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -2391,7 +2391,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         // Paper start - Call missing map initialize event and set id
+         final DimensionDataStorage storage = this.getServer().overworld().getDataStorage();
+ 
+-        synchronized (storage.cache) { // Folia - region threading
++        // synchronized (storage.cache) { // Folia - region threading // Luminol - Optimize locking of DimensionDataStorage
+         final Optional<net.minecraft.world.level.saveddata.SavedData> cacheEntry = storage.cache.get(MapItemSavedData.type(mapId));
+         if (cacheEntry == null) { // Cache did not contain, try to load and may init
+             final MapItemSavedData mapData = storage.get(MapItemSavedData.type(mapId)); // get populates the cache
+@@ -2410,7 +2410,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         }
+ 
+         return null;
+-        } // Folia - region threading
++        // } // Folia - region threading // Luminol - Optimize locking of DimensionDataStorage
+         // Paper end - Call missing map initialize event and set id
+     }
+ 
+@@ -2993,9 +2993,9 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+                 for (final ServerLevel level : ServerLevel.this.getServer().getAllLevels()) {
+                     // Folia start - make map data thread-safe
+                     List<Optional<net.minecraft.world.level.saveddata.SavedData>> worldDataCache;
+-                    synchronized (level.getDataStorage().cache) {
++                    // synchronized (level.getDataStorage().cache) { // Luminol - Optimize locking of DimensionDataStorage
+                         worldDataCache = new java.util.ArrayList<>(level.getDataStorage().cache.values());
+-                    }
++                    // } // Luminol - Optimize locking of DimensionDataStorage
+                     for (final Optional<net.minecraft.world.level.saveddata.SavedData> savedData : worldDataCache) {
+                         // Folia end - make map data thread-safe
+                         if (savedData.isEmpty() || !(savedData.get() instanceof MapItemSavedData map)) {
+diff --git a/net/minecraft/world/level/storage/DimensionDataStorage.java b/net/minecraft/world/level/storage/DimensionDataStorage.java
+index a1449d9b7a45c0119bbd268db3e82035cefbb166..8e247d0a567b79466e7771adf71a001058d06915 100644
+--- a/net/minecraft/world/level/storage/DimensionDataStorage.java
++++ b/net/minecraft/world/level/storage/DimensionDataStorage.java
+@@ -38,7 +38,7 @@ import org.slf4j.Logger;
+ 
+ public class DimensionDataStorage implements AutoCloseable {
+     private static final Logger LOGGER = LogUtils.getLogger();
+-    public final Map<SavedDataType<?>, Optional<SavedData>> cache = new HashMap<>();
++    public final Map<SavedDataType<?>, Optional<SavedData>> cache = new java.util.concurrent.ConcurrentHashMap<>();
+     private final DataFixer fixerUpper;
+     private final HolderLookup.Provider registries;
+     private final Path dataFolder;
+@@ -55,6 +55,17 @@ public class DimensionDataStorage implements AutoCloseable {
+     }
+ 
+     public <T extends SavedData> T computeIfAbsent(SavedDataType<T> type) {
++        // Luminol - Optimize locking of DimensionDataStorage
++        if (true) {
++            Optional<SavedData> result = this.cache.computeIfAbsent(type, key -> {
++                T created = type.constructor().get();
++                created.setDirty();
++                return Optional.of(created);
++            });
++
++            return (T) result.get();
++        }
++        // Luminol end
+         synchronized (this.cache) { // Folia - make map data thread-safe
+         T savedData = this.get(type);
+         if (savedData != null) {
+@@ -68,6 +79,13 @@ public class DimensionDataStorage implements AutoCloseable {
+     }
+ 
+     public <T extends SavedData> @Nullable T get(SavedDataType<T> type) {
++        // Luminol - Optimize locking of DimensionDataStorage
++        if (true) {
++            Optional<SavedData> result = this.cache.computeIfAbsent(type, key -> Optional.ofNullable(this.readSavedData(type)));
++
++            return (T) result.orElse(null);
++        }
++        // Luminol end
+         synchronized (this.cache) { // Folia - make map data thread-safe
+         Optional<SavedData> optional = this.cache.get(type);
+         if (optional == null) {
+@@ -98,6 +116,12 @@ public class DimensionDataStorage implements AutoCloseable {
+     }
+ 
+     public <T extends SavedData> void set(SavedDataType<T> type, T value) {
++        // Luminol - Optimize locking of DimensionDataStorage
++        if (true) {
++            this.cache.put(type, Optional.of(value));
++            value.setDirty();
++            return;
++        }
+         synchronized (this.cache) { // Folia - make map data thread-safe
+         this.cache.put(type, Optional.of(value));
+         value.setDirty();

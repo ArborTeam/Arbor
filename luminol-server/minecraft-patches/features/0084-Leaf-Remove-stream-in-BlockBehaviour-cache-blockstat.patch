@@ -1,0 +1,39 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mrhua269 <mrhua269@gmail.com>
+Date: Sat, 3 Jan 2026 16:00:14 +0800
+Subject: [PATCH] Leaf: Remove stream in BlockBehaviour cache blockstate
+
+A part of Leaf(https://github.com/Winds-Studio/Leaf/blob/dev/1.21.9/leaf-server/minecraft-patches/features/0131-Remove-stream-in-BlockBehaviour-cache-blockstate.patch)
+
+Original license: https://github.com/Winds-Studio/Leaf/blob/dev/1.21.9/LICENSE.md
+
+diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
+index 10f9f617123e7ef582707038230f43350d5c5810..418517faeaf40ae2f7dea5635e4232cd89db3ead 100644
+--- a/net/minecraft/world/level/block/state/BlockBehaviour.java
++++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
+@@ -1049,7 +1049,7 @@ public abstract class BlockBehaviour implements FeatureElement, org.leavesmc.lea
+             private static final Direction[] DIRECTIONS = Direction.values();
+             private static final int SUPPORT_TYPE_COUNT = SupportType.values().length;
+             protected final VoxelShape collisionShape;
+-            protected final boolean largeCollisionShape;
++            protected boolean largeCollisionShape; // Luminol - make mutable
+             private final boolean[] faceSturdy;
+             protected final boolean isCollisionShapeFullBlock;
+ 
+@@ -1065,8 +1065,14 @@ public abstract class BlockBehaviour implements FeatureElement, org.leavesmc.lea
+                         )
+                     );
+                 } else {
+-                    this.largeCollisionShape = Arrays.stream(Direction.Axis.values())
+-                        .anyMatch(dir -> this.collisionShape.min(dir) < 0.0 || this.collisionShape.max(dir) > 1.0);
++                    // Leaf start - Remove stream in BlockBehaviour cache blockstate
++                    for (Direction.Axis axis : Direction.Axis.values()) {
++                        if (this.collisionShape.min(axis) < 0.0 || this.collisionShape.max(axis) > 1.0) {
++                            this.largeCollisionShape = true;
++                            break;
++                        }
++                    }
++                    // Leaf end - Remove stream in BlockBehaviour cache blockstate
+                     this.faceSturdy = new boolean[DIRECTIONS.length * SUPPORT_TYPE_COUNT];
+ 
+                     for (Direction direction : DIRECTIONS) {

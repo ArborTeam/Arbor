@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mrhua269 <mrhua269@gmail.com>
+Date: Sat, 10 Jan 2026 22:25:33 +0800
+Subject: [PATCH] Correct volatile reference set in RegionizedTaskQueue
+
+
+diff --git a/io/papermc/paper/threadedregions/RegionizedTaskQueue.java b/io/papermc/paper/threadedregions/RegionizedTaskQueue.java
+index 40ee051e2267cc497232ea4103e06616995a2f10..4820e83550e4fc304e683c143edca22b737986ce 100644
+--- a/io/papermc/paper/threadedregions/RegionizedTaskQueue.java
++++ b/io/papermc/paper/threadedregions/RegionizedTaskQueue.java
+@@ -517,7 +517,7 @@ public final class RegionizedTaskQueue {
+             }
+ 
+             private ReferenceCountData getReferenceCounterVolatile() {
+-                return (ReferenceCountData)REFERENCE_COUNTER_HANDLE.get(this);
++                return (ReferenceCountData)REFERENCE_COUNTER_HANDLE.getVolatile(this);
+             }
+ 
+             private ReferenceCountData compareAndExchangeReferenceCounter(final ReferenceCountData expect, final ReferenceCountData update) {

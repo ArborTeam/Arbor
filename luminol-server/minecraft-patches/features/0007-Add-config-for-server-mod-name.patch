@@ -5,10 +5,10 @@ Subject: [PATCH] Add config for server mod name
 
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index a3592692fcada960e0ad9c3f45ae86bb12d728a1..4675af0a2f18c4b9dabfb380364253be3e227ded 100644
+index 97842c57f5d2ec4b9ea002695fafd614a10b806a..1feb6de49d330711cc594c3f8342fbc4f21bb5c1 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -2065,7 +2065,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2063,7 +2063,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @DontObfuscate
      public String getServerModName() {

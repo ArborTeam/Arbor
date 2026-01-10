@@ -6,7 +6,7 @@ Subject: [PATCH] Force disable builtin spark plugin
 The spark passed down from paper has some memory leaking issue, so we fully removed it from the code to prevent that memory leaking issue.
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 4b066ed04a5b8ec1968b0e92f1fb447c0215ae73..7f6572fbde4f39d60c97a9bf2d9d04303ce4bc22 100644
+index 8e33b8f43134fa267112249e7d73081365240f63..491c78bffae2917f1f7f0b1fce0376a987319537 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -661,8 +661,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -65,7 +65,7 @@ index 4b066ed04a5b8ec1968b0e92f1fb447c0215ae73..7f6572fbde4f39d60c97a9bf2d9d0430
          new com.destroystokyo.paper.event.server.ServerTickStartEvent((int)region.getCurrentTick()).callEvent(); // Paper - Server Tick Events // Folia - region threading
          // Folia start - region threading
          if (region != null) {
-@@ -1820,7 +1820,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1818,7 +1818,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          long remaining = scheduledEnd - endTime; // Folia - region ticking
          new com.destroystokyo.paper.event.server.ServerTickEndEvent((int)io.papermc.paper.threadedregions.RegionizedServer.getCurrentTick(), ((double)(endTime - startTime) / 1000000D), remaining).callEvent(); // Folia - region ticking
          // Paper end - Server Tick Events

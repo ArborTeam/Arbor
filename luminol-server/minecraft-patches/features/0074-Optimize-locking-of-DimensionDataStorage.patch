@@ -3,7 +3,7 @@ From: mrhua269 <mrhua269@gmail.com>
 Date: Sat, 3 Jan 2026 23:01:44 +0800
 Subject: [PATCH] Optimize locking of DimensionDataStorage
 
-replace hashmap with synchronized with concurrent hashmap
+replace (hashmap with synchronized lock) with concurrent hashmap
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
 index 9d67814ca9079126b6c587c62c8abd36d953e2a4..b1fb62488e3ae2fb2d6adc97d933d98452b2a484 100644
@@ -40,7 +40,7 @@ index 9d67814ca9079126b6c587c62c8abd36d953e2a4..b1fb62488e3ae2fb2d6adc97d933d984
                          // Folia end - make map data thread-safe
                          if (savedData.isEmpty() || !(savedData.get() instanceof MapItemSavedData map)) {
 diff --git a/net/minecraft/world/level/storage/DimensionDataStorage.java b/net/minecraft/world/level/storage/DimensionDataStorage.java
-index a1449d9b7a45c0119bbd268db3e82035cefbb166..8e247d0a567b79466e7771adf71a001058d06915 100644
+index a1449d9b7a45c0119bbd268db3e82035cefbb166..a91669ee4be4f0b3d0906b1f203d7d8badd92c49 100644
 --- a/net/minecraft/world/level/storage/DimensionDataStorage.java
 +++ b/net/minecraft/world/level/storage/DimensionDataStorage.java
 @@ -38,7 +38,7 @@ import org.slf4j.Logger;
@@ -52,13 +52,21 @@ index a1449d9b7a45c0119bbd268db3e82035cefbb166..8e247d0a567b79466e7771adf71a0010
      private final DataFixer fixerUpper;
      private final HolderLookup.Provider registries;
      private final Path dataFolder;
-@@ -55,6 +55,17 @@ public class DimensionDataStorage implements AutoCloseable {
+@@ -55,6 +55,25 @@ public class DimensionDataStorage implements AutoCloseable {
      }
  
      public <T extends SavedData> T computeIfAbsent(SavedDataType<T> type) {
 +        // Luminol - Optimize locking of DimensionDataStorage
 +        if (true) {
 +            Optional<SavedData> result = this.cache.computeIfAbsent(type, key -> {
++                // note: this part is from the get method following
++                final T read = this.readSavedData(type);
++                if (read != null) {
++                    // we have the data on disk, read and directly return
++                    return Optional.of(read);
++                }
++
++                // no data found, create a new one
 +                T created = type.constructor().get();
 +                created.setDirty();
 +                return Optional.of(created);
@@ -70,7 +78,7 @@ index a1449d9b7a45c0119bbd268db3e82035cefbb166..8e247d0a567b79466e7771adf71a0010
          synchronized (this.cache) { // Folia - make map data thread-safe
          T savedData = this.get(type);
          if (savedData != null) {
-@@ -68,6 +79,13 @@ public class DimensionDataStorage implements AutoCloseable {
+@@ -68,6 +87,13 @@ public class DimensionDataStorage implements AutoCloseable {
      }
  
      public <T extends SavedData> @Nullable T get(SavedDataType<T> type) {
@@ -84,7 +92,7 @@ index a1449d9b7a45c0119bbd268db3e82035cefbb166..8e247d0a567b79466e7771adf71a0010
          synchronized (this.cache) { // Folia - make map data thread-safe
          Optional<SavedData> optional = this.cache.get(type);
          if (optional == null) {
-@@ -98,6 +116,12 @@ public class DimensionDataStorage implements AutoCloseable {
+@@ -98,6 +124,12 @@ public class DimensionDataStorage implements AutoCloseable {
      }
  
      public <T extends SavedData> void set(SavedDataType<T> type, T value) {

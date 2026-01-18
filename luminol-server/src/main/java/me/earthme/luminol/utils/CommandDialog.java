@@ -30,9 +30,8 @@ public class CommandDialog {
             player.openDialog(
                     DialogUtil.createHolder(
                             name + "config",
-                            config.getAllDataWithComment(),
-                            name + "config submit ",
-                            config.SPLIT
+                            config.getAllDataFull(),
+                            name + "config submit "
                     ));
             return;
         }
@@ -64,9 +63,8 @@ public class CommandDialog {
         }
 
         DialogUtil.addInputs(
-                config.getDataWithComment(keySingleConfigs),
+                config.getFullData(keySingleConfigs),
                 name + "config submit ",
-                config.SPLIT,
                 builder
         );
 
@@ -80,6 +78,15 @@ public class CommandDialog {
                             Component.translatable("Show all configs"),
                             300,
                             Optional.of(commandTemplate)
+                    ));
+        }
+
+        if (builder.getInputCount() == 0) {
+            builder.addButton(
+                    DialogUtil.createButton(
+                            Component.translatable("Close"),
+                            300,
+                            Optional.empty()
                     ));
         }
 

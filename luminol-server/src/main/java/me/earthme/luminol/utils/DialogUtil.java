@@ -1,5 +1,6 @@
 package me.earthme.luminol.utils;
 
+import me.earthme.luminol.config.ConfigsInstance;
 import net.minecraft.commands.functions.StringTemplate;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -12,25 +13,20 @@ import net.minecraft.server.dialog.input.BooleanInput;
 import net.minecraft.server.dialog.input.NumberRangeInput;
 import net.minecraft.server.dialog.input.TextInput;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 
 import java.util.*;
 
 public class DialogUtil {
-    public static Holder<Dialog> createHolder(String title, Map<String, Object> map, String commandPrefix) {
-        return createHolder(title, map, commandPrefix, null);
-    }
-
-    public static Holder<Dialog> createHolder(String title, Map<String, Object> map, String commandPrefix, String split) {
+    public static Holder<Dialog> createHolder(String title, Set<ConfigsInstance.ConfigPair> map, String commandPrefix) {
         return transformToHolder(
-                createDialog(title, map, commandPrefix, split)
+                createDialog(title, map, commandPrefix)
         );
     }
 
-    public static Holder<Dialog> createHolder(String title, List<String> list, String commandPrefix) {
+    public static Holder<Dialog> createHolder(String title, List<String> list) {
         return transformToHolder(
-                createDialog(title, list, commandPrefix)
+                createDialog(title, list)
         );
     }
 
@@ -38,7 +34,7 @@ public class DialogUtil {
         return Holder.direct(dialog);
     }
 
-    public static MultiActionDialog createDialog(String title, List<String> options, String commandPrefix) {
+    public static MultiActionDialog createDialog(String title, List<String> options) {
         DialogBuilder builder = new DialogBuilder();
         for (String option : options) {
             builder.addButton(
@@ -56,42 +52,26 @@ public class DialogUtil {
         return builder.build();
     }
 
-    public static MultiActionDialog createDialog(String title, Map<String, Object> map, String commandPrefix) {
-        return createDialog(title, map, commandPrefix, null);
-    }
-
-    public static MultiActionDialog createDialog(String title, Map<String, Object> map, String commandPrefix, @Nullable String split) {
-        return addInputs(map, commandPrefix, split, new DialogBuilder())
+    public static MultiActionDialog createDialog(String title, Set<ConfigsInstance.ConfigPair> map, String commandPrefix) {
+        return addInputs(map, commandPrefix, new DialogBuilder())
                 .setTitle(title)
                 .setPause(false)
                 .setColumns(1)
                 .build();
     }
 
-    public static DialogBuilder addInputs(Map<String, Object> map, String commandPrefix, @Nullable String split, @NotNull DialogBuilder builder) {
+    public static DialogBuilder addInputs(Set<ConfigsInstance.ConfigPair> map, String commandPrefix, @NotNull DialogBuilder builder) {
+        boolean hasInput = false;
         JSONObject valueBuilder = new JSONObject();
-        boolean _bl = split != null && !split.isEmpty();
         Set<String> usedKeys = new HashSet<>();
         int keyCounter = 0;
 
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            String key = null;
-            String label = null;
-            String comment = null;
-            String key0 = entry.getKey();
-            Object value = entry.getValue();
-            if (_bl) {
-                int index = key0.indexOf(split);
-                if (index != -1) {
-                    label = key0.substring(0, index);
-                    key = sanitizeKey(label);
-                    comment = key0.substring(index + split.length());
-                }
-            }
-            if (key == null || key.isEmpty()) {
-                key = sanitizeKey(key0);
-                label = key0;
-            }
+        for (ConfigsInstance.ConfigPair entry : map) {
+            Object value = entry.value();
+            String label = entry.key();
+            String key = sanitizeKey(label);
+            String comment = entry.comment();
+            String[] suggestions = entry.suggestions();
 
             String originalKey = key;
             while (usedKeys.contains(key)) {
@@ -101,17 +81,56 @@ public class DialogUtil {
 
             valueBuilder.put(label, "$(" + key + ")");
 
+            String addition1 = "";
+
             if (comment != null && !comment.isEmpty()) {
-                String _label = "comment of " + label;
+                addition1 = comment;
+            }
+
+            String addition2 = "";
+
+            if (suggestions != null && suggestions.length > 0) {
+                StringBuilder addition = new StringBuilder("Suggestions: ");
+                boolean first = true;
+                for (String suggestion : suggestions) {
+                    if (!first) {
+                        addition.append(", ");
+                    } else {
+                        first = false;
+                    }
+                    addition.append(suggestion);
+                }
+                addition2 = addition.toString();
+            }
+
+            String addition = addition1.isEmpty() ? addition2 : addition2.isEmpty() ? "" : addition1 + "\n" + addition2;
+
+            if (!addition.isEmpty()) {
+                addition = "Any edit in this text input will not save to file.\n" + addition;
+                String _label = "Additional information of " + label;
                 String _key = sanitizeKey(_label);
                 String _originalKey = _key;
-                comment = "Any edit in this text input will not save to file.\n" + comment;
                 while (usedKeys.contains(_key)) {
                     _key = _originalKey + "_" + (++keyCounter);
                 }
                 usedKeys.add(_key);
-                Input _comment = createTextInput(_label, _key, comment, 300, true, 2147483647, new TextInput.MultilineOptions(Optional.of(1000), Optional.of((int) (20 * (comment.lines().count() + 1)))));
-                builder.addInput(_comment);
+                builder.addInput(
+                        createTextInput(
+                                _label,
+                                _key,
+                                addition,
+                                300,
+                                true,
+                                2147483647,
+                                new TextInput.MultilineOptions(
+                                        Optional.of(1000),
+                                        Optional.of(
+                                                (int) (20 * (addition.lines().count() + 1)
+                                                )
+                                        )
+                                )
+                        )
+                );
             }
 
             switch (value) {
@@ -130,20 +149,24 @@ public class DialogUtil {
                 default -> {
                 }
             }
+
+            hasInput = true;
         }
         String raw = commandPrefix + valueBuilder.toJSONString() + "$(missing)";
         StringTemplate template = StringTemplate.fromString(raw);
         CommandTemplate confirmTemplate = new CommandTemplate(new ParsedTemplate(raw, template));
-        builder.addButton(createButton(
-                        Component.translatable("Confirm"),
-                        300,
-                        Optional.of(confirmTemplate)
-                ))
-                .addButton(createButton(
-                        Component.translatable("Cancel"),
-                        300,
-                        Optional.empty()
-                ));
+        if (hasInput) {
+            builder.addButton(createButton(
+                            Component.translatable("Confirm"),
+                            300,
+                            Optional.of(confirmTemplate)
+                    ))
+                    .addButton(createButton(
+                            Component.translatable("Cancel"),
+                            300,
+                            Optional.empty()
+                    ));
+        }
 
         return builder;
     }
@@ -220,7 +243,7 @@ public class DialogUtil {
 
             if (Character.isWhitespace(c)) {
                 // If we have accumulated a word, add it to list
-                if (currentWord.length() > 0) {
+                if (!currentWord.isEmpty()) {
                     words.add(currentWord.toString());
                     currentWord = new StringBuilder();
                 }
@@ -233,7 +256,7 @@ public class DialogUtil {
         }
 
         // Add the last word if exists
-        if (currentWord.length() > 0) {
+        if (!currentWord.isEmpty()) {
             words.add(currentWord.toString());
         }
 
@@ -264,7 +287,7 @@ public class DialogUtil {
             // Handle explicit line breaks
             if (word.contains("\n")) {
                 // Add current line content
-                wrappedText.append(currentLine.toString());
+                wrappedText.append(currentLine);
                 // Add the word containing newline
                 wrappedText.append(word);
                 // Reset for next line

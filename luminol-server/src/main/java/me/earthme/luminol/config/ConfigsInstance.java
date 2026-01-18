@@ -41,7 +41,6 @@ public class ConfigsInstance {
     private final Map<String, String[]> suggestionsMap = new HashMap<>();
 
     // Constants and state flags
-    public final String SPLIT = " # ";
     public boolean alreadyInit = false;
     private CommentedFileConfig configFileInstance;
 
@@ -187,7 +186,7 @@ public class ConfigsInstance {
     /**
      * Load all configuration modules
      */
-    private void loadAllModules(boolean keepComments) throws IllegalAccessException {
+    private void loadAllModules(boolean keepComments) {
         Map<IConfigModule, Set<Exception>> stagedMap = new HashMap<>();
         for (IConfigModule instanced : allInstanced.keySet()) {
             Set<Exception> exceptions = loadForSingle(instanced, keepComments);
@@ -307,7 +306,7 @@ public class ConfigsInstance {
 
         // Handle missing or removed configurations
         if (!configFileInstance.contains(fullConfigKeyName) || removed) {
-            handleMissingOrRemovedConfig(field, fullConfigKeyName, configInfo, removed, keys);
+            handleMissingOrRemovedConfig(field, fullConfigKeyName, configInfo, removed);
         } else {
             // Handle existing configurations
             handleExistingConfig(field, fullConfigKeyName, configInfo, doNotReload, keepComments);
@@ -318,8 +317,7 @@ public class ConfigsInstance {
      * Handle missing or removed configuration entries
      */
     private void handleMissingOrRemovedConfig(Field field, String fullConfigKeyName,
-                                              ConfigInfo configInfo, boolean removed,
-                                              List<String> keys) throws IllegalAccessException {
+                                              ConfigInfo configInfo, boolean removed) throws IllegalAccessException {
         // Process transformed configurations
         processTransformedConfigs(field, fullConfigKeyName, configInfo, removed);
 
@@ -792,87 +790,94 @@ public class ConfigsInstance {
     /**
      * Get all configuration data
      */
-    public Map<String, Object> getAllData() {
-        return getData("", false);
+    public Set<ConfigPair> getAllData() {
+        return getData("", false, false);
     }
 
     /**
      * Get configuration data with specified prefix
      */
-    public Map<String, Object> getData(String prefix) {
-        return getData(prefix, false);
+    public Set<ConfigPair> getData(String prefix) {
+        return getData(prefix, false, false);
     }
 
     /**
      * Get all configuration data with comments
      */
-    public Map<String, Object> getAllDataWithComment() {
-        return getData("", true);
+    public Set<ConfigPair> getAllDataFull() {
+        return getData("", true, true);
     }
 
     /**
      * Get configuration data with comments and specified prefix
      */
-    public Map<String, Object> getDataWithComment(String prefix) {
-        return getData(prefix, true);
+    public Set<ConfigPair> getDataFull(String prefix) {
+        return getData(prefix, true, true);
     }
 
     /**
      * Get configuration data with specified prefix
      */
-    private Map<String, Object> getData(String prefix, boolean _comment) {
-        Map<String, Object> result = new TreeMap<>();
-        for (String key : defaultvalueMap.keySet()) {
-            if (!key.startsWith(prefix)) continue;
-            processData(key, result, _comment);
-        }
-        return result;
+    public Set<ConfigPair> getData(String prefix, boolean _comment, boolean _withSuggestions) {
+        List<String> keys = getAllConfigPaths(prefix);
+        return getData(keys, _comment, _withSuggestions);
     }
 
     /**
      * Get configuration data for specified keys
      */
-    public Map<String, Object> getData(List<String> list) {
-        return getData(list, false);
+    public Set<ConfigPair> getData(List<String> list) {
+        return getData(list, false, false);
     }
 
     /**
      * Get configuration data with comments for specified keys
      */
-    public Map<String, Object> getDataWithComment(List<String> list) {
-        return getData(list, true);
+    public Set<ConfigPair> getDataWithComment(List<String> list) {
+        return getData(list, true, false);
+    }
+
+    public Set<ConfigPair> getFullData(List<String> list) {
+        return getData(list, true, true);
     }
 
     /**
      * Get configuration data for specified keys
      */
-    private Map<String, Object> getData(List<String> list, boolean _comment) {
-        Map<String, Object> result = new TreeMap<>();
+    private Set<ConfigPair> getData(List<String> list, boolean _comment, boolean _withSuggestions) {
+        Set<ConfigPair> result = new HashSet<>();
         for (String key : list) {
-            processData(key, result, _comment);
+            Object valueOrigin = configFileInstance.get(key);
+            Object value = valueOrigin;
+            if (value instanceof List list1) {
+                value = parseStringFromList(list1);
+            } else if (value instanceof Enum) {
+                value = ((Enum<?>) value).name();
+            }
+            String comment = null;
+            if (_comment) {
+                comment = configFileInstance.getComment(key);
+                if (comment == null || comment.isEmpty()) {
+                    comment = null;
+                }
+            }
+            String[] suggestions = null;
+            if (_withSuggestions) {
+                suggestions = getConfigSuggestions(key);
+            }
+
+            if (suggestions == null) {
+                if (valueOrigin instanceof Enum<?> enumValue) {
+                    Enum<?>[] values = enumValue.getClass().getEnumConstants();
+                    suggestions = new String[values.length];
+                    for (Enum<?> enumValue1 : values) {
+                        suggestions[enumValue1.ordinal()] = enumValue1.name();
+                    }
+                }
+            }
+            result.add(new ConfigPair(key, value, comment, suggestions));
         }
         return result;
-    }
-
-    /**
-     * Process configuration data for a key
-     */
-    private void processData(String key, Map<String, Object> result, boolean _comment) {
-        String _key = key;
-        Object value = configFileInstance.get(key);
-        if (value instanceof List list1) {
-            value = parseStringFromList(list1);
-        }
-        if (_comment) {
-            String comment = configFileInstance.getComment(key);
-            if (comment != null && !comment.isEmpty()) {
-                _key += SPLIT + comment;
-            }
-        }
-        if (value instanceof Enum) {
-            value = ((Enum<?>) value).name();
-        }
-        result.put(_key, value);
     }
 
     /**
@@ -889,5 +894,8 @@ public class ConfigsInstance {
         validValues.forEach(configFileInstance::set);
         validComments.forEach(configFileInstance::setComment);
         saveConfigs();
+    }
+
+    public record ConfigPair(String key, Object value, String comment, String[] suggestions) {
     }
 }

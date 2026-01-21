@@ -9,7 +9,7 @@ Original patch: https://github.com/pufferfish-gg/Pufferfish/blob/ver/1.21/puffer
 Original license(GPL-3.0): https://github.com/pufferfish-gg/Pufferfish/blob/ver/1.21/PATCH-LICENSE
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 61668641eb49364c827244d5adb5ec8f250c5f01..598cdc104d9d50e019bdccc18f6c1dad98aa0178 100644
+index dcd1ea74e807456fa111954138dac73fb849130d..d5ff175cbc905fc6e104900bbaa59cf84666e227 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -217,11 +217,13 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab

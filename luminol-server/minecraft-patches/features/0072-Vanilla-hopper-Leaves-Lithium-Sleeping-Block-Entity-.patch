@@ -224,10 +224,10 @@ index 6f01763c178324dd1741b996cd21cb9c23795b71..a794da4d2376e7e19993471b1510ccd0
          }
      }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index fb1f6fde9a41c34c30a1ad5715aababb0927d10f..9d67814ca9079126b6c587c62c8abd36d953e2a4 100644
+index 387ce2555cc41b01c51ee3a3f148d4c9af58a50e..2ac8988091550ced69176fb1fb38bb5e3f56c927 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -2613,6 +2613,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2625,6 +2625,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
          for (TickingBlockEntity tickingBlockEntity : (Iterable<? extends net.minecraft.world.level.block.entity.TickingBlockEntity>)null) { // Folia - region threading
              BlockPos pos = tickingBlockEntity.getPos();
@@ -249,7 +249,7 @@ index 6489b47810b0431c350098d574469bbe0adcd726..b63cecafd841b97a694f6d2610141dcd
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 1e1d58dc8e2f5af1128730403805f97a1856c73f..0dbb6093e519dae45fc2fdb9bdbb6c33ff567ce7 100644
+index c7625bed55bed1f90de2253d63fa90a128bcd78e..90960c2d40f19cf11185a1c499f478d0bb96f942 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -310,7 +310,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -261,7 +261,7 @@ index 1e1d58dc8e2f5af1128730403805f97a1856c73f..0dbb6093e519dae45fc2fdb9bdbb6c33
      private final VecDeltaCodec packetPositionCodec = new VecDeltaCodec();
      public boolean needsSync;
      public @Nullable PortalProcessor portalProcess;
-@@ -4380,11 +4380,13 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4379,11 +4379,13 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      }
  
      protected Entity transformForAsyncTeleport(ServerLevel destination, Vec3 pos, Float yaw, Float pitch, Vec3 velocity) {
@@ -275,7 +275,7 @@ index 1e1d58dc8e2f5af1128730403805f97a1856c73f..0dbb6093e519dae45fc2fdb9bdbb6c33
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
          this.postRemoveAfterChangingDimensions();
-@@ -6036,6 +6038,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -6035,6 +6037,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box
@@ -605,10 +605,10 @@ index 8660c37560442153787e854a0e95bdd81c1bc152..ed2971b54afbebe37a7ff61798778a42
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index ab24fe3ba245457db37eb7922c85dd478a47ed55..0efa6fd27af5552d5a2264ebba4ed2fa5c3833af 100644
+index fdc425a8eac576a241360595a1a5015869f9e641..f18acb8a7ee89fe80ce336986b2413e437549b3c 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1460,7 +1460,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1459,7 +1459,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
              // Spigot end
              if (tickingBlockEntity.isRemoved()) {
                  toRemove.add(tickingBlockEntity); // Paper - Fix MC-117075; use removeAll
@@ -617,7 +617,7 @@ index ab24fe3ba245457db37eb7922c85dd478a47ed55..0efa6fd27af5552d5a2264ebba4ed2fa
                  tickingBlockEntity.tick();
                  // Paper start - rewrite chunk system
                  if ((++tickedEntities & 7) == 0) {
-@@ -2171,4 +2171,25 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -2170,4 +2170,25 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          return this.moonrise$getEntityLookup().getEntityCount(); // Paper - rewrite chunk system
      }
      // Paper end - allow patching this logic

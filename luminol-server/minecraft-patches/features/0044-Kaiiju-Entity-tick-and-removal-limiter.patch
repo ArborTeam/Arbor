@@ -20,10 +20,10 @@ index 1f49d787ecee4ba9dce087036a4e3cbce2228c17..b974742a0fb2dc18cfc9a61159ab0a25
      // block ticking
      private final ObjectLinkedOpenHashSet<BlockEventData> blockEvents = new ObjectLinkedOpenHashSet<>();
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 611befab799957ab370668e38875987f8a5eebbd..ab644316f0f6c74f730fcc05025986a6088a4a0a 100644
+index 16e5f5e8b82c1a7e7c65bd9f99333c809b462226..b3425665d05a4cba27b72e5b9d6667de740c8c0a 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -845,6 +845,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -861,6 +861,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
  
              profiler.startTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.ACTIVATE_ENTITIES); try { // Folia - profiler
@@ -31,7 +31,7 @@ index 611befab799957ab370668e38875987f8a5eebbd..ab644316f0f6c74f730fcc05025986a6
              io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
              } finally { profiler.stopTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.ACTIVATE_ENTITIES); } // Folia - profiler
              profiler.startTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.ENTITY_TICK); try { // Folia - profiler
-@@ -866,6 +867,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -882,6 +883,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
                                          entity.stopRiding();
                                      }
@@ -45,7 +45,7 @@ index 611befab799957ab370668e38875987f8a5eebbd..ab644316f0f6c74f730fcc05025986a6
  
                                      profilerFiller.push("tick");
                                      this.guardEntityTick(this::tickNonPassenger, entity);
-@@ -875,6 +883,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -891,6 +899,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                          }
                      }
                  );

@@ -8,10 +8,10 @@ A part of Leaf(https://github.com/Winds-Studio/Leaf/blob/dev/1.21.9/leaf-server/
 Original license: https://github.com/Winds-Studio/Leaf/blob/dev/1.21.9/LICENSE.md
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index b1fb62488e3ae2fb2d6adc97d933d98452b2a484..4fa29d777a56b3296ea5e5fb4b9cb3300a7dda31 100644
+index 2ac8988091550ced69176fb1fb38bb5e3f56c927..2c140e4b5c818cbaedcdd3110794e30dd94dd8b4 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1835,6 +1835,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1851,6 +1851,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      @Override
      public void destroyBlockProgress(int breakerId, BlockPos pos, int progress) {
@@ -27,7 +27,7 @@ index b1fb62488e3ae2fb2d6adc97d933d98452b2a484..4fa29d777a56b3296ea5e5fb4b9cb330
          // CraftBukkit start
          Player breakerPlayer = null;
          Entity entity = this.getEntity(breakerId);
-@@ -1851,7 +1860,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1867,7 +1876,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                  .callEvent();
          }
          // Paper end - Add BlockBreakProgressUpdateEvent
@@ -36,7 +36,7 @@ index b1fb62488e3ae2fb2d6adc97d933d98452b2a484..4fa29d777a56b3296ea5e5fb4b9cb330
              if (serverPlayer.level() == this && serverPlayer.getId() != breakerId) {
                  double d = pos.getX() - serverPlayer.getX();
                  double d1 = pos.getY() - serverPlayer.getY();
-@@ -1862,7 +1871,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1878,7 +1887,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                  }
                  // CraftBukkit end
                  if (d * d + d1 * d1 + d2 * d2 < 1024.0) {

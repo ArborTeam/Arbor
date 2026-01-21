@@ -5,10 +5,10 @@ Subject: [PATCH] Fix entity portal-teleport speed
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index ab644316f0f6c74f730fcc05025986a6088a4a0a..d8f135640bf816d9c7d9458eabcd18b4c6ee5c5e 100644
+index b3425665d05a4cba27b72e5b9d6667de740c8c0a..55ce934d39f91e7df02e3b550b73b1832ff290e0 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1436,7 +1436,27 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1452,7 +1452,27 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          if (levelChunk != null) levelChunk.getChunkHot().startTicking(); try { // KioCG
          try {
          // Folia end - profiler
@@ -36,7 +36,7 @@ index ab644316f0f6c74f730fcc05025986a6088a4a0a..d8f135640bf816d9c7d9458eabcd18b4
          entity.tick();
          // Folia start - region threading
          if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
-@@ -1447,6 +1467,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1463,6 +1483,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              // portalled
              return;
          }
@@ -46,7 +46,7 @@ index ab644316f0f6c74f730fcc05025986a6088a4a0a..d8f135640bf816d9c7d9458eabcd18b4
          } else {entity.inactiveTick();} // Paper - EAR 2
          profilerFiller.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index aea77618d76c2fc203208ee77439471290abe361..4799b1d644a45ec5dca5c4e2006e220c26e47f4d 100644
+index 4c8ad47a93ccdfca306d17dc6f113857676b57af..080a287e86915312ac8caaecbcb2741ea6c85564 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -373,6 +373,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -57,7 +57,7 @@ index aea77618d76c2fc203208ee77439471290abe361..4799b1d644a45ec5dca5c4e2006e220c
  
      public void inactiveTick() {
      }
-@@ -3511,6 +3512,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -3510,6 +3511,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          } else {
              if (this.portalProcess == null || !this.portalProcess.isSamePortal(portal)) {
                  this.portalProcess = new PortalProcessor(portal, pos.immutable());

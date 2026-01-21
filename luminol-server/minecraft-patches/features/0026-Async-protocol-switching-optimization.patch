@@ -173,7 +173,7 @@ index 2cc3dd1f267ae78d3aacb84509d4bf668235688f..00eec818bfd7d1a7442e6bd2fa531f4a
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index ccf2a4e6f612c417d636055cb8f19491d74ec7db..9dfbcbdaed9fa4d5a456cc301923131e84f49c66 100644
+index 7e4143c15651055b9e548d3ebfb1650876aebfec..a36d5986b04617155f1b07476450cbe765304ee2 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2845,7 +2845,7 @@ public class ServerGamePacketListenerImpl
@@ -199,7 +199,7 @@ index ccf2a4e6f612c417d636055cb8f19491d74ec7db..9dfbcbdaed9fa4d5a456cc301923131e
      }
  
      @Override
-@@ -3713,12 +3719,25 @@ public class ServerGamePacketListenerImpl
+@@ -3719,12 +3725,25 @@ public class ServerGamePacketListenerImpl
              throw new IllegalStateException("Client acknowledged config, but none was requested");
          } else {
              final ServerConfigurationPacketListenerImpl listener = new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())); // Paper

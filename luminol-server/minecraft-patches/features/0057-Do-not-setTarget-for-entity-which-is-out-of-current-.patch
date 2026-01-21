@@ -6,7 +6,7 @@ Subject: [PATCH] Do not setTarget for entity which is out of current
 
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 598cdc104d9d50e019bdccc18f6c1dad98aa0178..d33d45077bb685976a711812e24530b8836a2000 100644
+index d5ff175cbc905fc6e104900bbaa59cf84666e227..c6985d2a9d1093943d754d77089bd4c3d5baf3ee 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -284,6 +284,11 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab

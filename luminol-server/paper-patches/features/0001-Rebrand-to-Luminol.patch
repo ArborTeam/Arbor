@@ -41,7 +41,7 @@ index 4d2936f6818c38e2844cba78ffad339e93ff29ab..90fb73103e3ef64d0d0ab6de04e249aa
      private static final int DISTANCE_UNKNOWN = -2;
 -    private static final String DOWNLOAD_PAGE = "https://papermc.io/downloads/folia"; // Folia
 -    private static final String REPOSITORY = "PaperMC/Folia"; // Folia
-+    private static final String DOWNLOAD_PAGE = "github.com/LuminolMC/Luminol"; // Luminol
++    private static final String DOWNLOAD_PAGE = "https://github.com/LuminolMC/Luminol"; // Luminol
 +    private static final String REPOSITORY = "LuminolMC/Luminol"; // Luminol
      private static final ServerBuildInfo BUILD_INFO = ServerBuildInfo.buildInfo();
      private static final String USER_AGENT = BUILD_INFO.brandName() + "/" + BUILD_INFO.asString(VERSION_SIMPLE) + " (https://papermc.io)";

@@ -9,7 +9,7 @@ See the comments on setSource in ThreadedTicketPropagator
 and the implementation of addTicketAtLevel on the original ChunkHolderManager
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
-index 2745180094b48b10e7ca9d4ab28c7762637db7c3..0bc308917066cd8cfabbd401205e53973eaeb0d5 100644
+index 2745180094b48b10e7ca9d4ab28c7762637db7c3..a83624a8f3aec28aa2cd2d4a57fa2720e5fd1101 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
 @@ -713,7 +713,17 @@ public final class ChunkHolderManager {
@@ -71,7 +71,53 @@ index 2745180094b48b10e7ca9d4ab28c7762637db7c3..0bc308917066cd8cfabbd401205e5397
          try {
              if (this.removeTicketAtLevel(removeType, chunk, removeLevel, removeIdentifier, false)) {
                  this.addTicketAtLevel(addType, chunk, addLevel, addIdentifier, false);
-@@ -1416,7 +1448,17 @@ public final class ChunkHolderManager {
+@@ -1102,9 +1134,20 @@ public final class ChunkHolderManager {
+         final Thread waiter = Thread.currentThread();
+         final Long entityLoadId = ChunkTaskScheduler.getNextEntityLoadId();
+         NewChunkHolder.GenericDataLoadTaskCallback loadTask = null;
+-        final ReentrantAreaLock.Node ticketLock = this.ticketLockArea.lock(chunkX, chunkZ);
++        // final ReentrantAreaLock.Node ticketLock = this.ticketLockArea.lock(chunkX, chunkZ); // Luminol - Fix incorrect ticket locking area
++        // Luminol start - Fix incorrect ticket locking area
++        // (posX & ~(SECTION_SIZE - 1), posZ & ~(SECTION_SIZE - 1)) to (posX | (SECTION_SIZE - 1), posZ | (SECTION_SIZE - 1))
++        final int sectionSize = ThreadedTicketLevelPropagator.SECTION_SIZE;
++        final ReentrantAreaLock.Node ticketLock = this.ticketLockArea.lock(
++                chunkX & ~(sectionSize - 1),
++                chunkZ & ~(sectionSize - 1),
++                chunkX | (sectionSize - 1),
++                chunkZ | (sectionSize - 1)
++        );
++        // Luminol end - Fix incorrect ticket locking area
+         try {
+-            this.addTicketAtLevel(ChunkTaskScheduler.ENTITY_LOAD, chunkX, chunkZ, MAX_TICKET_LEVEL, entityLoadId);
++            // this.addTicketAtLevel(ChunkTaskScheduler.ENTITY_LOAD, chunkX, chunkZ, MAX_TICKET_LEVEL, entityLoadId); // Luminol - Fix incorrect ticket locking area
++            this.addTicketAtLevel(ChunkTaskScheduler.ENTITY_LOAD, CoordinateUtils.getChunkKey(chunkX, chunkZ), MAX_TICKET_LEVEL, entityLoadId, false); // Luminol - Fix incorrect ticket locking area
+             final ReentrantAreaLock.Node schedulingLock = this.taskScheduler.schedulingLockArea.lock(chunkX, chunkZ);
+             try {
+                 current = this.getOrCreateChunkHolder(chunkX, chunkZ);
+@@ -1185,9 +1228,20 @@ public final class ChunkHolderManager {
+         final Thread waiter = Thread.currentThread();
+         final Long poiLoadId = ChunkTaskScheduler.getNextPoiLoadId();
+         NewChunkHolder.GenericDataLoadTaskCallback loadTask = null;
+-        final ReentrantAreaLock.Node ticketLock = this.ticketLockArea.lock(chunkX, chunkZ);
++        // final ReentrantAreaLock.Node ticketLock = this.ticketLockArea.lock(chunkX, chunkZ); // Luminol - Fix incorrect ticket locking area
++        // Luminol start - Fix incorrect ticket locking area
++        // (posX & ~(SECTION_SIZE - 1), posZ & ~(SECTION_SIZE - 1)) to (posX | (SECTION_SIZE - 1), posZ | (SECTION_SIZE - 1))
++        final int sectionSize = ThreadedTicketLevelPropagator.SECTION_SIZE;
++        final ReentrantAreaLock.Node ticketLock = this.ticketLockArea.lock(
++                chunkX & ~(sectionSize - 1),
++                chunkZ & ~(sectionSize - 1),
++                chunkX | (sectionSize - 1),
++                chunkZ | (sectionSize - 1)
++        );
++        // Luminol end - Fix incorrect ticket locking area
+         try {
+-            this.addTicketAtLevel(ChunkTaskScheduler.POI_LOAD, chunkX, chunkZ, MAX_TICKET_LEVEL, poiLoadId);
++            // this.addTicketAtLevel(ChunkTaskScheduler.POI_LOAD, chunkX, chunkZ, MAX_TICKET_LEVEL, poiLoadId, false); // Luminol - Fix incorrect ticket locking area
++            this.addTicketAtLevel(ChunkTaskScheduler.POI_LOAD, CoordinateUtils.getChunkKey(chunkX, chunkZ), MAX_TICKET_LEVEL, poiLoadId, false); // Luminol - Fix incorrect ticket locking area
+             final ReentrantAreaLock.Node schedulingLock = this.taskScheduler.schedulingLockArea.lock(chunkX, chunkZ);
+             try {
+                 current = this.getOrCreateChunkHolder(chunkX, chunkZ);
+@@ -1416,7 +1470,17 @@ public final class ChunkHolderManager {
              }
  
              // stage 3: actually attempt to remove the chunk holders

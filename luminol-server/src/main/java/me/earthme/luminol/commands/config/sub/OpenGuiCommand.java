@@ -6,7 +6,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.earthme.luminol.commands.config.ConfigCommand;
 import me.earthme.luminol.commands.config.ConfigSubcommand;
-import me.earthme.luminol.utils.CommandDialog;
+import me.earthme.luminol.utils.dialog.ConfigCommandDialog;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.world.entity.player.Player;
@@ -31,7 +31,7 @@ public class OpenGuiCommand extends ConfigSubcommand {
     protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
         if (context.getSender() instanceof CraftPlayer cPlayer) {
             final Player player = cPlayer.getHandle();
-            CommandDialog.openGui(player, parent.name, parent.config);
+            ConfigCommandDialog.openGui(player, parent.name, parent.config);
         } else {
             context.getSender().sendMessage(
                     Component
@@ -69,7 +69,7 @@ public class OpenGuiCommand extends ConfigSubcommand {
         protected boolean execute(@NotNull CommandContext context) {
             if (context.getSender() instanceof CraftPlayer cPlayer) {
                 final Player player = cPlayer.getHandle();
-                CommandDialog.openGui(player, parent.name, parent.config, context.getArgument(PathArgument.class));
+                ConfigCommandDialog.openGui(player, parent.name, parent.config, context.getArgument(PathArgument.class));
             } else {
                 context.getSender().sendMessage(
                         Component

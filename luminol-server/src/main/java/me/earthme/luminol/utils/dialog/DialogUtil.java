@@ -1,6 +1,6 @@
-package me.earthme.luminol.utils;
+package me.earthme.luminol.utils.dialog;
 
-import me.earthme.luminol.config.ConfigsInstance;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.commands.functions.StringTemplate;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -18,7 +18,7 @@ import org.json.simple.JSONObject;
 import java.util.*;
 
 public class DialogUtil {
-    public static Holder<Dialog> createHolder(String title, Set<ConfigsInstance.ConfigPair> map, String commandPrefix) {
+    public static Holder<Dialog> createHolder(String title, Map<String, Pair<Object, String>> map, String commandPrefix) {
         return transformToHolder(
                 createDialog(title, map, commandPrefix)
         );
@@ -52,7 +52,7 @@ public class DialogUtil {
         return builder.build();
     }
 
-    public static MultiActionDialog createDialog(String title, Set<ConfigsInstance.ConfigPair> map, String commandPrefix) {
+    public static MultiActionDialog createDialog(String title, Map<String, Pair<Object, String>> map, String commandPrefix) {
         return addInputs(map, commandPrefix, new DialogBuilder())
                 .setTitle(title)
                 .setPause(false)
@@ -60,18 +60,17 @@ public class DialogUtil {
                 .build();
     }
 
-    public static DialogBuilder addInputs(Set<ConfigsInstance.ConfigPair> map, String commandPrefix, @NotNull DialogBuilder builder) {
+    public static DialogBuilder addInputs(Map<String, Pair<Object, String>> map, String commandPrefix, @NotNull DialogBuilder builder) {
         boolean hasInput = false;
         JSONObject valueBuilder = new JSONObject();
         Set<String> usedKeys = new HashSet<>();
         int keyCounter = 0;
 
-        for (ConfigsInstance.ConfigPair entry : map) {
-            Object value = entry.value();
-            String label = entry.key();
+        for (Map.Entry<String, Pair<Object, String>> entry : map.entrySet()) {
+            Object value = entry.getValue().getFirst();
+            String label = entry.getKey();
             String key = sanitizeKey(label);
-            String comment = entry.comment();
-            String[] suggestions = entry.suggestions();
+            String comment = entry.getValue().getSecond();
 
             String originalKey = key;
             while (usedKeys.contains(key)) {
@@ -81,32 +80,8 @@ public class DialogUtil {
 
             valueBuilder.put(label, "$(" + key + ")");
 
-            String addition1 = "";
-
             if (comment != null && !comment.isEmpty()) {
-                addition1 = comment;
-            }
-
-            String addition2 = "";
-
-            if (suggestions != null && suggestions.length > 0) {
-                StringBuilder addition = new StringBuilder("Suggestions: ");
-                boolean first = true;
-                for (String suggestion : suggestions) {
-                    if (!first) {
-                        addition.append(", ");
-                    } else {
-                        first = false;
-                    }
-                    addition.append(suggestion);
-                }
-                addition2 = addition.toString();
-            }
-
-            String addition = addition1.isEmpty() ? addition2 : addition2.isEmpty() ? "" : addition1 + "\n" + addition2;
-
-            if (!addition.isEmpty()) {
-                addition = "Any edit in this text input will not save to file.\n" + addition;
+                String addition = "Any edit in this text input will not save to file.\n" + comment;
                 String _label = "Additional information of " + label;
                 String _key = sanitizeKey(_label);
                 String _originalKey = _key;

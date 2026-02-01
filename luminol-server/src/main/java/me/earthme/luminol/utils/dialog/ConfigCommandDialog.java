@@ -1,4 +1,4 @@
-package me.earthme.luminol.utils;
+package me.earthme.luminol.utils.dialog;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class CommandDialog {
+public class ConfigCommandDialog {
     public static void openGui(Player player, String name, ConfigsInstance config) {
         openGui(player, name, config, "");
     }
@@ -28,7 +28,7 @@ public class CommandDialog {
     public static void openGui(Player player, String name, ConfigsInstance config, String prefix) {
         if (prefix.equals("full")) {
             player.openDialog(
-                    DialogUtil.createHolder(
+                    ConfigDialogUtil.createHolder(
                             name + "config",
                             config.getAllDataFull(),
                             name + "config submit "
@@ -62,7 +62,7 @@ public class CommandDialog {
             }
         }
 
-        DialogUtil.addInputs(
+        ConfigDialogUtil.addInputs(
                 config.getFullData(keySingleConfigs),
                 name + "config submit ",
                 builder

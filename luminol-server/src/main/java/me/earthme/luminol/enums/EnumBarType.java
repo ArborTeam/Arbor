@@ -4,6 +4,7 @@ import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
 import me.earthme.luminol.functions.bars.GlobalServerMemoryBar;
 import me.earthme.luminol.functions.bars.GlobalServerRegionBar;
 import me.earthme.luminol.functions.bars.GlobalServerTpsBar;
+import org.jetbrains.annotations.NotNull;
 
 public enum EnumBarType {
     TPS(GlobalServerTpsBar.class),
@@ -16,6 +17,7 @@ public enum EnumBarType {
         this.clazz = clazz;
     }
 
+    @NotNull
     public AbstractGlobalServerBar newInstance() {
         try {
             return this.clazz.getConstructor().newInstance();

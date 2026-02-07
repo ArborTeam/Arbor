@@ -3,6 +3,7 @@ package me.earthme.luminol.functions.bars;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import me.earthme.luminol.utils.NullPlugin;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
@@ -13,39 +14,49 @@ import org.slf4j.Logger;
 import java.util.*;
 
 public abstract class AbstractGlobalServerBar {
-    protected final NullPlugin NULL_PLUGIN = new NullPlugin();
+    protected static final Logger logger = LogUtils.getLogger();
+    protected static final NullPlugin NULL_PLUGIN = new NullPlugin();
+
     protected final Map<UUID, BossBar> uuid2Bossbars = Maps.newConcurrentMap();
-    protected final Map<UUID, ScheduledTask> scheduledTasks = new HashMap<>();
-    protected final Logger logger = LogUtils.getLogger();
-    protected volatile ScheduledTask scannerTask = null;
+    protected final Map<UUID, ScheduledTask> scheduledTasks = new Object2ObjectLinkedOpenHashMap<>();
+
+    protected ScheduledTask scannerTask = null;
     protected boolean disabled = true;
 
     public abstract void init();
 
-    public void init(int i) {
-        disabled = false;
-        cancelBarUpdateTask();
+    public void init(int updateInterval) {
+        synchronized (this) {
+            disabled = false;
+            cancelBarUpdateTask();
 
-        scannerTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(NULL_PLUGIN, unused -> {
-            try {
-                update();
-                cleanUp();
-            } catch (Exception e) {
-                logger.error(e.getLocalizedMessage());
-            }
-        }, 1, i);
+            this.scannerTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(NULL_PLUGIN, unused -> {
+                try {
+                    update();
+                    cleanUp();
+                } catch (Exception e) {
+                    logger.error(e.getLocalizedMessage());
+                }
+            }, 1, updateInterval);
+        }
     }
 
     public void cancelBarUpdateTask() {
-        if (scannerTask == null || scannerTask.isCancelled()) {
-            return;
-        }
+        synchronized (this) {
+            if (this.scannerTask == null || this.scannerTask.isCancelled()) {
+                return;
+            }
 
-        scannerTask.cancel();
+            // we need wait until the task is really cancelled so that we are safe to modify scheduledTasks map
+            ScheduledTask.CancelledState cancelledState;
+            do {
+                cancelledState = this.scannerTask.cancel();
+            } while (cancelledState != ScheduledTask.CancelledState.CANCELLED_ALREADY && cancelledState != ScheduledTask.CancelledState.CANCELLED_BY_CALLER);
 
-        for (ScheduledTask task : scheduledTasks.values()) {
-            if (!task.isCancelled()) {
-                task.cancel();
+            for (ScheduledTask task : this.scheduledTasks.values()) {
+                if (!task.isCancelled()) {
+                    task.cancel();
+                }
             }
         }
     }

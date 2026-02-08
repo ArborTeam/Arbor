@@ -173,10 +173,10 @@ index 2cc3dd1f267ae78d3aacb84509d4bf668235688f..00eec818bfd7d1a7442e6bd2fa531f4a
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 7e4143c15651055b9e548d3ebfb1650876aebfec..a36d5986b04617155f1b07476450cbe765304ee2 100644
+index 4547f5f4588f1e0311b8008e06a711d9fdebc067..9dc3e00dd9f1110cbbe79e301a249d2420e0d94e 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2845,7 +2845,7 @@ public class ServerGamePacketListenerImpl
+@@ -2846,7 +2846,7 @@ public class ServerGamePacketListenerImpl
          // removed from the world
          // Folia end - rewrite login process - fix bad ordering of this field write - move after removed from world
          try { // Folia - rewrite login process - move connection ownership to global region
@@ -185,7 +185,7 @@ index 7e4143c15651055b9e548d3ebfb1650876aebfec..a36d5986b04617155f1b07476450cbe7
          this.removePlayerFromWorld();
          } finally { // Folia start - rewrite login process - move connection ownership to global region
              io.papermc.paper.threadedregions.RegionizedWorldData worldData = this.player.level().getCurrentWorldData();
-@@ -2854,7 +2854,13 @@ public class ServerGamePacketListenerImpl
+@@ -2855,7 +2855,13 @@ public class ServerGamePacketListenerImpl
          } // Folia end - rewrite login process - move connection ownership to global region
          this.waitingForSwitchToConfig = true; // Folia - rewrite login process - fix bad ordering of this field write - moved down
          this.send(ClientboundStartConfigurationPacket.INSTANCE);
@@ -199,7 +199,7 @@ index 7e4143c15651055b9e548d3ebfb1650876aebfec..a36d5986b04617155f1b07476450cbe7
      }
  
      @Override
-@@ -3719,12 +3725,25 @@ public class ServerGamePacketListenerImpl
+@@ -3720,12 +3726,25 @@ public class ServerGamePacketListenerImpl
              throw new IllegalStateException("Client acknowledged config, but none was requested");
          } else {
              final ServerConfigurationPacketListenerImpl listener = new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())); // Paper

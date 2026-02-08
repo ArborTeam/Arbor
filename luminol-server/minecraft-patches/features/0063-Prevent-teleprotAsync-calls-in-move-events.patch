@@ -5,10 +5,10 @@ Subject: [PATCH] Prevent teleprotAsync calls in move events
 
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 3cdfc86a805886649396aaef41da5a5773fb965f..6318824fb3efde4043d3db2a0ac681c38621c5fe 100644
+index 52c87838ccaf6d852b89424dd2d2babdbcffc1a9..bd344bbebc867f89061694edc0feeab9d679c90c 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -717,7 +717,9 @@ public class ServerGamePacketListenerImpl
+@@ -718,7 +718,9 @@ public class ServerGamePacketListenerImpl
  
                      Location oldTo = to.clone();
                      PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
@@ -18,7 +18,7 @@ index 3cdfc86a805886649396aaef41da5a5773fb965f..6318824fb3efde4043d3db2a0ac681c3
  
                      // If the event is cancelled we move the player back to their old location.
                      if (event.isCancelled()) {
-@@ -1711,7 +1713,9 @@ public class ServerGamePacketListenerImpl
+@@ -1712,7 +1714,9 @@ public class ServerGamePacketListenerImpl
  
                                          Location oldTo = to.clone();
                                          PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);

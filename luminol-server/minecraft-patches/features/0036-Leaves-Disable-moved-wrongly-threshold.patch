@@ -8,10 +8,10 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a36d5986b04617155f1b07476450cbe765304ee2..3cdfc86a805886649396aaef41da5a5773fb965f 100644
+index 9dc3e00dd9f1110cbbe79e301a249d2420e0d94e..52c87838ccaf6d852b89424dd2d2babdbcffc1a9 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -633,7 +633,7 @@ public class ServerGamePacketListenerImpl
+@@ -634,7 +634,7 @@ public class ServerGamePacketListenerImpl
                      return;
                  }
                  // Paper end - Prevent moving into unloaded chunks
@@ -20,7 +20,7 @@ index a36d5986b04617155f1b07476450cbe765304ee2..3cdfc86a805886649396aaef41da5a57
                      // CraftBukkit end
                      LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", rootVehicle.getPlainTextName(), this.player.getPlainTextName(), d3, d4, d5);
                      this.send(ClientboundMoveVehiclePacket.fromEntity(rootVehicle));
-@@ -661,7 +661,7 @@ public class ServerGamePacketListenerImpl
+@@ -662,7 +662,7 @@ public class ServerGamePacketListenerImpl
                  d5 = d2 - rootVehicle.getZ();
                  d7 = d3 * d3 + d4 * d4 + d5 * d5;
                  boolean flag1 = false;
@@ -29,7 +29,7 @@ index a36d5986b04617155f1b07476450cbe765304ee2..3cdfc86a805886649396aaef41da5a57
                      flag1 = true; // Paper - diff on change, this should be moved wrongly
                      LOGGER.warn("{} (vehicle of {}) moved wrongly! {}", rootVehicle.getPlainTextName(), this.player.getPlainTextName(), Math.sqrt(d7));
                  }
-@@ -1556,7 +1556,7 @@ public class ServerGamePacketListenerImpl
+@@ -1557,7 +1557,7 @@ public class ServerGamePacketListenerImpl
  
                                      if (this.shouldCheckPlayerMovement(isFallFlying)) {
                                          float f2 = isFallFlying ? 300.0F : 100.0F;
@@ -38,7 +38,7 @@ index a36d5986b04617155f1b07476450cbe765304ee2..3cdfc86a805886649396aaef41da5a57
                                              // CraftBukkit end
                                              // Paper start - Add fail move event
                                              io.papermc.paper.event.player.PlayerFailMoveEvent event = fireFailMove(io.papermc.paper.event.player.PlayerFailMoveEvent.FailReason.MOVED_TOO_QUICKLY,
-@@ -1630,7 +1630,8 @@ public class ServerGamePacketListenerImpl
+@@ -1631,7 +1631,8 @@ public class ServerGamePacketListenerImpl
                                  d5 = d2 - this.player.getZ();
                                  d7 = d3 * d3 + d4 * d4 + d5 * d5;
                                  boolean movedWrongly = false; // Paper - Add fail move event; rename

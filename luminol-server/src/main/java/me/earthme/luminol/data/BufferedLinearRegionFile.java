@@ -272,9 +272,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 return;
             }
 
-            // save headers
-            this.writeSwapFileHeaders(true, false);
-
             long spareSize = this.swapFileChannel.size();
 
             spareSize -= this.headerSize();
@@ -297,15 +294,16 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 sectorSize += sector.length;
             }
 
-            boolean compacted = false;
+            boolean compactRequested = spareSize > SWAP_FILE_AUTO_COMPACT_SIZE && (double) spareSize > ((double) sectorSize) * SWAP_FILE_AUTO_COMPACT_PERCENT;
+
             // try auto compact to clean the garbage area
-            if (spareSize > SWAP_FILE_AUTO_COMPACT_SIZE && (double) spareSize > ((double) sectorSize) * SWAP_FILE_AUTO_COMPACT_PERCENT) {
-                compacted = true;
+            if (compactRequested) {
+                // do compact
                 this.compactSwapFile();
             }
 
             // prevent syncing after compact because it could be time costing sometimes
-            if (!Files.exists(this.masterFilePath) && !compacted) {
+            if (!Files.exists(this.masterFilePath) && !compactRequested) {
                 this.syncToMasterFile();
             }
         } finally {

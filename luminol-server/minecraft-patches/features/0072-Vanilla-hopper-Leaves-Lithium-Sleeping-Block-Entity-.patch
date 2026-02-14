@@ -249,7 +249,7 @@ index 6489b47810b0431c350098d574469bbe0adcd726..b63cecafd841b97a694f6d2610141dcd
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index c7625bed55bed1f90de2253d63fa90a128bcd78e..90960c2d40f19cf11185a1c499f478d0bb96f942 100644
+index c59a25092ad3a0d72f055caf1159ae950db538fb..6498027d1da0dbaad6f8f01f8e648357cf3d8d0b 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -310,7 +310,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -261,7 +261,7 @@ index c7625bed55bed1f90de2253d63fa90a128bcd78e..90960c2d40f19cf11185a1c499f478d0
      private final VecDeltaCodec packetPositionCodec = new VecDeltaCodec();
      public boolean needsSync;
      public @Nullable PortalProcessor portalProcess;
-@@ -4379,11 +4379,13 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4362,11 +4362,13 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      }
  
      protected Entity transformForAsyncTeleport(ServerLevel destination, Vec3 pos, Float yaw, Float pitch, Vec3 velocity) {
@@ -275,7 +275,7 @@ index c7625bed55bed1f90de2253d63fa90a128bcd78e..90960c2d40f19cf11185a1c499f478d0
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
          this.postRemoveAfterChangingDimensions();
-@@ -6035,6 +6037,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -6018,6 +6020,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box
@@ -605,7 +605,7 @@ index 8660c37560442153787e854a0e95bdd81c1bc152..ed2971b54afbebe37a7ff61798778a42
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index fdc425a8eac576a241360595a1a5015869f9e641..f18acb8a7ee89fe80ce336986b2413e437549b3c 100644
+index 62fe9969364014c444e9b5374d27fe92d88993c9..7803ff8e2e37b44d6e1b094e3141e0c99137659a 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1459,7 +1459,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -617,7 +617,7 @@ index fdc425a8eac576a241360595a1a5015869f9e641..f18acb8a7ee89fe80ce336986b2413e4
                  tickingBlockEntity.tick();
                  // Paper start - rewrite chunk system
                  if ((++tickedEntities & 7) == 0) {
-@@ -2170,4 +2170,25 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -2189,4 +2189,25 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          return this.moonrise$getEntityLookup().getEntityCount(); // Paper - rewrite chunk system
      }
      // Paper end - allow patching this logic

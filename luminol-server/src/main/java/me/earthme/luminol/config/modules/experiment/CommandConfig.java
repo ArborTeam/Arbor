@@ -18,4 +18,9 @@ public class CommandConfig implements IConfigModule {
                DO NOT ENABLE UNLESS YOU KNOW WHAT YOU ARE DOING!!!
             """)
     public static boolean commandBlock = false;
+    @ConfigInfo(name = "enable_waypoints_and_waypoint_command", comments = """
+            Enable waypoint and waypoint command.
+            WARN: Still under testing
+            """)
+    public static boolean waypointsAndWaypointCommand = false;
 }

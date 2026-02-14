@@ -66,13 +66,14 @@
      }
  }
  val log4jPlugins = sourceSets.create("log4jPlugins") {
-@@ -151,7 +_,20 @@
+@@ -151,7 +_,21 @@
  }
  
  dependencies {
 -    implementation(project(":folia-api"))
 +    implementation(project(":luminol-api")) // Luminol
 +    // Luminol start - Dependenices insert
++    implementation("io.netty:netty-all:4.2.9.Final") // used for io_uring
 +    implementation("com.electronwill.night-config:toml:3.8.3") // Night config
 +    implementation("com.github.luben:zstd-jni:1.5.4-1")
 +    implementation("net.openhft:zero-allocation-hashing:0.16")

@@ -6,7 +6,7 @@ import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.TransformedConfig;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(category = EnumConfigCategory.FIXES, name = "force_cleanup_drop_non_owned_entity_memory_module")
+@ConfigClassInfo(category = EnumConfigCategory.FIXES, name = "force_cleanup_drop_non_owned_entity_memory_module", comments = "This config is a temporary fix for those incorrect owned data in the memory of each mob, for more you can see https://github.com/PaperMC/Folia/issues/203")
 public class ForceCleanupEntityBrainMemoryConfig implements IConfigModule {
     @TransformedConfig(name = "enabled_for_entity", directory = {"optimizations", "enabled_for_entity"})
     @TransformedConfig(name = "enabled_for_entity", directory = {"experiment", "enabled_for_entity"})

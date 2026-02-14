@@ -7,8 +7,8 @@ import me.earthme.luminol.enums.EnumConfigCategory;
 
 @ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "projectile")
 public class ProjectileChunkReduceConfig implements IConfigModule {
-    @ConfigInfo(name = "max-loads-per-tick")
+    @ConfigInfo(name = "max-loads-per-tick", comments = "Controls how many chunks are allowed to be sync loaded by projectiles in a tick.")
     public static int maxProjectileLoadsPerTick;
-    @ConfigInfo(name = "max-loads-per-projectile")
+    @ConfigInfo(name = "max-loads-per-projectile", comments = "Controls how many chunks a projectile can load in its lifetime before it gets automatically removed.")
     public static int maxProjectileLoadsPerProjectile;
 }

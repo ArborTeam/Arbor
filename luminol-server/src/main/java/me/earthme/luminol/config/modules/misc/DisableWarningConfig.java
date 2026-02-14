@@ -13,6 +13,6 @@ public class DisableWarningConfig implements IConfigModule {
             """
                     Disable heightmap-check's warning""")
     public static boolean disableHeightmapWarning = false;
-    @ConfigInfo(name = "disable_offline_mode_warning")
+    @ConfigInfo(name = "disable_offline_mode_warning", comments = "Disable offline warns popped in the log when starting the server")
     public static boolean disableOfflineModeWarning = false;
 }

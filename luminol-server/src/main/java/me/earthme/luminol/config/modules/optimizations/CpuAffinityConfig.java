@@ -17,11 +17,12 @@ import java.util.Set;
 public class CpuAffinityConfig implements IConfigModule {
     @TransformedConfig(name = "enabled", directory = {"misc", "cpu_affinity"})
     @HotReloadUnsupported
-    @ConfigInfo(name = "enabled")
+    @ConfigInfo(name = "enabled", comments = "Using this you could pin the threads of tick region scheduler to cpu cores listed in the config 'tickregion_affinity' following, \n" +
+            "which is useful for those CPU with P and E cores (such as 12/13/14 gen Intel Core CPUs and so on.)")
     public static boolean cpuAffinityEnabled = false;
     @HotReloadUnsupported
     @TransformedConfig(name = "enabled", directory = {"misc", "tickregion_affinity"})
-    @ConfigInfo(name = "tickregion_affinity")
+    @ConfigInfo(name = "tickregion_affinity", comments = "The core number you want the tick region threads to bind on")
     public static List<String> tickRegionAffinity = Affinity.getAffinity()
             .stream()
             .mapToObj(String::valueOf)

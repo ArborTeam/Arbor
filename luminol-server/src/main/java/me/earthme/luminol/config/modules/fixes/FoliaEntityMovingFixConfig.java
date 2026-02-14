@@ -20,5 +20,5 @@ public class FoliaEntityMovingFixConfig implements IConfigModule {
 
     @TransformedConfig(name = "warn_on_detected", directory = {"fixes", "fix_high_velocity_issue", "folia"})
     @ConfigInfo(name = "warn_on_detected")
-    public static boolean warnOnDetected = true;
+    public static boolean warnOnDetected = false;
 }

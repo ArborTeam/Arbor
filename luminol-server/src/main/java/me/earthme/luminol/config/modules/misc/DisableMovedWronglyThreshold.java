@@ -7,6 +7,6 @@ import me.earthme.luminol.enums.EnumConfigCategory;
 
 @ConfigClassInfo(category = EnumConfigCategory.MISC, name = "disable_moved_wrongly_threshold")
 public class DisableMovedWronglyThreshold implements IConfigModule {
-    @ConfigInfo(name = "enabled")
+    @ConfigInfo(name = "enabled", comments = "Disable wrongly move warns and checks")
     public static boolean enabled = false;
 }

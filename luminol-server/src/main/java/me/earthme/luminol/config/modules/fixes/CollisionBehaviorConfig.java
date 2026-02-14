@@ -14,6 +14,8 @@ public class CollisionBehaviorConfig implements IConfigModule {
     @CommandSuggestions(suggest = {"VANILLA", "BLOCK_SHAPE_VANILLA", "PAPER"})
     @ConfigInfo(name = "mode", comments =
             """
+                    Decides which collision logics will be used(Moonrise and Paper modified this for optimization but would also break some vanilla behaviours at the same time).
+                    Would be useful for fixing improper behaviours of some huge redstone machines
                     Available Value:
                     VANILLA
                     BLOCK_SHAPE_VANILLA

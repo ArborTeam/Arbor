@@ -12,7 +12,8 @@ public class SecureSeedConfig implements IConfigModule {
     @TransformedConfig(name = "enabled", directory = {"misc", "secure_seed"})
     @ConfigInfo(name = "enabled", comments = """
             Once you enable secure seed, all ores and structures are generated with 1024-bit seed
-            instead of using 64-bit seed in vanilla, made seed cracker become impossible.""")
+            instead of using 64-bit seed in vanilla, made seed cracker become impossible.
+            ***** WARN: You need keep it enabled if your old world are also using secure seed! Or it will kill your save *****""")
     @HotReloadUnsupported
     public static boolean enabled = false;
 }

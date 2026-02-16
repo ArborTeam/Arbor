@@ -8,7 +8,7 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/c5f18b7864206cea4411
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-index e8bdc71a97c404f162e62ef777f47df8499c200c..64f1a47fc7b97b5d28db0aa3ab31c99008e7e1a9 100644
+index cc67d950846bdd45271024701f24dc8d7b79c889..17f344ee738115928bf25fd85fadb80e70f55257 100644
 --- a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 +++ b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 @@ -101,6 +101,14 @@ public final class CollisionUtil {
@@ -26,16 +26,16 @@ index e8bdc71a97c404f162e62ef777f47df8499c200c..64f1a47fc7b97b5d28db0aa3ab31c990
      // assume !isEmpty(target) && abs(source_move) >= COLLISION_EPSILON
      public static double collideX(final AABB target, final AABB source, final double source_move) {
          if ((source.minY - target.maxY) < -COLLISION_EPSILON && (source.maxY - target.minY) > COLLISION_EPSILON &&
-@@ -2025,7 +2033,7 @@ public final class CollisionUtil {
-                                     AABB singleAABB = ((CollisionVoxelShape)blockCollision).moonrise$getSingleAABBRepresentation();
-                                     if (singleAABB != null) {
-                                         singleAABB = singleAABB.move((double)blockX, (double)blockY, (double)blockZ);
--                                        if (!voxelShapeIntersect(aabb, singleAABB)) {
-+                                        if (shouldSkip(aabb, blockCollision, singleAABB)) { // Leaves - Configurable collision behavior
-                                             continue;
+@@ -2033,7 +2041,7 @@ public final class CollisionUtil {
+                                                 continue;
+                                             }
+                                         } else {
+-                                            if (!voxelShapeIntersect(aabb, singleAABB)) {
++                                            if (shouldSkip(aabb, blockCollision, singleAABB)) { // Leaves - Configurable collision behavior
+                                                 continue;
+                                             }
                                          }
- 
-@@ -2078,6 +2086,18 @@ public final class CollisionUtil {
+@@ -2087,6 +2095,18 @@ public final class CollisionUtil {
          return ret;
      }
  

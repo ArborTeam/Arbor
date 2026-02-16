@@ -4,7 +4,7 @@ import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
-@ConfigClassInfo(name = "recompute_path_when_path_finding_out_of_tick_region", category = EnumConfigCategory.FIXES)
+@ConfigClassInfo(name = "pathfinding_fixes", category = EnumConfigCategory.FIXES)
 public class PathfindingFixesConfig {
     @ConfigInfo(name = "break_down_pathfinding_when_out_of_region", comments = "Recompute path or stop pathfinding when it's touching the blocks out of current tick region")
     public static boolean breakDownPathfindingWhenOutOfRegion = false;

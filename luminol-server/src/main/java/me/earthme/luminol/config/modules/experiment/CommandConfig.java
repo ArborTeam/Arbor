@@ -17,7 +17,7 @@ public class CommandConfig implements IConfigModule {
     @ConfigInfo(name = "enable_command_block", comments = """
             Force to enable command blocks.
             ATTENTION: WOULD CAUSE SERVER CRASHING AS SOME THREADING ISSUE!!!
-               DO NOT ENABLE UNLESS YOU KNOW WHAT YOU ARE DOING!!!
+            DO NOT ENABLE UNLESS YOU KNOW WHAT YOU ARE DOING!!!
             """)
     public static boolean commandBlock = false;
     @ConfigInfo(name = "enable_waypoints_and_waypoint_command", comments = """

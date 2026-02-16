@@ -28,18 +28,10 @@ index c20d10250e2fdd563d0fcfac47de1e276393b529..7ae3cd98f553f722a47fa26b7cb367de
              }
          }
 diff --git a/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-index 0a77b906a426732a2f82e8727ef99b0ebf692238..9794c4237e6a37e8e747ceffcc24b59b4317d458 100644
+index 0a77b906a426732a2f82e8727ef99b0ebf692238..61540e9e7b160204c12c17c67dbb89401348b319 100644
 --- a/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-@@ -19,6 +19,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
- import net.minecraft.world.level.ClipContext;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.PathNavigationRegion;
-+import net.minecraft.world.level.block.Block;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.pathfinder.Node;
- import net.minecraft.world.level.pathfinder.NodeEvaluator;
-@@ -101,6 +102,19 @@ public abstract class PathNavigation {
+@@ -101,6 +101,19 @@ public abstract class PathNavigation {
      public void recomputePath() {
          if (this.tick - this.timeLastRecompute > 20L) { // Folia - region threading
              if (this.targetPos != null) {
@@ -59,7 +51,7 @@ index 0a77b906a426732a2f82e8727ef99b0ebf692238..9794c4237e6a37e8e747ceffcc24b59b
                  this.path = null;
                  this.path = this.createPath(this.targetPos, this.reachRange);
                  this.timeLastRecompute = this.tick; // Folia - region threading
-@@ -181,6 +195,17 @@ public abstract class PathNavigation {
+@@ -181,6 +194,17 @@ public abstract class PathNavigation {
                  }
              }
              // Paper end - EntityPathfindEvent
@@ -77,7 +69,7 @@ index 0a77b906a426732a2f82e8727ef99b0ebf692238..9794c4237e6a37e8e747ceffcc24b59b
              ProfilerFiller profilerFiller = Profiler.get();
              profilerFiller.push("pathfind");
              BlockPos blockPos = offsetUpward ? this.mob.blockPosition().above() : this.mob.blockPosition();
-@@ -283,6 +308,17 @@ public abstract class PathNavigation {
+@@ -283,6 +307,17 @@ public abstract class PathNavigation {
  
              if (!this.isDone()) {
                  Vec3 tempMobPos = this.path.getNextEntityPos(this.mob);

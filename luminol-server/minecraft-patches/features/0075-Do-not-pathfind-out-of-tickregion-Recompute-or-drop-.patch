@@ -1,7 +1,8 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: mrhua269 <mrhua269@gmail.com>
 Date: Sun, 15 Feb 2026 22:39:13 +0800
-Subject: [PATCH] Recompute path when path finding out of current tick region
+Subject: [PATCH] Do not pathfind out of tickregion & Recompute or drop path
+ when target or next node is out of tickregion
 
 
 diff --git a/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java b/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java

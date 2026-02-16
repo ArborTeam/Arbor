@@ -4,21 +4,61 @@ Date: Sun, 15 Feb 2026 22:39:13 +0800
 Subject: [PATCH] Recompute path when path finding out of current tick region
 
 
+diff --git a/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java b/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
+index c20d10250e2fdd563d0fcfac47de1e276393b529..2c1c237444286d22952829cbbf4804b0fc2729f1 100644
+--- a/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
++++ b/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
+@@ -62,6 +62,17 @@ public class FlyingPathNavigation extends PathNavigation {
+ 
+             if (!this.isDone()) {
+                 Vec3 nextEntityPos = this.path.getNextEntityPos(this.mob);
++                // Luminol - Recompute path when path finding out of current tick region
++                if (me.earthme.luminol.config.modules.fixes.RecomputePathWhenOutOfRegionConfig.enabled) {
++                    // we assume that:
++                    // 1. The code above doesn't touch the 'main thread context' with the position from 'this.path'
++                    // 2. The pathfinder could correctly recompute or discard the incorrect target position and this situation is happening rarely
++                    if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.mob.level(), nextEntityPos)) {
++                        this.hasDelayedRecomputation = true;
++                        return;
++                    }
++                }
++                // Luminol end
+                 this.mob.getMoveControl().setWantedPosition(nextEntityPos.x, nextEntityPos.y, nextEntityPos.z, this.speedModifier);
+             }
+         }
 diff --git a/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-index 0a77b906a426732a2f82e8727ef99b0ebf692238..25f63b356975c5205eea707a0d102c2ed4b7c2f4 100644
+index 0a77b906a426732a2f82e8727ef99b0ebf692238..e3ab520fb7d7d16f0a9f95e2a19d492151164595 100644
 --- a/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-@@ -283,6 +283,19 @@ public abstract class PathNavigation {
+@@ -101,6 +101,19 @@ public abstract class PathNavigation {
+     public void recomputePath() {
+         if (this.tick - this.timeLastRecompute > 20L) { // Folia - region threading
+             if (this.targetPos != null) {
++                // Luminol - Recompute path when path finding out of current tick region
++                if (me.earthme.luminol.config.modules.fixes.RecomputePathWhenOutOfRegionConfig.enabled) {
++                    // The target seems to be pointed to a position out of current region, so reset if it is
++                    // also it will interrupt the pathfinding
++                    if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.mob.level(), this.targetPos)) {
++                        // also we need to reset the path field so all of it will be stopped
++                        this.path = null;
++
++                        this.targetPos = null;
++                        return;
++                    }
++                }
++                // Luminol end
+                 this.path = null;
+                 this.path = this.createPath(this.targetPos, this.reachRange);
+                 this.timeLastRecompute = this.tick; // Folia - region threading
+@@ -283,6 +296,17 @@ public abstract class PathNavigation {
  
              if (!this.isDone()) {
                  Vec3 tempMobPos = this.path.getNextEntityPos(this.mob);
 +                // Luminol - Recompute path when path finding out of current tick region
 +                if (me.earthme.luminol.config.modules.fixes.RecomputePathWhenOutOfRegionConfig.enabled) {
-+                    // The target seems to be pointed to an position out of current region, so reset if it is
-+                    if (this.targetPos != null && !ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.mob.level(), this.targetPos)) {
-+                        this.targetPos = null;
-+                    }
-+
++                    // we assume that:
++                    // 1. The code above doesn't touch the 'main thread context' with the position from 'this.path'
++                    // 2. The pathfinder could correctly recompute or discard the incorrect target position and this situation is happening rarely
 +                    if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.mob.level(), tempMobPos)) {
 +                        this.hasDelayedRecomputation = true;
 +                        return;

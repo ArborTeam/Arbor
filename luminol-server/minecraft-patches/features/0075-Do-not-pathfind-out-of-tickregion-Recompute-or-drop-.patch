@@ -28,10 +28,19 @@ index c20d10250e2fdd563d0fcfac47de1e276393b529..7ae3cd98f553f722a47fa26b7cb367de
              }
          }
 diff --git a/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-index 0a77b906a426732a2f82e8727ef99b0ebf692238..61540e9e7b160204c12c17c67dbb89401348b319 100644
+index 0a77b906a426732a2f82e8727ef99b0ebf692238..f0c4d4638128c6e56fd52c3514f1bede701142bb 100644
 --- a/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-@@ -101,6 +101,19 @@ public abstract class PathNavigation {
+@@ -1,6 +1,8 @@
+ package net.minecraft.world.entity.ai.navigation;
+ 
+ import com.google.common.collect.ImmutableSet;
++
++import java.util.HashSet;
+ import java.util.Set;
+ import java.util.stream.Collectors;
+ import java.util.stream.Stream;
+@@ -101,6 +103,19 @@ public abstract class PathNavigation {
      public void recomputePath() {
          if (this.tick - this.timeLastRecompute > 20L) { // Folia - region threading
              if (this.targetPos != null) {
@@ -51,13 +60,14 @@ index 0a77b906a426732a2f82e8727ef99b0ebf692238..61540e9e7b160204c12c17c67dbb8940
                  this.path = null;
                  this.path = this.createPath(this.targetPos, this.reachRange);
                  this.timeLastRecompute = this.tick; // Folia - region threading
-@@ -181,6 +194,17 @@ public abstract class PathNavigation {
+@@ -181,6 +196,18 @@ public abstract class PathNavigation {
                  }
              }
              // Paper end - EntityPathfindEvent
 +            // Luminol - Do not path find for targets out of current region
 +            if (me.earthme.luminol.config.modules.fixes.PathfindingFixesConfig.doNotPathfindToNotOwnedTargets) {
 +                // filter the targets not owned by current region
++                targets = new HashSet<>(targets); // well no idea about how to determine if this should be copied to a modifiable one
 +                targets.removeIf(pos -> !ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.mob.level(), pos));
 +
 +                // return if no available (observe the logic in the first if block)
@@ -69,7 +79,7 @@ index 0a77b906a426732a2f82e8727ef99b0ebf692238..61540e9e7b160204c12c17c67dbb8940
              ProfilerFiller profilerFiller = Profiler.get();
              profilerFiller.push("pathfind");
              BlockPos blockPos = offsetUpward ? this.mob.blockPosition().above() : this.mob.blockPosition();
-@@ -283,6 +307,17 @@ public abstract class PathNavigation {
+@@ -283,6 +310,17 @@ public abstract class PathNavigation {
  
              if (!this.isDone()) {
                  Vec3 tempMobPos = this.path.getNextEntityPos(this.mob);

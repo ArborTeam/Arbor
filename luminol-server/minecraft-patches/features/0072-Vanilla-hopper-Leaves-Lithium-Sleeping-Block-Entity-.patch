@@ -8,7 +8,7 @@ Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index b974742a0fb2dc18cfc9a61159ab0a2567a4dca4..56e09b99c2901882483c5f2b3216bf0a11406e2e 100644
+index 962c8ae73bcbdc2a4102a3ebdfa9938cf9db1690..c7f578c117baccb10c0c15b05a6c04e073f15da8 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -61,6 +61,10 @@ import java.util.Set;
@@ -142,7 +142,7 @@ index b974742a0fb2dc18cfc9a61159ab0a2567a4dca4..56e09b99c2901882483c5f2b3216bf0a
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -448,6 +515,11 @@ public final class RegionizedWorldData {
+@@ -452,6 +519,11 @@ public final class RegionizedWorldData {
      // Redstone
      public final alternate.current.wire.WireHandler wireHandler;
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;

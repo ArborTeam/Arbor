@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: mrhua269 <mrhua269@gmail.com>
 Date: Fri, 20 Feb 2026 22:42:23 +0800
-Subject: [PATCH] Fix riding statics desync
+Subject: [PATCH] Fix riding statistics desync
 
 Referred to: https://github.com/CraftCanvasMC/Canvas/commit/057175b0c10d5a4d1d9059fd9d077750c32633b2
 

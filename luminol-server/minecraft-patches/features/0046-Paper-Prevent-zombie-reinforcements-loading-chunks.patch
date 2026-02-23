@@ -9,7 +9,7 @@ As part of: Paper (https://github.com/PaperMC/Paper/blob/2ae1f05336d0f13b646e6c2
 Licensed under: GPL-3.0 (https://github.com/PaperMC/Paper/blob/fa360aa83657d15e8e803ce55800986f6bff8f70/licenses/GPL.md)
 
 diff --git a/net/minecraft/world/entity/monster/zombie/Zombie.java b/net/minecraft/world/entity/monster/zombie/Zombie.java
-index d9935d71393b28ee8052b1c05739bfd44d6afb47..67a77b253e7761873f35e0b2725df16ffc4db36c 100644
+index d1b91335b1e979a2e64e6f0ec95dbe32023a25b7..98e2fb1c290de40e62484bbce71cad98da16343a 100644
 --- a/net/minecraft/world/entity/monster/zombie/Zombie.java
 +++ b/net/minecraft/world/entity/monster/zombie/Zombie.java
 @@ -325,6 +325,13 @@ public class Zombie extends Monster {

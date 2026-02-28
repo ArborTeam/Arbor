@@ -48,7 +48,7 @@ jobs:
         run: chmod 755 ./scripts/setup_and_build.sh && ./scripts/setup_and_build.sh
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.project_id_b }} CI Artifacts
           path: luminol-server/build/libs/*-paperclip-*-mojmap.jar

@@ -39,11 +39,11 @@ public class PortalRateLimiterConfig implements IConfigModule {
     // use this to prevent reallocation
     private static final String VARIABLE_TICKING_ENTITY_CONT = "e";
     private static final String VARIABLE_TICKING_CHUNK_CONT = "c";
-    private static final String VARIABLE_PLAYER_CONT = "e";
+    private static final String VARIABLE_PLAYER_CONT = "p";
 
     @Nullable
     public static Expression getExpressionIfConfigured() {
-        if (maxPortalTeleportsPerTick == -1) {
+        if (maxPortalTeleportsPerTick != -1) {
             return null;
         }
 

@@ -1,5 +1,6 @@
 package su.plo.matter;
 
+import me.earthme.luminol.config.modules.function.SecureSeedConfig;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
@@ -25,12 +26,24 @@ public class WorldgenCryptoRandom extends WorldgenRandom {
 
     public WorldgenCryptoRandom(int x, int z, Globals.Salt typeSalt, long salt) {
         super(new LegacyRandomSource(0L));
-        if (typeSalt != null) {
+        
+        if (typeSalt == null) {
+            return;
+        }
+
+        if (SecureSeedConfig.enabled) {
             this.setSecureSeed(x, z, typeSalt, salt);
+        } else {
+            super.setSeed(((long) x << 32) | ((long) z & 0xffffffffL) ^ salt);
         }
     }
 
     public void setSecureSeed(int x, int z, Globals.Salt typeSalt, long salt) {
+        if (!SecureSeedConfig.enabled) {
+            super.setSeed(((long) x << 32) | ((long) z & 0xffffffffL) ^ salt);
+            return;
+        }
+        
         System.arraycopy(Globals.worldSeed, 0, this.worldSeed, 0, Globals.WORLD_SEED_LONGS);
         message[0] = ((long) x << 32) | ((long) z & 0xffffffffL);
         message[1] = ((long) Globals.dimension.get() << 32) | ((long) salt & 0xffffffffL);
@@ -81,6 +94,10 @@ public class WorldgenCryptoRandom extends WorldgenRandom {
 
     @Override
     public @NotNull RandomSource fork() {
+        if (!SecureSeedConfig.enabled) {
+            return super.fork();
+        }
+
         WorldgenCryptoRandom fork = new WorldgenCryptoRandom(0, 0, null, 0);
 
         System.arraycopy(Globals.worldSeed, 0, fork.worldSeed, 0, Globals.WORLD_SEED_LONGS);
@@ -97,11 +114,15 @@ public class WorldgenCryptoRandom extends WorldgenRandom {
 
     @Override
     public int next(int bits) {
-        return (int) getBits(bits);
+        return SecureSeedConfig.enabled ? (int) getBits(bits) : super.next(bits);
     }
 
     @Override
     public void consumeCount(int count) {
+        if (!SecureSeedConfig.enabled) {
+            return;
+        }
+
         randomBitIndex += count;
         if (randomBitIndex >= MAX_RANDOM_BIT_INDEX * 2) {
             randomBitIndex -= MAX_RANDOM_BIT_INDEX;
@@ -113,6 +134,9 @@ public class WorldgenCryptoRandom extends WorldgenRandom {
 
     @Override
     public int nextInt(int bound) {
+        if (!SecureSeedConfig.enabled) {
+            return super.nextInt(bound);
+        }
         int bits = Mth.ceillog2(bound);
         int result;
         do {
@@ -124,22 +148,29 @@ public class WorldgenCryptoRandom extends WorldgenRandom {
 
     @Override
     public long nextLong() {
-        return getBits(64);
+        return SecureSeedConfig.enabled ? getBits(64) : super.nextLong();
     }
 
     @Override
     public double nextDouble() {
-        return getBits(53) * 0x1.0p-53;
+        return SecureSeedConfig.enabled ? (getBits(53) * 0x1.0p-53) : super.nextDouble();
     }
 
     @Override
     public long setDecorationSeed(long worldSeed, int blockX, int blockZ) {
+        if (!SecureSeedConfig.enabled) {
+            return super.setDecorationSeed(worldSeed, blockX, blockZ);
+        }
         setSecureSeed(blockX, blockZ, Globals.Salt.POPULATION, 0);
         return ((long) blockX << 32) | ((long) blockZ & 0xffffffffL);
     }
 
     @Override
     public void setFeatureSeed(long populationSeed, int index, int step) {
+        if (!SecureSeedConfig.enabled) {
+            super.setFeatureSeed(populationSeed, index, step);
+            return;
+        }
         setSecureSeed((int) (populationSeed >> 32), (int) populationSeed, Globals.Salt.DECORATION, index + 10000L * step);
     }
 

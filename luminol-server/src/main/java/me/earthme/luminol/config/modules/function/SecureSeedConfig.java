@@ -14,14 +14,13 @@ import java.util.Base64;
 public class SecureSeedConfig implements IConfigModule {
     @TransformedConfig(name = "enabled", directory = {"misc", "secure_seed"})
     @ConfigInfo(name = "enabled", comments = """
-            Once you enable secure seed, all ores and structures are generated with 1024-bit seed
-            instead of using 64-bit seed in vanilla, making traditional seed cracking impossible.
-			Note: If you use V1 it will be vulnerable to terrain elevation attacks.
-            ***** WARN: You need keep it enabled if your old world are also using secure seed! Or it will kill your save *****""")
+                     Once you enable secure seed, all ores and structures are generated with 1024-bit seed
+                     instead of using 64-bit seed in vanilla, making traditional seed cracking impossible.
+            Note: If you use V1 it will be vulnerable to terrain elevation attacks.
+                     ***** WARN: You need keep it enabled if your old world are also using secure seed! Or it will kill your save *****""")
     @HotReloadUnsupported
     public static boolean enabled = false;
 
-    @TransformedConfig(name = "version", directory = {"misc", "secure_seed"})
     @ConfigInfo(name = "version", comments = """
             Version 1: Blake2b (insecure, reversible with a GPU/ASIC cluster in minutes with enough entropy)
             Version 2: Blake3 with salt key derivation (recommended, irreversible)
@@ -29,7 +28,6 @@ public class SecureSeedConfig implements IConfigModule {
     @HotReloadUnsupported
     public static int version = 1;
 
-    @TransformedConfig(name = "salt", directory = {"misc", "secure_seed"})
     @ConfigInfo(name = "salt", comments = """
             Auto-generated 256-bit salt for V2 cryptographic operations.
             Generated once on first startup - DO NOT SHARE THIS OR MODIFY (MODIFYING THIS WILL CAUSE CHUNK ERRORS)!

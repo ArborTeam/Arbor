@@ -8,7 +8,7 @@ import me.earthme.luminol.enums.EnumConfigCategory;
 
 @ConfigClassInfo(category = EnumConfigCategory.MISC, name = "force_disable_packet_limiter_of_paper", comments =
         "Force and fully disable all packet limiters of Paper, which is used to prevent from kicking by using some quick crafting mods but \n" +
-        "has negative impacts on security"
+                "has negative impacts on security"
 )
 public class PaperPacketLimiterConfig implements IConfigModule {
     @TransformedConfig(name = "force_disable", directory = {"optimizations", "force_disable_packet_limiter_of_paper"})

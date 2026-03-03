@@ -21,8 +21,8 @@ public class HashingV2 {
     private static final int DERIVE_KEY_MATERIAL = 1 << 6;
 
     private static final int[] IV = {
-        0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
-        0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
+            0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
+            0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
     };
 
     private static final int[] MSG_PERMUTATION = {2, 6, 3, 10, 7, 0, 4, 13, 1, 11, 12, 5, 9, 14, 15, 8};
@@ -156,11 +156,11 @@ public class HashingV2 {
                 if (this.blockLen == BLOCK_LEN) {
                     int[] blockWords = wordsFromLittleEndianBytes(this.block);
                     this.chainingValue = first8Words(compress(
-                        this.chainingValue,
-                        blockWords,
-                        this.chunkCounter,
-                        BLOCK_LEN,
-                        this.flags | this.startFlag()
+                            this.chainingValue,
+                            blockWords,
+                            this.chunkCounter,
+                            BLOCK_LEN,
+                            this.flags | this.startFlag()
                     ));
                     this.blocksCompressed++;
                     this.block = new byte[BLOCK_LEN];
@@ -179,20 +179,20 @@ public class HashingV2 {
             int[] blockWords = new int[16];
             for (int i = 0; i < 16 && i * 4 < this.blockLen; i++) {
                 blockWords[i] = ((this.block[i * 4 + 0] & 0xFF)) |
-                               ((this.block[i * 4 + 1] & 0xFF) << 8) |
-                               ((this.block[i * 4 + 2] & 0xFF) << 16) |
-                               ((this.block[i * 4 + 3] & 0xFF) << 24);
+                        ((this.block[i * 4 + 1] & 0xFF) << 8) |
+                        ((this.block[i * 4 + 2] & 0xFF) << 16) |
+                        ((this.block[i * 4 + 3] & 0xFF) << 24);
             }
             return blockWords;
         }
 
         Output output() {
             return new Output(
-                this.chainingValue,
-                outputBlockWords(),
-                this.chunkCounter,
-                this.blockLen,
-                this.flags | this.startFlag() | CHUNK_END
+                    this.chainingValue,
+                    outputBlockWords(),
+                    this.chunkCounter,
+                    this.blockLen,
+                    this.flags | this.startFlag() | CHUNK_END
             );
         }
     }
@@ -214,11 +214,11 @@ public class HashingV2 {
 
         int[] chainingValue() {
             return first8Words(compress(
-                this.inputChainingValue,
-                this.blockWords,
-                this.counter,
-                this.blockLen,
-                this.flags
+                    this.inputChainingValue,
+                    this.blockWords,
+                    this.counter,
+                    this.blockLen,
+                    this.flags
             ));
         }
 
@@ -228,11 +228,11 @@ public class HashingV2 {
 
             for (int offset = 0; offset < outLen; offset += 2 * OUT_LEN) {
                 int[] words = compress(
-                    this.inputChainingValue,
-                    this.blockWords,
-                    outputBlockCounter,
-                    this.blockLen,
-                    this.flags | ROOT
+                        this.inputChainingValue,
+                        this.blockWords,
+                        outputBlockCounter,
+                        this.blockLen,
+                        this.flags | ROOT
                 );
 
                 byte[] blockOutput = wordsToLittleEndianBytes(words, 64);
@@ -254,11 +254,11 @@ public class HashingV2 {
         System.arraycopy(rightChildCv, 0, blockWords, 8, 8);
 
         return new Output(
-            keyWords,
-            blockWords,
-            0,
-            BLOCK_LEN,
-            PARENT | flags
+                keyWords,
+                blockWords,
+                0,
+                BLOCK_LEN,
+                PARENT | flags
         );
     }
 
@@ -358,10 +358,10 @@ public class HashingV2 {
             while (parentNodesRemaining > 0) {
                 parentNodesRemaining--;
                 output = parentOutput(
-                    this.cvStack.get(parentNodesRemaining),
-                    output.chainingValue(),
-                    this.keyWords,
-                    this.flags
+                        this.cvStack.get(parentNodesRemaining),
+                        output.chainingValue(),
+                        this.keyWords,
+                        this.flags
                 );
             }
 
@@ -391,9 +391,9 @@ public class HashingV2 {
         int[] ints = new int[bytes.length / 4];
         for (int i = 0; i < ints.length; i++) {
             ints[i] = ((bytes[i * 4 + 0] & 0xFF)) |
-                      ((bytes[i * 4 + 1] & 0xFF) << 8) |
-                      ((bytes[i * 4 + 2] & 0xFF) << 16) |
-                      ((bytes[i * 4 + 3] & 0xFF) << 24);
+                    ((bytes[i * 4 + 1] & 0xFF) << 8) |
+                    ((bytes[i * 4 + 2] & 0xFF) << 16) |
+                    ((bytes[i * 4 + 3] & 0xFF) << 24);
         }
         return ints;
     }
@@ -497,18 +497,18 @@ public class HashingV2 {
             buffer = new byte[len];
             threadBuffer.set(buffer);
         }
-        
+
         ByteBuffer buf = threadByteBuffer.get();
         if (buf.capacity() < len) {
             buf = ByteBuffer.allocate(len).order(ByteOrder.LITTLE_ENDIAN);
             threadByteBuffer.set(buf);
         }
         buf.clear();
-        
+
         for (long l : message) {
             buf.putLong(l);
         }
-        
+
         byte[] hashBytes = blake3(Arrays.copyOf(buffer, len));
         int[] hashInts = bytesToIntsLittleEndian(hashBytes);
 

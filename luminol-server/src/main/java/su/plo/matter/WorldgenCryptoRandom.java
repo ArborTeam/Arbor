@@ -26,7 +26,7 @@ public class WorldgenCryptoRandom extends WorldgenRandom {
 
     public WorldgenCryptoRandom(int x, int z, Globals.Salt typeSalt, long salt) {
         super(new LegacyRandomSource(0L));
-        
+
         if (typeSalt == null) {
             return;
         }
@@ -43,7 +43,7 @@ public class WorldgenCryptoRandom extends WorldgenRandom {
             super.setSeed(((long) x << 32) | ((long) z & 0xffffffffL) ^ salt);
             return;
         }
-        
+
         System.arraycopy(Globals.worldSeed, 0, this.worldSeed, 0, Globals.WORLD_SEED_LONGS);
         message[0] = ((long) x << 32) | ((long) z & 0xffffffffL);
         message[1] = ((long) Globals.dimension.get() << 32) | ((long) salt & 0xffffffffL);

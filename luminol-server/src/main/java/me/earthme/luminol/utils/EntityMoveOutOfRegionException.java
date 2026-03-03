@@ -4,7 +4,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.Vec3;
 
-public class EntityMoveOutOfRegionException extends RuntimeException{
+public class EntityMoveOutOfRegionException extends RuntimeException {
     private final Entity entity;
     private final Vec3 movement;
     private final MoverType moverType;

@@ -2,7 +2,6 @@ package me.earthme.luminol.functions.bars;
 
 import me.earthme.luminol.enums.EnumBarType;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

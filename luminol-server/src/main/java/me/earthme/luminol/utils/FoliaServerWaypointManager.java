@@ -1,7 +1,7 @@
 package me.earthme.luminol.utils;
 
 import ca.spottedleaf.moonrise.common.util.TickThread;
-import com.google.common.collect.*;
+import com.google.common.collect.Sets;
 import me.earthme.luminol.config.modules.experiment.CommandConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -11,7 +11,8 @@ import net.minecraft.world.waypoints.WaypointManager;
 import net.minecraft.world.waypoints.WaypointTransmitter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class FoliaServerWaypointManager implements WaypointManager<@NotNull WaypointTransmitter> {

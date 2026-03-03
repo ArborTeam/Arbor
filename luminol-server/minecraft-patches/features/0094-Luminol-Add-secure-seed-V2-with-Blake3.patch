@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Libalpm64 <libalpm@proton.me>
+Date: Mon, 2 Mar 2026 00:00:00 +0000
+Subject: [PATCH] Luminol: Add secure seed V2 with Blake3
+
+
+diff --git a/net/minecraft/world/level/levelgen/RandomState.java b/net/minecraft/world/level/levelgen/RandomState.java
+index ed3be510e969a1a27a61c466873ef277cbcd0586..805e5704c83d3d3b100bddec6d3f4dc1db32eb6e 100644
+--- a/net/minecraft/world/level/levelgen/RandomState.java
++++ b/net/minecraft/world/level/levelgen/RandomState.java
+@@ -35,10 +35,28 @@ public final class RandomState {
+     }
+ 
+     private RandomState(NoiseGeneratorSettings settings, HolderGetter<NormalNoise.NoiseParameters> noiseParametersGetter, final long levelSeed) {
+-        this.random = settings.getRandomSource().newInstance(levelSeed).forkPositional();
++        // this.random = settings.getRandomSource().newInstance(levelSeed).forkPositional(); // Luminol - Add secure seed V2 with Blake3
++        // Luminol start - Add secure seed V2 with Blake3
++        final long[] secureWorldSeed = (me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled && me.earthme.luminol.config.modules.function.SecureSeedConfig.version == 2)
++            ? su.plo.matter.HashingV2.expandLevelSeedTo1024Bits(levelSeed)
++            : null;
++
++        long terrainSeed = (me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled && me.earthme.luminol.config.modules.function.SecureSeedConfig.version == 2)
++            ? su.plo.matter.HashingV2.getTerrainSeed(secureWorldSeed, su.plo.matter.HashingV2.TerrainType.BASE_TERRAIN)
++            : levelSeed;
++        long aquiferSeed = (me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled && me.earthme.luminol.config.modules.function.SecureSeedConfig.version == 2)
++            ? su.plo.matter.HashingV2.getTerrainSeed(secureWorldSeed, su.plo.matter.HashingV2.TerrainType.AQUIFER)
++            : levelSeed;
++        long oreSeed = (me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled && me.earthme.luminol.config.modules.function.SecureSeedConfig.version == 2)
++            ? su.plo.matter.HashingV2.getTerrainSeed(secureWorldSeed, su.plo.matter.HashingV2.TerrainType.ORE)
++            : levelSeed;
++        // Luminol end
++        this.random = settings.getRandomSource().newInstance(terrainSeed).forkPositional(); // Luminol - Add secure seed V2 with Blake3
+         this.noises = noiseParametersGetter;
+-        this.aquiferRandom = this.random.fromHashOf(Identifier.withDefaultNamespace("aquifer")).forkPositional();
+-        this.oreRandom = this.random.fromHashOf(Identifier.withDefaultNamespace("ore")).forkPositional();
++        //this.aquiferRandom = this.random.fromHashOf(Identifier.withDefaultNamespace("aquifer")).forkPositional(); // Luminol - Add secure seed V2 with Blake3
++        //this.oreRandom = this.random.fromHashOf(Identifier.withDefaultNamespace("ore")).forkPositional(); // Luminol - Add secure seed V2 with Blake3
++        this.aquiferRandom = settings.getRandomSource().newInstance(aquiferSeed).forkPositional(); // Luminol - Add secure seed V2 with Blake3
++        this.oreRandom = settings.getRandomSource().newInstance(oreSeed).forkPositional(); // Luminol - Add secure seed V2 with Blake3
+         this.noiseIntances = new ConcurrentHashMap<>();
+         this.positionalRandoms = new ConcurrentHashMap<>();
+         this.surfaceSystem = new SurfaceSystem(this, settings.defaultBlock(), settings.seaLevel(), this.random);
+@@ -48,6 +66,12 @@ public final class RandomState {
+             private final Map<DensityFunction, DensityFunction> wrapped = new HashMap<>();
+ 
+             private RandomSource newLegacyInstance(long seed) {
++                // Luminol start - Add secure seed V2 with Blake3
++                if (me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled && me.earthme.luminol.config.modules.function.SecureSeedConfig.version == 2) {
++                    long climateSeed = su.plo.matter.HashingV2.getTerrainSeed(secureWorldSeed, su.plo.matter.HashingV2.TerrainType.CLIMATE);
++                    return new su.plo.matter.WorldgenCryptoRandom(0, 0, su.plo.matter.Globals.Salt.UNDEFINED, climateSeed + seed);
++                }
++                // Luminol end
+                 return new LegacyRandomSource(levelSeed + seed);
+             }
+ 
+@@ -85,7 +109,12 @@ public final class RandomState {
+                     return blendedNoise.withNewRandom(randomSource);
+                 } else {
+                     return (DensityFunction)(densityFunction instanceof DensityFunctions.EndIslandDensityFunction
+-                        ? new DensityFunctions.EndIslandDensityFunction(levelSeed)
++                        //? new DensityFunctions.EndIslandDensityFunction(levelSeed) // Luminol - Add secure seed V2 with Blake3
++                        // Luminol start - Add secure seed V2 with Blake3
++                        ? new DensityFunctions.EndIslandDensityFunction((me.earthme.luminol.config.modules.function.SecureSeedConfig.enabled && me.earthme.luminol.config.modules.function.SecureSeedConfig.version == 2)
++                            ? su.plo.matter.HashingV2.getTerrainSeed(secureWorldSeed, su.plo.matter.HashingV2.TerrainType.SURFACE)
++                            : levelSeed)
++                       // Luminol end
+                         : densityFunction);
+                 }
+             }

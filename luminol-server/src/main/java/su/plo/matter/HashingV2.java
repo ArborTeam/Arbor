@@ -5,7 +5,6 @@ import me.earthme.luminol.config.modules.function.SecureSeedConfig;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class HashingV2 {
     private static final int BLOCK_LEN = 64;
@@ -28,10 +27,13 @@ public class HashingV2 {
 
     private static final int[] MSG_PERMUTATION = {2, 6, 3, 10, 7, 0, 4, 13, 1, 11, 12, 5, 9, 14, 15, 8};
 
-    private static final ReentrantReadWriteLock seedLock = new ReentrantReadWriteLock();
-    private static volatile long[] cachedSaltHash = null;
-    private static volatile String lastSalt = null;
+    private static final ThreadLocal<SaltHolder> saltHolderLocal = ThreadLocal.withInitial(() -> {
+        final SaltHolder newHolder = new SaltHolder();
 
+        newHolder.init(SecureSeedConfig.salt);
+
+        return newHolder;
+    });
     private static final ThreadLocal<byte[]> threadBuffer = ThreadLocal.withInitial(() -> new byte[128]);
     private static final ThreadLocal<ByteBuffer> threadByteBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocate(128).order(ByteOrder.LITTLE_ENDIAN));
 
@@ -264,6 +266,25 @@ public class HashingV2 {
         return parentOutput(leftChildCv, rightChildCv, keyWords, flags).chainingValue();
     }
 
+    private static class SaltHolder {
+        private long[] cachedSaltHash = null;
+        private String lastSalt = null;
+
+        public void init(String currentSalt) {
+            if (cachedSaltHash == null || !currentSalt.equals(lastSalt)) {
+                byte[] saltBytes = currentSalt.getBytes();
+                byte[] hashBytes = blake3(saltBytes);
+                int[] hashInts = bytesToIntsLittleEndian(hashBytes);
+
+                cachedSaltHash = new long[8];
+                for (int i = 0; i < 8; i++) {
+                    cachedSaltHash[i] = (hashInts[i] & 0xFFFFFFFFL);
+                }
+                lastSalt = currentSalt;
+            }
+        }
+    }
+
     private static class Hasher {
         ChunkState chunkState;
         int[] keyWords;
@@ -386,19 +407,9 @@ public class HashingV2 {
     }
 
     private static long[] getSaltHash() {
-        String currentSalt = SecureSeedConfig.salt;
-        if (cachedSaltHash == null || !currentSalt.equals(lastSalt)) {
-            byte[] saltBytes = currentSalt.getBytes();
-            byte[] hashBytes = blake3(saltBytes);
-            int[] hashInts = bytesToIntsLittleEndian(hashBytes);
+        final SaltHolder currHolder = saltHolderLocal.get();
 
-            cachedSaltHash = new long[8];
-            for (int i = 0; i < 8; i++) {
-                cachedSaltHash[i] = (hashInts[i] & 0xFFFFFFFFL);
-            }
-            lastSalt = currentSalt;
-        }
-        return cachedSaltHash;
+        return currHolder.cachedSaltHash;
     }
 
     private static long[] hashWorldSeedInternal(long[] worldSeed) {
@@ -419,37 +430,30 @@ public class HashingV2 {
     }
 
     public static long[] hashWorldSeed(long[] worldSeed) {
-        seedLock.readLock().lock();
-        try {
-            if (!SecureSeedConfig.enabled && SecureSeedConfig.version == 2) {
-                return worldSeed.clone();
-            }
-
-            long[] saltHashValue = getSaltHash();
-            long[] saltedSeed = new long[worldSeed.length];
-
-            for (int i = 0; i < worldSeed.length; i++) {
-                saltedSeed[i] = worldSeed[i] ^ saltHashValue[i % saltHashValue.length];
-            }
-
-            return hashWorldSeedInternal(saltedSeed);
-        } finally {
-            seedLock.readLock().unlock();
+        if (!SecureSeedConfig.enabled && SecureSeedConfig.version == 2) {
+            return worldSeed.clone();
         }
+
+        long[] saltHashValue = getSaltHash();
+        long[] saltedSeed = new long[worldSeed.length];
+
+        for (int i = 0; i < worldSeed.length; i++) {
+            saltedSeed[i] = worldSeed[i] ^ saltHashValue[i % saltHashValue.length];
+        }
+
+        return hashWorldSeedInternal(saltedSeed);
     }
 
     public static long[] expandLevelSeedTo1024Bits(long levelSeed) {
-        seedLock.readLock().lock();
-        try {
-            if (!SecureSeedConfig.enabled && SecureSeedConfig.version == 2) {
-                long[] result = new long[Globals.WORLD_SEED_LONGS];
-                for (int i = 0; i < Globals.WORLD_SEED_LONGS; i++) {
-                    result[i] = levelSeed ^ (i * 0x9E3779B97F4A7C15L);
-                }
-                return result;
+        if (!SecureSeedConfig.enabled && SecureSeedConfig.version == 2) {
+            long[] result = new long[Globals.WORLD_SEED_LONGS];
+            for (int i = 0; i < Globals.WORLD_SEED_LONGS; i++) {
+                result[i] = levelSeed ^ (i * 0x9E3779B97F4A7C15L);
             }
+            return result;
+        }
 
-            String salt = SecureSeedConfig.salt;
+        String salt = SecureSeedConfig.salt;
         byte[] saltBytes = salt.getBytes(java.nio.charset.StandardCharsets.UTF_8);
         byte[] saltKey = blake3(saltBytes);
 
@@ -464,14 +468,11 @@ public class HashingV2 {
             byte[] hash = blake3Keyed(input, saltKey, 32);
             int[] hashInts = bytesToIntsLittleEndian(hash);
 
-            result[segment] = ((long) hashInts[0] & 0xFFFFFFFFL) | 
-                              (((long) hashInts[1] & 0xFFFFFFFFL) << 32);
+            result[segment] = ((long) hashInts[0] & 0xFFFFFFFFL) |
+                    (((long) hashInts[1] & 0xFFFFFFFFL) << 32);
         }
 
         return result;
-        } finally {
-            seedLock.readLock().unlock();
-        }
     }
 
     public static long getTerrainSeed(long[] hashedSeed, TerrainType type) {

@@ -10,12 +10,23 @@ public enum EnumConfigCategory {
     REMOVED("removed");               // removed config
 
     private final String baseKeyName;
+    private final String keyComment;
+
+    EnumConfigCategory(String baseKeyName, String keyComment) {
+        this.baseKeyName = baseKeyName;
+        this.keyComment = keyComment;
+    }
 
     EnumConfigCategory(String baseKeyName) {
         this.baseKeyName = baseKeyName;
+        this.keyComment = null;
     }
 
     public String getBaseKeyName() {
         return this.baseKeyName;
+    }
+
+    public String getKeyComment() {
+        return this.keyComment;
     }
 }

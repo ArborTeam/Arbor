@@ -194,7 +194,27 @@ public class ConfigsInstance {
                 stagedMap.put(instanced, exceptions);
             }
         }
+
+        loadCategoryComments(); // load base key comment
+
         allInstanced.putAll(stagedMap);
+    }
+
+    /**
+     * Load config category comments
+     */
+    private void loadCategoryComments() {
+        for (EnumConfigCategory category : EnumConfigCategory.values()) {
+            String mainKey = category.getBaseKeyName();
+            for (String key : defaultvalueMap.keySet()) {
+                if (key.startsWith(mainKey)) {
+                    String comment = configFileInstance.getComment(key);
+                    if (comment != null && !comment.isEmpty()) {
+                        configFileInstance.setComment(key, comment);
+                    }
+                }
+            }
+        }
     }
 
     /**

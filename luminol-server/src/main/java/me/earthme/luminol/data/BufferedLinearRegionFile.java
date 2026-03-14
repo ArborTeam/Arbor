@@ -936,7 +936,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     return;
                 }
 
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 // error caught during other reading logics, close directly
                 try {
                     rawDataStream.close();
@@ -1001,11 +1001,11 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             try {
                 Files.move(tempFile.toPath(), masterFilePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 // retry with non-atomic move
                 try {
                     Files.move(tempFile.toPath(), masterFilePath, StandardCopyOption.REPLACE_EXISTING);
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     // now we are totally failed
 
                     // fast-fail

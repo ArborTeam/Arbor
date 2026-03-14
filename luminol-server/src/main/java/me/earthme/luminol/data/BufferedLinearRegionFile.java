@@ -409,7 +409,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     StandardCopyOption.ATOMIC_MOVE
             );
         } catch (Exception e) {
-            // atomic move might be unsupported on some file systems, so give it a attempt to retry without atomic move
+            // atomic move might be unsupported on some file systems, so give it an attempt to retry without atomic move
             try {
                 Files.move(
                         target,

@@ -4,21 +4,22 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
+import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.enums.EnumConfigCategory;
-import me.earthme.luminol.utils.LuminolUpdateHelper;
+import me.earthme.luminol.utils.AutoUpdateHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
 
 @ConfigClassInfo(
-    category = EnumConfigCategory.MISC,
-    name = "auto_update",
-    comments = """
-        Checks GitHub Releases for newer Luminol jars on a schedule.
-        Downloads are staged under auto_update/luminol and written to auto_update/core.path,
-        which Hyacinthusclip can consume on the next restart.
-        If target_jar_path is set, Luminol will also try to replace that launcher jar directly."""
+        category = EnumConfigCategory.MISC,
+        name = "auto_update",
+        comments = """
+                Checks GitHub Releases for newer Luminol jars on a schedule.
+                Downloads are staged under auto_update/luminol and written to auto_update/core.path,
+                which Hyacinthusclip can consume on the next restart.
+                If target_jar_path is set, Luminol will also try to replace that launcher jar directly."""
 )
 public class AutoUpdateConfig implements IConfigModule {
     @ConfigInfo(name = "enabled", comments = "Whether Luminol should check for updates automatically.")
@@ -36,13 +37,21 @@ public class AutoUpdateConfig implements IConfigModule {
             and let Hyacinthusclip switch to it through auto_update/core.path on restart.""")
     public static String targetJarPath = "";
 
+    @DoNotLoad
+    public AutoUpdateHelper instance = null;
+
     @Override
     public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> exs) {
-        LuminolUpdateHelper.reload();
+        if (enabled) {
+            if (instance == null) {
+                instance = new AutoUpdateHelper();
+            }
+            instance.load(false);
+        }
     }
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        LuminolUpdateHelper.shutdown();
+        if (instance != null) instance.shutdown();
     }
 }

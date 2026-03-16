@@ -1,10 +1,6 @@
 package me.earthme.luminol.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import com.mojang.logging.LogUtils;
 import io.papermc.paper.ServerBuildInfo;
 import me.earthme.luminol.config.modules.misc.AutoUpdateConfig;
@@ -13,11 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -37,35 +29,26 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
+import static java.nio.file.StandardOpenOption.*;
 
-public final class LuminolUpdateHelper {
-    private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Gson GSON = new Gson();
+public final class AutoUpdateHelper {
+    private final Logger LOGGER = LogUtils.getClassLogger();
+    private final Gson GSON = new Gson();
 
-    private static final String GITHUB_API_BASE = "https://api.github.com/repos/LuminolMC/Luminol";
-    private static final Path AUTO_UPDATE_DIR = Path.of("auto_update");
-    private static final Path CORE_PATH_FILE = AUTO_UPDATE_DIR.resolve("core.path");
-    private static final Path LUMINOL_UPDATE_DIR = AUTO_UPDATE_DIR.resolve("luminol");
-    private static final Path LATEST_PATH_FILE = LUMINOL_UPDATE_DIR.resolve("latest.path");
-    private static final long DAILY_TASK_PERIOD_MILLIS = TimeUnit.DAYS.toMillis(1);
+    private final String GITHUB_API_BASE = "https://api.github.com/repos/LuminolMC/Luminol";
+    private final Path AUTO_UPDATE_DIR = Path.of("auto_update");
+    private final Path CORE_PATH_FILE = AUTO_UPDATE_DIR.resolve("core.path");
+    private final Path LUMINOL_UPDATE_DIR = AUTO_UPDATE_DIR.resolve("luminol");
+    private final Path LATEST_PATH_FILE = LUMINOL_UPDATE_DIR.resolve("latest.path");
+    private final long DAILY_TASK_PERIOD_MILLIS = TimeUnit.DAYS.toMillis(1);
 
-    private static final AtomicBoolean UPDATE_RUNNING = new AtomicBoolean(false);
+    private final AtomicBoolean UPDATE_RUNNING = new AtomicBoolean(false);
 
-    private static volatile @Nullable ScheduledExecutorService scheduler;
+    private volatile @Nullable ScheduledExecutorService scheduler;
 
-    private LuminolUpdateHelper() {
-    }
-
-    public static synchronized void reload() {
-        shutdown();
+    public synchronized void load(boolean reload) {
+        if (reload) shutdown();
         ensureWorkingDirectories();
-
-        if (!AutoUpdateConfig.enabled) {
-            return;
-        }
 
         scheduler = Executors.newSingleThreadScheduledExecutor(task -> {
             final Thread thread = new Thread(task, "Luminol Auto Update Scheduler");
@@ -90,10 +73,10 @@ public final class LuminolUpdateHelper {
                 }
 
                 scheduler.scheduleAtFixedRate(
-                    LuminolUpdateHelper::checkForUpdatesSafely,
-                    taskDelay.toMillis(),
-                    DAILY_TASK_PERIOD_MILLIS,
-                    TimeUnit.MILLISECONDS
+                        this::checkForUpdatesSafely,
+                        taskDelay.toMillis(),
+                        DAILY_TASK_PERIOD_MILLIS,
+                        TimeUnit.MILLISECONDS
                 );
             } catch (Exception e) {
                 LOGGER.warn("Illegal auto-update time ignored: {}", time);
@@ -101,7 +84,7 @@ public final class LuminolUpdateHelper {
         }
     }
 
-    public static synchronized void shutdown() {
+    public synchronized void shutdown() {
         if (scheduler != null) {
             scheduler.shutdownNow();
             scheduler = null;
@@ -110,7 +93,7 @@ public final class LuminolUpdateHelper {
         UPDATE_RUNNING.set(false);
     }
 
-    private static void checkForUpdatesSafely() {
+    private void checkForUpdatesSafely() {
         if (!UPDATE_RUNNING.compareAndSet(false, true)) {
             LOGGER.info("A Luminol auto-update check is already running, skipping this schedule.");
             return;
@@ -125,7 +108,7 @@ public final class LuminolUpdateHelper {
         }
     }
 
-    private static void checkForUpdates() {
+    private void checkForUpdates() {
         final ServerBuildInfo buildInfo = ServerBuildInfo.buildInfo();
         final Optional<String> gitCommit = buildInfo.gitCommit();
 
@@ -141,8 +124,8 @@ public final class LuminolUpdateHelper {
         final ReleaseAssetInfo latestRelease = getLatestCompatibleRelease(mcVersion, gitBranch);
         if (latestRelease == null) {
             LOGGER.warn("No compatible Luminol release was found for Minecraft {}{}.",
-                mcVersion,
-                gitBranch == null ? "" : " on branch " + gitBranch
+                    mcVersion,
+                    gitBranch == null ? "" : " on branch " + gitBranch
             );
             return;
         }
@@ -155,18 +138,18 @@ public final class LuminolUpdateHelper {
 
         if (updateStatus == UpdateStatus.CURRENT_BUILD_AHEAD_OR_DIVERGED) {
             LOGGER.info(
-                "Current build {} is not behind release {}, skipping auto-update to avoid downgrading.",
-                currentGitHash,
-                latestRelease.tagName()
+                    "Current build {} is not behind release {}, skipping auto-update to avoid downgrading.",
+                    currentGitHash,
+                    latestRelease.tagName()
             );
             return;
         }
 
         if (updateStatus == UpdateStatus.UNKNOWN) {
             LOGGER.warn(
-                "Could not compare current build {} with release {}, skipping auto-update to avoid unsafe replacement.",
-                currentGitHash,
-                latestRelease.tagName()
+                    "Could not compare current build {} with release {}, skipping auto-update to avoid unsafe replacement.",
+                    currentGitHash,
+                    latestRelease.tagName()
             );
             return;
         }
@@ -180,19 +163,19 @@ public final class LuminolUpdateHelper {
 
         if (finalJarPath.equals(stagedJar)) {
             LOGGER.info(
-                "Downloaded the latest Luminol jar to {} and refreshed auto_update/core.path for Hyacinthusclip. Please restart your server.",
-                finalJarPath.toAbsolutePath()
+                    "Downloaded the latest Luminol jar to {} and refreshed auto_update/core.path for Hyacinthusclip. Please restart your server.",
+                    finalJarPath.toAbsolutePath()
             );
         } else {
             LOGGER.info(
-                "Updated target jar at {} using release {} and refreshed auto_update/core.path. Please restart your server.",
-                finalJarPath.toAbsolutePath(),
-                latestRelease.tagName()
+                    "Updated target jar at {} using release {} and refreshed auto_update/core.path. Please restart your server.",
+                    finalJarPath.toAbsolutePath(),
+                    latestRelease.tagName()
             );
         }
     }
 
-    private static void ensureWorkingDirectories() {
+    private void ensureWorkingDirectories() {
         try {
             Files.createDirectories(LUMINOL_UPDATE_DIR);
         } catch (IOException e) {
@@ -200,7 +183,7 @@ public final class LuminolUpdateHelper {
         }
     }
 
-    private static @Nullable ReleaseAssetInfo getLatestCompatibleRelease(String mcVersion, @Nullable String gitBranch) {
+    private @Nullable ReleaseAssetInfo getLatestCompatibleRelease(String mcVersion, @Nullable String gitBranch) {
         final JsonArray releases = requestJsonArray(GITHUB_API_BASE + "/releases?per_page=100");
         if (releases == null) {
             return null;
@@ -237,7 +220,7 @@ public final class LuminolUpdateHelper {
         return fallbackMatch;
     }
 
-    private static @Nullable ReleaseAssetInfo parseReleaseInfo(JsonObject releaseObject) {
+    private @Nullable ReleaseAssetInfo parseReleaseInfo(JsonObject releaseObject) {
         if (releaseObject.get("draft").getAsBoolean()) {
             return null;
         }
@@ -265,8 +248,8 @@ public final class LuminolUpdateHelper {
             }
 
             final String digest = assetObject.has("digest") && !assetObject.get("digest").isJsonNull()
-                ? assetObject.get("digest").getAsString()
-                : "";
+                    ? assetObject.get("digest").getAsString()
+                    : "";
             final String sha256 = normalizeSha256Digest(digest);
             if (sha256 == null) {
                 LOGGER.warn("Skipping release {} because asset {} does not expose a SHA-256 digest.", tagName, assetName);
@@ -274,20 +257,20 @@ public final class LuminolUpdateHelper {
             }
 
             return new ReleaseAssetInfo(
-                tagName,
-                tagName.substring(hashSeparatorIndex + 1),
-                releaseObject.get("target_commitish").getAsString(),
-                releaseObject.get("prerelease").getAsBoolean(),
-                assetName,
-                sha256,
-                assetObject.get("browser_download_url").getAsString()
+                    tagName,
+                    tagName.substring(hashSeparatorIndex + 1),
+                    releaseObject.get("target_commitish").getAsString(),
+                    releaseObject.get("prerelease").getAsBoolean(),
+                    assetName,
+                    sha256,
+                    assetObject.get("browser_download_url").getAsString()
             );
         }
 
         return null;
     }
 
-    private static @Nullable String normalizeSha256Digest(String digest) {
+    private @Nullable String normalizeSha256Digest(String digest) {
         if (digest == null || digest.isBlank()) {
             return null;
         }
@@ -300,13 +283,13 @@ public final class LuminolUpdateHelper {
         return normalized;
     }
 
-    private static UpdateStatus compareReleaseWithCurrentBuild(String releaseGitHash, String currentGitHash) {
+    private UpdateStatus compareReleaseWithCurrentBuild(String releaseGitHash, String currentGitHash) {
         if (releaseGitHash.equalsIgnoreCase(currentGitHash)) {
             return UpdateStatus.UP_TO_DATE;
         }
 
         final JsonObject compareObject = requestJsonObject(
-            GITHUB_API_BASE + "/compare/" + releaseGitHash + "..." + currentGitHash
+                GITHUB_API_BASE + "/compare/" + releaseGitHash + "..." + currentGitHash
         );
         if (compareObject == null || !compareObject.has("status")) {
             return UpdateStatus.UNKNOWN;
@@ -320,7 +303,7 @@ public final class LuminolUpdateHelper {
         };
     }
 
-    private static @NotNull Path downloadAndStageRelease(ReleaseAssetInfo releaseInfo) {
+    private @NotNull Path downloadAndStageRelease(ReleaseAssetInfo releaseInfo) {
         final Path tempPath = LUMINOL_UPDATE_DIR.resolve(releaseInfo.assetName() + ".cache");
         final Path stagedPath = LUMINOL_UPDATE_DIR.resolve(releaseInfo.assetName());
         final Path backupPath = LUMINOL_UPDATE_DIR.resolve(releaseInfo.assetName() + ".old");
@@ -329,8 +312,8 @@ public final class LuminolUpdateHelper {
             Files.deleteIfExists(tempPath);
 
             try (
-                ReadableByteChannel source = Channels.newChannel(openConnection(releaseInfo.downloadUrl()).getInputStream());
-                FileChannel fileChannel = FileChannel.open(tempPath, CREATE, WRITE, TRUNCATE_EXISTING)
+                    ReadableByteChannel source = Channels.newChannel(openConnection(releaseInfo.downloadUrl()).getInputStream());
+                    FileChannel fileChannel = FileChannel.open(tempPath, CREATE, WRITE, TRUNCATE_EXISTING)
             ) {
                 fileChannel.transferFrom(source, 0, Long.MAX_VALUE);
             }
@@ -347,7 +330,7 @@ public final class LuminolUpdateHelper {
         }
     }
 
-    private static @NotNull Path tryApplyTargetJar(Path stagedJar) {
+    private @NotNull Path tryApplyTargetJar(Path stagedJar) {
         if (AutoUpdateConfig.targetJarPath.isBlank()) {
             return stagedJar;
         }
@@ -377,7 +360,7 @@ public final class LuminolUpdateHelper {
         }
     }
 
-    private static void writeCorePath(Path path) {
+    private void writeCorePath(Path path) {
         try (BufferedWriter writer = Files.newBufferedWriter(CORE_PATH_FILE, StandardCharsets.UTF_8, CREATE, WRITE, TRUNCATE_EXISTING)) {
             writer.write(path.toAbsolutePath().normalize().toString());
         } catch (IOException e) {
@@ -385,7 +368,7 @@ public final class LuminolUpdateHelper {
         }
     }
 
-    private static void writeLatestPath(Path path) {
+    private void writeLatestPath(Path path) {
         try (BufferedWriter writer = Files.newBufferedWriter(LATEST_PATH_FILE, StandardCharsets.UTF_8, CREATE, WRITE, TRUNCATE_EXISTING)) {
             writer.write(path.toAbsolutePath().normalize().toString());
         } catch (IOException e) {
@@ -393,7 +376,7 @@ public final class LuminolUpdateHelper {
         }
     }
 
-    private static boolean isFileValid(Path file, String expectedHash) {
+    private boolean isFileValid(Path file, String expectedHash) {
         try (FileInputStream inputStream = new FileInputStream(file.toFile())) {
             final byte[] buffer = new byte[8192];
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -409,7 +392,7 @@ public final class LuminolUpdateHelper {
         }
     }
 
-    private static @NotNull String toHexString(byte @NotNull [] bytes) {
+    private @NotNull String toHexString(byte @NotNull [] bytes) {
         final StringBuilder builder = new StringBuilder(bytes.length * 2);
         for (byte b : bytes) {
             builder.append(String.format("%02x", b));
@@ -417,7 +400,7 @@ public final class LuminolUpdateHelper {
         return builder.toString();
     }
 
-    private static @Nullable JsonArray requestJsonArray(String url) {
+    private @Nullable JsonArray requestJsonArray(String url) {
         try {
             final JsonElement element = requestJsonElement(url);
             return element != null && element.isJsonArray() ? element.getAsJsonArray() : null;
@@ -427,7 +410,7 @@ public final class LuminolUpdateHelper {
         }
     }
 
-    private static @Nullable JsonObject requestJsonObject(String url) {
+    private @Nullable JsonObject requestJsonObject(String url) {
         try {
             final JsonElement element = requestJsonElement(url);
             return element != null && element.isJsonObject() ? element.getAsJsonObject() : null;
@@ -437,7 +420,7 @@ public final class LuminolUpdateHelper {
         }
     }
 
-    private static @Nullable JsonElement requestJsonElement(String url) throws IOException, URISyntaxException {
+    private @Nullable JsonElement requestJsonElement(String url) throws IOException, URISyntaxException {
         final HttpURLConnection connection = openConnection(url);
 
         final int responseCode = connection.getResponseCode();
@@ -454,7 +437,7 @@ public final class LuminolUpdateHelper {
         }
     }
 
-    private static @NotNull HttpURLConnection openConnection(String url) throws IOException, URISyntaxException {
+    private @NotNull HttpURLConnection openConnection(String url) throws IOException, URISyntaxException {
         final HttpURLConnection connection = (HttpURLConnection) new URI(url).toURL().openConnection();
         connection.setRequestProperty("Accept", "application/vnd.github+json");
         connection.setRequestProperty("User-Agent", "Luminol Auto Update");
@@ -471,13 +454,13 @@ public final class LuminolUpdateHelper {
     }
 
     private record ReleaseAssetInfo(
-        String tagName,
-        String releaseCommitHash,
-        String targetCommitish,
-        boolean prerelease,
-        String assetName,
-        String sha256,
-        String downloadUrl
+            String tagName,
+            String releaseCommitHash,
+            String targetCommitish,
+            boolean prerelease,
+            String assetName,
+            String sha256,
+            String downloadUrl
     ) {
     }
 }

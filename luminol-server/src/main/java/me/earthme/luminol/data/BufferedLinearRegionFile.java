@@ -3,6 +3,7 @@ package me.earthme.luminol.data;
 import abomination.IRegionFile;
 import ca.spottedleaf.concurrentutil.util.ConcurrentUtil;
 import ca.spottedleaf.moonrise.patches.chunk_system.io.MoonriseRegionFileIO;
+import com.github.luben.zstd.Zstd;
 import com.github.luben.zstd.ZstdInputStream;
 import com.github.luben.zstd.ZstdOutputStream;
 import me.earthme.luminol.utils.BufferedLinearRegionFileFlusher;
@@ -26,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -39,8 +41,13 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     private static final long MASTER_FILE_SUPER_BLOCK = -0x200812250269L;
     private static final byte MASTER_FILE_VERSION = 0x02; // ver 2.0
+    private static final byte MASTER_FILE_VERSION_BUCKET = 0x03; // ver 2.0
 
     private static final long LINEAR_FILE_SUPER_BLOCK = 0xc3ff13183cca9d9aL;
+
+    private static final int BUCKET_SHIFT = 4;
+    private static final int BUCKET_SIZE = 1 << BUCKET_SHIFT;
+    private static final int BUCKET_COUNT = 1024 / BUCKET_SIZE;
 
     private static final StandardOpenOption[] SWAP_FILE_CHANNEL_OPTIONS = new StandardOpenOption[]{
             StandardOpenOption.CREATE,
@@ -48,10 +55,20 @@ public class BufferedLinearRegionFile implements IRegionFile {
             StandardOpenOption.READ,
             StandardOpenOption.DELETE_ON_CLOSE
     };
+
     private static final StandardOpenOption[] TMP_FILE_CHANNEL_OPTIONS = new StandardOpenOption[]{
             StandardOpenOption.CREATE,
             StandardOpenOption.WRITE
     };
+
+    private static final class Bucket {
+        private final Object lock = new Object();
+
+        private boolean dirty = false;
+        private boolean loaded = false;
+    }
+
+    private final Bucket[] buckets = new Bucket[BUCKET_COUNT];
 
     private final Path masterFilePath;
     private final Path swapFilePath;
@@ -84,6 +101,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.masterFilePath = masterFilePath;
         this.swapFilePath = Path.of(this.masterFilePath.toString() + ".swp");
 
+        for (int i = 0; i < this.buckets.length; i++) {
+            this.buckets[i] = new Bucket();
+        }
+
         Validate.inclusiveBetween(1, 22, compressionLevel);
         this.compressionLevel = (byte) compressionLevel;
 
@@ -93,6 +114,57 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.flusher = flusher;
 
         this.flusher.addFile(this);
+    }
+
+    private void ensureBucketLoaded(int chunkIndex) throws IOException {
+        final int bucketIndex = chunkIndex >> BUCKET_SHIFT;
+        final Bucket bucket = this.buckets[bucketIndex];
+
+        synchronized (bucket.lock) {
+            if (bucket.loaded) {
+                return;
+            }
+
+            this.masterFileParser.loadBucketsFor(this.masterFilePath, bucketIndex);
+            bucket.loaded = true;
+        }
+    }
+
+    private void makeBucketDirty(int chunkIndex) {
+        final int bucketIndex = chunkIndex >> BUCKET_SHIFT;
+        final Bucket bucket = this.buckets[bucketIndex];
+
+        synchronized (bucket.lock) {
+            bucket.dirty = true;
+        }
+    }
+
+    private boolean clearDirtyIfBucketDirty(int bucketIndex) {
+        final Bucket bucket = this.buckets[bucketIndex];
+
+        synchronized (bucket.lock) {
+            final boolean dirty = bucket.dirty;
+
+            bucket.dirty = false;
+
+            return dirty;
+        }
+    }
+
+    private void markAsNotDirty(int bucketIndex) {
+        final Bucket bucket = this.buckets[bucketIndex];
+
+        synchronized (bucket.lock) {
+            bucket.dirty = false;
+        }
+    }
+
+    private boolean isBucketDirty(int bucketIndex) {
+        final Bucket bucket = this.buckets[bucketIndex];
+
+        synchronized (bucket.lock) {
+            return bucket.dirty;
+        }
     }
 
     public boolean markAsBeingSynced() {
@@ -159,7 +231,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
 
         try {
-            this.masterFileParser.writeMainFile(this.masterFilePath);
+            // this.masterFileParser.writeMainFile(this.masterFilePath);
+            this.masterFileParser.writeMainFileBucketed(this.masterFilePath);
         } catch (Exception e) {
             // set back
             SYNCED_HANDLE.setVolatile(this, false);
@@ -494,6 +567,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void clearChunkData(int chunkOrdinal) throws IOException {
+        this.ensureBucketLoaded(chunkOrdinal);
+
         this.regionObjectLock.writeLock().lock();
         try {
             final Sector sector = this.sectors[chunkOrdinal];
@@ -505,6 +580,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             this.regionObjectLock.writeLock().unlock();
         }
 
+        this.makeBucketDirty(chunkOrdinal);
         this.markAsToSync();
     }
 
@@ -517,7 +593,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
         return (x & 31) + ((z & 31) << 5);
     }
 
-    private boolean hasData(int chunkOrdinal) {
+    private boolean hasData(int chunkOrdinal) throws IOException {
+        this.ensureBucketLoaded(chunkOrdinal);
+
         this.regionObjectLock.readLock().lock();
         try {
             return this.sectors[chunkOrdinal].hasData();
@@ -546,7 +624,11 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private @Nullable ByteBuffer readChunk(int x, int z) throws IOException {
-        final ByteBuffer data = this.readChunkDataRaw(getChunkIndex(x, z));
+        final int chunkIndex = getChunkIndex(x, z);
+
+        this.ensureBucketLoaded(chunkIndex);
+
+        final ByteBuffer data = this.readChunkDataRaw(chunkIndex);
 
         if (data == null) {
             return null;
@@ -593,7 +675,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     @Override
-    public boolean doesChunkExist(@NotNull ChunkPos pos) {
+    public boolean doesChunkExist(@NotNull ChunkPos pos) throws IOException {
         return this.hasData(getChunkIndex(pos.x, pos.z));
     }
 
@@ -609,12 +691,23 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     @Override
     public boolean hasChunk(@NotNull ChunkPos pos) {
-        return this.hasData(getChunkIndex(pos.x, pos.z));
+        try {
+            return this.hasData(getChunkIndex(pos.x, pos.z));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void write(@NotNull ChunkPos pos, ByteBuffer buf) throws IOException {
+
+        final int chunkIndex = getChunkIndex(pos.x, pos.z);
+
+        this.ensureBucketLoaded(chunkIndex);
+
         this.writeChunk(pos.x, pos.z, buf);
+
+        this.makeBucketDirty(chunkIndex);
     }
 
     // MCC 的玩意,这东西也用不上给Linear了()
@@ -826,14 +919,207 @@ public class BufferedLinearRegionFile implements IRegionFile {
         public void close() throws IOException {
             ByteBuffer bytebuffer = ByteBuffer.wrap(this.buf, 0, this.count);
 
+            final int chunkIndex = getChunkIndex(this.pos.x, this.pos.z);
+
+            BufferedLinearRegionFile.this.ensureBucketLoaded(chunkIndex);
             BufferedLinearRegionFile.this.writeChunk(this.pos.x, this.pos.z, bytebuffer);
             BufferedLinearRegionFile.this.flushInternal();
+
+            BufferedLinearRegionFile.this.makeBucketDirty(chunkIndex);
         }
     }
 
     private class LinearMasterFileParser {
+        public void writeMainFileBucketed(@NotNull Path mainFile) throws IOException {
+            final Path tmpFilePath = Path.of(mainFile + ".tmp");
+
+            final boolean[] syncedBuckets = new boolean[BUCKET_COUNT];
+
+            try (final InputStream oldMasterIn = Files.exists(mainFile) ? Files.newInputStream(mainFile, StandardOpenOption.READ) : null;
+                 final DataInputStream in = oldMasterIn != null ? new DataInputStream(oldMasterIn) : null){
+
+                try (final OutputStream newMasterOut = Files.newOutputStream(tmpFilePath, TMP_FILE_CHANNEL_OPTIONS)) {
+                    final DataOutputStream out = new DataOutputStream(newMasterOut);
+
+                    // file head(14 bytes)
+                    out.writeLong(MASTER_FILE_SUPER_BLOCK);
+                    out.writeByte(MASTER_FILE_VERSION_BUCKET);
+                    out.writeByte(BufferedLinearRegionFile.this.compressionLevel);
+                    out.writeInt(BufferedLinearRegionFile.this.xxHash32Seed);
+
+                    // skip file head
+                    if (in != null) in.skipBytes(14);
+
+                    for (int bucketIndex = 0; bucketIndex < BUCKET_COUNT; bucketIndex++) {
+                        final int baseChunk = bucketIndex << BUCKET_SHIFT;
+
+                        final ByteArrayOutputStream rawBuf = new ByteArrayOutputStream();
+                        final DataOutputStream rawOutHelper = new DataOutputStream(rawBuf);
+                        boolean hasAny = false;
+
+                        final int bucketSizeOld = in != null ? in.readInt() : 0;
+
+                        final boolean isBucketDirty = BufferedLinearRegionFile.this.isBucketDirty(bucketIndex);
+                        if (isBucketDirty) {
+                            if (bucketSizeOld > 0) {
+                                if (in != null) in.skipBytes(bucketSizeOld);
+                            }
+
+                            for (int i = 0; i < BUCKET_SIZE; i++) {
+                                final ByteBuffer data = BufferedLinearRegionFile.this.readChunkDataRaw(baseChunk + i);
+                                if (data == null) {
+                                    rawOutHelper.writeInt(0);
+                                } else {
+                                    final byte[] arr = new byte[data.remaining()];
+                                    data.get(arr);
+                                    rawOutHelper.writeInt(arr.length);
+                                    rawOutHelper.write(arr);
+                                    hasAny = true;
+                                }
+                            }
+
+                            syncedBuckets[bucketIndex] = true;
+                        } else {
+                            // not modified, copy directly
+                            if (bucketSizeOld > 0) {
+                                final byte[] unmodifiedBucketData = new byte[bucketSizeOld];
+                                if (in != null) in.readFully(unmodifiedBucketData);
+
+                                out.writeInt(bucketSizeOld);
+                                out.write(unmodifiedBucketData);
+                            } else {
+                                out.writeInt(0);
+                            }
+                            continue;
+                        }
+
+                        rawOutHelper.flush();
+
+                        if (!hasAny) {
+                            out.writeInt(0);
+                            continue;
+                        }
+
+                        final byte[] raw = rawBuf.toByteArray();
+                        final byte[] compressed = Zstd.compress(raw, BufferedLinearRegionFile.this.compressionLevel);
+
+                        out.writeInt(4 + compressed.length); // origin compressed bucket len
+                        out.writeInt(raw.length); // uncompressed len
+                        out.write(compressed); // compressed data
+                    }
+
+                    out.flush();
+                    newMasterOut.flush();
+                }
+
+            }
+
+            try {
+                Files.move(tmpFilePath, mainFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (Throwable e) {
+                try {
+                    Files.move(tmpFilePath, mainFile, StandardCopyOption.REPLACE_EXISTING);
+                } catch (Throwable ex) {
+                    Files.deleteIfExists(mainFile);
+                    throw new IOException("Failed to replace master file!", e);
+                }
+            }
+
+            for (int i = 0; i < syncedBuckets.length; i++) {
+                final boolean synced = syncedBuckets[i];
+
+                if (synced) {
+                    BufferedLinearRegionFile.this.markAsNotDirty(i);
+                }
+            }
+        }
+
+        private void loadBucketsFor(Path file, int bucketIndex) throws IOException {
+            final int beginChunkIndex = bucketIndex << BUCKET_SHIFT;
+
+            if (!Files.exists(file)) {
+                return;
+            }
+
+            try (FileChannel fileChannel = FileChannel.open(file, StandardOpenOption.READ)){
+                // header + version + compression + hash_seed (8 + 1 + 1 + 4 = 14)
+                final ByteBuffer headerBuffer = ByteBuffer.allocate(14);
+                while (headerBuffer.hasRemaining())
+                    fileChannel.read(headerBuffer);
+                headerBuffer.flip();
+
+                final long superblock = headerBuffer.getLong();
+                if (superblock != MASTER_FILE_SUPER_BLOCK)
+                    throw new IOException("Invalid superblock " + superblock + "!");
+
+                final byte version = headerBuffer.get();
+                if (version != MASTER_FILE_VERSION_BUCKET)
+                    throw new IOException("Unknown version : " + version);
+
+                final byte compressionLevel = headerBuffer.get();
+                final int hashSeed = headerBuffer.getInt();
+
+                // let's read n bucket
+                for (int i = 0; i < BUCKET_COUNT; i++) {
+                    // only one int and it's allocating frequency, so use off heap buffer
+                    final ByteBuffer lengthMarkBuffer = ByteBuffer.allocate(4);
+                    while (lengthMarkBuffer.hasRemaining())
+                        fileChannel.read(lengthMarkBuffer);
+                    lengthMarkBuffer.flip();
+
+                    final int sizeOfThisBucket = lengthMarkBuffer.getInt();
+                    if (sizeOfThisBucket == 0) {
+                        // no data and it's ours
+                        if (i == bucketIndex) {
+                            return;
+                        }
+
+                        // or simply no data
+                        continue;
+                    }
+
+                    // not our bucket, skip
+                    if (i != bucketIndex) {
+                        final long currPosition = fileChannel.position();
+                        final long skipped = currPosition + sizeOfThisBucket;
+
+                        fileChannel.position(skipped);
+                        continue;
+                    }
+
+                    final ByteBuffer fullBucketData = ByteBuffer.allocateDirect(sizeOfThisBucket);
+                    while (fullBucketData.hasRemaining())
+                        fileChannel.read(fullBucketData);
+                    fullBucketData.flip();
+
+                    final int originalLengthOfBucket = fullBucketData.getInt();
+                    final ByteBuffer decompressed = Zstd.decompress(fullBucketData, originalLengthOfBucket);
+
+                    for (int chunkIndex = beginChunkIndex; chunkIndex < beginChunkIndex + BUCKET_SIZE; chunkIndex++) {
+                        final int chunkSectionDataSize = decompressed.getInt();
+                        if (chunkSectionDataSize <= 0) {
+                            continue;
+                        }
+
+                        final byte[] chunkSectionData = new byte[chunkSectionDataSize];
+                        decompressed.get(chunkSectionData);
+
+                        BufferedLinearRegionFile.this.writeChunkDataRaw(chunkIndex, ByteBuffer.wrap(chunkSectionData), true);
+                    }
+                    break;
+                }
+            }
+        }
+
         private void parseBufferedLinear(@NotNull DataInputStream ioStream, Path file) throws IOException {
             final byte version = ioStream.readByte();
+
+            // we will parse dynamically
+            if (version == MASTER_FILE_VERSION_BUCKET) {
+                ioStream.close();
+                return;
+            }
+
             if (version != MASTER_FILE_VERSION)
                 throw new RuntimeException("Invalid version: " + version + " in " + file);
 
@@ -906,6 +1192,14 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         final int z = posByAxis[1];
 
                         BufferedLinearRegionFile.this.writeChunk(x, z, chunkDataNioBuffer);
+
+                        final int bucketIndex = i >> BUCKET_SHIFT;
+                        final Bucket bucket = BufferedLinearRegionFile.this.buckets[bucketIndex];
+
+                        synchronized (bucket.lock) {
+                            bucket.loaded = true;
+                            bucket.dirty = true;
+                        }
                     }
                 }
             }

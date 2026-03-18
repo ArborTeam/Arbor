@@ -1041,33 +1041,25 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 return;
             }
 
-            try (FileChannel fileChannel = FileChannel.open(file, StandardOpenOption.READ)){
+            try (InputStream masterIn = Files.newInputStream(file, StandardOpenOption.READ);
+                 DataInputStream masterInHelper = new DataInputStream(masterIn)
+            ){
                 // header + version + compression + hash_seed (8 + 1 + 1 + 4 = 14)
-                final ByteBuffer headerBuffer = ByteBuffer.allocate(14);
-                while (headerBuffer.hasRemaining())
-                    fileChannel.read(headerBuffer);
-                headerBuffer.flip();
 
-                final long superblock = headerBuffer.getLong();
+                final long superblock = masterInHelper.readLong();
                 if (superblock != MASTER_FILE_SUPER_BLOCK)
                     throw new IOException("Invalid superblock " + superblock + "!");
 
-                final byte version = headerBuffer.get();
+                final byte version = (byte)masterInHelper.read();
                 if (version != MASTER_FILE_VERSION_BUCKET)
                     throw new IOException("Unknown version : " + version);
 
-                final byte compressionLevel = headerBuffer.get();
-                final int hashSeed = headerBuffer.getInt();
+                final byte compressionLevel = (byte)masterInHelper.read();
+                final int hashSeed = masterInHelper.readInt();
 
                 // let's read n bucket
                 for (int i = 0; i < BUCKET_COUNT; i++) {
-                    // only one int and it's allocating frequency, so use off heap buffer
-                    final ByteBuffer lengthMarkBuffer = ByteBuffer.allocate(4);
-                    while (lengthMarkBuffer.hasRemaining())
-                        fileChannel.read(lengthMarkBuffer);
-                    lengthMarkBuffer.flip();
-
-                    final int sizeOfThisBucket = lengthMarkBuffer.getInt();
+                    final int sizeOfThisBucket = masterInHelper.readInt();
                     if (sizeOfThisBucket == 0) {
                         // no data and it's ours
                         if (i == bucketIndex) {
@@ -1080,20 +1072,16 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
                     // not our bucket, skip
                     if (i != bucketIndex) {
-                        final long currPosition = fileChannel.position();
-                        final long skipped = currPosition + sizeOfThisBucket;
-
-                        fileChannel.position(skipped);
+                        masterInHelper.skipBytes(sizeOfThisBucket);
                         continue;
                     }
 
-                    final ByteBuffer fullBucketData = ByteBuffer.allocateDirect(sizeOfThisBucket);
-                    while (fullBucketData.hasRemaining())
-                        fileChannel.read(fullBucketData);
-                    fullBucketData.flip();
+                    final byte[] bucketDataArray = new byte[sizeOfThisBucket - 4]; // reduced original size
+                    final int originalLengthOfBucket = masterInHelper.readInt();
 
-                    final int originalLengthOfBucket = fullBucketData.getInt();
-                    final ByteBuffer decompressed = Zstd.decompress(fullBucketData, originalLengthOfBucket);
+                    masterInHelper.readFully(bucketDataArray);
+
+                    final ByteBuffer decompressed = ByteBuffer.wrap(Zstd.decompress(bucketDataArray, originalLengthOfBucket));
 
                     for (int chunkIndex = beginChunkIndex; chunkIndex < beginChunkIndex + BUCKET_SIZE; chunkIndex++) {
                         final int chunkSectionDataSize = decompressed.getInt();

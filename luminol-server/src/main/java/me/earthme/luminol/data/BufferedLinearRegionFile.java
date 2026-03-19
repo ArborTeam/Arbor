@@ -1129,6 +1129,14 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         final ByteBuffer sectorDataNioBuffer = ByteBuffer.wrap(sectorData);
 
                         BufferedLinearRegionFile.this.writeChunkDataRaw(index, sectorDataNioBuffer, true);
+
+                        final int bucketIndex = index >> BUCKET_SHIFT;
+                        final Bucket bucket = BufferedLinearRegionFile.this.buckets[bucketIndex];
+
+                        synchronized (bucket.lock) {
+                            bucket.loaded = true;
+                            bucket.dirty = true;
+                        }
                     }
                 }
             }

@@ -45,7 +45,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     private static final long LINEAR_FILE_SUPER_BLOCK = 0xc3ff13183cca9d9aL;
 
-    private static final int BUCKET_SHIFT = 4;
+    private static final int BUCKET_SHIFT = 6;
     private static final int BUCKET_SIZE = 1 << BUCKET_SHIFT;
     private static final int BUCKET_COUNT = 1024 / BUCKET_SIZE;
 

@@ -27,7 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
-import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -951,7 +950,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         //   [14, 526): position table — BUCKET_COUNT(16) × long(8) each; 0 = no data for that bucket
         //   [526, EOF): bucket data — originalLen(int) + compressedLen(int) + compressedData
         private static final long V3_POS_TABLE_OFFSET = 14L;
-        private static final int  V3_POS_TABLE_SIZE   = BUCKET_COUNT * Long.BYTES; // 128
+        private static final int V3_POS_TABLE_SIZE = BUCKET_COUNT * Long.BYTES; // 128
         private static final long V3_DATA_AREA_OFFSET = V3_POS_TABLE_OFFSET + V3_POS_TABLE_SIZE; // 142
 
         public void writeMainFileBucketed(@NotNull Path mainFile) throws IOException {
@@ -989,7 +988,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     }
                 } catch (Exception e) {
                     if (oldChannel != null) {
-                        try { oldChannel.close(); } catch (IOException ignored) {}
+                        try {
+                            oldChannel.close();
+                        } catch (IOException ignored) {
+                        }
                         oldChannel = null;
                     }
                 }
@@ -1167,7 +1169,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
         }
 
-        /** Returns null if the position table looks like old sequential format (values < V3_DATA_AREA_OFFSET). */
+        /**
+         * Returns null if the position table looks like old sequential format (values < V3_DATA_AREA_OFFSET).
+         */
         @Nullable
         private long[] tryReadV3PositionTable(FileChannel channel) throws IOException {
             final ByteBuffer buf = ByteBuffer.allocate(V3_POS_TABLE_SIZE);
@@ -1197,7 +1201,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
         }
 
-        /** Old V3 sequential format: bucketSize(int) + originalLen(int) + compressedData(bucketSize-4 bytes) */
+        /**
+         * Old V3 sequential format: bucketSize(int) + originalLen(int) + compressedData(bucketSize-4 bytes)
+         */
         private void loadBucketFromOldV3Sequential(FileChannel channel, int bucketIndex, int beginChunkIndex) throws IOException {
             long offset = 14L; // old format had no position table; bucket data starts right after the 14-byte header
 
@@ -1229,7 +1235,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
         }
 
-        /** Read all buckets from old sequential V3 file and repack them in new format layout (originalLen+compressedLen+data). */
+        /**
+         * Read all buckets from old sequential V3 file and repack them in new format layout (originalLen+compressedLen+data).
+         */
         private byte[][] readOldV3BucketsAsNewFormat(FileChannel channel) throws IOException {
             final byte[][] result = new byte[BUCKET_COUNT][];
             long offset = 14L;

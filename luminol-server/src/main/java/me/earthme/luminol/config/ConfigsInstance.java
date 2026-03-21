@@ -206,6 +206,7 @@ public class ConfigsInstance {
     private void loadCategoryComments() {
         for (EnumConfigCategory category : EnumConfigCategory.values()) {
             String mainKey = category.getBaseKeyName();
+            if (mainKey == null) continue;
             for (String key : defaultvalueMap.keySet()) {
                 if (key.startsWith(mainKey)) {
                     String comment = configFileInstance.getComment(key);
@@ -268,7 +269,8 @@ public class ConfigsInstance {
      */
     private List<String> buildConfigCategoryPath(ConfigClassInfo configClassInfo) {
         final List<String> category = new ArrayList<>();
-        category.add(configClassInfo.category().getBaseKeyName());
+        String name = configClassInfo.category().getBaseKeyName();
+        if (name != null) category.add(name);
         category.addAll(List.of(configClassInfo.directory()));
         category.add(configClassInfo.name());
         return category;

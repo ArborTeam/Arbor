@@ -7,7 +7,8 @@ public enum EnumConfigCategory {
     FUNCTION("function"),             // new functions
     EXPERIMENT("experiment"),         // experimental features
     UNSUPPORTED("unsupported"),       // features we do not want anyone to use
-    REMOVED("removed");               // removed config
+    REMOVED("removed"),               // removed config
+    ROOT(null);
 
     private final String baseKeyName;
     private final String keyComment;

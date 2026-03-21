@@ -41,7 +41,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     private static final long MASTER_FILE_SUPER_BLOCK = -0x200812250269L;
     private static final byte MASTER_FILE_VERSION = 0x02; // ver 2.0
-    private static final byte MASTER_FILE_VERSION_BUCKET = 0x03; // ver 2.0
+    private static final byte MASTER_FILE_VERSION_BUCKET = 0x03; // ver 3.0
 
     private static final long LINEAR_FILE_SUPER_BLOCK = 0xc3ff13183cca9d9aL;
 
@@ -948,11 +948,11 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private class LinearMasterFileParser {
         // V3 new format layout:
         //   [0,  14): header  — superblock(8) + version(1) + compressionLevel(1) + xxHash32Seed(4)
-        //   [14, 526): position table — BUCKET_COUNT(64) × long(8) each; 0 = no data for that bucket
+        //   [14, 526): position table — BUCKET_COUNT(16) × long(8) each; 0 = no data for that bucket
         //   [526, EOF): bucket data — originalLen(int) + compressedLen(int) + compressedData
         private static final long V3_POS_TABLE_OFFSET = 14L;
-        private static final int  V3_POS_TABLE_SIZE   = BUCKET_COUNT * Long.BYTES; // 512
-        private static final long V3_DATA_AREA_OFFSET = V3_POS_TABLE_OFFSET + V3_POS_TABLE_SIZE; // 526
+        private static final int  V3_POS_TABLE_SIZE   = BUCKET_COUNT * Long.BYTES; // 128
+        private static final long V3_DATA_AREA_OFFSET = V3_POS_TABLE_OFFSET + V3_POS_TABLE_SIZE; // 142
 
         public void writeMainFileBucketed(@NotNull Path mainFile) throws IOException {
             final Path tmpFilePath = Path.of(mainFile + ".tmp");

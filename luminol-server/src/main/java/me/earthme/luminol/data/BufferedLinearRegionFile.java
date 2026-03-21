@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -947,7 +948,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private class LinearMasterFileParser {
         // V3 new format layout:
         //   [0,  14): header  — superblock(8) + version(1) + compressionLevel(1) + xxHash32Seed(4)
-        //   [14, 526): position table — BUCKET_COUNT(16) × long(8) each; 0 = no data for that bucket
+        //   [14, 142): position table — BUCKET_COUNT(16) × long(8) each; 0 = no data for that bucket
         //   [526, EOF): bucket data — originalLen(int) + compressedLen(int) + compressedData
         private static final long V3_POS_TABLE_OFFSET = 14L;
         private static final int V3_POS_TABLE_SIZE = BUCKET_COUNT * Long.BYTES; // 128
@@ -960,7 +961,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             // Open old file to copy non-dirty buckets
             long[] oldPositionTable = null;
-            byte[][] oldBucketCache = null; // used when old file is in old sequential format
             FileChannel oldChannel = null;
 
             if (Files.exists(mainFile)) {
@@ -971,13 +971,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         readFullyAt(oldChannel, hdr, 0);
                         hdr.flip();
                         if (hdr.getLong() == MASTER_FILE_SUPER_BLOCK && hdr.get() == MASTER_FILE_VERSION_BUCKET) {
-                            oldPositionTable = tryReadV3PositionTable(oldChannel);
-                            if (oldPositionTable == null) {
-                                // Old sequential V3: load all buckets and convert to new format layout
-                                oldBucketCache = readOldV3BucketsAsNewFormat(oldChannel);
-                                oldChannel.close();
-                                oldChannel = null;
-                            }
+                            oldPositionTable = this.parseOffsetTable(oldChannel);
                         } else {
                             oldChannel.close();
                             oldChannel = null;
@@ -986,14 +980,16 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         oldChannel.close();
                         oldChannel = null;
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     if (oldChannel != null) {
                         try {
                             oldChannel.close();
-                        } catch (IOException ignored) {
+                        } catch (IOException e2) {
+                            e.addSuppressed(e2);
                         }
-                        oldChannel = null;
                     }
+
+                    throw new RuntimeException(e);
                 }
             }
 
@@ -1058,7 +1054,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         // Not dirty: copy bytes from old file if available
                         byte[] bucketBytes = null;
 
-                        if (oldPositionTable != null && oldChannel != null && oldPositionTable[bucketIndex] != 0) {
+                        if (oldPositionTable != null && oldPositionTable[bucketIndex] != 0) {
                             // New-format old file: seek directly via position table
                             final long oldOffset = oldPositionTable[bucketIndex];
                             final ByteBuffer lensBuf = ByteBuffer.allocate(8);
@@ -1071,8 +1067,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
                             lensBuf.rewind();
                             lensBuf.get(bucketBytes, 0, 8);
                             readFullyAt(oldChannel, ByteBuffer.wrap(bucketBytes, 8, compressedLen), oldOffset + 8);
-                        } else if (oldBucketCache != null) {
-                            bucketBytes = oldBucketCache[bucketIndex];
                         }
 
                         if (bucketBytes != null) {
@@ -1144,48 +1138,39 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 headerBuf.get();
                 headerBuf.getInt();
 
-                final long[] posTable = tryReadV3PositionTable(channel);
+                final long[] posTable = this.parseOffsetTable(channel);
 
-                if (posTable != null) {
-                    // New format: jump directly to bucket data
-                    final long bucketDataOffset = posTable[bucketIndex];
-                    if (bucketDataOffset == 0) return;
+                // New format: jump directly to bucket data
+                final long bucketDataOffset = posTable[bucketIndex];
+                if (bucketDataOffset == 0) return;
 
-                    final ByteBuffer lensBuf = ByteBuffer.allocate(8);
-                    readFullyAt(channel, lensBuf, bucketDataOffset);
-                    lensBuf.flip();
-                    final int originalLen = lensBuf.getInt();
-                    final int compressedLen = lensBuf.getInt();
+                final ByteBuffer lensBuf = ByteBuffer.allocate(8);
+                readFullyAt(channel, lensBuf, bucketDataOffset);
+                lensBuf.flip();
+                final int originalLen = lensBuf.getInt();
+                final int compressedLen = lensBuf.getInt();
 
-                    final byte[] compressedData = new byte[compressedLen];
-                    readFullyAt(channel, ByteBuffer.wrap(compressedData), bucketDataOffset + 8);
+                final byte[] compressedData = new byte[compressedLen];
+                readFullyAt(channel, ByteBuffer.wrap(compressedData), bucketDataOffset + 8);
 
-                    final ByteBuffer decompressed = ByteBuffer.wrap(Zstd.decompress(compressedData, originalLen));
-                    loadChunksFromBucketData(decompressed, beginChunkIndex);
-                } else {
-                    // Old sequential V3 format fallback
-                    loadBucketFromOldV3Sequential(channel, bucketIndex, beginChunkIndex);
-                }
+                final ByteBuffer decompressed = ByteBuffer.wrap(Zstd.decompress(compressedData, originalLen));
+                this.loadChunksFromBucketData(decompressed, beginChunkIndex);
             }
         }
 
-        /**
-         * Returns null if the position table looks like old sequential format (values < V3_DATA_AREA_OFFSET).
-         */
-        @Nullable
-        private long[] tryReadV3PositionTable(FileChannel channel) throws IOException {
+        private long[] parseOffsetTable(FileChannel channel) throws IOException {
             final ByteBuffer buf = ByteBuffer.allocate(V3_POS_TABLE_SIZE);
             readFullyAt(channel, buf, V3_POS_TABLE_OFFSET);
             buf.flip();
 
             final long[] table = new long[BUCKET_COUNT];
+
+            Arrays.fill(table, 0L);
             for (int i = 0; i < BUCKET_COUNT; i++) {
                 final long pos = buf.getLong();
-                if (pos != 0 && pos < V3_DATA_AREA_OFFSET) {
-                    return null; // Looks like old-format int-sized bucket sizes, not offsets
-                }
                 table[i] = pos;
             }
+
             return table;
         }
 
@@ -1201,81 +1186,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
         }
 
-        /**
-         * Old V3 sequential format: bucketSize(int) + originalLen(int) + compressedData(bucketSize-4 bytes)
-         */
-        private void loadBucketFromOldV3Sequential(FileChannel channel, int bucketIndex, int beginChunkIndex) throws IOException {
-            long offset = 14L; // old format had no position table; bucket data starts right after the 14-byte header
-
-            for (int i = 0; i < BUCKET_COUNT; i++) {
-                final ByteBuffer sizeBuf = ByteBuffer.allocate(4);
-                readFullyAt(channel, sizeBuf, offset);
-                sizeBuf.flip();
-                final int bucketSize = sizeBuf.getInt();
-                offset += 4;
-
-                if (i == bucketIndex) {
-                    if (bucketSize == 0) return;
-
-                    final ByteBuffer lenBuf = ByteBuffer.allocate(4);
-                    readFullyAt(channel, lenBuf, offset);
-                    lenBuf.flip();
-                    final int originalLen = lenBuf.getInt();
-                    final int compressedLen = bucketSize - 4;
-
-                    final byte[] compressedData = new byte[compressedLen];
-                    readFullyAt(channel, ByteBuffer.wrap(compressedData), offset + 4);
-
-                    final ByteBuffer decompressed = ByteBuffer.wrap(Zstd.decompress(compressedData, originalLen));
-                    loadChunksFromBucketData(decompressed, beginChunkIndex);
-                    return;
-                }
-
-                offset += bucketSize;
-            }
-        }
-
-        /**
-         * Read all buckets from old sequential V3 file and repack them in new format layout (originalLen+compressedLen+data).
-         */
-        private byte[][] readOldV3BucketsAsNewFormat(FileChannel channel) throws IOException {
-            final byte[][] result = new byte[BUCKET_COUNT][];
-            long offset = 14L;
-
-            for (int i = 0; i < BUCKET_COUNT; i++) {
-                final ByteBuffer sizeBuf = ByteBuffer.allocate(4);
-                readFullyAt(channel, sizeBuf, offset);
-                sizeBuf.flip();
-                final int bucketSize = sizeBuf.getInt();
-                offset += 4;
-
-                if (bucketSize > 0) {
-                    final ByteBuffer lenBuf = ByteBuffer.allocate(4);
-                    readFullyAt(channel, lenBuf, offset);
-                    lenBuf.flip();
-                    final int originalLen = lenBuf.getInt();
-                    final int compressedLen = bucketSize - 4;
-
-                    final byte[] compressedData = new byte[compressedLen];
-                    readFullyAt(channel, ByteBuffer.wrap(compressedData), offset + 4);
-
-                    // Repack as new format: originalLen(4) + compressedLen(4) + compressedData
-                    final ByteBuffer newBuf = ByteBuffer.allocate(8 + compressedLen);
-                    newBuf.putInt(originalLen);
-                    newBuf.putInt(compressedLen);
-                    newBuf.put(compressedData);
-                    result[i] = newBuf.array();
-
-                    offset += bucketSize;
-                }
-            }
-            return result;
-        }
-
-        private void parseBufferedLinear(@NotNull DataInputStream ioStream, Path file) throws IOException {
+        private void parseBufferedLinearV2(@NotNull DataInputStream ioStream, Path file) throws IOException {
             final byte version = ioStream.readByte();
 
-            // we will parse dynamically
+            // we will parse dynamically (V3)
             if (version == MASTER_FILE_VERSION_BUCKET) {
                 ioStream.close();
                 return;
@@ -1390,7 +1304,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 superBlock = rawDataStream.readLong();
 
                 if (superBlock == MASTER_FILE_SUPER_BLOCK) {
-                    this.parseBufferedLinear(rawDataStream, mainFilePath);
+                    this.parseBufferedLinearV2(rawDataStream, mainFilePath);
                     return;
                 }
 

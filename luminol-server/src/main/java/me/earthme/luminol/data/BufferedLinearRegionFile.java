@@ -1330,6 +1330,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             throw new IOException("Unknown or unsupported super block : " + superBlock);
         }
 
+        @Deprecated(forRemoval = true)
         public void writeMainFile(@NotNull Path mainFile) throws IOException {
             final Path tmpFilePath = Path.of(mainFile + ".tmp");
 

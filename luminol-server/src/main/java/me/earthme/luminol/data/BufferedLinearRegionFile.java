@@ -56,7 +56,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             StandardOpenOption.DELETE_ON_CLOSE
     };
 
-    private static final StandardOpenOption[] TMP_FILE_CHANNEL_OPTIONS = new StandardOpenOption[]{
+    private static final StandardOpenOption[] MASTER_TMP_FILE_CHANNEL_OPTIONS = new StandardOpenOption[]{
             StandardOpenOption.CREATE,
             StandardOpenOption.WRITE
     };
@@ -367,7 +367,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 sectorSize += sector.length;
             }
 
-            boolean compactRequested = spareSize > SWAP_FILE_AUTO_COMPACT_SIZE && (double) spareSize > ((double) sectorSize) * SWAP_FILE_AUTO_COMPACT_PERCENT;
+            final boolean compactRequested = spareSize > SWAP_FILE_AUTO_COMPACT_SIZE && (double) spareSize > ((double) sectorSize) * SWAP_FILE_AUTO_COMPACT_PERCENT;
 
             // try auto compact to clean the garbage area
             if (compactRequested) {
@@ -1337,7 +1337,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             File tempFile = tmpFilePath.toFile();
 
-            try (final OutputStream fileStream = Files.newOutputStream(tmpFilePath, TMP_FILE_CHANNEL_OPTIONS);
+            try (final OutputStream fileStream = Files.newOutputStream(tmpFilePath, MASTER_TMP_FILE_CHANNEL_OPTIONS);
                  final ZstdOutputStream zstdStream = new ZstdOutputStream(fileStream, BufferedLinearRegionFile.this.compressionLevel)
             ) {
 

@@ -29,9 +29,9 @@ public class ConfigCommandDialog {
         if (prefix.equals("full")) {
             player.openDialog(
                     ConfigDialogUtil.createHolder(
-                            name + "config",
+                            name,
                             config.getAllDataFull(),
-                            name + "config submit "
+                            name + " submit "
                     ));
             return;
         }
@@ -50,7 +50,7 @@ public class ConfigCommandDialog {
 
             // Always create button if there are child paths or if it's a valid config node
             if (!childPaths.isEmpty() || !childKeySingleConfigs.isEmpty()) {
-                String raw = name + "config open-gui " + key + "$(missing)";
+                String raw = name + " open-gui " + key + "$(missing)";
                 StringTemplate template = StringTemplate.fromString(raw);
                 CommandTemplate commandTemplate = new CommandTemplate(new ParsedTemplate(raw, template));
                 builder.addButton(
@@ -64,13 +64,13 @@ public class ConfigCommandDialog {
 
         ConfigDialogUtil.addInputs(
                 config.getFullData(keySingleConfigs),
-                name + "config submit ",
+                name + " submit ",
                 builder
         );
 
         // Add "Show all configs" button at root level
         if (prefix.isEmpty()) {
-            String raw = name + "config open-gui full$(missing)";
+            String raw = name + " open-gui full$(missing)";
             StringTemplate template = StringTemplate.fromString(raw);
             CommandTemplate commandTemplate = new CommandTemplate(new ParsedTemplate(raw, template));
             builder.addButton(
@@ -90,7 +90,7 @@ public class ConfigCommandDialog {
                     ));
         }
 
-        builder.setTitle(name + "config")
+        builder.setTitle(name)
                 .setPause(false)
                 .setColumns(1);
         player.openDialog(

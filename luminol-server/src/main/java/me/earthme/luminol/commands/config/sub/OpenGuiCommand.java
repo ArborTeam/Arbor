@@ -31,7 +31,7 @@ public class OpenGuiCommand extends ConfigSubcommand {
     protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
         if (context.getSender() instanceof CraftPlayer cPlayer) {
             final Player player = cPlayer.getHandle();
-            ConfigCommandDialog.openGui(player, parent.name, parent.config);
+            ConfigCommandDialog.openGui(player, parent.getCommandName(), parent.config);
         } else {
             context.getSender().sendMessage(
                     Component
@@ -69,7 +69,7 @@ public class OpenGuiCommand extends ConfigSubcommand {
         protected boolean execute(@NotNull CommandContext context) {
             if (context.getSender() instanceof CraftPlayer cPlayer) {
                 final Player player = cPlayer.getHandle();
-                ConfigCommandDialog.openGui(player, parent.name, parent.config, context.getArgument(PathArgument.class));
+                ConfigCommandDialog.openGui(player, parent.getCommandName(), parent.config, context.getArgument(PathArgument.class));
             } else {
                 context.getSender().sendMessage(
                         Component

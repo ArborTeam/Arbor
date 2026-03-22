@@ -26,7 +26,7 @@ public class ResetCommentsCommand extends ConfigSubcommand {
     protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
         context.getSender().sendMessage(
                 Component
-                        .text("If you want to reset comments to default in the configuration file, please use /" + parent.name + "config reset-comments confirm")
+                        .text("If you want to reset comments to default in the configuration file, please use /" + parent.getCommandName() + " reset-comments confirm")
                         .color(TextColor.color(255, 0, 0))
         );
         return true;
@@ -52,7 +52,7 @@ public class ResetCommentsCommand extends ConfigSubcommand {
             if (!confirm.equals("confirm")) {
                 context.getSender().sendMessage(
                         Component
-                                .text("Please use /" + parent.name + "config reset-comments confirm to confirm!")
+                                .text("Please use /" + parent.getCommandName() + " reset-comments confirm to confirm!")
                                 .color(TextColor.color(255, 0, 0))
                 );
                 return true;

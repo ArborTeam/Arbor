@@ -26,7 +26,7 @@ public class CleanCommand extends ConfigSubcommand {
     protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
         context.getSender().sendMessage(
                 Component
-                        .text("If you want to clean up useless items in the configuration file, please use /" + parent.name + "config clean confirm")
+                        .text("If you want to clean up useless items in the configuration file, please use /" + parent.getCommandName() + " clean confirm")
                         .color(TextColor.color(255, 0, 0))
         );
         return true;
@@ -52,7 +52,7 @@ public class CleanCommand extends ConfigSubcommand {
             if (!"confirm".equals(confirm)) {
                 context.getSender().sendMessage(
                         Component
-                                .text("Please use /" + parent.name + "config clean confirm to confirm!")
+                                .text("Please use /" + parent.getCommandName() + " clean confirm to confirm!")
                                 .color(TextColor.color(255, 0, 0))
                 );
                 return true;

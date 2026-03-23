@@ -575,7 +575,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             sector.clear();
 
-            this.writeSwapFileHeaders(true, false);
+            this.writeSwapFileHeaders(false, false);
         } finally {
             this.regionObjectLock.writeLock().unlock();
         }

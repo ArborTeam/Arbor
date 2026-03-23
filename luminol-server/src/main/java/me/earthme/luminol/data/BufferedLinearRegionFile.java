@@ -1052,27 +1052,25 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         syncedBuckets[bucketIndex] = true;
                     } else {
                         // Not dirty: copy bytes from old file if available
-                        byte[] bucketBytes = null;
-
                         if (oldPositionTable != null && oldPositionTable[bucketIndex] != 0) {
-                            // New-format old file: seek directly via position table
                             final long oldOffset = oldPositionTable[bucketIndex];
                             final ByteBuffer lensBuf = ByteBuffer.allocate(8);
                             readFullyAt(oldChannel, lensBuf, oldOffset);
                             lensBuf.flip();
-                            final int originalLen = lensBuf.getInt();
+                            lensBuf.getInt(); // skip originalLen
                             final int compressedLen = lensBuf.getInt();
 
-                            bucketBytes = new byte[8 + compressedLen];
-                            lensBuf.rewind();
-                            lensBuf.get(bucketBytes, 0, 8);
-                            readFullyAt(oldChannel, ByteBuffer.wrap(bucketBytes, 8, compressedLen), oldOffset + 8);
-                        }
-
-                        if (bucketBytes != null) {
+                            final long bucketTotalSize = 8L + compressedLen;
                             newPositionTable[bucketIndex] = dataOffset;
-                            writeFullyAt(outChannel, ByteBuffer.wrap(bucketBytes), dataOffset);
-                            dataOffset += bucketBytes.length;
+                            outChannel.position(dataOffset);
+                            long remaining = bucketTotalSize;
+                            long srcPos = oldOffset;
+                            while (remaining > 0) {
+                                final long transferred = oldChannel.transferTo(srcPos, remaining, outChannel);
+                                srcPos += transferred;
+                                remaining -= transferred;
+                            }
+                            dataOffset += bucketTotalSize;
                         }
                     }
                 }

@@ -390,7 +390,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
             this.markClosed();
 
             try {
-                this.writeSwapFileHeaders(true, true);
                 this.syncToMasterFile();
             } finally {
                 this.swapFileChannel.close();

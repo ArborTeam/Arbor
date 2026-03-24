@@ -64,8 +64,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private static final class Bucket {
         private final Object lock = new Object();
 
-        private boolean dirty = false;
-        private boolean loaded = false;
+        private volatile boolean dirty = false;
+        private volatile boolean loaded = false;
     }
 
     private final Bucket[] buckets = new Bucket[BUCKET_COUNT];
@@ -162,9 +162,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private boolean isBucketDirty(int bucketIndex) {
         final Bucket bucket = this.buckets[bucketIndex];
 
-        synchronized (bucket.lock) {
-            return bucket.dirty;
-        }
+        return bucket.dirty;
     }
 
     public boolean markAsBeingSynced() {
@@ -203,10 +201,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     public void syncIfNeeded() throws IOException {
-        // the sync operation is just coping the data from swap file to the master file
-        // so we could acquire read lock simply so that we won't block any other read operations
         if (!this.regionObjectLock.readLock().tryLock()) {
-            BEING_SYNCED_HANDLE.setVolatile(this, false); // mark as not being synced
+            BEING_SYNCED_HANDLE.setVolatile(this, false);
             return;
         }
 
@@ -216,23 +212,22 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 return;
             }
 
-            this.syncToMasterFile();
+            this.syncToMasterFile(false);
         } finally {
-            BEING_SYNCED_HANDLE.setVolatile(this, false); // mark as not being synced
+            BEING_SYNCED_HANDLE.setVolatile(this, false);
 
             this.regionObjectLock.readLock().unlock();
         }
     }
 
-    private void syncToMasterFile() throws IOException {
+    private void syncToMasterFile(boolean lock) throws IOException {
         // prevent multiple syncs in the same time
         if (!SYNCED_HANDLE.compareAndSet(this, false, true)) {
             return;
         }
 
         try {
-            // this.masterFileParser.writeMainFile(this.masterFilePath);
-            this.masterFileParser.writeMainFileBucketed(this.masterFilePath);
+            this.masterFileParser.writeMainFileBucketed(this.masterFilePath, lock);
         } catch (Exception e) {
             // set back
             SYNCED_HANDLE.setVolatile(this, false);
@@ -339,6 +334,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void flushInternal() throws IOException {
+        boolean compactRequested = false;
+
         this.regionObjectLock.writeLock().lock();
         try {
             if (this.isClosedRaw()) {
@@ -367,20 +364,20 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 sectorSize += sector.length;
             }
 
-            final boolean compactRequested = spareSize > SWAP_FILE_AUTO_COMPACT_SIZE && (double) spareSize > ((double) sectorSize) * SWAP_FILE_AUTO_COMPACT_PERCENT;
+            compactRequested = spareSize > SWAP_FILE_AUTO_COMPACT_SIZE && (double) spareSize > ((double) sectorSize) * SWAP_FILE_AUTO_COMPACT_PERCENT;
 
             // try auto compact to clean the garbage area
             if (compactRequested) {
                 // do compact
                 this.compactSwapFile();
             }
-
-            // prevent syncing after compact because it could be time costing sometimes
-            if (!Files.exists(this.masterFilePath) && !compactRequested) {
-                this.syncToMasterFile();
-            }
         } finally {
             this.regionObjectLock.writeLock().unlock();
+        }
+
+        // prevent syncing after compact because it could be time costing sometimes
+        if (!Files.exists(this.masterFilePath) && !compactRequested) {
+            this.syncToMasterFile(true);
         }
     }
 
@@ -390,7 +387,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             this.markClosed();
 
             try {
-                this.syncToMasterFile();
+                this.syncToMasterFile(false);
             } finally {
                 this.swapFileChannel.close();
             }
@@ -546,10 +543,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.markAsToSync();
     }
 
-    private @Nullable ByteBuffer readChunkDataRaw(int chunkOrdinal) throws IOException {
+    private @Nullable ByteBuffer readChunkDataRaw(int chunkOrdinal, boolean lock) throws IOException {
         final ByteBuffer raw;
 
-        this.regionObjectLock.readLock().lock();
+        if (lock) this.regionObjectLock.readLock().lock();
         try {
             final Sector sector = this.sectors[chunkOrdinal];
 
@@ -559,7 +556,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             raw = sector.read(this.swapFileChannel);
         } finally {
-            this.regionObjectLock.readLock().unlock();
+            if (lock) this.regionObjectLock.readLock().unlock();
         }
 
         return this.compressingOps.fromCommitedSection(raw);
@@ -625,7 +622,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
         this.ensureBucketLoaded(chunkIndex);
 
-        final ByteBuffer data = this.readChunkDataRaw(chunkIndex);
+        final ByteBuffer data = this.readChunkDataRaw(chunkIndex, true);
 
         if (data == null) {
             return null;
@@ -697,7 +694,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     @Override
     public void write(@NotNull ChunkPos pos, ByteBuffer buf) throws IOException {
-
         final int chunkIndex = getChunkIndex(pos.x, pos.z);
 
         this.ensureBucketLoaded(chunkIndex);
@@ -778,7 +774,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
     // here we use this tool to prevent the swap file goes too large
     // sometimes when a region contains all chunks, it might be very huge without any compressions(around 100MiB)
     private static class CompressingOps {
-        private final LZ4Compressor lz4Compressor = LZ4Factory.fastestInstance().fastCompressor();
+        private final LZ4Compressor lz4Compressor = LZ4Factory.fastestInstance().highCompressor(); // use lz4hc
         private final LZ4FastDecompressor lz4Decompressor = LZ4Factory.fastestInstance().fastDecompressor();
 
         public @NotNull ByteBuffer commitSectionData(@NotNull ByteBuffer in) {
@@ -951,7 +947,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         private static final int V3_POS_TABLE_SIZE = BUCKET_COUNT * Long.BYTES; // 128
         private static final long V3_DATA_AREA_OFFSET = V3_POS_TABLE_OFFSET + V3_POS_TABLE_SIZE; // 142
 
-        public void writeMainFileBucketed(@NotNull Path mainFile) throws IOException {
+        public void writeMainFileBucketed(@NotNull Path mainFile, boolean lock) throws IOException {
             final Path tmpFilePath = Path.of(mainFile + ".tmp");
             final boolean[] syncedBuckets = new boolean[BUCKET_COUNT];
             final long[] newPositionTable = new long[BUCKET_COUNT];
@@ -1017,7 +1013,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         boolean hasAny = false;
 
                         for (int i = 0; i < BUCKET_SIZE; i++) {
-                            final ByteBuffer data = BufferedLinearRegionFile.this.readChunkDataRaw(baseChunk + i);
+                            final ByteBuffer data = BufferedLinearRegionFile.this.readChunkDataRaw(baseChunk + i, lock);
                             if (data == null) {
                                 rawOut.writeInt(0);
                             } else {
@@ -1079,8 +1075,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 }
                 posTableBuf.flip();
                 writeFullyAt(outChannel, posTableBuf, V3_POS_TABLE_OFFSET);
-
-                outChannel.force(true);
             } finally {
                 if (oldChannel != null) {
                     oldChannel.close();
@@ -1353,7 +1347,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
                 for (int i = 0; i < 1024; i++) {
                     // read from swap file
-                    final ByteBuffer chunkData = BufferedLinearRegionFile.this.readChunkDataRaw(i);
+                    final ByteBuffer chunkData = BufferedLinearRegionFile.this.readChunkDataRaw(i, true);
 
                     // not found
                     if (chunkData == null) {

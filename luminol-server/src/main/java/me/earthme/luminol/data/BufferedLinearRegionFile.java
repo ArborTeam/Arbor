@@ -345,7 +345,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 return;
             }
 
-            long spareSize = this.swapFileChannel.size();
+            long spareSize = this.currentAcquiredIndex;
 
             spareSize -= this.headerSize();
             for (Sector sector : this.sectors) {
@@ -573,8 +573,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
             final Sector sector = this.sectors[chunkOrdinal];
 
             sector.clear();
-
-            this.writeSwapFileHeaders(false, false);
         } finally {
             this.regionObjectLock.writeLock().unlock();
         }

@@ -14,11 +14,11 @@ import org.leavesmc.leaves.command.CommandContext;
 import org.leavesmc.leaves.command.LiteralNode;
 
 public class ConfigEditCommand extends LiteralNode {
-    private final String bar_name;
+    private final EnumBarType barType;
 
-    public ConfigEditCommand(String barName) {
+    public ConfigEditCommand(EnumBarType barType) {
         super("config");
-        this.bar_name = barName;
+        this.barType = barType;
         children(
                 BooleanArgument::new
         );
@@ -34,34 +34,24 @@ public class ConfigEditCommand extends LiteralNode {
             AbstractGlobalServerBar bar;
 
             try {
-                bar = GlobalServerBarManager.get(EnumBarType.valueOf(bar_name.toUpperCase()));
+                bar = GlobalServerBarManager.get(barType);
             } catch (IllegalArgumentException e) {
                 context.getSender().sendMessage(Component.text(e.getMessage()).color(TextColor.color(255, 0, 0)));
                 return true;
-            }
-
-            String configPath;
-            switch (bar_name) {
-                case "memory" -> configPath = "function.membar.enabled";
-                case "region" -> configPath = "function.regionbar.enabled";
-                case "tps" -> configPath = "function.tpsbar.enabled";
-                default -> {
-                    return false;
-                }
             }
 
             boolean value = context.getArgument(BooleanArgument.class);
             if (value == bar.enabled()) {
                 context.getSender().sendMessage(
                         Component
-                                .text("Bar type with " + bar_name + " was already " + (value ? "enabled" : "disabled") + "!")
+                                .text("Bar type with " + barType.getName() + " was already " + (value ? "enabled" : "disabled") + "!")
                                 .color(TextColor.color(255, 0, 0)));
             } else {
-                ConfigsInstance config = ConfigManager.configfiles.get("luminol");
-                if (config.setConfig(configPath, value)) {
+                ConfigsInstance config = ConfigManager.configfiles.get(barType.getConfigOrigin());
+                if (config.setConfig(barType.getConfigPath(), value)) {
                     config.reloadAsync(true).thenAccept(nullValue -> context.getSender().sendMessage(
                             Component
-                                    .text("Bar type with " + bar_name + (value ? " enabled" : " disabled") + " successfully!")
+                                    .text("Bar type with " + barType.getName() + (value ? " enabled" : " disabled") + " successfully!")
                                     .color(TextColor.color(0, 255, 0))
                     ));
                 }

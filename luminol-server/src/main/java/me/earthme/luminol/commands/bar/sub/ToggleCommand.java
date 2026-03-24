@@ -26,11 +26,11 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class ToggleCommand extends LiteralNode {
-    private final String bar_name;
+    private final EnumBarType barType;
 
-    public ToggleCommand(String barName) {
+    public ToggleCommand(EnumBarType barType) {
         super("toggle");
-        this.bar_name = barName;
+        this.barType = barType;
         children(
                 PlayerArg::new
         );
@@ -49,23 +49,23 @@ public class ToggleCommand extends LiteralNode {
         AbstractGlobalServerBar bar;
 
         try {
-            bar = GlobalServerBarManager.get(EnumBarType.valueOf(bar_name.toUpperCase()));
+            bar = GlobalServerBarManager.get(this.barType);
         } catch (IllegalArgumentException e) {
             context.getSender().sendMessage(Component.text(e.getMessage()).color(TextColor.color(255, 0, 0)));
             return true;
         }
 
         if (!bar.enabled()) {
-            context.getSender().sendMessage(Component.text("Bar type with " + bar_name + " was already disabled!").color(TextColor.color(255, 0, 0)));
+            context.getSender().sendMessage(Component.text("Bar type with " + this.barType.getName() + " was already disabled!").color(TextColor.color(255, 0, 0)));
         }
 
         if (bar.isPlayerVisible(player)) {
-            context.getSender().sendMessage(Component.text("Disabled Bar type with " + bar_name + " for " + player.getName()).color(TextColor.color(0, 255, 0)));
+            context.getSender().sendMessage(Component.text("Disabled Bar type with " + this.barType.getName() + " for " + player.getName()).color(TextColor.color(0, 255, 0)));
             bar.setVisibilityForPlayer(player, false);
             return true;
         }
 
-        context.getSender().sendMessage(Component.text("Enabled Bar type with " + bar_name + " for " + player.getName()).color(TextColor.color(0, 255, 0)));
+        context.getSender().sendMessage(Component.text("Enabled Bar type with " + this.barType.getName() + " for " + player.getName()).color(TextColor.color(0, 255, 0)));
         bar.setVisibilityForPlayer(player, true);
         return true;
     }
@@ -96,19 +96,8 @@ public class ToggleCommand extends LiteralNode {
         }
     }
 
-    private String getOldName() {
-        String oldName;
-        switch (bar_name) {
-            case "memory" -> oldName = "membar";
-            case "tps" -> oldName = "tpsbar";
-            case "region" -> oldName = "regionbar";
-            default -> oldName = bar_name;
-        }
-        return oldName;
-    }
-
     protected ArgumentBuilder<CommandSourceStack, ?> compile0() {
-        ArgumentBuilder<CommandSourceStack, ?> builder = Commands.literal(getOldName()).requires(this::requires);
+        ArgumentBuilder<CommandSourceStack, ?> builder = Commands.literal(this.barType.getCommandName()).requires(this::requires);
 
         if (canExecute()) {
             builder = builder.executes(mojangCtx -> {
@@ -122,7 +111,7 @@ public class ToggleCommand extends LiteralNode {
 
     @Override
     public boolean requires(@NotNull CommandSourceStack source) {
-        return BarCommand.hasPermission(source.getSender(), this.bar_name, this.name);
+        return BarCommand.hasPermission(source.getSender(), this.barType.getName(), this.name);
     }
 
     @SuppressWarnings("unchecked")
@@ -135,7 +124,7 @@ public class ToggleCommand extends LiteralNode {
 
     public void unregister() { // unregister for old version command
         PaperCommands.INSTANCE.setValid();
-        PaperCommands.INSTANCE.getDispatcher().getRoot().removeCommand(getOldName());
+        PaperCommands.INSTANCE.getDispatcher().getRoot().removeCommand(this.barType.getCommandName());
         PaperCommands.INSTANCE.invalidate();
         Bukkit.getOnlinePlayers().forEach(org.bukkit.entity.Player::updateCommands);
     }

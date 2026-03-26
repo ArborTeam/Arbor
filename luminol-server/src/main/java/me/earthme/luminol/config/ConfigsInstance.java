@@ -333,6 +333,9 @@ public class ConfigsInstance {
             // Handle existing configurations
             handleExistingConfig(field, fullConfigKeyName, configInfo, doNotReload, keepComments);
         }
+
+        // handle tasks need processed before config finalized
+        ConfigManager.registerRunnableBeforeFinalLoad(singleConfigModule::beforeFinalLoad);
     }
 
     /**

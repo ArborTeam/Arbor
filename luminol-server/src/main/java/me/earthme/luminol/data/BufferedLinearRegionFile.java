@@ -495,7 +495,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             // flush to file
             this.writeSwapFileHeaders(true, true);
-        }catch (Throwable ex) {
+        } catch (Throwable ex) {
             // we are totally failed here,
             // directly mark as closed as the swap file is already replaced, and we failed to update the
             // data which is still in the memory
@@ -1146,7 +1146,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     final ByteBuffer decompressed = ByteBuffer.wrap(Zstd.decompress(compressedData, originalLen));
                     this.loadChunksFromBucketData(decompressed, beginChunkIndex);
                 }
-            }finally {
+            } finally {
                 this.masterFileLock.readLock().unlock();
             }
         }

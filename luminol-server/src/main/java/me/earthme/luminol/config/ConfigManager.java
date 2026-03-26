@@ -6,15 +6,16 @@ import me.earthme.luminol.config.flags.TransformedConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConfigManager {
-    public static final Map<String, ConfigsInstance> configfiles = new ConcurrentHashMap<>();
-    public static final Map<TransformedConfig, String[]> needTransformedConfigs = new ConcurrentHashMap<>();
+    private static boolean initialized = false;
+    private static final Map<String, ConfigsInstance> configfiles = new HashMap<>();
+    private static final Collection<Runnable> runnableBeforeFinalLoad = new ConcurrentLinkedQueue<>();
+    private static final Map<TransformedConfig, String[]> needTransformedConfigs = new ConcurrentHashMap<>();
     // String[]:
     // 0 -> origin key
     // 1 -> target key
@@ -41,19 +42,32 @@ public class ConfigManager {
     }
 
     public static void loadConfigFiles() {
+        runTaskBeforeFinalLoad();
         CompletableFuture<?>[] futures = configfiles.values().stream()
                 .map(config -> CompletableFuture.runAsync(config::finalizeLoadConfig))
                 .toArray(CompletableFuture[]::new);
         CompletableFuture.allOf(futures).join();
         CommandRegister.register(); // register command after config loaded to enable some command didn't depend on config files
+        initialized = true;
+    }
+
+    public static void registerRunnableBeforeFinalLoad(Runnable runnable) {
+        if (initialized) return;
+        runnableBeforeFinalLoad.add(runnable);
     }
 
     public static void registerTransformedConfig(@NotNull String origin, @NotNull String target, @NotNull String originKey, @NotNull String targetKey, TransformedConfig transformedConfig) {
+        if (initialized) return;
         needTransformedConfigs.put(transformedConfig, new String[]{origin, target, originKey, targetKey});
     }
 
-    private static ConfigsInstance getConfigs(String name) {
+    public static ConfigsInstance getConfigs(String name) {
         return configfiles.get(name);
+    }
+
+    private static void runTaskBeforeFinalLoad() {
+        runnableBeforeFinalLoad.forEach(Runnable::run);
+        runnableBeforeFinalLoad.clear();
     }
 
     private static void acceptTransformedConfigs() {

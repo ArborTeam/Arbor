@@ -47,7 +47,7 @@ public class ConfigEditCommand extends LiteralNode {
                                 .text("Bar type with " + barType.getName() + " was already " + (value ? "enabled" : "disabled") + "!")
                                 .color(TextColor.color(255, 0, 0)));
             } else {
-                ConfigsInstance config = ConfigManager.configfiles.get(barType.getConfigOrigin());
+                ConfigsInstance config = ConfigManager.getConfigs(barType.getConfigOrigin());
                 if (config.setConfig(barType.getConfigPath(), value)) {
                     config.reloadAsync(true).thenAccept(nullValue -> context.getSender().sendMessage(
                             Component

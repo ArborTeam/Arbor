@@ -7,6 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 public interface IConfigModule {
+    default void beforeFinalLoad() {
+    }
+
     default void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
     }
 

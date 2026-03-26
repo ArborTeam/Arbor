@@ -65,7 +65,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         private final Object lock = new Object();
 
         private volatile boolean dirty = false;
-        private boolean loaded = false;
+        private volatile boolean loaded = false;
     }
 
     private final Bucket[] buckets = new Bucket[BUCKET_COUNT];
@@ -120,6 +120,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         final int bucketIndex = chunkIndex >> BUCKET_SHIFT;
         final Bucket bucket = this.buckets[bucketIndex];
 
+        // bucket lock -> master read lock -> swap write lock
         synchronized (bucket.lock) {
             if (bucket.loaded) {
                 return;
@@ -187,22 +188,15 @@ public class BufferedLinearRegionFile implements IRegionFile {
     public void syncIfNeeded() throws IOException {
         // the sync operation is just coping the data from swap file to the master file
         // so we could acquire read lock simply so that we won't block any other read operations
-        if (!this.regionObjectLock.readLock().tryLock()) {
-            BEING_SYNCED_HANDLE.setVolatile(this, false); // mark as not being synced
-            return;
-        }
-
         try {
             // skip if closed already
-            if (this.isClosedRaw()) {
+            if (this.isClosed()) {
                 return;
             }
 
             this.syncToMasterFile();
         } finally {
             BEING_SYNCED_HANDLE.setVolatile(this, false); // mark as not being synced
-
-            this.regionObjectLock.readLock().unlock();
         }
     }
 
@@ -321,6 +315,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private void flushInternal() throws IOException {
+        boolean initiallySyncRequired;
+
         this.regionObjectLock.writeLock().lock();
         try {
             if (this.isClosedRaw()) {
@@ -358,24 +354,24 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
 
             // prevent syncing after compact because it could be time costing sometimes
-            if (!Files.exists(this.masterFilePath) && !compactRequested) {
-                this.syncToMasterFile();
-            }
+            initiallySyncRequired = !Files.exists(this.masterFilePath) && !compactRequested;
         } finally {
             this.regionObjectLock.writeLock().unlock();
+        }
+
+        if (initiallySyncRequired) {
+            this.syncToMasterFile();
         }
     }
 
     private void closeInternal() throws IOException {
+        this.syncIfNeeded();
+
         this.regionObjectLock.writeLock().lock();
         try {
             this.markClosed();
 
-            try {
-                this.syncToMasterFile();
-            } finally {
-                this.swapFileChannel.close();
-            }
+            this.swapFileChannel.close();
         } finally {
             this.regionObjectLock.writeLock().unlock();
         }
@@ -933,7 +929,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         private static final int V3_POS_TABLE_SIZE = BUCKET_COUNT * Long.BYTES; // 128
         private static final long V3_DATA_AREA_OFFSET = V3_POS_TABLE_OFFSET + V3_POS_TABLE_SIZE; // 142
 
-        private final ReadWriteLock masterLock = new ReentrantReadWriteLock();
+        private final ReadWriteLock masterFileLock = new ReentrantReadWriteLock();
 
         public void writeMainFileBucketed(@NotNull Path mainFile) throws IOException {
             final Path tmpFilePath = Path.of(mainFile + ".tmp");
@@ -1001,6 +997,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         boolean hasAny = false;
 
                         for (int i = 0; i < BUCKET_SIZE; i++) {
+                            // swap read lock
                             final ByteBuffer data = BufferedLinearRegionFile.this.readChunkDataRaw(baseChunk + i);
                             if (data == null) {
                                 rawOut.writeInt(0);
@@ -1071,7 +1068,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 }
             }
 
-            this.masterLock.writeLock().lock();
+            this.masterFileLock.writeLock().lock();
             try {
                 try {
                     Files.move(tmpFilePath, mainFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
@@ -1084,7 +1081,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     }
                 }
             } finally {
-                this.masterLock.writeLock().unlock();
+                this.masterFileLock.writeLock().unlock();
             }
 
             for (int i = 0; i < syncedBuckets.length; i++) {
@@ -1097,7 +1094,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         private void loadBucketsFor(Path file, int bucketIndex) throws IOException {
             final int beginChunkIndex = bucketIndex << BUCKET_SHIFT;
 
-            this.masterLock.readLock().lock();
+            this.masterFileLock.readLock().lock();
 
             try {
                 if (!Files.exists(file)) {
@@ -1144,7 +1141,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     this.loadChunksFromBucketData(decompressed, beginChunkIndex);
                 }
             }finally {
-                this.masterLock.readLock().unlock();
+                this.masterFileLock.readLock().unlock();
             }
         }
 

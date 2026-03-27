@@ -210,7 +210,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         try {
             // this.masterFileParser.writeMainFile(this.masterFilePath);
             this.masterFileParser.writeMainFileBucketed(this.masterFilePath);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // set back
             SYNCED_HANDLE.setVolatile(this, false);
 
@@ -413,7 +413,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 targetTemp,
                 StandardOpenOption.CREATE_NEW,
                 StandardOpenOption.WRITE,
-                StandardOpenOption.READ
+                StandardOpenOption.READ,
+                StandardOpenOption.TRUNCATE_EXISTING
         )) {
             long offsetPointer = this.headerSize();
             tempChannel.position(offsetPointer);
@@ -438,13 +439,13 @@ public class BufferedLinearRegionFile implements IRegionFile {
             tempChannel.force(true);
 
             newAcquiredIndex = offsetPointer;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             // recalculate acquired index
             this.recalculateAcquiredIndex();
             // delete the target temp file
             Files.deleteIfExists(targetTemp);
             // fast-fail
-            this.markClosed(); // prevent new writing & sync operations
+            // note: we don't block new write operations here as this is recoverable
             throw new IOException("Failed to compact swap file!", ex);
         }
 
@@ -459,7 +460,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     StandardCopyOption.REPLACE_EXISTING,
                     StandardCopyOption.ATOMIC_MOVE
             );
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // atomic move might be unsupported on some file systems, so give it an attempt to retry without atomic move
             try {
                 Files.move(
@@ -467,7 +468,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         this.swapFilePath,
                         StandardCopyOption.REPLACE_EXISTING
                 );
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 // now we are totally failed
                 e.addSuppressed(ex);
 
@@ -478,21 +479,31 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 // reopen closed channel
                 this.reopenSwapFileChannel();
                 // fast-fail
-                this.markClosed(); // prevent new writing & sync opeartions
+                this.markClosed(); // prevent new writing & sync operations
                 throw new IOException("Failed to replace original swap file!", e);
             }
         }
 
 
-        // reopen file channel
-        this.reopenSwapFileChannel();
+        try {
+            // reopen file channel
+            this.reopenSwapFileChannel();
 
-        // replace with recalculated file headers
-        this.sectors = newSectorsToBeReplaced;
-        this.currentAcquiredIndex = newAcquiredIndex;
+            // replace with recalculated file headers
+            this.sectors = newSectorsToBeReplaced;
+            this.currentAcquiredIndex = newAcquiredIndex;
 
-        // flush to file
-        this.writeSwapFileHeaders(true, true);
+            // flush to file
+            this.writeSwapFileHeaders(true, true);
+        }catch (Throwable ex) {
+            // we are totally failed here,
+            // directly mark as closed as the swap file is already replaced, and we failed to update the
+            // data which is still in the memory
+            //
+            // which means we might write any data into any incorrect indexed sectors which will blow the whole data
+            this.markClosed();
+            throw new IOException(ex);
+        }
     }
 
     private void reopenSwapFileChannel() throws IOException {
@@ -921,6 +932,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
             final boolean[] syncedBuckets = new boolean[BUCKET_COUNT];
             final long[] newPositionTable = new long[BUCKET_COUNT];
 
+            // note: there is no necessary hold the write lock for this stuff
+            // as the truly write operations only happens on replacing the master file (see the file move call below this hunk)
+            // and we had CAS flags to prevent multiple synchronization happening at the same time
+
             // Open old file to copy non-dirty buckets
             long[] oldPositionTable = null;
             FileChannel oldChannel = null;
@@ -984,6 +999,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         for (int i = 0; i < BUCKET_SIZE; i++) {
                             // swap read lock
                             final ByteBuffer data = BufferedLinearRegionFile.this.readChunkDataRaw(baseChunk + i);
+
+                            // note: null -> no data contained
                             if (data == null) {
                                 rawOut.writeInt(0);
                             } else {
@@ -1058,10 +1075,14 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 try {
                     Files.move(tmpFilePath, mainFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
                 } catch (Throwable e) {
+
                     try {
                         Files.move(tmpFilePath, mainFile, StandardCopyOption.REPLACE_EXISTING);
                     } catch (Throwable ex) {
-                        Files.deleteIfExists(mainFile);
+                        Files.deleteIfExists(tmpFilePath);
+
+                        e.addSuppressed(ex);
+
                         throw new IOException("Failed to replace master file!", e);
                     }
                 }
@@ -1130,7 +1151,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
         }
 
-        private long[] parseOffsetTable(FileChannel channel) throws IOException {
+        private long @NonNull [] parseOffsetTable(FileChannel channel) throws IOException {
             final ByteBuffer buf = ByteBuffer.allocate(V3_POS_TABLE_SIZE);
             readFullyAt(channel, buf, V3_POS_TABLE_OFFSET);
             buf.flip();

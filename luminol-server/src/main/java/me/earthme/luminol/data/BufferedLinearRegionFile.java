@@ -18,6 +18,7 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.io.*;
 import java.lang.invoke.VarHandle;
@@ -904,22 +905,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
     }
 
-    private static void writeFullyAt(FileChannel channel, ByteBuffer buf, long startOffset) throws IOException {
-        long offset = startOffset;
-        while (buf.hasRemaining()) {
-            offset += channel.write(buf, offset);
-        }
-    }
-
-    private static void readFullyAt(FileChannel channel, ByteBuffer buf, long startOffset) throws IOException {
-        long offset = startOffset;
-        while (buf.hasRemaining()) {
-            final int read = channel.read(buf, offset);
-            if (read < 0) throw new EOFException("Unexpected EOF at offset " + offset);
-            offset += read;
-        }
-    }
-
     private class LinearMasterFileParser {
         // V3 new format layout:
         //   [0,  14): header  — superblock(8) + version(1) + compressionLevel(1) + xxHash32Seed(4)
@@ -1170,6 +1155,22 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 decompressed.get(chunkSectionData);
 
                 BufferedLinearRegionFile.this.writeChunkDataRaw(chunkIndex, ByteBuffer.wrap(chunkSectionData), true);
+            }
+        }
+
+        private static void writeFullyAt(FileChannel channel, @NonNull ByteBuffer buf, long startOffset) throws IOException {
+            long offset = startOffset;
+            while (buf.hasRemaining()) {
+                offset += channel.write(buf, offset);
+            }
+        }
+
+        private static void readFullyAt(FileChannel channel, @NonNull ByteBuffer buf, long startOffset) throws IOException {
+            long offset = startOffset;
+            while (buf.hasRemaining()) {
+                final int read = channel.read(buf, offset);
+                if (read < 0) throw new EOFException("Unexpected EOF at offset " + offset);
+                offset += read;
             }
         }
 

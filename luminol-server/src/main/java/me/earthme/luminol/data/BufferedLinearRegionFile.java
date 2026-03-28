@@ -940,138 +940,138 @@ public class BufferedLinearRegionFile implements IRegionFile {
             long[] oldPositionTable = null;
             FileChannel oldChannel = null;
 
-            if (Files.exists(mainFile)) {
-                try {
-                    oldChannel = FileChannel.open(mainFile, StandardOpenOption.READ);
-                    if (oldChannel.size() >= V3_DATA_AREA_OFFSET) {
-                        final ByteBuffer hdr = ByteBuffer.allocate(14);
-                        readFullyAt(oldChannel, hdr, 0);
-                        hdr.flip();
-                        if (hdr.getLong() == MASTER_FILE_SUPER_BLOCK && hdr.get() == MASTER_FILE_VERSION_BUCKET) {
-                            oldPositionTable = this.parseOffsetTable(oldChannel);
+            this.masterFileLock.writeLock().lock();
+            try {
+                if (Files.exists(mainFile)) {
+                    try {
+                        oldChannel = FileChannel.open(mainFile, StandardOpenOption.READ);
+                        if (oldChannel.size() >= V3_DATA_AREA_OFFSET) {
+                            final ByteBuffer hdr = ByteBuffer.allocate(14);
+                            readFullyAt(oldChannel, hdr, 0);
+                            hdr.flip();
+                            if (hdr.getLong() == MASTER_FILE_SUPER_BLOCK && hdr.get() == MASTER_FILE_VERSION_BUCKET) {
+                                oldPositionTable = this.parseOffsetTable(oldChannel);
+                            } else {
+                                oldChannel.close();
+                                oldChannel = null;
+                            }
                         } else {
                             oldChannel.close();
                             oldChannel = null;
                         }
-                    } else {
-                        oldChannel.close();
-                        oldChannel = null;
+                    } catch (Throwable e) {
+                        if (oldChannel != null) {
+                            try {
+                                oldChannel.close();
+                            } catch (IOException e2) {
+                                e.addSuppressed(e2);
+                            }
+                        }
+
+                        throw new RuntimeException(e);
                     }
-                } catch (Throwable e) {
+                }
+
+                try (FileChannel outChannel = FileChannel.open(tmpFilePath,
+                        StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
+
+                    // Write header (14 bytes)
+                    final ByteBuffer header = ByteBuffer.allocate(14);
+                    header.putLong(MASTER_FILE_SUPER_BLOCK);
+                    header.put(MASTER_FILE_VERSION_BUCKET);
+                    header.put(BufferedLinearRegionFile.this.compressionLevel);
+                    header.putInt(BufferedLinearRegionFile.this.xxHash32Seed);
+                    header.flip();
+                    writeFullyAt(outChannel, header, 0);
+
+                    // Write position table placeholder (all zeros, filled in at the end)
+                    writeFullyAt(outChannel, ByteBuffer.allocate(V3_POS_TABLE_SIZE), V3_POS_TABLE_OFFSET);
+
+                    long dataOffset = V3_DATA_AREA_OFFSET;
+
+                    for (int bucketIndex = 0; bucketIndex < BUCKET_COUNT; bucketIndex++) {
+                        final boolean isBucketDirty = BufferedLinearRegionFile.this.isBucketDirty(bucketIndex);
+
+                        if (isBucketDirty) {
+                            final int baseChunk = bucketIndex << BUCKET_SHIFT;
+                            final ByteArrayOutputStream rawBuf = new ByteArrayOutputStream();
+                            final DataOutputStream rawOut = new DataOutputStream(rawBuf);
+                            boolean hasAny = false;
+
+                            for (int i = 0; i < BUCKET_SIZE; i++) {
+                                // swap read lock
+                                final ByteBuffer data = BufferedLinearRegionFile.this.readChunkDataRaw(baseChunk + i);
+
+                                // note: null -> no data contained
+                                if (data == null) {
+                                    rawOut.writeInt(0);
+                                } else {
+                                    final byte[] arr = new byte[data.remaining()];
+                                    data.get(arr);
+                                    rawOut.writeInt(arr.length);
+                                    rawOut.write(arr);
+                                    hasAny = true;
+                                }
+                            }
+                            rawOut.flush();
+
+                            if (hasAny) {
+                                final byte[] raw = rawBuf.toByteArray();
+                                final byte[] compressed = Zstd.compress(raw, BufferedLinearRegionFile.this.compressionLevel);
+
+                                newPositionTable[bucketIndex] = dataOffset;
+
+                                final ByteBuffer bucketBuf = ByteBuffer.allocate(8 + compressed.length);
+                                bucketBuf.putInt(raw.length);        // original (uncompressed) length
+                                bucketBuf.putInt(compressed.length); // compressed length
+                                bucketBuf.put(compressed);
+                                bucketBuf.flip();
+                                writeFullyAt(outChannel, bucketBuf, dataOffset);
+                                dataOffset += bucketBuf.limit();
+                            }
+                            // else: newPositionTable[bucketIndex] stays 0
+
+                            syncedBuckets[bucketIndex] = true;
+                        } else {
+                            // Not dirty: copy bytes from old file if available
+                            if (oldPositionTable != null && oldPositionTable[bucketIndex] != 0) {
+                                final long oldOffset = oldPositionTable[bucketIndex];
+                                final ByteBuffer lensBuf = ByteBuffer.allocate(8);
+                                readFullyAt(oldChannel, lensBuf, oldOffset);
+                                lensBuf.flip();
+                                lensBuf.getInt(); // skip originalLen
+                                final int compressedLen = lensBuf.getInt();
+
+                                final long bucketTotalSize = 8L + compressedLen;
+                                newPositionTable[bucketIndex] = dataOffset;
+                                outChannel.position(dataOffset);
+                                long remaining = bucketTotalSize;
+                                long srcPos = oldOffset;
+                                while (remaining > 0) {
+                                    final long transferred = oldChannel.transferTo(srcPos, remaining, outChannel);
+                                    srcPos += transferred;
+                                    remaining -= transferred;
+                                }
+                                dataOffset += bucketTotalSize;
+                            }
+                        }
+                    }
+
+                    // Write the finalized position table
+                    final ByteBuffer posTableBuf = ByteBuffer.allocate(V3_POS_TABLE_SIZE);
+                    for (final long pos : newPositionTable) {
+                        posTableBuf.putLong(pos);
+                    }
+                    posTableBuf.flip();
+                    writeFullyAt(outChannel, posTableBuf, V3_POS_TABLE_OFFSET);
+
+                    outChannel.force(true);
+                } finally {
                     if (oldChannel != null) {
-                        try {
-                            oldChannel.close();
-                        } catch (IOException e2) {
-                            e.addSuppressed(e2);
-                        }
-                    }
-
-                    throw new RuntimeException(e);
-                }
-            }
-
-            try (FileChannel outChannel = FileChannel.open(tmpFilePath,
-                    StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
-
-                // Write header (14 bytes)
-                final ByteBuffer header = ByteBuffer.allocate(14);
-                header.putLong(MASTER_FILE_SUPER_BLOCK);
-                header.put(MASTER_FILE_VERSION_BUCKET);
-                header.put(BufferedLinearRegionFile.this.compressionLevel);
-                header.putInt(BufferedLinearRegionFile.this.xxHash32Seed);
-                header.flip();
-                writeFullyAt(outChannel, header, 0);
-
-                // Write position table placeholder (all zeros, filled in at the end)
-                writeFullyAt(outChannel, ByteBuffer.allocate(V3_POS_TABLE_SIZE), V3_POS_TABLE_OFFSET);
-
-                long dataOffset = V3_DATA_AREA_OFFSET;
-
-                for (int bucketIndex = 0; bucketIndex < BUCKET_COUNT; bucketIndex++) {
-                    final boolean isBucketDirty = BufferedLinearRegionFile.this.isBucketDirty(bucketIndex);
-
-                    if (isBucketDirty) {
-                        final int baseChunk = bucketIndex << BUCKET_SHIFT;
-                        final ByteArrayOutputStream rawBuf = new ByteArrayOutputStream();
-                        final DataOutputStream rawOut = new DataOutputStream(rawBuf);
-                        boolean hasAny = false;
-
-                        for (int i = 0; i < BUCKET_SIZE; i++) {
-                            // swap read lock
-                            final ByteBuffer data = BufferedLinearRegionFile.this.readChunkDataRaw(baseChunk + i);
-
-                            // note: null -> no data contained
-                            if (data == null) {
-                                rawOut.writeInt(0);
-                            } else {
-                                final byte[] arr = new byte[data.remaining()];
-                                data.get(arr);
-                                rawOut.writeInt(arr.length);
-                                rawOut.write(arr);
-                                hasAny = true;
-                            }
-                        }
-                        rawOut.flush();
-
-                        if (hasAny) {
-                            final byte[] raw = rawBuf.toByteArray();
-                            final byte[] compressed = Zstd.compress(raw, BufferedLinearRegionFile.this.compressionLevel);
-
-                            newPositionTable[bucketIndex] = dataOffset;
-
-                            final ByteBuffer bucketBuf = ByteBuffer.allocate(8 + compressed.length);
-                            bucketBuf.putInt(raw.length);        // original (uncompressed) length
-                            bucketBuf.putInt(compressed.length); // compressed length
-                            bucketBuf.put(compressed);
-                            bucketBuf.flip();
-                            writeFullyAt(outChannel, bucketBuf, dataOffset);
-                            dataOffset += bucketBuf.limit();
-                        }
-                        // else: newPositionTable[bucketIndex] stays 0
-
-                        syncedBuckets[bucketIndex] = true;
-                    } else {
-                        // Not dirty: copy bytes from old file if available
-                        if (oldPositionTable != null && oldPositionTable[bucketIndex] != 0) {
-                            final long oldOffset = oldPositionTable[bucketIndex];
-                            final ByteBuffer lensBuf = ByteBuffer.allocate(8);
-                            readFullyAt(oldChannel, lensBuf, oldOffset);
-                            lensBuf.flip();
-                            lensBuf.getInt(); // skip originalLen
-                            final int compressedLen = lensBuf.getInt();
-
-                            final long bucketTotalSize = 8L + compressedLen;
-                            newPositionTable[bucketIndex] = dataOffset;
-                            outChannel.position(dataOffset);
-                            long remaining = bucketTotalSize;
-                            long srcPos = oldOffset;
-                            while (remaining > 0) {
-                                final long transferred = oldChannel.transferTo(srcPos, remaining, outChannel);
-                                srcPos += transferred;
-                                remaining -= transferred;
-                            }
-                            dataOffset += bucketTotalSize;
-                        }
+                        oldChannel.close();
                     }
                 }
 
-                // Write the finalized position table
-                final ByteBuffer posTableBuf = ByteBuffer.allocate(V3_POS_TABLE_SIZE);
-                for (final long pos : newPositionTable) {
-                    posTableBuf.putLong(pos);
-                }
-                posTableBuf.flip();
-                writeFullyAt(outChannel, posTableBuf, V3_POS_TABLE_OFFSET);
-
-                outChannel.force(true);
-            } finally {
-                if (oldChannel != null) {
-                    oldChannel.close();
-                }
-            }
-
-            this.masterFileLock.writeLock().lock();
-            try {
                 try {
                     Files.move(tmpFilePath, mainFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
                 } catch (Throwable e) {

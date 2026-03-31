@@ -361,6 +361,18 @@ public class ConfigsInstance {
         Object currentValue = field.get(null);
         if (currentValue instanceof Enum) {
             currentValue = ((Enum<?>) currentValue).name();
+        } else if (currentValue instanceof List<?> list) {
+            if (!list.isEmpty() && list.getFirst() instanceof Enum) {
+                List<String> stringList = new ArrayList<>();
+                for (Object item : list) {
+                    if (item instanceof Enum e) {
+                        stringList.add(e.name());
+                    } else {
+                        stringList.add(item.toString());
+                    }
+                }
+                currentValue = stringList;
+            }
         }
         if (currentValue == null) {
             throw new UnsupportedOperationException("Config " + configInfo.name() + "tried to add an null default value!");
@@ -432,13 +444,13 @@ public class ConfigsInstance {
                                       ConfigInfo configInfo, boolean doNotReload,
                                       boolean keepComments) throws IllegalAccessException, IllegalFormatConversionException {
         // Handle existing configurations
-        Object actuallyValue = getActualConfigValue(fullConfigKeyName);
+        Object actuallyValue = getActualConfigValue(fullConfigKeyName, field);
 
         IllegalFormatConversionException e0 = null;
 
         // Transform value if needed
         try {
-            actuallyValue = tryTransform(field.get(null).getClass(), actuallyValue);
+            actuallyValue = tryTransform(field, actuallyValue);
             configFileInstance.set(fullConfigKeyName, actuallyValue);
         } catch (IllegalFormatConversionException e) {
             if (configInfo.allowAutoReset()) resetConfig(fullConfigKeyName);
@@ -485,6 +497,26 @@ public class ConfigsInstance {
             actuallyValue = configFileInstance.get(fullConfigKeyName);
         }
         return actuallyValue;
+    }
+
+    private Object getActualConfigValue(String fullConfigKeyName, Field field) {
+        Object value = getActualConfigValue(fullConfigKeyName);
+        if (field != null && value instanceof List<?> list && !list.isEmpty() && list.getFirst() instanceof String) {
+            Class<?> elementType = getListElementType(field);
+            if (elementType != null && elementType.isEnum()) {
+                List<Object> transformedList = new ArrayList<>();
+                for (Object item : list) {
+                    String enumValue = item.toString();
+                    Object enumConstant = Arrays.stream(elementType.getEnumConstants())
+                            .filter(e -> ((Enum<?>) e).name().equalsIgnoreCase(enumValue))
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalArgumentException("No enum constant " + elementType.getSimpleName() + "." + enumValue));
+                    transformedList.add(enumConstant);
+                }
+                return Collections.unmodifiableList(transformedList);
+            }
+        }
+        return value;
     }
 
     // Configuration manipulation methods
@@ -616,7 +648,8 @@ public class ConfigsInstance {
     /**
      * Attempt to transform a value to target type
      */
-    private Object tryTransform(Class<?> targetType, Object value) {
+    private Object tryTransform(Field field, Object value) {
+        Class<?> targetType = field.getType();
         if (!targetType.isAssignableFrom(value.getClass())) {
             try {
                 if (targetType == Integer.class) {
@@ -638,6 +671,23 @@ public class ConfigsInstance {
                             .filter(e -> ((Enum<?>) e).name().equalsIgnoreCase(enumValue))
                             .findFirst()
                             .orElseThrow(() -> new IllegalArgumentException("No enum constant " + targetType.getSimpleName() + "." + enumValue));
+                } else if (List.class.isAssignableFrom(targetType) && value instanceof List<?> valueList) {
+                    if (!valueList.isEmpty() && valueList.getFirst() instanceof String) {
+                        Class<?> elementType = getListElementType(field);
+
+                        if (elementType != null && elementType.isEnum()) {
+                            List<Object> transformedList = new ArrayList<>();
+                            for (Object item : valueList) {
+                                String enumValue = item.toString();
+                                Object enumConstant = Arrays.stream(elementType.getEnumConstants())
+                                        .filter(e -> ((Enum<?>) e).name().equalsIgnoreCase(enumValue))
+                                        .findFirst()
+                                        .orElseThrow(() -> new IllegalArgumentException("No enum constant " + elementType.getSimpleName() + "." + enumValue));
+                                transformedList.add(enumConstant);
+                            }
+                            value = Collections.unmodifiableList(transformedList);
+                        }
+                    }
                 }
             } catch (Exception e) {
                 logger.error("Failed to transform value {}!", value);
@@ -645,6 +695,17 @@ public class ConfigsInstance {
             }
         }
         return value;
+    }
+
+    private Class<?> getListElementType(Field field) {
+        java.lang.reflect.Type genericType = field.getGenericType();
+        if (genericType instanceof java.lang.reflect.ParameterizedType parameterizedType) {
+            java.lang.reflect.Type[] typeArguments = parameterizedType.getActualTypeArguments();
+            if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
+                return (Class<?>) typeArguments[0];
+            }
+        }
+        return null;
     }
 
     /**

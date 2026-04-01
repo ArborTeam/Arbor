@@ -90,7 +90,7 @@ public class GlobalServerRegionBar extends AbstractGlobalServerBar {
             case ACTION_BAR -> player.sendActionBar(message);
 
             case BOSS_BAR ->
-                    bar.name(message).color(barColorFromUtil(utilisationPercent)).progress((float) Math.min(1.0, Math.max(utilisation, 0)));
+                    bar.name(message).color(barColorFromUtil(utilisationPercent)).progress((float) Math.clamp(utilisation, 0, 1.0));
 
             case TAB_LIST -> player.sendPlayerListFooter(message);
 

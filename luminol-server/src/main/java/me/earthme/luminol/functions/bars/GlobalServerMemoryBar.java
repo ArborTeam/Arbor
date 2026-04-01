@@ -65,7 +65,7 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
     }
 
     private void updateMembar(Player player, @NotNull BossBar bar, long used, long xmx) {
-        double percent = Math.max(Math.min((float) used / xmx, 1.0F), 0.0F);
+        double percent = Math.clamp((float) used / xmx, 0.0F, 1.0F);
         final Component message = MiniMessage.miniMessage().deserialize(
                 MembarConfig.memBarFormat,
                 Placeholder.component("used", getMemoryComponent(used, xmx)),
@@ -94,7 +94,7 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
     }
 
     private @NotNull Component getMemoryComponent(long used, long max) {
-        final BossBar.Color colorBukkit = barColorFromMemory(Math.max(Math.min((float) used / max, 1.0F), 0.0F));
+        final BossBar.Color colorBukkit = barColorFromMemory(Math.clamp((float) used / max, 0.0F, 1.0F));
         final String colorString = colorBukkit.name();
 
         final String content = "<%s><text></%s>";

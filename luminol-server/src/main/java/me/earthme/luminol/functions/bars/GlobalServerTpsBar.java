@@ -84,7 +84,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
             case ACTION_BAR -> player.sendActionBar(message);
 
             case BOSS_BAR ->
-                    bar.name(message).color(barColorFromTps(tps)).progress((float) Math.min((float) 1, Math.max(mspt / 50, 0)));
+                    bar.name(message).color(barColorFromTps(tps)).progress((float) Math.clamp(mspt / 50, 0, (float) 1));
 
             case TAB_LIST -> player.sendPlayerListFooter(message);
 

@@ -618,6 +618,17 @@ public class ConfigsInstance {
                         return str;
                     })
                     .collect(Collectors.joining(", ", "[", "]"));
+        } else if (list.getFirst() instanceof Number) {
+            ret = list.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(", ", "[", "]"));
+        } else if (list.getFirst() instanceof Enum<?>) {
+            ret = list.stream()
+                    .map(obj -> {
+                        String str = ((Enum<?>) obj).name();
+                        return "\"" + str + "\"";
+                    })
+                    .collect(Collectors.joining(", ", "[", "]"));
         } else {
             ret = list.stream()
                     .map(obj -> {

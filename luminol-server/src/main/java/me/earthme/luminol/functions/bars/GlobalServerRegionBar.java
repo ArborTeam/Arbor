@@ -125,17 +125,17 @@ public class GlobalServerRegionBar extends AbstractGlobalServerBar {
 
     private BossBar.Color barColorFromUtil(double util) {
         if (util > 100) {
-            return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(3));
+            return RegionBarConfig.utilColors.get(3);
         }
 
         if (util >= 70) {
-            return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(2));
+            return RegionBarConfig.utilColors.get(2);
         }
 
         if (util >= 50) {
-            return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(1));
+            return RegionBarConfig.utilColors.get(1);
         }
 
-        return BossBar.Color.valueOf(RegionBarConfig.utilColors.get(0));
+        return RegionBarConfig.utilColors.get(0);
     }
 }

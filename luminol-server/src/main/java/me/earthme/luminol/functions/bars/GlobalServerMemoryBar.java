@@ -48,7 +48,7 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
             if (MembarConfig.display == EnumStatusBarDisplay.BOSS_BAR) {
                 targetBossbar = uuid2Bossbars.computeIfAbsent(
                         playerUUID,
-                        (unused1) -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.valueOf(MembarConfig.memColors.get(3)), BossBar.Overlay.NOTCHED_20)
+                        (unused1) -> BossBar.bossBar(Component.text(""), 0.0F, MembarConfig.memColors.get(3), BossBar.Overlay.NOTCHED_20)
                 );
 
                 apiPlayer.showBossBar(targetBossbar);
@@ -105,17 +105,17 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
 
     private BossBar.Color barColorFromMemory(double memPercent) {
         if (memPercent == -1) {
-            return BossBar.Color.valueOf(MembarConfig.memColors.get(3));
+            return MembarConfig.memColors.get(3);
         }
 
         if (memPercent <= 50) {
-            return BossBar.Color.valueOf(MembarConfig.memColors.get(0));
+            return MembarConfig.memColors.get(0);
         }
 
         if (memPercent <= 70) {
-            return BossBar.Color.valueOf(MembarConfig.memColors.get(1));
+            return MembarConfig.memColors.get(1);
         }
 
-        return BossBar.Color.valueOf(MembarConfig.memColors.get(2));
+        return MembarConfig.memColors.get(2);
     }
 }

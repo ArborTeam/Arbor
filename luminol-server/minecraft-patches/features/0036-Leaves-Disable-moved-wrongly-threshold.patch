@@ -8,7 +8,7 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 9dc3e00dd9f1110cbbe79e301a249d2420e0d94e..52c87838ccaf6d852b89424dd2d2babdbcffc1a9 100644
+index 9dc3e00dd9f1110cbbe79e301a249d2420e0d94e..87a5e60e646a74529e708ee2cb3d4ce4fb2ae019 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -634,7 +634,7 @@ public class ServerGamePacketListenerImpl
@@ -16,7 +16,7 @@ index 9dc3e00dd9f1110cbbe79e301a249d2420e0d94e..52c87838ccaf6d852b89424dd2d2babd
                  }
                  // Paper end - Prevent moving into unloaded chunks
 -                if (d7 - d6 > Math.max(100.0, Mth.square(org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed)) && !this.isSingleplayerOwner()) {
-+                if (!me.earthme.luminol.config.modules.misc.DisableMovedWronglyThreshold.enabled && d7 - d6 > Math.max(100.0, Mth.square(org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed)) && !this.isSingleplayerOwner()) { // Leaves - disable can
++                if (!me.earthme.luminol.config.modules.misc.DisableWarningConfig.disableMovedWronglyThresholdWarning && d7 - d6 > Math.max(100.0, Mth.square(org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed)) && !this.isSingleplayerOwner()) { // Leaves - disable can
                      // CraftBukkit end
                      LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", rootVehicle.getPlainTextName(), this.player.getPlainTextName(), d3, d4, d5);
                      this.send(ClientboundMoveVehiclePacket.fromEntity(rootVehicle));
@@ -25,7 +25,7 @@ index 9dc3e00dd9f1110cbbe79e301a249d2420e0d94e..52c87838ccaf6d852b89424dd2d2babd
                  d7 = d3 * d3 + d4 * d4 + d5 * d5;
                  boolean flag1 = false;
 -                if (d7 > org.spigotmc.SpigotConfig.movedWronglyThreshold) { // Spigot
-+                if (!me.earthme.luminol.config.modules.misc.DisableMovedWronglyThreshold.enabled && d7 > org.spigotmc.SpigotConfig.movedWronglyThreshold) { // Spigot
++                if (!me.earthme.luminol.config.modules.misc.DisableWarningConfig.disableMovedWronglyThresholdWarning && d7 > org.spigotmc.SpigotConfig.movedWronglyThreshold) { // Spigot
                      flag1 = true; // Paper - diff on change, this should be moved wrongly
                      LOGGER.warn("{} (vehicle of {}) moved wrongly! {}", rootVehicle.getPlainTextName(), this.player.getPlainTextName(), Math.sqrt(d7));
                  }
@@ -34,7 +34,7 @@ index 9dc3e00dd9f1110cbbe79e301a249d2420e0d94e..52c87838ccaf6d852b89424dd2d2babd
                                      if (this.shouldCheckPlayerMovement(isFallFlying)) {
                                          float f2 = isFallFlying ? 300.0F : 100.0F;
 -                                        if (d7 - d6 > Math.max(f2, Mth.square(org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed))) {
-+                                        if (!me.earthme.luminol.config.modules.misc.DisableMovedWronglyThreshold.enabled && d7 - d6 > Math.max(f2, Mth.square(org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed))) { // Leaves - disable can
++                                        if (!me.earthme.luminol.config.modules.misc.DisableWarningConfig.disableMovedWronglyThresholdWarning && d7 - d6 > Math.max(f2, Mth.square(org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed))) { // Leaves - disable can
                                              // CraftBukkit end
                                              // Paper start - Add fail move event
                                              io.papermc.paper.event.player.PlayerFailMoveEvent event = fireFailMove(io.papermc.paper.event.player.PlayerFailMoveEvent.FailReason.MOVED_TOO_QUICKLY,
@@ -43,7 +43,7 @@ index 9dc3e00dd9f1110cbbe79e301a249d2420e0d94e..52c87838ccaf6d852b89424dd2d2babd
                                  d7 = d3 * d3 + d4 * d4 + d5 * d5;
                                  boolean movedWrongly = false; // Paper - Add fail move event; rename
 -                                if (!this.player.isChangingDimension()
-+                                if (!me.earthme.luminol.config.modules.misc.DisableMovedWronglyThreshold.enabled // Leaves - disable can
++                                if (!me.earthme.luminol.config.modules.misc.DisableWarningConfig.disableMovedWronglyThresholdWarning // Leaves - disable can
 +                                    && !this.player.isChangingDimension()
                                      && d7 > org.spigotmc.SpigotConfig.movedWronglyThreshold // Spigot
                                      && !this.player.isSleeping()

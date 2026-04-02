@@ -8,6 +8,7 @@ import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
 import me.earthme.luminol.functions.bars.GlobalServerBarManager;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,13 +25,13 @@ public class TpsBarConfig implements IConfigModule {
     public static String tpsBarFormat = "<gray>TPS<yellow>:</yellow> <tps> MSPT<yellow>:</yellow> <mspt> Ping<yellow>:</yellow> <ping>ms ChunkHot<yellow>:</yellow> <chunkhot>";
     @TransformedConfig(name = "tps_color_list", directory = {"misc", "tpsbar"})
     @ConfigInfo(name = "tps_color_list")
-    public static List<String> tpsColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
+    public static List<BossBar.Color> tpsColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
     @TransformedConfig(name = "ping_color_list", directory = {"misc", "tpsbar"})
     @ConfigInfo(name = "ping_color_list")
-    public static List<String> pingColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
+    public static List<BossBar.Color> pingColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
     @TransformedConfig(name = "chunkhot_color_list", directory = {"misc", "tpsbar"})
     @ConfigInfo(name = "chunkhot_color_list")
-    public static List<String> chunkHotColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
+    public static List<BossBar.Color> chunkHotColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
     @TransformedConfig(name = "update_interval_ticks", directory = {"misc", "tpsbar"})
     @ConfigInfo(name = "update_interval_ticks")
     public static int updateInterval = 15;

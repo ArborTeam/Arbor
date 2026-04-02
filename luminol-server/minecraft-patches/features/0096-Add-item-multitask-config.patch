@@ -8,7 +8,7 @@ is for Anarchy servers or Crystal PVP servers this allows them to pvp
 without stopping the item mid animation.
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index bd344bbebc867f89061694edc0feeab9d679c90c..de11a8eb0dd556dcc35522e5d2c1d4d4bc6f3b81 100644
+index 8843559f8400e60e3494089846e7d25a5940bfbc..90e044ab3476d91819dddf14054d4626358da363 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2137,7 +2137,11 @@ public class ServerGamePacketListenerImpl

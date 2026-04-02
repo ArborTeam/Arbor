@@ -8,6 +8,7 @@ import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
 import me.earthme.luminol.functions.bars.GlobalServerBarManager;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +25,7 @@ public class RegionBarConfig implements IConfigModule {
     public static String regionBarFormat = "<gray>Util<yellow>:</yellow> <util> Chunks<yellow>:</yellow> <green><chunks></green> Players<yellow>:</yellow> <green><players></green> Entities<yellow>:</yellow> <green><entities></green>";
     @TransformedConfig(name = "util_color_list", directory = {"misc", "regionbar"})
     @ConfigInfo(name = "util_color_list")
-    public static List<String> utilColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
+    public static List<BossBar.Color> utilColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
     @TransformedConfig(name = "update_interval_ticks", directory = {"misc", "regionbar"})
     @ConfigInfo(name = "update_interval_ticks")
     public static int updateInterval = 15;

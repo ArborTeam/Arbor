@@ -8,6 +8,7 @@ import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
 import me.earthme.luminol.functions.bars.GlobalServerBarManager;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +25,7 @@ public class MembarConfig implements IConfigModule {
     public static String memBarFormat = "<gray>Memory usage <yellow>:</yellow> <used>MB<yellow>/</yellow><available>MB";
     @TransformedConfig(name = "memory_color_list", directory = {"misc", "membar"})
     @ConfigInfo(name = "memory_color_list")
-    public static List<String> memColors = List.of("GREEN", "YELLOW", "RED", "PURPLE");
+    public static List<BossBar.Color> memColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
     @TransformedConfig(name = "update_interval_ticks", directory = {"misc", "membar"})
     @ConfigInfo(name = "update_interval_ticks")
     public static int updateInterval = 15;

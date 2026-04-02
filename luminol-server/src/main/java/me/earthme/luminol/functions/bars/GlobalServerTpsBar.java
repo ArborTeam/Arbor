@@ -50,7 +50,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
             if (TpsBarConfig.display == EnumStatusBarDisplay.BOSS_BAR) {
                 targetBossbar = uuid2Bossbars.computeIfAbsent(
                         playerUUID,
-                        unused -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(3)), BossBar.Overlay.NOTCHED_20)
+                        unused -> BossBar.bossBar(Component.text(""), 0.0F, TpsBarConfig.tpsColors.get(3), BossBar.Overlay.NOTCHED_20)
                 );
 
                 apiPlayer.showBossBar(targetBossbar);
@@ -104,18 +104,18 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
 
     private BossBar.Color barColorFromPing(int ping) {
         if (ping == -1) {
-            return BossBar.Color.valueOf(TpsBarConfig.pingColors.get(3));
+            return TpsBarConfig.pingColors.get(3);
         }
 
         if (ping <= 80) {
-            return BossBar.Color.valueOf(TpsBarConfig.pingColors.get(0));
+            return TpsBarConfig.pingColors.get(0);
         }
 
         if (ping <= 160) {
-            return BossBar.Color.valueOf(TpsBarConfig.pingColors.get(1));
+            return TpsBarConfig.pingColors.get(1);
         }
 
-        return BossBar.Color.valueOf(TpsBarConfig.pingColors.get(2));
+        return TpsBarConfig.pingColors.get(2);
     }
 
     private @NotNull Component getMsptComponent(double mspt) {
@@ -140,34 +140,34 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
 
     private BossBar.Color barColorFromChunkHot(long chunkHot) {
         if (chunkHot == -1) {
-            return BossBar.Color.valueOf(TpsBarConfig.chunkHotColors.get(3));
+            return TpsBarConfig.chunkHotColors.get(3);
         }
 
         if (chunkHot <= 300000L) {
-            return BossBar.Color.valueOf(TpsBarConfig.chunkHotColors.get(0));
+            return TpsBarConfig.chunkHotColors.get(0);
         }
 
         if (chunkHot <= 500000L) {
-            return BossBar.Color.valueOf(TpsBarConfig.chunkHotColors.get(1));
+            return TpsBarConfig.chunkHotColors.get(1);
         }
 
-        return BossBar.Color.valueOf(TpsBarConfig.chunkHotColors.get(2));
+        return TpsBarConfig.chunkHotColors.get(2);
     }
 
     private BossBar.Color barColorFromMspt(double mspt) {
         if (mspt == -1) {
-            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(3));
+            return TpsBarConfig.tpsColors.get(3);
         }
 
         if (mspt <= 25) {
-            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(0));
+            return TpsBarConfig.tpsColors.get(0);
         }
 
         if (mspt <= 50) {
-            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(1));
+            return TpsBarConfig.tpsColors.get(1);
         }
 
-        return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(2));
+        return TpsBarConfig.tpsColors.get(2);
     }
 
     private @NotNull Component getTpsComponent(double tps) {
@@ -182,17 +182,17 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
 
     private BossBar.Color barColorFromTps(double tps) {
         if (tps == -1) {
-            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(3));
+            return TpsBarConfig.tpsColors.get(3);
         }
 
         if (tps >= 18) {
-            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(0));
+            return TpsBarConfig.tpsColors.get(0);
         }
 
         if (tps >= 15) {
-            return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(1));
+            return TpsBarConfig.tpsColors.get(1);
         }
 
-        return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(2));
+        return TpsBarConfig.tpsColors.get(2);
     }
 }

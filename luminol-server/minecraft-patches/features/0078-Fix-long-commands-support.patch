@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Thu, 2 Apr 2026 12:26:24 +0800
+Subject: [PATCH] Fix long commands support
+
+Some long commands can be run through the dialog command, but paper has prohibited it.
+Revert to vanilla to fix it.
+
+diff --git a/net/minecraft/network/protocol/game/ServerboundChatCommandPacket.java b/net/minecraft/network/protocol/game/ServerboundChatCommandPacket.java
+index 073e369fc21d1e098cb680638859a37b154895a4..f9360aaec1c322a6f6a7d7168289bc124276cd2a 100644
+--- a/net/minecraft/network/protocol/game/ServerboundChatCommandPacket.java
++++ b/net/minecraft/network/protocol/game/ServerboundChatCommandPacket.java
+@@ -12,7 +12,7 @@ public record ServerboundChatCommandPacket(String command) implements Packet<Ser
+     );
+ 
+     private ServerboundChatCommandPacket(FriendlyByteBuf buffer) {
+-        this(buffer.readUtf(MAX_CHAT_PACKET_INPUT_SIZE)); // Paper - limit chat command inputs
++        this(me.earthme.luminol.config.modules.fixes.LongCommandSupportConfig.enabled ? buffer.readUtf() : buffer.readUtf(MAX_CHAT_PACKET_INPUT_SIZE)); // Paper - limit chat command inputs // Luminol - add support for long command inputs
+     }
+ 
+     private void write(FriendlyByteBuf buffer) {

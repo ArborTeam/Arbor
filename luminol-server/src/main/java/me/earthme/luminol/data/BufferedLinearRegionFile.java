@@ -5,7 +5,6 @@ import ca.spottedleaf.concurrentutil.util.ConcurrentUtil;
 import ca.spottedleaf.moonrise.patches.chunk_system.io.MoonriseRegionFileIO;
 import com.github.luben.zstd.Zstd;
 import com.github.luben.zstd.ZstdInputStream;
-import com.github.luben.zstd.ZstdOutputStream;
 import me.earthme.luminol.utils.BufferedLinearRegionFileFlusher;
 import net.jpountz.lz4.LZ4Compressor;
 import net.jpountz.lz4.LZ4Factory;
@@ -14,6 +13,7 @@ import net.jpountz.xxhash.XXHash32;
 import net.jpountz.xxhash.XXHashFactory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
+import net.openhft.hashing.LongHashFunction;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -110,7 +110,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.compressionLevel = (byte) compressionLevel;
 
         this.initSwapFile();
-        this.loadSwapDataFromMasterFile();
+        this.tryLoadOldBlinearMasterFileData();
 
         this.flusher = flusher;
 
@@ -218,8 +218,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
     }
 
-    private void loadSwapDataFromMasterFile() throws IOException {
-        this.masterFileParser.parseMainFile(this.masterFilePath);
+    private void tryLoadOldBlinearMasterFileData() throws IOException {
+        this.masterFileParser.tryParseMainFileOld(this.masterFilePath);
     }
 
     private void initSwapFile() throws IOException {
@@ -409,6 +409,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         long newAcquiredIndex;
 
         final Path targetTemp = new File(this.swapFilePath.toString() + ".tmp").toPath();
+
         try (FileChannel tempChannel = FileChannel.open(
                 targetTemp,
                 StandardOpenOption.CREATE_NEW,
@@ -452,10 +453,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.swapFileChannel.close();
 
         // replace swap file
-        final Path target = new File(this.swapFilePath + ".tmp").toPath();
         try {
             Files.move(
-                    target,
+                    targetTemp,
                     this.swapFilePath,
                     StandardCopyOption.REPLACE_EXISTING,
                     StandardCopyOption.ATOMIC_MOVE
@@ -464,7 +464,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             // atomic move might be unsupported on some file systems, so give it an attempt to retry without atomic move
             try {
                 Files.move(
-                        target,
+                        targetTemp,
                         this.swapFilePath,
                         StandardCopyOption.REPLACE_EXISTING
                 );
@@ -473,7 +473,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 e.addSuppressed(ex);
 
                 // delete file that failed to replace
-                Files.deleteIfExists(target);
+                Files.deleteIfExists(targetTemp);
                 // recalculate acquired index
                 this.recalculateAcquiredIndex();
                 // reopen closed channel
@@ -1195,7 +1195,103 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
         }
 
-        private void parseBufferedLinearV2(@NotNull DataInputStream ioStream, Path file) throws IOException {
+
+        private void parseLinearV2(DataInputStream ioStream, Path file) throws IOException {
+            ioStream.readLong(); // Skip newestTimestamp (Long)
+
+            byte gridSize = ioStream.readByte();
+            if (gridSize != 1 && gridSize != 2 && gridSize != 4 && gridSize != 8 && gridSize != 16 && gridSize != 32)
+                throw new RuntimeException("Invalid grid size: " + gridSize + " file " + file);
+            int bucketSize = 32 / gridSize;
+
+            ioStream.readInt(); // Skip region_x (Int)
+            ioStream.readInt(); // Skip region_z (Int)
+
+            ioStream.skipBytes(128); // Skip existence bitmap
+
+            // Skip NBT features
+            while (true) {
+                byte featureNameLength = ioStream.readByte();
+                if (featureNameLength == 0) break;
+                byte[] featureNameBytes = new byte[featureNameLength];
+                ioStream.readFully(featureNameBytes);
+                ioStream.readInt(); // featureValue
+            }
+
+            // Read bucket metadata
+            int totalBuckets = gridSize * gridSize;
+            int[] bucketSizes = new int[totalBuckets];
+            byte[] bucketCompressionLevels = new byte[totalBuckets];
+            long[] bucketHashes = new long[totalBuckets];
+            for (int i = 0; i < totalBuckets; i++) {
+                bucketSizes[i] = ioStream.readInt();
+                bucketCompressionLevels[i] = ioStream.readByte();
+                bucketHashes[i] = ioStream.readLong();
+            }
+
+            // Read and decompress each bucket, load chunks into swap
+            for (int bx = 0; bx < gridSize; bx++) {
+                for (int bz = 0; bz < gridSize; bz++) {
+                    int bucketIdx = bx * gridSize + bz;
+
+                    if (bucketSizes[bucketIdx] <= 0) continue;
+
+                    byte[] compressedBucket = new byte[bucketSizes[bucketIdx]];
+                    ioStream.readFully(compressedBucket);
+
+                    long rawHash = LongHashFunction.xx().hashBytes(compressedBucket);
+                    if (rawHash != bucketHashes[bucketIdx]) {
+                        throw new IOException("Region file hash incorrect for bucket " + bucketIdx + " in " + file);
+                    }
+
+                    ByteArrayInputStream bucketByteStream = new ByteArrayInputStream(compressedBucket);
+                    ZstdInputStream zstdStream = new ZstdInputStream(bucketByteStream);
+                    ByteBuffer bucketBuffer = ByteBuffer.wrap(zstdStream.readAllBytes());
+                    zstdStream.close();
+
+                    for (int cx = 0; cx < bucketSize; cx++) {
+                        for (int cz = 0; cz < bucketSize; cz++) {
+                            int chunkX = bx * bucketSize + cx;
+                            int chunkZ = bz * bucketSize + cz;
+                            int chunkIndex = chunkX + chunkZ * 32;
+
+                            int chunkSize = bucketBuffer.getInt();
+                            long timestamp = bucketBuffer.getLong();
+
+                            if (chunkSize > 0) {
+                                // chunkSize includes the 8 bytes of timestamp already written
+                                int dataLen = chunkSize - 8;
+                                byte[] chunkData = new byte[dataLen];
+                                bucketBuffer.get(chunkData);
+
+                                // Use writeChunk to go through the full path (adds length + timestamp + xxhash header)
+                                BufferedLinearRegionFile.this.writeChunk(chunkX, chunkZ, ByteBuffer.wrap(chunkData));
+
+                                // Mark bucket as loaded and dirty so it gets synced to new master format
+                                final int blinearBucketIndex = chunkIndex >> BUCKET_SHIFT;
+                                final Bucket bucket = BufferedLinearRegionFile.this.buckets[blinearBucketIndex];
+
+                                bucket.dirty = true;
+
+                                synchronized (bucket.lock) {
+                                    bucket.loaded = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Footer validation
+            long footerSuperBlock = ioStream.readLong();
+            if (footerSuperBlock != LINEAR_FILE_SUPER_BLOCK) {
+                throw new IOException("Footer superblock invalid " + file);
+            }
+
+            BufferedLinearRegionFile.this.markAsToSync();
+        }
+
+        private void tryParseBlinearV2(@NotNull DataInputStream ioStream, Path file) throws IOException {
             final byte version = ioStream.readByte();
 
             // we will parse dynamically (V3)
@@ -1247,7 +1343,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             return new int[]{x, z};
         }
 
-        private void parseLinear(@NotNull DataInputStream ioStream, Path file) throws IOException {
+        private void parseLinearV1(@NotNull DataInputStream ioStream, Path file) throws IOException {
             final byte version = ioStream.readByte();
 
             if (version != 1 && version != 2) {
@@ -1301,7 +1397,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
         }
 
-        public void parseMainFile(@NotNull Path mainFilePath) throws IOException {
+        // won't and need not to hold any region locks as we are calling this in a safe point (initially newed)
+        public void tryParseMainFileOld(@NotNull Path mainFilePath) throws IOException {
             final File file = mainFilePath.toFile();
 
             if (!file.exists() || !file.canRead()) {
@@ -1312,18 +1409,31 @@ public class BufferedLinearRegionFile implements IRegionFile {
             final FileInputStream fileStream = new FileInputStream(file);
             final DataInputStream rawDataStream = new DataInputStream(fileStream);
 
+            boolean oldParsed = false;
             final long superBlock;
             try {
                 superBlock = rawDataStream.readLong();
 
                 if (superBlock == MASTER_FILE_SUPER_BLOCK) {
-                    this.parseBufferedLinearV2(rawDataStream, mainFilePath);
-                    return;
+                    this.tryParseBlinearV2(rawDataStream, mainFilePath);
+
+                    oldParsed = true;
                 }
 
                 if (superBlock == LINEAR_FILE_SUPER_BLOCK) {
-                    this.parseLinear(rawDataStream, mainFilePath);
-                    return;
+                    final byte version = rawDataStream.readByte();
+
+                    if (version == 1 || version == 2) {
+                        this.parseLinearV1(rawDataStream, mainFilePath);
+
+                        oldParsed = true;
+                    }
+
+                    if (version == 3) {
+                        this.parseLinearV2(rawDataStream, mainFilePath);
+
+                        oldParsed = true;
+                    }
                 }
 
             } catch (Throwable ex) {
@@ -1337,73 +1447,16 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 throw new IOException("Failed to parse master file: " + mainFilePath, ex);
             }
 
+            // old parsed, remove the original file, and we will recreate it as we sync
+            if (oldParsed) {
+                Files.deleteIfExists(mainFilePath);
+                return;
+            }
+
             // anyone non-matched, close stream and throw the error
             rawDataStream.close();
 
             throw new IOException("Unknown or unsupported super block : " + superBlock);
-        }
-
-        @Deprecated(forRemoval = true)
-        public void writeMainFile(@NotNull Path mainFile) throws IOException {
-            final Path tmpFilePath = Path.of(mainFile + ".tmp");
-
-            long timestamp = System.currentTimeMillis();
-
-            File tempFile = tmpFilePath.toFile();
-
-            try (final OutputStream fileStream = Files.newOutputStream(tmpFilePath, MASTER_TMP_FILE_CHANNEL_OPTIONS);
-                 final ZstdOutputStream zstdStream = new ZstdOutputStream(fileStream, BufferedLinearRegionFile.this.compressionLevel)
-            ) {
-
-                // only used as a helper stream
-                // the parent stream will be closed in the try-catch block upper
-                final DataOutputStream fileDataStreamHelper = new DataOutputStream(fileStream);
-
-                fileDataStreamHelper.writeLong(MASTER_FILE_SUPER_BLOCK); // super block
-                fileDataStreamHelper.writeByte(MASTER_FILE_VERSION); // version
-                fileDataStreamHelper.writeLong(timestamp); // timestamp
-                fileDataStreamHelper.write(BufferedLinearRegionFile.this.compressionLevel); // compression level
-                fileDataStreamHelper.flush();
-
-                // only used as a helper stream
-                // the parent stream will be closed in the try-catch block upper
-                final DataOutputStream zstdDataStreamHelper = new DataOutputStream(zstdStream);
-
-                for (int i = 0; i < 1024; i++) {
-                    // read from swap file
-                    final ByteBuffer chunkData = BufferedLinearRegionFile.this.readChunkDataRaw(i);
-
-                    // not found
-                    if (chunkData == null) {
-                        zstdDataStreamHelper.writeInt(0);
-                        continue;
-                    }
-
-                    final byte[] buffer = new byte[chunkData.remaining()];
-                    chunkData.get(buffer);
-
-                    // store
-                    zstdDataStreamHelper.writeInt(buffer.length); // len
-                    zstdDataStreamHelper.write(buffer); // data
-                }
-
-                zstdDataStreamHelper.flush();
-            }
-
-            try {
-                Files.move(tempFile.toPath(), masterFilePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-            } catch (Throwable e) {
-                // retry with non-atomic move
-                try {
-                    Files.move(tempFile.toPath(), masterFilePath, StandardCopyOption.REPLACE_EXISTING);
-                } catch (Throwable ex) {
-                    // now we are totally failed
-
-                    // fast-fail
-                    Files.deleteIfExists(masterFilePath);
-                    throw new IOException("Failed to replace original master file!", e);
-                }
-            }
         }
     }
 }

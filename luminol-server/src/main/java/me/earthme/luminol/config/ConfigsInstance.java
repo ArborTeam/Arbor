@@ -659,8 +659,8 @@ public class ConfigsInstance {
     /**
      * Attempt to transform a value to target type
      */
-    private Object tryTransform(Field field, Object value) {
-        Class<?> targetType = field.getType();
+    private Object tryTransform(Field field, Object value) throws IllegalAccessException {
+        Class<?> targetType = field.get(null).getClass();
         if (!targetType.isAssignableFrom(value.getClass())) {
             try {
                 if (targetType == Integer.class) {

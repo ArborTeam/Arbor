@@ -1264,9 +1264,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
                                 byte[] chunkData = new byte[dataLen];
                                 bucketBuffer.get(chunkData);
 
-                                // Use writeChunk to go through the full path (adds length + timestamp + xxhash header)
-                                BufferedLinearRegionFile.this.writeChunk(chunkX, chunkZ, ByteBuffer.wrap(chunkData));
-
                                 // Mark bucket as loaded and dirty so it gets synced to new master format
                                 final int blinearBucketIndex = chunkIndex >> BUCKET_SHIFT;
                                 final Bucket bucket = BufferedLinearRegionFile.this.buckets[blinearBucketIndex];
@@ -1276,6 +1273,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
                                 synchronized (bucket.lock) {
                                     bucket.loaded = true;
                                 }
+
+                                // Use writeChunk to go through the full path (adds length + timestamp + xxhash header)
+                                BufferedLinearRegionFile.this.writeChunk(chunkX, chunkZ, ByteBuffer.wrap(chunkData));
                             }
                         }
                     }
@@ -1287,8 +1287,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
             if (footerSuperBlock != LINEAR_FILE_SUPER_BLOCK) {
                 throw new IOException("Footer superblock invalid " + file);
             }
-
-            BufferedLinearRegionFile.this.markAsToSync();
         }
 
         private void tryParseBlinearV2(@NotNull DataInputStream ioStream, Path file) throws IOException {
@@ -1320,8 +1318,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
                         final ByteBuffer sectorDataNioBuffer = ByteBuffer.wrap(sectorData);
 
-                        BufferedLinearRegionFile.this.writeChunkDataRaw(index, sectorDataNioBuffer, true);
-
                         final int bucketIndex = index >> BUCKET_SHIFT;
                         final Bucket bucket = BufferedLinearRegionFile.this.buckets[bucketIndex];
 
@@ -1330,7 +1326,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
                         }
 
                         bucket.dirty = true;
-                        BufferedLinearRegionFile.this.markAsToSync();
+
+                        BufferedLinearRegionFile.this.writeChunkDataRaw(index, sectorDataNioBuffer, false);
                     }
                 }
             }
@@ -1437,8 +1434,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 }
 
             } catch (Throwable ex) {
-                // error caught during other reading logics, close directly
-                try {
+                 try {
                     rawDataStream.close();
                 } catch (IOException ex2) {
                     ex.addSuppressed(ex2);
@@ -1449,7 +1445,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             // old parsed, remove the original file, and we will recreate it as we sync
             if (oldParsed) {
-                Files.deleteIfExists(mainFilePath);
+                // immediately do sync operation
+                BufferedLinearRegionFile.this.syncToMasterFile();
                 return;
             }
 

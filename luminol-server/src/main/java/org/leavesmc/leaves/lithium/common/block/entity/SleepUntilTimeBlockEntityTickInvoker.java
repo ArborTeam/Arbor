@@ -72,5 +72,7 @@ public class SleepUntilTimeBlockEntityTickInvoker implements TickingBlockEntity 
     @Override
     public void updateTicksForLithium(long redstoneGameTimeOffset) {
         this.sleepUntilTickExclusive += redstoneGameTimeOffset;
+
+        this.delegate.updateTicksForLithium(redstoneGameTimeOffset);
     }
 }

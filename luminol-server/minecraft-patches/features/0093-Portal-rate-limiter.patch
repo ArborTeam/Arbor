@@ -5,7 +5,7 @@ Subject: [PATCH] Portal rate limiter
 
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index c7f578c117baccb10c0c15b05a6c04e073f15da8..6de3e60d63a838cf9d24822cbbf1cd2b445e6b4d 100644
+index d791ac80d3d25cef32536f8297aca0d003db4489..33d186d660ce3e3dc8cf26cd521fa99291ff78a5 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -75,6 +75,10 @@ public final class RegionizedWorldData {
@@ -19,7 +19,7 @@ index c7f578c117baccb10c0c15b05a6c04e073f15da8..6de3e60d63a838cf9d24822cbbf1cd2b
              // Luminol start - Lithium sleeping block entity
              // lithium listeners
              final long fromRedstoneTimeOffsetForLithiumTracker = into.redstoneTime - from.redstoneTime;
-@@ -198,6 +202,12 @@ public final class RegionizedWorldData {
+@@ -210,6 +214,12 @@ public final class RegionizedWorldData {
          public void split(final RegionizedWorldData from, final int chunkToRegionShift,
                            final Long2ReferenceOpenHashMap<RegionizedWorldData> regionToData,
                            final ReferenceOpenHashSet<RegionizedWorldData> dataSet) {
@@ -32,7 +32,7 @@ index c7f578c117baccb10c0c15b05a6c04e073f15da8..6de3e60d63a838cf9d24822cbbf1cd2b
              // Luminol start - Lithium sleeping block entity
              // lithium entity movement listeners
              for (var entry : from.containerEntityMovementTrackerMap.entrySet()) {
-@@ -524,6 +534,35 @@ public final class RegionizedWorldData {
+@@ -536,6 +546,35 @@ public final class RegionizedWorldData {
      public final Map<Long, ChunkSectionInventoryEntityTracker> containerEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();
      public final Map<Long, ChunkSectionItemEntityMovementTracker> itemEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();
      // Luminol end

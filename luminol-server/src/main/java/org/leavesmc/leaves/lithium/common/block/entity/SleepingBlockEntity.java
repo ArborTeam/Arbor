@@ -76,9 +76,8 @@ public interface SleepingBlockEntity {
             sleepingTicker = tickWrapper.ticker;
         }
         Level world = ((BlockEntity) this).getLevel();
-        tickWrapper.setLithiumSlept(sleepingTicker);
         tickWrapper.rebind(new SleepUntilTimeBlockEntityTickInvoker((BlockEntity) this, world.getRedstoneGameTime() + 1, sleepingTicker));
-        this.lithium$setSleepingTicker(sleepingTicker);
+        this.lithium$setSleepingTicker(null);
     }
 
     default void wakeUpNow() {

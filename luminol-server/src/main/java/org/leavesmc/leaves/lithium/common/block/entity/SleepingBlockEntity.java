@@ -64,7 +64,6 @@ public interface SleepingBlockEntity {
             return false;
         }
         this.lithium$setSleepingTicker(tickWrapper.ticker);
-        tickWrapper.setLithiumSlept(tickWrapper.ticker);
         tickWrapper.rebind(SleepingBlockEntity.SLEEPING_BLOCK_ENTITY_TICKER);
         return true;
     }
@@ -94,7 +93,6 @@ public interface SleepingBlockEntity {
         if (tickWrapper == null) {
             return;
         }
-        tickWrapper.setLithiumSlept(null);
         tickWrapper.rebind(delegate);
     }
 

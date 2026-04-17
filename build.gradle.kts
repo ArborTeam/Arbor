@@ -8,7 +8,7 @@ plugins {
 
 paperweight {
     upstreams.register("folia") {
-        repo = github("PaperMC", "Folia")
+        repo = github("LunaDeerMC", "Folia")
         ref = providers.gradleProperty("foliaRef")
 
         patchFile {

@@ -1,32 +1,14 @@
 --- a/folia-server/build.gradle.kts
 +++ b/folia-server/build.gradle.kts
-@@ -7,7 +_,7 @@
-     `java-library`
-     `maven-publish`
-     idea
--    id("io.papermc.paperweight.core")
-+    id("moe.luminolmc.hyacinthusweight.core")
-     id("io.papermc.fill.gradle") version "1.0.10"
- }
- 
-@@ -15,7 +_,7 @@
- 
- dependencies {
-     mache("io.papermc:mache:1.21.11+build.1")
--    paperclip("io.papermc:paperclip:3.0.3")
-+    hyacinthusclip("moe.luminolmc:hyacinthusclip:${providers.gradleProperty("clipVersion").get()}")
- }
- 
- paperweight {
-@@ -23,6 +_,7 @@
+@@ -24,6 +_,7 @@
      gitFilePatches = false
-     
+ 
      val fork = forks.register("folia") {
 +        rootDirectory = upstreamsDirectory().map { it.dir("folia") }
          upstream.patchDir("paperServer") {
              upstreamPath = "paper-server"
              excludes = setOf("src/minecraft", "patches", "build.gradle.kts")
-@@ -31,7 +_,23 @@
+@@ -32,7 +_,24 @@
          }
      }
  
@@ -48,10 +30,11 @@
 +    }
 +
 +    activeFork = luminol
++
  
  
-     spigot {
-@@ -120,10 +_,14 @@
+     updatingMinecraft {
+@@ -103,10 +_,14 @@
      main {
          java { srcDir("../paper-server/src/main/java"); srcDir("../paper-server/src/generated/java") }
          resources { srcDir("../paper-server/src/main/resources") }
@@ -66,15 +49,14 @@
      }
  }
  val log4jPlugins = sourceSets.create("log4jPlugins") {
-@@ -151,7 +_,22 @@
+@@ -134,7 +_,21 @@
  }
  
  dependencies {
 -    implementation(project(":folia-api"))
-+    implementation(project(":luminol-api")) // Luminol
++    implementation(project(":luminol-api"))
 +    // Luminol start - Dependenices insert
 +    implementation("net.objecthunter:exp4j:0.4.8")
-+    implementation("io.netty:netty-all:4.2.9.Final") // used for io_uring
 +    implementation("com.electronwill.night-config:toml:3.8.3") // Night config
 +    implementation("com.github.luben:zstd-jni:1.5.4-1")
 +    implementation("net.openhft:zero-allocation-hashing:0.16")
@@ -87,29 +69,39 @@
 +    }
 +    // Leaves end - leaves plugin
 +    // Luminol end
-     implementation("ca.spottedleaf:concurrentutil:0.0.8")
+     implementation("ca.spottedleaf:concurrentutil:0.0.10")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -169,7 +_,7 @@
-     runtimeOnly(log4jPlugins.output)
-     alsoShade(log4jPlugins.output)
- 
--    implementation("com.velocitypowered:velocity-native:3.4.0-SNAPSHOT") {
-+    implementation("one.pkg.velocity_rc:velocity-native:3.4.0-SNAPSHOT") { // VelocityNT ReastLib
-         isTransitive = false
+@@ -196,14 +_,14 @@
+         val gitBranch = git.exec(providers, "rev-parse", "--abbrev-ref", "HEAD").get().trim()
+         attributes(
+             "Main-Class" to "org.bukkit.craftbukkit.Main",
+-            "Implementation-Title" to "Folia",
++            "Implementation-Title" to "Luminol", // Luminol - Rebrand
+             "Implementation-Version" to implementationVersion,
+             "Implementation-Vendor" to date,
+-            "Specification-Title" to "Folia",
++            "Specification-Title" to "Luminol", // Luminol - Rebrand
+             "Specification-Version" to project.version,
+-            "Specification-Vendor" to "Paper Team",
+-            "Brand-Id" to "papermc:folia",
+-            "Brand-Name" to "Folia",
++            "Specification-Vendor" to "LuminoLMC", // Luminol - Rebrand
++            "Brand-Id" to "luminolmc:luminol", // Luminol - Rebrand
++            "Brand-Name" to "Luminol", // Luminol - Rebrand
+             "Build-Number" to (build ?: ""),
+             "Build-Time" to buildTime.toString(),
+             "Git-Branch" to gitBranch,
+@@ -214,6 +_,20 @@
+         }
      }
-     implementation("io.netty:netty-codec-haproxy:4.2.7.Final") // Add support for proxy protocol
-@@ -210,26 +_,42 @@
-     implementation("me.lucko:spark-paper:1.10.152")
  }
- 
 +// Pufferfish Start
 +tasks.withType<JavaCompile> {
 +    val compilerArgs = options.compilerArgs
 +    compilerArgs.add("--add-modules=jdk.incubator.vector")
 +}
 +// Pufferfish End
-+
 +// Luminol start - Hide unnecessary warnings
 +tasks.withType<JavaCompile> {
 +    val compilerArgs = options.compilerArgs
@@ -118,37 +110,10 @@
 +    compilerArgs.add("-Xlint:-dep-ann")
 +}
 +// Luminol end
-+
- tasks.jar {
-     manifest {
-         val git = Git(rootProject.layout.projectDirectory.path)
-         val mcVersion = rootProject.providers.gradleProperty("mcVersion").get()
-         val build = System.getenv("BUILD_NUMBER") ?: null
--        val buildTime = providers.environmentVariable("BUILD_STARTED_AT").map(Instant::parse).orElse(Instant.EPOCH).get()
-+        val buildTime = Instant.now() // Always use current as build time
-         val gitHash = git.exec(providers, "rev-parse", "--short=7", "HEAD").get().trim()
-         val implementationVersion = "$mcVersion-${build ?: "DEV"}-$gitHash"
-         val date = git.exec(providers, "show", "-s", "--format=%ci", gitHash).get().trim()
-         val gitBranch = git.exec(providers, "rev-parse", "--abbrev-ref", "HEAD").get().trim()
-         attributes(
-             "Main-Class" to "org.bukkit.craftbukkit.Main",
--            "Implementation-Title" to "Folia",
-+            "Implementation-Title" to "Luminol",
-             "Implementation-Version" to implementationVersion,
-             "Implementation-Vendor" to date,
--            "Specification-Title" to "Folia",
-+            "Specification-Title" to "Luminol",
-             "Specification-Version" to project.version,
--            "Specification-Vendor" to "Paper Team",
--            "Brand-Id" to "papermc:folia",
--            "Brand-Name" to "Folia",
-+            "Specification-Vendor" to "LuminolMC org",
-+            "Brand-Id" to "luminolmc:luminol",
-+            "Brand-Name" to "Luminol",
-             "Build-Number" to (build ?: ""),
-             "Build-Time" to buildTime.toString(),
-             "Git-Branch" to gitBranch,
-@@ -381,7 +_,7 @@
+ 
+ // Compile tests with -parameters for better junit parameterized test names
+ tasks.compileTestJava {
+@@ -341,7 +_,7 @@
  }
  
  fill {

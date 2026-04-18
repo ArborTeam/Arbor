@@ -3,13 +3,15 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java // TODO java launcher tasks
-    id("moe.luminolmc.hyacinthusweight.patcher")
+    id("io.papermc.paperweight.patcher") version "2.0.0-SNAPSHOT"
 }
 
 paperweight {
     upstreams.register("folia") {
         repo = github("LunaDeerMC", "Folia")
         ref = providers.gradleProperty("foliaRef")
+
+        println("Upstream commit ref: " + ref.get())
 
         patchFile {
             path = "folia-server/build.gradle.kts"
@@ -44,7 +46,7 @@ subprojects {
 
     extensions.configure<JavaPluginExtension> {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
+            languageVersion = JavaLanguageVersion.of(25)
         }
     }
 
@@ -64,7 +66,7 @@ subprojects {
     }
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = Charsets.UTF_8.name()
-        options.release = 21
+        options.release = 25
         options.isFork = true
     }
     tasks.withType<Javadoc>().configureEach {

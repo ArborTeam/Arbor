@@ -8,10 +8,10 @@ As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18
 Licensed under: MIT (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/LICENSE)
 
 diff --git a/src/main/java/org/bukkit/entity/Villager.java b/src/main/java/org/bukkit/entity/Villager.java
-index d1ab8a25589a016e210af6bc448385f465509618..5bc6da48bd19fc49759a7ae6f556800866a2d414 100644
+index a2024b5dda030a7724c13b2446224903ae837339..71f34a40b136f7f08a4820056c00692b986f63bd 100755
 --- a/src/main/java/org/bukkit/entity/Villager.java
 +++ b/src/main/java/org/bukkit/entity/Villager.java
-@@ -406,4 +406,13 @@ public interface Villager extends AbstractVillager {
+@@ -405,4 +405,13 @@ public interface Villager extends AbstractVillager {
       * Demand is still updated even if all events are canceled.
       */
      public void restock();

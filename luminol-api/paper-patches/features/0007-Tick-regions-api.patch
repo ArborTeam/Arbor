@@ -5,10 +5,10 @@ Subject: [PATCH] Tick regions api
 
 
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index b202bdb84bae23f7b2b5af591879a032f6378a25..320ce229a0163e4f1981f6b71b71ea8f7ff555f9 100644
+index e2b65c0d2d6b9fb6fb4003a8e57766d410a95322..21eac354badd6974cd1e51233c1c775992807a38 100755
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
-@@ -4619,4 +4619,8 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
+@@ -4621,4 +4621,8 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
              }
          }
      }

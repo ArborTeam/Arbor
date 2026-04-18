@@ -1,0 +1,71 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sat, 18 Apr 2026 09:47:46 +0800
+Subject: [PATCH] Add tpsbar with chunkhot membar and region bar
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
+index c8d179d936d57e8222d87b7fd943dbddfa8446a0..e0ecc487098d78447d0959ac27a1c1e8efaec199 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
+@@ -408,4 +408,12 @@ public class CraftChunk implements Chunk {
+     static {
+         Arrays.fill(FULL_LIGHT, (byte) 0xFF);
+     }
++
++    // KioCG start - ChunkHot
++    @Override
++    public long getChunkHotAvg() {
++        final net.minecraft.world.level.chunk.LevelChunk target = this.level.getChunkIfLoaded(this.x,this.z);
++        return target == null ? -1 : target.getChunkHot().getAverage();
++    }
++    // KioCG end
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 0ab8a2d8c41b22df271e342ba341d5d1cd7cef7f..4cb1eb1c2856c553e0ada30f1c6b63c50ce3f775 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -2204,6 +2204,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+             handle.newLevel = data.getIntOr("newLevel", 0);
+             handle.expToDrop = data.getIntOr("expToDrop", 0);
+             handle.keepLevel = data.getBooleanOr("keepLevel", false);
++            //Luminol start - Tpsbar
++            getHandle().isTpsBarVisible = data.getBooleanOr("tpsbarVisible", false);
++            //Luminol end
++            //Luminol start - Membar
++            getHandle().isMemBarVisible = data.getBooleanOr("membarVisible", false);
++            //Luminol end
++            //Luminol start - Regionbar
++            getHandle().isRegionBarVisible = data.getBooleanOr("regionbarVisible", false);
++            //Luminol end
+         });
+     }
+ 
+@@ -2221,6 +2230,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+         data.putLong("lastPlayed", System.currentTimeMillis());
+         data.putString("lastKnownName", handle.getGameProfile().name());
+ 
++        //Luminol start - Tpsbar
++        data.putBoolean("tpsbarVisible",handle.isTpsBarVisible);
++        //Luminol end
++        //Luminol start - Membar
++        data.putBoolean("membarVisible", handle.isMemBarVisible);
++        //Luminol end
++        //Luminol start - Regionbar
++        data.putBoolean("regionbarVisible", handle.isRegionBarVisible);
++        //Luminol end
+         // Paper start - persist for use in offline save data
+         ValueOutput paper = output.child("Paper");
+         paper.putLong("LastLogin", handle.loginTime);
+@@ -3405,4 +3423,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+             entity.remove();
+         }
+     }
++
++    // KioCG start - ChunkHot
++    @Override
++    public long getNearbyChunkHot() {
++        return this.getHandle().getNearbyChunkHot();
++    }
++    // KioCG end
+ }

@@ -652,7 +652,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     @Override
     public DataInputStream getChunkDataInputStream(@NotNull ChunkPos pos) throws IOException {
-        final ByteBuffer data = this.readChunk(pos.x, pos.z);
+        final ByteBuffer data = this.readChunk(pos.x(), pos.z());
 
         if (data == null) {
             return null;
@@ -663,7 +663,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     @Override
     public boolean doesChunkExist(@NotNull ChunkPos pos) throws IOException {
-        return this.hasData(getChunkIndex(pos.x, pos.z));
+        return this.hasData(getChunkIndex(pos.x(), pos.z()));
     }
 
     @Override
@@ -673,13 +673,13 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     @Override
     public void clear(@NotNull ChunkPos pos) throws IOException {
-        this.clearChunkData(getChunkIndex(pos.x, pos.z));
+        this.clearChunkData(getChunkIndex(pos.x(), pos.z()));
     }
 
     @Override
     public boolean hasChunk(@NotNull ChunkPos pos) {
         try {
-            return this.hasData(getChunkIndex(pos.x, pos.z));
+            return this.hasData(getChunkIndex(pos.x(), pos.z()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -688,11 +688,11 @@ public class BufferedLinearRegionFile implements IRegionFile {
     @Override
     public void write(@NotNull ChunkPos pos, ByteBuffer buf) throws IOException {
 
-        final int chunkIndex = getChunkIndex(pos.x, pos.z);
+        final int chunkIndex = getChunkIndex(pos.x(), pos.z());
 
         this.ensureBucketLoaded(chunkIndex);
 
-        this.writeChunk(pos.x, pos.z, buf);
+        this.writeChunk(pos.x(), pos.z(), buf);
 
         this.makeBucketDirty(chunkIndex);
     }
@@ -906,10 +906,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
         public void close() throws IOException {
             ByteBuffer bytebuffer = ByteBuffer.wrap(this.buf, 0, this.count);
 
-            final int chunkIndex = getChunkIndex(this.pos.x, this.pos.z);
+            final int chunkIndex = getChunkIndex(this.pos.x(), this.pos.z());
 
             BufferedLinearRegionFile.this.ensureBucketLoaded(chunkIndex);
-            BufferedLinearRegionFile.this.writeChunk(this.pos.x, this.pos.z, bytebuffer);
+            BufferedLinearRegionFile.this.writeChunk(this.pos.x(), this.pos.z(), bytebuffer);
             BufferedLinearRegionFile.this.flushInternal();
 
             BufferedLinearRegionFile.this.makeBucketDirty(chunkIndex);

@@ -1,26 +1,27 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Helvetica Volubi <suisuroru@blue-millennium.fun>
-Date: Sun, 22 Jun 2025 23:53:59 +0800
+From: MrHua269 <mrhua269@gmail.com>
+Date: Fri, 17 Apr 2026 22:45:58 +0800
 Subject: [PATCH] Rebrand to Luminol
 
 
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index 9216e85e74bb0121c72665f155b07cf9a37f430a..f41c70c6cb2e9fae43bad9dd66546417fe38f14a 100644
+index cf6152c5eaadf2586b00cad19b56401372f8bde0..95361d70182aa5581b19afb6f1adceab56d27531 100755
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -105,6 +105,7 @@ public class Main {
+@@ -103,7 +103,7 @@ public class Main {
+             if (options.has("jfrProfile")) { // CraftBukkit
                  JvmProfiler.INSTANCE.start(Environment.SERVER);
              }
- 
+-
 +            me.earthme.luminol.config.ConfigManager.initConfigs(); // Luminol - Luminol config
-             io.papermc.paper.plugin.PluginInitializerManager.load(optionSet); // Paper
+             io.papermc.paper.plugin.PluginInitializerManager.load(options); // Paper
              Bootstrap.bootStrap();
              Bootstrap.validate();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 3d8290b952e4341211ef8e669372bf7ea1c4bf62..7e514cd4aa55f9b9950d76a7d14dd7945b6eba96 100644
+index eb6f5748bfb1d145a502fb94806f0ab9fe5898aa..413ed813b89ca561e0431bf55f423d244b5ea674 100755
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -261,6 +261,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -282,6 +282,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
          this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
          // Paper end - initialize global and world-defaults configuration

@@ -8,7 +8,7 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/GPL-3.0.txt)
 
 diff --git a/net/minecraft/server/commands/SeedCommand.java b/net/minecraft/server/commands/SeedCommand.java
-index 86ee3b3ae028597576b9549bc4954dfcbaa6732c..2042dc0c7046dec25ff46ddd1e5bd45c3358040b 100755
+index 86ee3b3ae028597576b9549bc4954dfcbaa6732c..2042dc0c7046dec25ff46ddd1e5bd45c3358040b 100644
 --- a/net/minecraft/server/commands/SeedCommand.java
 +++ b/net/minecraft/server/commands/SeedCommand.java
 @@ -13,6 +13,15 @@ public class SeedCommand {
@@ -28,7 +28,7 @@ index 86ee3b3ae028597576b9549bc4954dfcbaa6732c..2042dc0c7046dec25ff46ddd1e5bd45c
              })
          );
 diff --git a/net/minecraft/server/dedicated/DedicatedServerProperties.java b/net/minecraft/server/dedicated/DedicatedServerProperties.java
-index 18d15b6200f03ef4482f734b7ea9a32fde3fb8a0..4333af40ee7f7a29aa5577b3eb79d61b99da76b5 100755
+index 18d15b6200f03ef4482f734b7ea9a32fde3fb8a0..4333af40ee7f7a29aa5577b3eb79d61b99da76b5 100644
 --- a/net/minecraft/server/dedicated/DedicatedServerProperties.java
 +++ b/net/minecraft/server/dedicated/DedicatedServerProperties.java
 @@ -137,7 +137,17 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
@@ -51,7 +51,7 @@ index 18d15b6200f03ef4482f734b7ea9a32fde3fb8a0..4333af40ee7f7a29aa5577b3eb79d61b
              this.get("generator-settings", s -> GsonHelper.parse(!s.isEmpty() ? s : "{}"), new JsonObject()),
              this.get("level-type", v -> v.toLowerCase(Locale.ROOT), WorldPresets.NORMAL.identifier().toString())
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 0df03750792b6cff9a2ccf2ed7462e69577c6eb2..b0c7f7289031dca3832a7854e0846e94290493d6 100755
+index 0df03750792b6cff9a2ccf2ed7462e69577c6eb2..b0c7f7289031dca3832a7854e0846e94290493d6 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -673,6 +673,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -63,7 +63,7 @@ index 0df03750792b6cff9a2ccf2ed7462e69577c6eb2..b0c7f7289031dca3832a7854e0846e94
      }
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index f55798cfb287ccedf111ac0cf7ffa1a1ba86ae52..bd5651e067e4c6552dda79d498f771b9d54551b8 100755
+index f55798cfb287ccedf111ac0cf7ffa1a1ba86ae52..bd5651e067e4c6552dda79d498f771b9d54551b8 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -620,6 +620,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -75,7 +75,7 @@ index f55798cfb287ccedf111ac0cf7ffa1a1ba86ae52..bd5651e067e4c6552dda79d498f771b9
          DataFixer fixerUpper = server.getFixerUpper();
          // Paper - rewrite chunk system
 diff --git a/net/minecraft/world/entity/monster/Slime.java b/net/minecraft/world/entity/monster/Slime.java
-index e19da253db0b1840f582b09a45d73638438afcfd..69bed7258f51f05f050e4d55923b09141b285e53 100755
+index e19da253db0b1840f582b09a45d73638438afcfd..69bed7258f51f05f050e4d55923b09141b285e53 100644
 --- a/net/minecraft/world/entity/monster/Slime.java
 +++ b/net/minecraft/world/entity/monster/Slime.java
 @@ -320,7 +320,12 @@ public class Slime extends Mob implements Enemy {
@@ -93,7 +93,7 @@ index e19da253db0b1840f582b09a45d73638438afcfd..69bed7258f51f05f050e4d55923b0914
                  final double maxHeightSlimeChunk = level.getMinecraftWorld().paperConfig().entities.spawning.slimeSpawnHeight.slimeChunk.maximum;
                  if (random.nextInt(10) == 0 && slimeChunk && pos.getY() < maxHeightSlimeChunk) {
 diff --git a/net/minecraft/world/level/chunk/ChunkAccess.java b/net/minecraft/world/level/chunk/ChunkAccess.java
-index c73b9871faa87493e081cb54e1bf1dce487359c6..f6e140c950f02e1a7c46274f9f68561f2622d7db 100755
+index c73b9871faa87493e081cb54e1bf1dce487359c6..f6e140c950f02e1a7c46274f9f68561f2622d7db 100644
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
 @@ -83,6 +83,10 @@ public abstract class ChunkAccess implements LightChunk, StructureAccess, BiomeM
@@ -126,7 +126,7 @@ index c73b9871faa87493e081cb54e1bf1dce487359c6..f6e140c950f02e1a7c46274f9f68561f
  
      public @Nullable BlockState setBlockState(final BlockPos pos, final BlockState state) {
 diff --git a/net/minecraft/world/level/chunk/ChunkGenerator.java b/net/minecraft/world/level/chunk/ChunkGenerator.java
-index c65fffcda14fea46e49d08024b25bc2e06383c56..8f7391fd0a83fb8d5d4314f32f40689e20dcc380 100755
+index c65fffcda14fea46e49d08024b25bc2e06383c56..8f7391fd0a83fb8d5d4314f32f40689e20dcc380 100644
 --- a/net/minecraft/world/level/chunk/ChunkGenerator.java
 +++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
 @@ -345,7 +345,11 @@ public abstract class ChunkGenerator {
@@ -161,7 +161,7 @@ index c65fffcda14fea46e49d08024b25bc2e06383c56..8f7391fd0a83fb8d5d4314f32f40689e
  
                                  for (StructureSet.StructureSelectionEntry option : options) {
 diff --git a/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java b/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java
-index d43105cf0c29cb86a5e3c7c59dc5e02d2ab8e53f..0abf68c263e5da628aa54f595c4c7716ac92baae 100755
+index d43105cf0c29cb86a5e3c7c59dc5e02d2ab8e53f..0abf68c263e5da628aa54f595c4c7716ac92baae 100644
 --- a/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java
 +++ b/net/minecraft/world/level/chunk/ChunkGeneratorStructureState.java
 @@ -202,7 +202,12 @@ public class ChunkGeneratorStructureState {
@@ -187,7 +187,7 @@ index d43105cf0c29cb86a5e3c7c59dc5e02d2ab8e53f..0abf68c263e5da628aa54f595c4c7716
              int positionInCircle = 0;
              int circle = 0;
 diff --git a/net/minecraft/world/level/chunk/status/ChunkStep.java b/net/minecraft/world/level/chunk/status/ChunkStep.java
-index 554faa6ebfc7c7db11634fc9a8cac846df9b92fb..33c20f0d7550449462a8c722e6d2238fd39b042f 100755
+index 554faa6ebfc7c7db11634fc9a8cac846df9b92fb..33c20f0d7550449462a8c722e6d2238fd39b042f 100644
 --- a/net/minecraft/world/level/chunk/status/ChunkStep.java
 +++ b/net/minecraft/world/level/chunk/status/ChunkStep.java
 @@ -60,6 +60,7 @@ public final class ChunkStep implements ca.spottedleaf.moonrise.patches.chunk_sy
@@ -199,7 +199,7 @@ index 554faa6ebfc7c7db11634fc9a8cac846df9b92fb..33c20f0d7550449462a8c722e6d2238f
              ProfiledDuration profiledDuration = JvmProfiler.INSTANCE.onChunkGenerate(chunk.getPos(), context.level().dimension(), this.targetStatus.getName());
              return this.task.doWork(context, this, cache, chunk).thenApply(newCenterChunk -> this.completeChunkGeneration(newCenterChunk, profiledDuration));
 diff --git a/net/minecraft/world/level/levelgen/WorldOptions.java b/net/minecraft/world/level/levelgen/WorldOptions.java
-index b98649c1c9c75a01a0ccfa036536e8b07c0c82a4..bd33faf331c9d48754ae7ea7652fd4b8187f1895 100755
+index b98649c1c9c75a01a0ccfa036536e8b07c0c82a4..bd33faf331c9d48754ae7ea7652fd4b8187f1895 100644
 --- a/net/minecraft/world/level/levelgen/WorldOptions.java
 +++ b/net/minecraft/world/level/levelgen/WorldOptions.java
 @@ -9,8 +9,22 @@ import net.minecraft.util.RandomSource;
@@ -326,7 +326,7 @@ index b98649c1c9c75a01a0ccfa036536e8b07c0c82a4..bd33faf331c9d48754ae7ea7652fd4b8
      public static OptionalLong parseSeed(String seedString) {
          seedString = seedString.trim();
 diff --git a/net/minecraft/world/level/levelgen/feature/GeodeFeature.java b/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
-index 80e95123e4485eddb17c9720dbb36799eeed943e..de2ddc570233b9e450f177d9bdd85bb4ccc1856c 100755
+index 80e95123e4485eddb17c9720dbb36799eeed943e..de2ddc570233b9e450f177d9bdd85bb4ccc1856c 100644
 --- a/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
 @@ -41,7 +41,11 @@ public class GeodeFeature extends Feature<GeodeConfiguration> {
@@ -343,7 +343,7 @@ index 80e95123e4485eddb17c9720dbb36799eeed943e..de2ddc570233b9e450f177d9bdd85bb4
          List<BlockPos> crackPoints = Lists.newLinkedList();
          double crackSizeAdjustment = (double)numPoints / config.outerWallDistance.maxInclusive();
 diff --git a/net/minecraft/world/level/levelgen/structure/Structure.java b/net/minecraft/world/level/levelgen/structure/Structure.java
-index f1e13ede1f7345089ece8d8ef391f7fd5e55c445..a3a1ab1b610fd0f75c4d5cc96ab921e47d0cfea7 100755
+index f1e13ede1f7345089ece8d8ef391f7fd5e55c445..a3a1ab1b610fd0f75c4d5cc96ab921e47d0cfea7 100644
 --- a/net/minecraft/world/level/levelgen/structure/Structure.java
 +++ b/net/minecraft/world/level/levelgen/structure/Structure.java
 @@ -248,6 +248,11 @@ public abstract class Structure {
@@ -359,7 +359,7 @@ index f1e13ede1f7345089ece8d8ef391f7fd5e55c445..a3a1ab1b610fd0f75c4d5cc96ab921e4
              random.setLargeFeatureSeed(seed, chunkPos.x(), chunkPos.z());
              return random;
 diff --git a/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java b/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java
-index 1310b2ca994b8f6d3d92bdc676fe44de3619cc09..8fcb08d7ffc90d2d46375faecd17774483a4560a 100755
+index 1310b2ca994b8f6d3d92bdc676fe44de3619cc09..8fcb08d7ffc90d2d46375faecd17774483a4560a 100644
 --- a/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java
 +++ b/net/minecraft/world/level/levelgen/structure/placement/RandomSpreadStructurePlacement.java
 @@ -67,8 +67,15 @@ public class RandomSpreadStructurePlacement extends StructurePlacement {
@@ -381,7 +381,7 @@ index 1310b2ca994b8f6d3d92bdc676fe44de3619cc09..8fcb08d7ffc90d2d46375faecd177744
          int spreadX = this.spreadType.evaluate(random, limit);
          int spreadZ = this.spreadType.evaluate(random, limit);
 diff --git a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
-index e14b27b36cdceb43c4c313e8487c63c011b68e06..658607f78d2a6bd6529ae3726fccfb87cd26c476 100755
+index e14b27b36cdceb43c4c313e8487c63c011b68e06..658607f78d2a6bd6529ae3726fccfb87cd26c476 100644
 --- a/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
 +++ b/net/minecraft/world/level/levelgen/structure/placement/StructurePlacement.java
 @@ -137,8 +137,16 @@ public abstract class StructurePlacement {
@@ -404,7 +404,7 @@ index e14b27b36cdceb43c4c313e8487c63c011b68e06..658607f78d2a6bd6529ae3726fccfb87
      }
  
 diff --git a/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java b/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java
-index 499e1c76a8ff6fdff2f1f95a50fbc22c1c750556..5f89b7e01f8d669f9edabfff74854320a29d6d00 100755
+index 499e1c76a8ff6fdff2f1f95a50fbc22c1c750556..5f89b7e01f8d669f9edabfff74854320a29d6d00 100644
 --- a/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java
 +++ b/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java
 @@ -64,7 +64,11 @@ public class JigsawPlacement {

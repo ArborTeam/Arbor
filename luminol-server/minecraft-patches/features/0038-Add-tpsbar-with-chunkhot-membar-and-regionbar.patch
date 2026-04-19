@@ -5,7 +5,7 @@ Subject: [PATCH] Add tpsbar with chunkhot, membar and regionbar
 
 
 diff --git a/ca/spottedleaf/moonrise/paper/util/BaseChunkSystemHooks.java b/ca/spottedleaf/moonrise/paper/util/BaseChunkSystemHooks.java
-index 52dcbcf64c3a510d4a4524b7d0ee226d9a73511d..051d601e7e809518e8d82ae4ae3259054d704f51 100755
+index 52dcbcf64c3a510d4a4524b7d0ee226d9a73511d..051d601e7e809518e8d82ae4ae3259054d704f51 100644
 --- a/ca/spottedleaf/moonrise/paper/util/BaseChunkSystemHooks.java
 +++ b/ca/spottedleaf/moonrise/paper/util/BaseChunkSystemHooks.java
 @@ -122,6 +122,7 @@ public abstract class BaseChunkSystemHooks implements ca.spottedleaf.moonrise.co
@@ -17,7 +17,7 @@ index 52dcbcf64c3a510d4a4524b7d0ee226d9a73511d..051d601e7e809518e8d82ae4ae325905
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 2de5ffaf7e0426a8edf876946cfaf7190a6f18fc..a13eda6df5e9b1b4403125e905315a1cab111473 100755
+index 2de5ffaf7e0426a8edf876946cfaf7190a6f18fc..a13eda6df5e9b1b4403125e905315a1cab111473 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1735,7 +1735,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -68,7 +68,7 @@ index 2de5ffaf7e0426a8edf876946cfaf7190a6f18fc..a13eda6df5e9b1b4403125e905315a1c
              this.lastServerStatus = nanos;
              this.status = this.buildServerStatus();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 5999426a3e4407fa2c2ebdb1bd4ad26411bc6473..97bcb69a8989daef602b370731e28e7aa43706e2 100755
+index 5999426a3e4407fa2c2ebdb1bd4ad26411bc6473..97bcb69a8989daef602b370731e28e7aa43706e2 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -950,6 +950,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -80,7 +80,7 @@ index 5999426a3e4407fa2c2ebdb1bd4ad26411bc6473..97bcb69a8989daef602b370731e28e7a
          super.stopServer();
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index bf92a5009282c29e4e97abc56cea5db01e1e572b..3daca54a594497fa350814e419d401a5ec505775 100755
+index bf92a5009282c29e4e97abc56cea5db01e1e572b..3daca54a594497fa350814e419d401a5ec505775 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1462,6 +1462,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -118,7 +118,7 @@ index bf92a5009282c29e4e97abc56cea5db01e1e572b..3daca54a594497fa350814e419d401a5
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index f3a251a3dc302b3bd68766c9e427f9aaf8b958bc..bc905ad670cb95cbeed3e4cfba68a9e4da6087a6 100755
+index f3a251a3dc302b3bd68766c9e427f9aaf8b958bc..bc905ad670cb95cbeed3e4cfba68a9e4da6087a6 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -454,7 +454,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -169,7 +169,7 @@ index f3a251a3dc302b3bd68766c9e427f9aaf8b958bc..bc905ad670cb95cbeed3e4cfba68a9e4
          AttributeInstance blockInteractionRange = this.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
          if (blockInteractionRange != null) {
 diff --git a/net/minecraft/world/entity/AreaEffectCloud.java b/net/minecraft/world/entity/AreaEffectCloud.java
-index 1a502cbd8acea9420fa6dd8d716018b5ede4ba6a..a4fc24bc636e17981a981c031d866531bc024983 100755
+index 1a502cbd8acea9420fa6dd8d716018b5ede4ba6a..a4fc24bc636e17981a981c031d866531bc024983 100644
 --- a/net/minecraft/world/entity/AreaEffectCloud.java
 +++ b/net/minecraft/world/entity/AreaEffectCloud.java
 @@ -415,4 +415,11 @@ public class AreaEffectCloud extends Entity implements TraceableEntity {
@@ -185,7 +185,7 @@ index 1a502cbd8acea9420fa6dd8d716018b5ede4ba6a..a4fc24bc636e17981a981c031d866531
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 8eb6f03498238c2003c76127f3695cdf58a0714d..cbe5e2666fb0562fc3be5c48e2249344c36904d0 100755
+index 8eb6f03498238c2003c76127f3695cdf58a0714d..cbe5e2666fb0562fc3be5c48e2249344c36904d0 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -6271,4 +6271,6 @@ public abstract class Entity
@@ -196,7 +196,7 @@ index 8eb6f03498238c2003c76127f3695cdf58a0714d..cbe5e2666fb0562fc3be5c48e2249344
 +    public boolean shouldTickHot() { return this.tickCount > 20 * 10 && this.isAlive(); } // KioCG
  }
 diff --git a/net/minecraft/world/entity/LightningBolt.java b/net/minecraft/world/entity/LightningBolt.java
-index 4ef848ddbf8cf84b1dfc3e6edb4218c639d9f2fa..bd8cac25917a117c4c8c7ef338f68c93e9059a8a 100755
+index 4ef848ddbf8cf84b1dfc3e6edb4218c639d9f2fa..bd8cac25917a117c4c8c7ef338f68c93e9059a8a 100644
 --- a/net/minecraft/world/entity/LightningBolt.java
 +++ b/net/minecraft/world/entity/LightningBolt.java
 @@ -283,4 +283,11 @@ public class LightningBolt extends Entity {
@@ -212,7 +212,7 @@ index 4ef848ddbf8cf84b1dfc3e6edb4218c639d9f2fa..bd8cac25917a117c4c8c7ef338f68c93
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 258b3645f4298ef731ddcc4afc5c5f6f47929e6b..10919ada428ac170a9cd76accab32bdcc708866e 100755
+index 258b3645f4298ef731ddcc4afc5c5f6f47929e6b..10919ada428ac170a9cd76accab32bdcc708866e 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -1715,4 +1715,11 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
@@ -228,7 +228,7 @@ index 258b3645f4298ef731ddcc4afc5c5f6f47929e6b..10919ada428ac170a9cd76accab32bdc
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/animal/equine/TraderLlama.java b/net/minecraft/world/entity/animal/equine/TraderLlama.java
-index 95f499b7fdbe1620c6eb13b9a2e86bb6091af085..a40d1f459b72942d7cb22e30e6265ef10c64db9c 100755
+index 95f499b7fdbe1620c6eb13b9a2e86bb6091af085..a40d1f459b72942d7cb22e30e6265ef10c64db9c 100644
 --- a/net/minecraft/world/entity/animal/equine/TraderLlama.java
 +++ b/net/minecraft/world/entity/animal/equine/TraderLlama.java
 @@ -163,4 +163,11 @@ public class TraderLlama extends Llama {
@@ -244,7 +244,7 @@ index 95f499b7fdbe1620c6eb13b9a2e86bb6091af085..a40d1f459b72942d7cb22e30e6265ef1
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/npc/wanderingtrader/WanderingTrader.java b/net/minecraft/world/entity/npc/wanderingtrader/WanderingTrader.java
-index 4c7fad3444dd8718e31bda8a8ab2efdaf0a736a1..e9d7d950cc2621ec9ad82f1db56bc772a1d9fd3c 100755
+index 4c7fad3444dd8718e31bda8a8ab2efdaf0a736a1..e9d7d950cc2621ec9ad82f1db56bc772a1d9fd3c 100644
 --- a/net/minecraft/world/entity/npc/wanderingtrader/WanderingTrader.java
 +++ b/net/minecraft/world/entity/npc/wanderingtrader/WanderingTrader.java
 @@ -274,4 +274,11 @@ public class WanderingTrader extends AbstractVillager implements Consumable.Over
@@ -260,7 +260,7 @@ index 4c7fad3444dd8718e31bda8a8ab2efdaf0a736a1..e9d7d950cc2621ec9ad82f1db56bc772
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 1c8a3867bfd11d45fd63512f83e0810cc855925d..57be1c239209414c6a9d9f96dd16d8fc109833f9 100755
+index 1c8a3867bfd11d45fd63512f83e0810cc855925d..57be1c239209414c6a9d9f96dd16d8fc109833f9 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -2225,4 +2225,12 @@ public abstract class Player extends Avatar implements ContainerUser {
@@ -277,7 +277,7 @@ index 1c8a3867bfd11d45fd63512f83e0810cc855925d..57be1c239209414c6a9d9f96dd16d8fc
 +
  }
 diff --git a/net/minecraft/world/entity/projectile/Projectile.java b/net/minecraft/world/entity/projectile/Projectile.java
-index 5102001d01c573eaef402a8b7fb9a2a47ed8c523..b65795c887200935750bba6250bd6c088ce951e9 100755
+index 5102001d01c573eaef402a8b7fb9a2a47ed8c523..b65795c887200935750bba6250bd6c088ce951e9 100644
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
 @@ -513,4 +513,11 @@ public abstract class Projectile extends Entity implements TraceableEntity {
@@ -293,7 +293,7 @@ index 5102001d01c573eaef402a8b7fb9a2a47ed8c523..b65795c887200935750bba6250bd6c08
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index c20cdd7c51186ff869d6dcfc6b323b62bf4e38ba..3b9452539cc6ec4348afccb7c2982ee1e6d033db 100755
+index c20cdd7c51186ff869d6dcfc6b323b62bf4e38ba..3b9452539cc6ec4348afccb7c2982ee1e6d033db 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -113,6 +113,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
@@ -322,7 +322,7 @@ index c20cdd7c51186ff869d6dcfc6b323b62bf4e38ba..3b9452539cc6ec4348afccb7c2982ee1
                          profiler.pop();
                      } catch (Throwable var5) {
 diff --git a/net/minecraft/world/level/redstone/NeighborUpdater.java b/net/minecraft/world/level/redstone/NeighborUpdater.java
-index 353085151026b0d695be3c35d0638ecd39a962ce..9b8d63f69ed1101f1b7b2728690e35165b9aeb99 100755
+index 353085151026b0d695be3c35d0638ecd39a962ce..9b8d63f69ed1101f1b7b2728690e35165b9aeb99 100644
 --- a/net/minecraft/world/level/redstone/NeighborUpdater.java
 +++ b/net/minecraft/world/level/redstone/NeighborUpdater.java
 @@ -81,7 +81,10 @@ public interface NeighborUpdater {

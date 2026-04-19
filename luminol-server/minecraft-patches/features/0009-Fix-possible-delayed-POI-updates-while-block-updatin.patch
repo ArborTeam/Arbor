@@ -5,7 +5,7 @@ Subject: [PATCH] Fix possible delayed POI updates while block updating
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index ed43ebd4540b97cd816cf88e0f8a06f66f8f35c2..972c861febda210618ed0a28cea1dcd4dacb8b39 100755
+index ed43ebd4540b97cd816cf88e0f8a06f66f8f35c2..972c861febda210618ed0a28cea1dcd4dacb8b39 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -2500,11 +2500,14 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -26,7 +26,7 @@ index ed43ebd4540b97cd816cf88e0f8a06f66f8f35c2..972c861febda210618ed0a28cea1dcd4
                  if (oldType.isEmpty() && this.getPoiManager().exists(immutable, ignored -> true)) {
                      this.getPoiManager().remove(immutable);
 diff --git a/net/minecraft/world/entity/npc/villager/Villager.java b/net/minecraft/world/entity/npc/villager/Villager.java
-index 9777b4077dbe1fdc05b84be067392b2acd4da98e..acc98ded5e46a9eb62cc233bd21ff25b7ad85aa0 100755
+index 9777b4077dbe1fdc05b84be067392b2acd4da98e..acc98ded5e46a9eb62cc233bd21ff25b7ad85aa0 100644
 --- a/net/minecraft/world/entity/npc/villager/Villager.java
 +++ b/net/minecraft/world/entity/npc/villager/Villager.java
 @@ -672,15 +672,17 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re

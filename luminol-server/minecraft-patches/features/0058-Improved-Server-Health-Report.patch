@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Bacteriawa <A3167717663@hotmail.com>
-Date: Tue, 14 Oct 2025 00:28:47 +0800
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Mon, 20 Apr 2026 01:05:33 +0800
 Subject: [PATCH] Improved Server Health Report
 
 
 diff --git a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
-index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..d1bd2ad461d1e5b061378c3990addef9a847dab9 100644
+index 7826c50b7c7c59e148905337ddc0dc8085f3f7c1..3b3e86a7594fc9e5ea2411ef5d15a4404fee9e0d 100644
 --- a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
 +++ b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
 @@ -28,6 +28,14 @@ import java.util.ArrayList;
@@ -225,8 +225,8 @@ index 2c3a3c9dd48b096d12bbff344750a1eae1f0549e..d1bd2ad461d1e5b061378c3990addef9
 -            }
 +            if (chunkCenter == null) continue;
 +
-             final int centerBlockX = ((chunkCenter.x << 4) | 7);
-             final int centerBlockZ = ((chunkCenter.z << 4) | 7);
+             final int centerBlockX = ((chunkCenter.x() << 4) | 7);
+             final int centerBlockZ = ((chunkCenter.z() << 4) | 7);
              final double util = report.utilisation();
 @@ -242,75 +254,102 @@ public final class CommandServerHealth extends Command {
              final double mspt = report.timePerTickData().segmentAll().average() / 1.0E6;

@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand to Luminol
 
 
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index cf6152c5eaadf2586b00cad19b56401372f8bde0..95361d70182aa5581b19afb6f1adceab56d27531 100755
+index cf6152c5eaadf2586b00cad19b56401372f8bde0..95361d70182aa5581b19afb6f1adceab56d27531 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
 @@ -103,7 +103,7 @@ public class Main {
@@ -18,7 +18,7 @@ index cf6152c5eaadf2586b00cad19b56401372f8bde0..95361d70182aa5581b19afb6f1adceab
              Bootstrap.bootStrap();
              Bootstrap.validate();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index eb6f5748bfb1d145a502fb94806f0ab9fe5898aa..413ed813b89ca561e0431bf55f423d244b5ea674 100755
+index eb6f5748bfb1d145a502fb94806f0ab9fe5898aa..413ed813b89ca561e0431bf55f423d244b5ea674 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -282,6 +282,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface

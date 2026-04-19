@@ -54,7 +54,7 @@ index 51c126735ace8fdde89ad97b5cab62f244212db0..c7d4d944eb198ac53a3eeae717a25c7d
 +    public void moonrise$write(final abomination.IRegionFile regionFile) throws IOException; // Luminol - Configurable region file format
  }
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index b5a6fd520ed770cc6a899a539b5a3ca8a626e77c..a969d7434d36cef23bd84e6a16a9a6797e9a1e2e 100755
+index b5a6fd520ed770cc6a899a539b5a3ca8a626e77c..a969d7434d36cef23bd84e6a16a9a6797e9a1e2e 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1008,10 +1008,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -71,7 +71,7 @@ index b5a6fd520ed770cc6a899a539b5a3ca8a626e77c..a969d7434d36cef23bd84e6a16a9a679
  
          return result;
 diff --git a/net/minecraft/util/worldupdate/FileToUpgrade.java b/net/minecraft/util/worldupdate/FileToUpgrade.java
-index a7f2cfa9277c898038f6b9e0a3401db51012b64c..db4dba8849eb27f8f84acc3297e342da4700d839 100755
+index a7f2cfa9277c898038f6b9e0a3401db51012b64c..db4dba8849eb27f8f84acc3297e342da4700d839 100644
 --- a/net/minecraft/util/worldupdate/FileToUpgrade.java
 +++ b/net/minecraft/util/worldupdate/FileToUpgrade.java
 @@ -4,5 +4,5 @@ import java.util.List;
@@ -82,7 +82,7 @@ index a7f2cfa9277c898038f6b9e0a3401db51012b64c..db4dba8849eb27f8f84acc3297e342da
 +public record FileToUpgrade(abomination.IRegionFile file, List<ChunkPos> chunksToUpgrade) { // Luminol - Configurable region file format
  }
 diff --git a/net/minecraft/util/worldupdate/RegionStorageUpgrader.java b/net/minecraft/util/worldupdate/RegionStorageUpgrader.java
-index c23fc1254ae54ca3996aec8a4a7ffe66c1e8d8f9..cb433ba3901d3a00210ddb980abc134b9f4d3df0 100755
+index c23fc1254ae54ca3996aec8a4a7ffe66c1e8d8f9..cb433ba3901d3a00210ddb980abc134b9f4d3df0 100644
 --- a/net/minecraft/util/worldupdate/RegionStorageUpgrader.java
 +++ b/net/minecraft/util/worldupdate/RegionStorageUpgrader.java
 @@ -36,7 +36,7 @@ import org.slf4j.Logger;
@@ -114,7 +114,7 @@ index c23fc1254ae54ca3996aec8a4a7ffe66c1e8d8f9..cb433ba3901d3a00210ddb980abc134b
              if (this.previousWriteFuture != null) {
                  this.previousWriteFuture.join();
 diff --git a/net/minecraft/world/level/chunk/storage/RegionFile.java b/net/minecraft/world/level/chunk/storage/RegionFile.java
-index b4a59b855b45018853e8122a5829a48ebd220a5f..665cbcb9e4c5d5d43b5f01fe73e1354625e4849b 100755
+index b4a59b855b45018853e8122a5829a48ebd220a5f..665cbcb9e4c5d5d43b5f01fe73e1354625e4849b 100644
 --- a/net/minecraft/world/level/chunk/storage/RegionFile.java
 +++ b/net/minecraft/world/level/chunk/storage/RegionFile.java
 @@ -23,7 +23,7 @@ import net.minecraft.world.level.ChunkPos;
@@ -177,7 +177,7 @@ index b4a59b855b45018853e8122a5829a48ebd220a5f..665cbcb9e4c5d5d43b5f01fe73e13546
          try (DataInputStream out = new DataInputStream(new java.io.BufferedInputStream(new java.util.zip.InflaterInputStream(Files.newInputStream(file))))) {
              return net.minecraft.nbt.NbtIo.read((java.io.DataInput) out);
 diff --git a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index eae4963b6d18c5f92871477b93f81c2c79331cd9..e403a697414570268c30d30464cde4da3f29a389 100755
+index eae4963b6d18c5f92871477b93f81c2c79331cd9..e403a697414570268c30d30464cde4da3f29a389 100644
 --- a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -19,7 +19,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise

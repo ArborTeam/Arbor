@@ -5,7 +5,7 @@ Subject: [PATCH] Add missing teleportation event APIs for folia
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index bc905ad670cb95cbeed3e4cfba68a9e4da6087a6..e5e5e7a29e6c4bd2170285bba7aa7c071da49e74 100755
+index bc905ad670cb95cbeed3e4cfba68a9e4da6087a6..e5e5e7a29e6c4bd2170285bba7aa7c071da49e74 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1800,6 +1800,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -19,7 +19,7 @@ index bc905ad670cb95cbeed3e4cfba68a9e4da6087a6..e5e5e7a29e6c4bd2170285bba7aa7c07
              );
          });
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index cbe5e2666fb0562fc3be5c48e2249344c36904d0..fa3fd6ede7620e8acbff708c6a3f4a6e479ef3cf 100755
+index cbe5e2666fb0562fc3be5c48e2249344c36904d0..fa3fd6ede7620e8acbff708c6a3f4a6e479ef3cf 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4447,6 +4447,31 @@ public abstract class Entity
@@ -125,7 +125,7 @@ index cbe5e2666fb0562fc3be5c48e2249344c36904d0..fa3fd6ede7620e8acbff708c6a3f4a6e
          // Kaiiju start - sync end platform spawning & entity teleportation
          final java.util.function.Consumer<Entity> tpComplete = type == PortalType.END && destination.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.END ?
 diff --git a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-index 832e04b97ffae60127537c0a8eb448af6602da1e..613b96b3fdce3ac051ee9b523da0ecd20f92e223 100755
+index 832e04b97ffae60127537c0a8eb448af6602da1e..613b96b3fdce3ac051ee9b523da0ecd20f92e223 100644
 --- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 @@ -192,6 +192,18 @@ public class TheEndGatewayBlockEntity extends TheEndPortalBlockEntity {

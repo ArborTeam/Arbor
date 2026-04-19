@@ -8,7 +8,7 @@ Some of changes from: Leaves (https://github.com/LeavesMC/Leaves/blob/6a2b9ee6b3
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 6baf54b03c0dd0f23807878287b84ae90f5efefc..41f5290584d12a998b562a70712fec9c482f79c8 100755
+index 6baf54b03c0dd0f23807878287b84ae90f5efefc..41f5290584d12a998b562a70712fec9c482f79c8 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -257,8 +257,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -23,7 +23,7 @@ index 6baf54b03c0dd0f23807878287b84ae90f5efefc..41f5290584d12a998b562a70712fec9c
                      synchronized (PACKET_LIMIT_LOCK) {
                          if (this.allPacketCounts != null) {
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index b0ab80f732ae6f7747c13b9ad2eeb31282e255b6..90bb7b767555e447f5dabbeb365296ec9c4bbdff 100755
+index b0ab80f732ae6f7747c13b9ad2eeb31282e255b6..90bb7b767555e447f5dabbeb365296ec9c4bbdff 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -875,7 +875,7 @@ public class ServerGamePacketListenerImpl

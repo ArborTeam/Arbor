@@ -8,7 +8,7 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40
 Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/MIT.txt)
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index 09d1ebf49d5bcb400fd4b6e6322a39c19b65c51c..3886b83f10611256551e125aebb773e7c08f73eb 100755
+index 09d1ebf49d5bcb400fd4b6e6322a39c19b65c51c..3886b83f10611256551e125aebb773e7c08f73eb 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
 @@ -37,14 +37,14 @@ import org.jspecify.annotations.Nullable;

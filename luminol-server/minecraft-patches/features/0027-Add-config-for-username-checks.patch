@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for username checks
 
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index cf08f8bbfbb9ae01adaaa3e3c9e1f20c242ecbac..78e3aab66936bba01bd0eb235e9dc46c4df25782 100755
+index cf08f8bbfbb9ae01adaaa3e3c9e1f20c242ecbac..78e3aab66936bba01bd0eb235e9dc46c4df25782 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -159,7 +159,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -19,7 +19,7 @@ index cf08f8bbfbb9ae01adaaa3e3c9e1f20c242ecbac..78e3aab66936bba01bd0eb235e9dc46c
              && !this.iKnowThisMayNotBeTheBestIdeaButPleaseDisableUsernameValidation) {
              Validate.validState(StringUtil.isReasonablePlayerName(packet.name()), "Invalid characters in username");
 diff --git a/net/minecraft/server/players/CachedUserNameToIdResolver.java b/net/minecraft/server/players/CachedUserNameToIdResolver.java
-index aecbdddf4cf3ab627477156cd314f2872e7a5dbb..50c64f4be138f08e8a57fb10888dbfbc364c91af 100755
+index aecbdddf4cf3ab627477156cd314f2872e7a5dbb..50c64f4be138f08e8a57fb10888dbfbc364c91af 100644
 --- a/net/minecraft/server/players/CachedUserNameToIdResolver.java
 +++ b/net/minecraft/server/players/CachedUserNameToIdResolver.java
 @@ -67,7 +67,7 @@ public class CachedUserNameToIdResolver implements UserNameToIdResolver {
@@ -32,7 +32,7 @@ index aecbdddf4cf3ab627477156cd314f2872e7a5dbb..50c64f4be138f08e8a57fb10888dbfbc
          } else {
              final boolean shouldLookup = !org.apache.commons.lang3.StringUtils.isBlank(name) // Paper - Don't lookup a profile with a blank name
 diff --git a/net/minecraft/util/StringUtil.java b/net/minecraft/util/StringUtil.java
-index 74f9da2d42cc4339ae28f344acaa80185b946f4d..b96a6d20cb3f28e846da0178c8beb91652dee8a7 100755
+index 74f9da2d42cc4339ae28f344acaa80185b946f4d..b96a6d20cb3f28e846da0178c8beb91652dee8a7 100644
 --- a/net/minecraft/util/StringUtil.java
 +++ b/net/minecraft/util/StringUtil.java
 @@ -62,8 +62,14 @@ public class StringUtil {

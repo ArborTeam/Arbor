@@ -8,7 +8,7 @@ On folia, entity usually cannot move out of the tickregion, but sometimes it act
 Reference from : https://github.com/KaiijuMC/Kaiiju/blob/ver/1.20.1/patches/server/0040-Teleport-async-if-we-cannot-move-entity-off-main.patch
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a1d1f2cb1c3f5b7c5ad1b88a27877d2c496f1e9e..00607f45610e39e90212b6d204c62ad441459ff2 100755
+index a1d1f2cb1c3f5b7c5ad1b88a27877d2c496f1e9e..00607f45610e39e90212b6d204c62ad441459ff2 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1156,6 +1156,19 @@ public abstract class Entity
@@ -32,7 +32,7 @@ index a1d1f2cb1c3f5b7c5ad1b88a27877d2c496f1e9e..00607f45610e39e90212b6d204c62ad4
          // Paper end - detailed watchdog information
          if (this.noPhysics) {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index e3a4b3afaac404caf82731acbe603f7bbb14d387..210e28304648c5465ea590981e204dd4603f94d2 100755
+index e3a4b3afaac404caf82731acbe603f7bbb14d387..210e28304648c5465ea590981e204dd4603f94d2 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1568,6 +1568,25 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

@@ -8,7 +8,7 @@ PS: My friend reported me this bug and I still need to check the details of how 
 XD
 
 diff --git a/net/minecraft/world/entity/Leashable.java b/net/minecraft/world/entity/Leashable.java
-index 844d313bfb729dbd3e61142339a651af945d7b0f..2b9a588276c00129267f0ce9b67c3e1710c48da9 100755
+index 844d313bfb729dbd3e61142339a651af945d7b0f..2b9a588276c00129267f0ce9b67c3e1710c48da9 100644
 --- a/net/minecraft/world/entity/Leashable.java
 +++ b/net/minecraft/world/entity/Leashable.java
 @@ -95,10 +95,28 @@ public interface Leashable {

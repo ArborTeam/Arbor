@@ -6,7 +6,7 @@ Subject: [PATCH] Add config to modify tripwire behavior
 Co-authored-by: Helvetica Volubi <88063803+suisuroru@users.noreply.github.com>
 
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index 2c8a4febdbc0a8010e786293f5b110236757aa60..20daa5cae253a2cbdbd667df565306d3fafc27bb 100755
+index 2c8a4febdbc0a8010e786293f5b110236757aa60..20daa5cae253a2cbdbd667df565306d3fafc27bb 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -210,10 +210,17 @@ public class TripWireHookBlock extends Block {
@@ -31,7 +31,7 @@ index 2c8a4febdbc0a8010e786293f5b110236757aa60..20daa5cae253a2cbdbd667df565306d3
                  }
              }
 diff --git a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
-index b67f5f7b76037ab77548c37a83e4d0918915223a..a8e69343f47ba2383f9dcc2cf6328463892aaeec 100755
+index b67f5f7b76037ab77548c37a83e4d0918915223a..a8e69343f47ba2383f9dcc2cf6328463892aaeec 100644
 --- a/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/EndPlatformFeature.java
 @@ -28,14 +28,39 @@ public class EndPlatformFeature extends Feature<NoneFeatureConfiguration> {

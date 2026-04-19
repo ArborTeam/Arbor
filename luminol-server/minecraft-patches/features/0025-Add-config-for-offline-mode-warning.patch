@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for offline mode warning
 
 
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 5b5a97f18da3818b24ffea832af5323cf6f063bd..5999426a3e4407fa2c2ebdb1bd4ad26411bc6473 100755
+index 5b5a97f18da3818b24ffea832af5323cf6f063bd..5999426a3e4407fa2c2ebdb1bd4ad26411bc6473 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -348,7 +348,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface

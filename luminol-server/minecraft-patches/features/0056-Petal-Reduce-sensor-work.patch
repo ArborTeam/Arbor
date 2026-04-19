@@ -8,7 +8,7 @@ As part of: Petal (https://github.com/Bloom-host/Petal/blob/cc691540fb48240f38b3
 Licensed under: GPL-3.0 (https://github.com/Bloom-host/Petal/blob/cc691540fb48240f38b376f3d94c8b0db2b60d99/LICENSE)
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 10919ada428ac170a9cd76accab32bdcc708866e..ee7743ee94c6359edcbbf6d791b402cd11e579a5 100755
+index 10919ada428ac170a9cd76accab32bdcc708866e..ee7743ee94c6359edcbbf6d791b402cd11e579a5 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -821,11 +821,12 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs

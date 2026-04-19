@@ -5,7 +5,7 @@ Subject: [PATCH] Fixes around entity brain and memories
 
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index d08d70909420ef014d3385129a0ff7d6cf4634a0..258b3645f4298ef731ddcc4afc5c5f6f47929e6b 100755
+index d08d70909420ef014d3385129a0ff7d6cf4634a0..258b3645f4298ef731ddcc4afc5c5f6f47929e6b 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -288,6 +288,11 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
@@ -21,7 +21,7 @@ index d08d70909420ef014d3385129a0ff7d6cf4634a0..258b3645f4298ef731ddcc4afc5c5f6f
          target = asValidTarget(target);
          LivingEntity currentTarget = this.getTargetUnchecked(); // Folia - region threading - moved down
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index b1fa72ccc777d6253c9be3293bf2ec3ecd5dcdf9..09d1ebf49d5bcb400fd4b6e6322a39c19b65c51c 100755
+index b1fa72ccc777d6253c9be3293bf2ec3ecd5dcdf9..09d1ebf49d5bcb400fd4b6e6322a39c19b65c51c 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
 @@ -387,7 +387,7 @@ public class Brain<E extends LivingEntity> {
@@ -45,7 +45,7 @@ index b1fa72ccc777d6253c9be3293bf2ec3ecd5dcdf9..09d1ebf49d5bcb400fd4b6e6322a39c1
  
      public void stopAll(ServerLevel level, E owner) {
 diff --git a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
-index 7172721045c7b40f49c714260c31c72073ea9cc4..2b22c3f21102b032478f2bd9015ba676c5105434 100755
+index 7172721045c7b40f49c714260c31c72073ea9cc4..2b22c3f21102b032478f2bd9015ba676c5105434 100644
 --- a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 +++ b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 @@ -81,6 +81,11 @@ public class BehaviorUtils {
@@ -61,7 +61,7 @@ index 7172721045c7b40f49c714260c31c72073ea9cc4..2b22c3f21102b032478f2bd9015ba676
          walker.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, target);
          walker.getBrain().setMemory(MemoryModuleType.WALK_TARGET, walkTarget);
 diff --git a/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java b/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java
-index 68251875edfa47ac34c64f99510998ad4bbb14b4..d83b353395bad7c6c41dfaa24018fd207904d995 100755
+index 68251875edfa47ac34c64f99510998ad4bbb14b4..d83b353395bad7c6c41dfaa24018fd207904d995 100644
 --- a/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java
 +++ b/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java
 @@ -37,4 +37,11 @@ public class BlockPosTracker implements PositionTracker {
@@ -77,7 +77,7 @@ index 68251875edfa47ac34c64f99510998ad4bbb14b4..d83b353395bad7c6c41dfaa24018fd20
 +    // Luminol end
  }
 diff --git a/net/minecraft/world/entity/ai/behavior/EntityTracker.java b/net/minecraft/world/entity/ai/behavior/EntityTracker.java
-index 97fdbe40be1fb924e186936404edda7e9810f70a..9186d7a317ac9f67eeb547fc86aee8895eafabc3 100755
+index 97fdbe40be1fb924e186936404edda7e9810f70a..9186d7a317ac9f67eeb547fc86aee8895eafabc3 100644
 --- a/net/minecraft/world/entity/ai/behavior/EntityTracker.java
 +++ b/net/minecraft/world/entity/ai/behavior/EntityTracker.java
 @@ -55,4 +55,11 @@ public class EntityTracker implements PositionTracker {
@@ -93,7 +93,7 @@ index 97fdbe40be1fb924e186936404edda7e9810f70a..9186d7a317ac9f67eeb547fc86aee889
 +    // Luminol end
  }
 diff --git a/net/minecraft/world/entity/ai/behavior/PositionTracker.java b/net/minecraft/world/entity/ai/behavior/PositionTracker.java
-index ce6cf5ecfb190428e3ef9b7dd39c98e3d27a7b9d..3334da2236fbe90cbdc3e67884f9c6ed80ac0f56 100755
+index ce6cf5ecfb190428e3ef9b7dd39c98e3d27a7b9d..3334da2236fbe90cbdc3e67884f9c6ed80ac0f56 100644
 --- a/net/minecraft/world/entity/ai/behavior/PositionTracker.java
 +++ b/net/minecraft/world/entity/ai/behavior/PositionTracker.java
 @@ -10,4 +10,7 @@ public interface PositionTracker {
@@ -105,7 +105,7 @@ index ce6cf5ecfb190428e3ef9b7dd39c98e3d27a7b9d..3334da2236fbe90cbdc3e67884f9c6ed
 +    boolean checkThread(net.minecraft.world.level.Level currOwnedByLevel); // Luminol - Fix a series issue around entity memory typed GlobalPos and WalkTarget
  }
 diff --git a/net/minecraft/world/entity/ai/behavior/SleepInBed.java b/net/minecraft/world/entity/ai/behavior/SleepInBed.java
-index 112572f5a6813abd3cf3bd26e2b087b7edb48f41..b88549614b978e14b4dac82d155c6bcc28393fef 100755
+index 112572f5a6813abd3cf3bd26e2b087b7edb48f41..b88549614b978e14b4dac82d155c6bcc28393fef 100644
 --- a/net/minecraft/world/entity/ai/behavior/SleepInBed.java
 +++ b/net/minecraft/world/entity/ai/behavior/SleepInBed.java
 @@ -55,6 +55,11 @@ public class SleepInBed extends Behavior<LivingEntity> {
@@ -121,7 +121,7 @@ index 112572f5a6813abd3cf3bd26e2b087b7edb48f41..b88549614b978e14b4dac82d155c6bcc
                  if (blockState == null) { return false; } // Paper - Prevent sync chunk loads when villagers try to find beds
                  return target.pos().closerToCenterThan(body.position(), 2.0) && blockState.is(BlockTags.BEDS) && !blockState.getValue(BedBlock.OCCUPIED);
 diff --git a/net/minecraft/world/entity/ai/memory/MemorySlot.java b/net/minecraft/world/entity/ai/memory/MemorySlot.java
-index 88a89b4c72cc99dc89d3f3cc928b2dfda4125759..3b51a44ab700740047c9e725547ceec65c0c80b1 100755
+index 88a89b4c72cc99dc89d3f3cc928b2dfda4125759..3b51a44ab700740047c9e725547ceec65c0c80b1 100644
 --- a/net/minecraft/world/entity/ai/memory/MemorySlot.java
 +++ b/net/minecraft/world/entity/ai/memory/MemorySlot.java
 @@ -13,7 +13,7 @@ public class MemorySlot<T> {
@@ -176,7 +176,7 @@ index 88a89b4c72cc99dc89d3f3cc928b2dfda4125759..3b51a44ab700740047c9e725547ceec6
  
      public static <T> MemorySlot<T> create() {
 diff --git a/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java b/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
-index e44814cfb6afb594456b8215bd13a92e93de2c85..c18e2071c699d9c5f4d46b7a58191df4f4d8ab5d 100755
+index e44814cfb6afb594456b8215bd13a92e93de2c85..c18e2071c699d9c5f4d46b7a58191df4f4d8ab5d 100644
 --- a/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
 @@ -60,6 +60,17 @@ public class FlyingPathNavigation extends PathNavigation {
@@ -198,7 +198,7 @@ index e44814cfb6afb594456b8215bd13a92e93de2c85..c18e2071c699d9c5f4d46b7a58191df4
              }
          }
 diff --git a/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-index 08ea3575f3eed34d4fc39be9e63565723c36daf7..6a49c46dadbf11c627a61233da39be5882b6713c 100755
+index 08ea3575f3eed34d4fc39be9e63565723c36daf7..6a49c46dadbf11c627a61233da39be5882b6713c 100644
 --- a/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 @@ -101,6 +101,19 @@ public abstract class PathNavigation {
@@ -259,7 +259,7 @@ index 08ea3575f3eed34d4fc39be9e63565723c36daf7..6a49c46dadbf11c627a61233da39be58
              }
          }
 diff --git a/net/minecraft/world/entity/animal/allay/AllayAi.java b/net/minecraft/world/entity/animal/allay/AllayAi.java
-index 05436572581d369fe392566ec9c0afa8d8f03c6e..6a9c9743eff605733198e9539d4e445c47256367 100755
+index 05436572581d369fe392566ec9c0afa8d8f03c6e..6a9c9743eff605733198e9539d4e445c47256367 100644
 --- a/net/minecraft/world/entity/animal/allay/AllayAi.java
 +++ b/net/minecraft/world/entity/animal/allay/AllayAi.java
 @@ -112,6 +112,17 @@ public class AllayAi {
@@ -281,7 +281,7 @@ index 05436572581d369fe392566ec9c0afa8d8f03c6e..6a9c9743eff605733198e9539d4e445c
                  return Optional.of(new BlockPosTracker(position.pos().above()));
              }
 diff --git a/net/minecraft/world/entity/animal/sniffer/Sniffer.java b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
-index c947f26f57de71ac0eafc0f56a96fec12ce5dba5..b27d30c59452c163f409bd0ac73a87499e56ace9 100755
+index c947f26f57de71ac0eafc0f56a96fec12ce5dba5..b27d30c59452c163f409bd0ac73a87499e56ace9 100644
 --- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 +++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 @@ -278,8 +278,18 @@ public class Sniffer extends Animal {

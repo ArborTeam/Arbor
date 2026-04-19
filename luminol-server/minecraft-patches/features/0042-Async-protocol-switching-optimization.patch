@@ -5,7 +5,7 @@ Subject: [PATCH] Async protocol switching optimization
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 41f5290584d12a998b562a70712fec9c482f79c8..0b9c90146a3cc4ef28e75214f1d6811f2bc84338 100755
+index 41f5290584d12a998b562a70712fec9c482f79c8..0b9c90146a3cc4ef28e75214f1d6811f2bc84338 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -1048,4 +1048,127 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -137,7 +137,7 @@ index 41f5290584d12a998b562a70712fec9c482f79c8..0b9c90146a3cc4ef28e75214f1d6811f
 +
  }
 diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index 485f4b7bc5137dbe495989cad6687005813f8fce..27ea7e1de6d8820963437e91d8c96520f604d92f 100755
+index 485f4b7bc5137dbe495989cad6687005813f8fce..27ea7e1de6d8820963437e91d8c96520f604d92f 100644
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 @@ -188,8 +188,9 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
@@ -171,7 +171,7 @@ index 485f4b7bc5137dbe495989cad6687005813f8fce..27ea7e1de6d8820963437e91d8c96520
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index bb57f0c1515d4975658ae069ec974e431761b22d..57b03c751cf8ebaa1dfd2598c1285cbc94726f32 100755
+index bb57f0c1515d4975658ae069ec974e431761b22d..57b03c751cf8ebaa1dfd2598c1285cbc94726f32 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2903,7 +2903,7 @@ public class ServerGamePacketListenerImpl
@@ -225,7 +225,7 @@ index bb57f0c1515d4975658ae069ec974e431761b22d..57b03c751cf8ebaa1dfd2598c1285cbc
      }
  
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 78e3aab66936bba01bd0eb235e9dc46c4df25782..22d0d63ce4a8f789d40602ecbe7fdf0572a7c19b 100755
+index 78e3aab66936bba01bd0eb235e9dc46c4df25782..22d0d63ce4a8f789d40602ecbe7fdf0572a7c19b 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -432,12 +432,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -262,7 +262,7 @@ index 78e3aab66936bba01bd0eb235e9dc46c4df25782..22d0d63ce4a8f789d40602ecbe7fdf05
  
      @Override
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 080e7ccecceece78ac5645b76408b59564662c4a..8fa01c7f3bb6702832ccb445586a0a67663a65b4 100755
+index 080e7ccecceece78ac5645b76408b59564662c4a..8fa01c7f3bb6702832ccb445586a0a67663a65b4 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -238,9 +238,11 @@ public abstract class PlayerList {

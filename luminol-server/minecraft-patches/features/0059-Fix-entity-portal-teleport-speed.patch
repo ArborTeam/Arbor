@@ -1,15 +1,15 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Helvetica Volubi <suisuroru@blue-millennium.fun>
-Date: Sun, 27 Apr 2025 14:26:01 +0800
+Date: Mon, 20 Apr 2026 01:10:30 +0800
 Subject: [PATCH] Fix entity portal-teleport speed
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index b3425665d05a4cba27b72e5b9d6667de740c8c0a..55ce934d39f91e7df02e3b550b73b1832ff290e0 100644
+index bd5651e067e4c6552dda79d498f771b9d54551b8..e86fdf67406316b7dd6c308853623d280e00b868 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1452,7 +1452,27 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-         if (levelChunk != null) levelChunk.getChunkHot().startTicking(); try { // KioCG
+@@ -1481,7 +1481,27 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+         foliaProfiler.startTimer(timerId);
          try {
          // Folia end - profiler
 +        // Luminol start - Entity portal-teleport speed fix
@@ -36,20 +36,20 @@ index b3425665d05a4cba27b72e5b9d6667de740c8c0a..55ce934d39f91e7df02e3b550b73b183
          entity.tick();
          // Folia start - region threading
          if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
-@@ -1463,6 +1483,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-             // portalled
+@@ -1499,6 +1519,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+             worldData.portalRateThrottler.increase(); // Luminol - Portal rate limiter
              return;
          }
 +        }
 +        // Luminol end - Entity portal-teleport speed fix
          // Folia end - region threading
          } else {entity.inactiveTick();} // Paper - EAR 2
-         profilerFiller.pop();
+         profiler.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 4c8ad47a93ccdfca306d17dc6f113857676b57af..080a287e86915312ac8caaecbcb2741ea6c85564 100644
+index ecd33188ef9ee613e55fbdd98ce29711ab22e2e1..cf673c1b03fa167cd956a05765eb4fa09e25ec9b 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -373,6 +373,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -387,6 +387,7 @@ public abstract class Entity
      public long activatedTick = Integer.MIN_VALUE;
      public boolean isTemporarilyActive;
      public long activatedImmunityTick = Integer.MIN_VALUE;
@@ -57,7 +57,7 @@ index 4c8ad47a93ccdfca306d17dc6f113857676b57af..080a287e86915312ac8caaecbcb2741e
  
      public void inactiveTick() {
      }
-@@ -3510,6 +3511,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -3546,6 +3547,7 @@ public abstract class Entity
          } else {
              if (this.portalProcess == null || !this.portalProcess.isSamePortal(portal)) {
                  this.portalProcess = new PortalProcessor(portal, pos.immutable());

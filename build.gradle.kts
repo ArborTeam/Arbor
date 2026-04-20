@@ -8,7 +8,7 @@ plugins {
 
 paperweight {
     upstreams.register("folia") {
-        repo = github("EilsapMC", "Folia-Tmp-Upstream")
+        repo = github("PaperMC", "Folia")
         ref = providers.gradleProperty("foliaRef")
 
         println("Upstream commit ref: " + ref.get())

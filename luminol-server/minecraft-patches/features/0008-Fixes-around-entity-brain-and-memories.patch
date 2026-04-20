@@ -1,15 +1,15 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <mrhua269@gmail.com>
-Date: Fri, 17 Apr 2026 22:51:54 +0800
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Tue, 21 Apr 2026 00:55:21 +0800
 Subject: [PATCH] Fixes around entity brain and memories
 
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index d08d70909420ef014d3385129a0ff7d6cf4634a0..258b3645f4298ef731ddcc4afc5c5f6f47929e6b 100644
+index c9554552b194060135951a036c589be6fb27151c..3beabbe07058c096615b3a037a54d2f42a89c6e9 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -288,6 +288,11 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
-         if (this.getTargetRaw() == target) { // Folia - region threading
+@@ -295,6 +295,11 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
+         if (Objects.equals(currentTarget, target)) {
              return false;
          }
 +        // Luminol start - Fix off-region targeting
@@ -19,9 +19,9 @@ index d08d70909420ef014d3385129a0ff7d6cf4634a0..258b3645f4298ef731ddcc4afc5c5f6f
 +        // Luminol end
          LivingEntity originalTarget = target;
          target = asValidTarget(target);
-         LivingEntity currentTarget = this.getTargetUnchecked(); // Folia - region threading - moved down
+         if (reason != null) {
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index b1fa72ccc777d6253c9be3293bf2ec3ecd5dcdf9..09d1ebf49d5bcb400fd4b6e6322a39c19b65c51c 100644
+index 8bf489874cd4d2b7e3779a6565f13511938754ed..ee416907adace680c5e2774e6cf6a8f270fe68b3 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
 @@ -387,7 +387,7 @@ public class Brain<E extends LivingEntity> {
@@ -43,7 +43,7 @@ index b1fa72ccc777d6253c9be3293bf2ec3ecd5dcdf9..09d1ebf49d5bcb400fd4b6e6322a39c1
 +        this.memories.values().forEach(slot -> slot.tick(body)); // Luminol - Add config to force clean entity memory that don't belong to current tick region
      }
  
-     public void stopAll(ServerLevel level, E owner) {
+     public void stopAll(final ServerLevel level, final E body) {
 diff --git a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 index 7172721045c7b40f49c714260c31c72073ea9cc4..2b22c3f21102b032478f2bd9015ba676c5105434 100644
 --- a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
@@ -198,30 +198,10 @@ index e44814cfb6afb594456b8215bd13a92e93de2c85..c18e2071c699d9c5f4d46b7a58191df4
              }
          }
 diff --git a/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-index 08ea3575f3eed34d4fc39be9e63565723c36daf7..6a49c46dadbf11c627a61233da39be5882b6713c 100644
+index 21ead01c326b187dc1117b549dbdf706730a2147..7175577ee381de438877e327bd8373450fbb8f7a 100644
 --- a/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-@@ -101,6 +101,19 @@ public abstract class PathNavigation {
-     public void recomputePath() {
-         if (this.tick - this.timeLastRecompute > 20L) { // Folia - region threading
-             if (this.targetPos != null) {
-+                // Luminol - Recompute path when path finding out of current tick region
-+                if (me.earthme.luminol.config.modules.fixes.PathfindingFixesConfig.breakDownPathfindingWhenOutOfRegion) {
-+                    // The target seems to be pointed to a position out of current region, so reset if it is
-+                    // also it will interrupt the pathfinding
-+                    if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.mob.level(), this.targetPos)) {
-+                        // also we need to reset the path field so all of it will be stopped
-+                        this.path = null;
-+
-+                        this.targetPos = null;
-+                        return;
-+                    }
-+                }
-+                // Luminol end
-                 this.path = null;
-                 this.path = this.createPath(this.targetPos, this.reachRange);
-                 this.timeLastRecompute = this.tick; // Folia - region threading
-@@ -183,6 +196,18 @@ public abstract class PathNavigation {
+@@ -181,6 +181,18 @@ public abstract class PathNavigation {
                  }
              }
              // Paper end - EntityPathfindEvent
@@ -240,7 +220,7 @@ index 08ea3575f3eed34d4fc39be9e63565723c36daf7..6a49c46dadbf11c627a61233da39be58
              ProfilerFiller profiler = Profiler.get();
              profiler.push("pathfind");
              BlockPos fromPos = above ? this.mob.blockPosition().above() : this.mob.blockPosition();
-@@ -284,6 +309,17 @@ public abstract class PathNavigation {
+@@ -282,6 +294,17 @@ public abstract class PathNavigation {
  
              if (!this.isDone()) {
                  Vec3 target = this.path.getNextEntityPos(this.mob);

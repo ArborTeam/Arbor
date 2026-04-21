@@ -109,12 +109,17 @@ public class BufferedLinearRegionFile implements IRegionFile {
         Validate.inclusiveBetween(1, 22, compressionLevel);
         this.compressionLevel = (byte) compressionLevel;
 
+        this.cleanUpSwapFile();
         this.initSwapFile();
         this.tryLoadOldBlinearMasterFileData();
 
         this.flusher = flusher;
 
         this.flusher.addFile(this);
+    }
+
+    private void cleanUpSwapFile() throws IOException {
+        Files.deleteIfExists(this.swapFilePath);
     }
 
     private void ensureBucketLoaded(int chunkIndex) throws IOException {
@@ -231,36 +236,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
         // fill default sectors
         for (int i = 0; i < 1024; i++) {
             this.sectors[i] = new Sector(i, this.headerSize(), 0);
-        }
-
-        // load sectors
-        this.readSwapFileHeaders();
-    }
-
-    private void readSwapFileHeaders() throws IOException {
-        if (this.swapFileChannel.size() < this.headerSize()) {
-            return;
-        }
-
-        final ByteBuffer buffer = ByteBuffer.allocate(this.headerSize());
-        long offset = 0;
-        while (buffer.hasRemaining())
-            offset += this.swapFileChannel.read(buffer, offset);
-        buffer.flip();
-
-        if (buffer.getLong() != SWAP_FILE_SUPER_BLOCK || buffer.get() != SWAP_FILE_VERSION) {
-            throw new IOException("Invalid file format or version mismatch");
-        }
-
-        this.xxHash32Seed = buffer.getInt(); // XXHash32 seed
-        this.currentAcquiredIndex = buffer.getLong(); // Acquired index
-
-        for (Sector sector : this.sectors) {
-            sector.restoreFrom(buffer);
-            if (sector.hasData()) {
-                // recompute if acquired index is corrupted
-                this.currentAcquiredIndex = Math.max(this.currentAcquiredIndex, sector.offset + sector.length);
-            }
         }
     }
 
@@ -1198,7 +1173,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
 
 
-        private void parseLinearV2(DataInputStream ioStream, Path file) throws IOException {
+        private void parseLinearV2(@NonNull DataInputStream ioStream, Path file) throws IOException {
             ioStream.readLong(); // Skip newestTimestamp (Long)
 
             byte gridSize = ioStream.readByte();
@@ -1342,13 +1317,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             return new int[]{x, z};
         }
 
-        private void parseLinearV1(@NotNull DataInputStream ioStream, Path file) throws IOException {
-            final byte version = ioStream.readByte();
-
-            if (version != 1 && version != 2) {
-                throw new IOException("Unsupported version for linear format : " + version);
-            }
-
+        private void parseLinearV1(@NotNull DataInputStream ioStream) throws IOException {
             // Skip newestTimestamp (Long) + Compression level (Byte) + Chunk count (Short): Unused.
             ioStream.skipBytes(11);
             // Skip chunk data len(Int)(Unused).
@@ -1423,7 +1392,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     final byte version = rawDataStream.readByte();
 
                     if (version == 1 || version == 2) {
-                        this.parseLinearV1(rawDataStream, mainFilePath);
+                        this.parseLinearV1(rawDataStream);
 
                         oldParsed = true;
                     }

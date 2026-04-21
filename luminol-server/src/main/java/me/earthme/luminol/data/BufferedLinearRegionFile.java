@@ -1405,7 +1405,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 }
 
             } catch (Throwable ex) {
-                 try {
+                try {
                     rawDataStream.close();
                 } catch (IOException ex2) {
                     ex.addSuppressed(ex2);

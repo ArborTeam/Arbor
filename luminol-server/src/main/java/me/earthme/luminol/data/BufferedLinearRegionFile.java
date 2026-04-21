@@ -243,7 +243,9 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
 
         final ByteBuffer buffer = ByteBuffer.allocate(this.headerSize());
-        this.swapFileChannel.read(buffer, 0);
+        long offset = 0;
+        while (buffer.hasRemaining())
+            offset += this.swapFileChannel.read(buffer, offset);
         buffer.flip();
 
         if (buffer.getLong() != SWAP_FILE_SUPER_BLOCK || buffer.get() != SWAP_FILE_VERSION) {

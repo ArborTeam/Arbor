@@ -4,13 +4,11 @@ import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.flags.CommandSuggestions;
 import me.earthme.luminol.config.flags.ConfigClassInfo;
 import me.earthme.luminol.config.flags.ConfigInfo;
-import me.earthme.luminol.config.flags.TransformedConfig;
 import me.earthme.luminol.enums.EnumCollisionBehaviorMode;
 import me.earthme.luminol.enums.EnumConfigCategory;
 
 @ConfigClassInfo(category = EnumConfigCategory.FIXES, name = "collision_behavior")
 public class CollisionBehaviorConfig implements IConfigModule {
-    @TransformedConfig(name = "mode", directory = {"misc", "collision_behavior"})
     @CommandSuggestions(suggest = {"VANILLA", "BLOCK_SHAPE_VANILLA", "PAPER"})
     @ConfigInfo(name = "mode", comments =
             """

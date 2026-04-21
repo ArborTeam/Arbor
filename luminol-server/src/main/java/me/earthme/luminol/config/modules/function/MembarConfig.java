@@ -2,7 +2,9 @@ package me.earthme.luminol.config.modules.function;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.*;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
+import me.earthme.luminol.config.flags.ConfigInfo;
+import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
@@ -17,20 +19,14 @@ import java.util.Set;
 
 @ConfigClassInfo(category = EnumConfigCategory.FUNCTION, name = "membar")
 public class MembarConfig implements IConfigModule {
-    @TransformedConfig(name = "enabled", directory = {"misc", "membar"})
     @ConfigInfo(name = "enabled")
     public static boolean memoryBarEnabled = false;
-    @TransformedConfig(name = "format", directory = {"misc", "membar"})
     @ConfigInfo(name = "format")
     public static String memBarFormat = "<gray>Memory usage <yellow>:</yellow> <used>MB<yellow>/</yellow><available>MB";
-    @TransformedConfig(name = "memory_color_list", directory = {"misc", "membar"})
     @ConfigInfo(name = "memory_color_list")
     public static List<BossBar.Color> memColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
-    @TransformedConfig(name = "update_interval_ticks", directory = {"misc", "membar"})
     @ConfigInfo(name = "update_interval_ticks")
     public static int updateInterval = 15;
-    @TransformedConfig(name = "display", directory = {"misc", "membar"})
-    @CommandSuggestions(suggest = {"BOSS_BAR", "ACTION_BAR", "TAB_LIST"})
     @ConfigInfo(name = "display", comments = "Available displays: BOSS_BAR, ACTION_BAR, TAB_LIST")
     public static EnumStatusBarDisplay display = EnumStatusBarDisplay.BOSS_BAR;
 

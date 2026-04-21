@@ -3,7 +3,10 @@ package me.earthme.luminol.config.modules.optimizations;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.*;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
+import me.earthme.luminol.config.flags.ConfigInfo;
+import me.earthme.luminol.config.flags.DoNotLoad;
+import me.earthme.luminol.config.flags.HotReloadUnsupported;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import net.openhft.affinity.Affinity;
 import org.jetbrains.annotations.Nullable;
@@ -15,13 +18,11 @@ import java.util.Set;
 
 @ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "cpu_affinity")
 public class CpuAffinityConfig implements IConfigModule {
-    @TransformedConfig(name = "enabled", directory = {"misc", "cpu_affinity"})
     @HotReloadUnsupported
     @ConfigInfo(name = "enabled", comments = "Using this you could pin the threads of tick region scheduler to cpu cores listed in the config 'tickregion_affinity' following, \n" +
             "which is useful for those CPU with P and E cores (such as 12/13/14 gen Intel Core CPUs and so on.)")
     public static boolean cpuAffinityEnabled = false;
     @HotReloadUnsupported
-    @TransformedConfig(name = "enabled", directory = {"misc", "tickregion_affinity"})
     @ConfigInfo(name = "tickregion_affinity", comments = "The core number you want the tick region threads to bind on")
     public static List<String> tickRegionAffinity = Affinity.getAffinity()
             .stream()

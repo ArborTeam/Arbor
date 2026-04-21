@@ -4,7 +4,10 @@ import abomination.LinearRegionFile;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import me.earthme.luminol.config.IConfigModule;
 import me.earthme.luminol.config.IllegalFormatConversionExceptionWithOrigin;
-import me.earthme.luminol.config.flags.*;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
+import me.earthme.luminol.config.flags.ConfigInfo;
+import me.earthme.luminol.config.flags.DoNotLoad;
+import me.earthme.luminol.config.flags.HotReloadUnsupported;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumRegionFormat;
 import me.earthme.luminol.utils.BufferedLinearRegionFileFlusher;
@@ -16,19 +19,15 @@ import java.util.Set;
 @ConfigClassInfo(category = EnumConfigCategory.FUNCTION, name = "region_format")
 public class RegionFormatConfig implements IConfigModule {
     @HotReloadUnsupported
-    @TransformedConfig(name = "format", directory = {"misc", "region_format"})
     @ConfigInfo(name = "format", allowAutoReset = false, comments = "Available choices: MCA, B_LINEAR, LINEAR_V2")
     public static EnumRegionFormat regionFormat = EnumRegionFormat.MCA;
     @HotReloadUnsupported
-    @TransformedConfig(name = "linear_compression_level", directory = {"misc", "region_format"})
     @ConfigInfo(name = "linear_compression_level", comments = "Decides the compression level of the region file(Only works for LINEAR_V2 and B_LINEAR)")
     public static int linearCompressionLevel = 1;
     @HotReloadUnsupported
-    @TransformedConfig(name = "linear_io_thread_count", directory = {"misc", "region_format"})
     @ConfigInfo(name = "linear_io_thread_count", comments = "Decides the worker thread count of linear(Only works for LINEAR_V2)")
     public static int linearIoThreadCount = 6;
     @HotReloadUnsupported
-    @TransformedConfig(name = "linear_io_flush_delay_ms", directory = {"misc", "region_format"})
     @ConfigInfo(name = "linear_io_flush_delay_ms", comments = "Decides when it will be flushed to the region file when it has been marked to save for n(default is 100) milliseconds(Only works for LINEAR_V2)")
     public static int linearIoFlushDelayMs = 100;
     @HotReloadUnsupported
@@ -38,7 +37,6 @@ public class RegionFormatConfig implements IConfigModule {
     @ConfigInfo(name = "blinear_io_thread_count", comments = "Decides the worker thread count of buffered linear(Only works for B_LINEAR)")
     public static int blinearIoThreadCount = 6;
     @HotReloadUnsupported
-    @TransformedConfig(name = "linear_use_virtual_thread", directory = {"misc", "region_format"})
     @ConfigInfo(name = "linear_use_virtual_thread", comments = "Decides if it could use virtual threads for linear format(Only works for LINEAR_V2)")
     public static boolean linearUseVirtualThread = true;
 

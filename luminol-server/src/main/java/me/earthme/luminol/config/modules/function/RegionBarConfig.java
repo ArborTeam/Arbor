@@ -2,7 +2,9 @@ package me.earthme.luminol.config.modules.function;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import me.earthme.luminol.config.IConfigModule;
-import me.earthme.luminol.config.flags.*;
+import me.earthme.luminol.config.flags.ConfigClassInfo;
+import me.earthme.luminol.config.flags.ConfigInfo;
+import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
@@ -17,20 +19,14 @@ import java.util.Set;
 
 @ConfigClassInfo(category = EnumConfigCategory.FUNCTION, name = "regionbar")
 public class RegionBarConfig implements IConfigModule {
-    @TransformedConfig(name = "enabled", directory = {"misc", "regionbar"})
     @ConfigInfo(name = "enabled")
     public static boolean regionbarEnabled = false;
-    @TransformedConfig(name = "format", directory = {"misc", "regionbar"})
     @ConfigInfo(name = "format")
     public static String regionBarFormat = "<gray>Util<yellow>:</yellow> <util> Chunks<yellow>:</yellow> <green><chunks></green> Players<yellow>:</yellow> <green><players></green> Entities<yellow>:</yellow> <green><entities></green>";
-    @TransformedConfig(name = "util_color_list", directory = {"misc", "regionbar"})
     @ConfigInfo(name = "util_color_list")
     public static List<BossBar.Color> utilColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
-    @TransformedConfig(name = "update_interval_ticks", directory = {"misc", "regionbar"})
     @ConfigInfo(name = "update_interval_ticks")
     public static int updateInterval = 15;
-    @CommandSuggestions(suggest = {"BOSS_BAR", "ACTION_BAR", "TAB_LIST"})
-    @TransformedConfig(name = "display", directory = {"misc", "regionbar"})
     @ConfigInfo(name = "display", comments = "Available displays: BOSS_BAR, ACTION_BAR, TAB_LIST")
     public static EnumStatusBarDisplay display = EnumStatusBarDisplay.BOSS_BAR;
 

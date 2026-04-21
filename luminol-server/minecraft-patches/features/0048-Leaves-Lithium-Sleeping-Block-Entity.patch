@@ -3,7 +3,7 @@ From: Bacteriawa <A3167717663@hotmail.com>
 Date: Tue, 21 Apr 2026 02:36:28 +0800
 Subject: [PATCH] Leaves Lithium Sleeping Block Entity
 
-A part from leaves
+A part of leaves
 
 Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/minecraft-patches/features/0136-Lithium-Sleeping-Block-Entity.patch
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
@@ -1573,7 +1573,7 @@ index 751625124a87de63d933d9c7809e46361e3136a5..0b20b1cd34e38f0805972f7ea250fe42
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 6296ea5cff5f72d00fbb0bf86851a84e116ccfe2..8eb13fbe8cc2737a094bc6bd1140eca671b8f579 100644
+index 6296ea5cff5f72d00fbb0bf86851a84e116ccfe2..0fb99e62f0a707c5c081b4993ccbd39c8e970760 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -27,8 +27,29 @@ import net.minecraft.world.level.storage.ValueInput;
@@ -1689,13 +1689,14 @@ index 6296ea5cff5f72d00fbb0bf86851a84e116ccfe2..8eb13fbe8cc2737a094bc6bd1140eca6
              if (isFullContainer(container, direction)) {
                  return false;
              } else {
-@@ -491,10 +541,18 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -491,13 +541,21 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
          io.papermc.paper.threadedregions.RegionizedWorldData worldData = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegionizedWorldData(); // Folia - region threading
          BlockPos blockPos = BlockPos.containing(hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ());
          BlockState blockState = level.getBlockState(blockPos);
 -        Container container = getSourceContainer(level, hopper, blockPos, blockState);
+-        if (container != null) {
 +        Container sourceContainer = me.earthme.luminol.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled ? getExtractInventory(level, hopper, blockPos, blockState) : getSourceContainer(level, hopper, blockPos, blockState); // Leaves - Lithium Sleeping Block Entity
-         if (container != null) {
++        if (sourceContainer != null) {
              Direction direction = Direction.DOWN;
              worldData.skipPullModeEventFire = worldData.skipHopperEvents; // Paper - Perf: Optimize Hoppers // Folia - region threading
 +            // Leaves start - Lithium Sleeping Block Entity
@@ -1707,8 +1708,13 @@ index 6296ea5cff5f72d00fbb0bf86851a84e116ccfe2..8eb13fbe8cc2737a094bc6bd1140eca6
 +            }
 +            // Leaves end - Lithium Sleeping Block Entity
  
-             for (int slot : getSlots(container, direction)) {
-                 if (tryTakeInItemFromSlot(hopper, container, slot, direction, level)) { // Spigot
+-            for (int slot : getSlots(container, direction)) {
+-                if (tryTakeInItemFromSlot(hopper, container, slot, direction, level)) { // Spigot
++            for (int slot : getSlots(sourceContainer, direction)) {
++                if (tryTakeInItemFromSlot(hopper, sourceContainer, slot, direction, level)) { // Spigot
+                     return true;
+                 }
+             }
 @@ -508,7 +566,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
                  && blockState.isCollisionShapeFullBlock(level, blockPos)
                  && !blockState.is(BlockTags.DOES_NOT_BLOCK_HOPPERS);

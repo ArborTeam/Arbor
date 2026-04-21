@@ -243,7 +243,7 @@ public class LinearRegionFile implements IRegionFile {
     }
 
     public LinearRegionFile(RegionStorageInfo storageKey, Path directory, Path path, boolean dsync, int compressionLevel) throws IOException {
-        this(storageKey, directory, path, RegionFileVersion.getCompressionFormat(), dsync, compressionLevel);
+        this(storageKey, directory, path, RegionFileVersion.getSelected(), dsync, compressionLevel);
     }
 
     public LinearRegionFile(RegionStorageInfo storageKey, Path path, Path directory, RegionFileVersion compressionFormat, boolean dsync, int compressionLevel) throws IOException {

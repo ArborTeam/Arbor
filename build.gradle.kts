@@ -7,6 +7,7 @@ plugins {
 }
 
 paperweight {
+    filterPatches = false
     upstreams.register("folia") {
         repo = github("PaperMC", "Folia")
         ref = providers.gradleProperty("foliaRef")

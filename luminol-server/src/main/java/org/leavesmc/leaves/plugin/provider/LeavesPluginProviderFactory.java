@@ -27,6 +27,7 @@ import io.papermc.paper.plugin.loader.PluginLoader;
 import io.papermc.paper.plugin.provider.type.PluginTypeFactory;
 import io.papermc.paper.plugin.provider.type.paper.PaperPluginParent;
 import io.papermc.paper.plugin.provider.util.ProviderUtil;
+import me.earthme.luminol.config.modules.unsupported.DisableCheckForFoliaSupported;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.jetbrains.annotations.NotNull;
 import org.leavesmc.leaves.plugin.provider.configuration.LeavesPluginMeta;
@@ -42,6 +43,9 @@ import java.util.logging.Logger;
 public class LeavesPluginProviderFactory implements PluginTypeFactory<PaperPluginParent, LeavesPluginMeta> {
     @Override
     public PaperPluginParent build(JarFile file, LeavesPluginMeta configuration, Path source) {
+        if (!configuration.isFoliaSupported() && !DisableCheckForFoliaSupported.disableForLeaves) {
+            throw new RuntimeException("Could not load plugin '" + configuration.getDisplayName() + "' as it is not marked as supporting Folia!");
+        }
         Logger jul = PaperPluginLogger.getLogger(configuration);
         ComponentLogger logger = ComponentLogger.logger(jul.getName());
         PluginProviderContext context = PluginProviderContextImpl.create(configuration, logger, source);

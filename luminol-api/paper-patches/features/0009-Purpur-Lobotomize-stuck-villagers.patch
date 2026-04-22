@@ -8,7 +8,7 @@ As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18
 Licensed under: MIT (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/LICENSE)
 
 diff --git a/src/main/java/org/bukkit/entity/Villager.java b/src/main/java/org/bukkit/entity/Villager.java
-index a2024b5dda030a7724c13b2446224903ae837339..71f34a40b136f7f08a4820056c00692b986f63bd 100755
+index a2024b5dda030a7724c13b2446224903ae837339..71f34a40b136f7f08a4820056c00692b986f63bd 100644
 --- a/src/main/java/org/bukkit/entity/Villager.java
 +++ b/src/main/java/org/bukkit/entity/Villager.java
 @@ -405,4 +405,13 @@ public interface Villager extends AbstractVillager {

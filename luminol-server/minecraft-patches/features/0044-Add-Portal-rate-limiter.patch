@@ -93,7 +93,7 @@ index cc99ede0f544be6febc050e1bb0f8744de18f562..fd6d244f32f3de5a4dacf68f1140340f
          //this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked // Folia - region threading
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 80967cf8e4daae2be06cbcfb85cb5c448e7f2ece..94f7a4380e2c4f522255dd5aba3ff7feaf6feeba 100644
+index 219b969095414b1c23667bef810bf911e4089159..0a4b819ff7649195ccaef0e25e4507c8ae5f3ac1 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1511,8 +1511,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet

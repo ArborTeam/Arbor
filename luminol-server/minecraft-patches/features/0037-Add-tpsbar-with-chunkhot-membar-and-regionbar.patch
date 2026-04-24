@@ -80,7 +80,7 @@ index 78bee796e3ac4be8bb1eee66e83bf20674165d73..0905b1c0a0e9954c8fc68649b5721c97
          super.stopServer();
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index a87127992136cefe282a956b99acb26438d7bc97..80967cf8e4daae2be06cbcfb85cb5c448e7f2ece 100644
+index ad0c4785f7b883a3666222e29cdbcf463a1259ac..219b969095414b1c23667bef810bf911e4089159 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1486,6 +1486,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet

@@ -1,0 +1,188 @@
+package me.earthme.luminol.utils.thread;
+
+import ca.spottedleaf.concurrentutil.collection.MultiThreadedQueue;
+import ca.spottedleaf.concurrentutil.scheduler.SchedulableTick;
+import ca.spottedleaf.concurrentutil.scheduler.SchedulableTickHack;
+import ca.spottedleaf.concurrentutil.scheduler.Scheduler;
+
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
+
+public class LevelAwareRegionScheduler extends Scheduler {
+    private final Scheduler parent;
+    private final AtomicBoolean halted = new AtomicBoolean(false);
+
+    private final AtomicInteger activeCount = new AtomicInteger(0);
+    private final MultiThreadedQueue<Runnable> haltedCallbacks = new MultiThreadedQueue<>();
+    private final Set<WrappedTask> managedTasks = new CopyOnWriteArraySet<>();
+
+    public LevelAwareRegionScheduler(Scheduler parent) {
+        this.parent = parent;
+    }
+
+    private void allTaskExitedCallback() {
+        Runnable callback;
+        while ((callback = this.haltedCallbacks.pollOrBlockAdds()) != null) {
+            callback.run();
+        }
+    }
+
+    public boolean isHaltSignalled() {
+        return this.halted.get();
+    }
+
+    public boolean isAllHalted() {
+        return this.haltedCallbacks.isAddBlocked();
+    }
+
+    private final class WrappedTask extends SchedulableTick {
+        private final SchedulableTick handle;
+        private final AtomicBoolean thisHalted = new AtomicBoolean(false);
+
+        private WrappedTask(SchedulableTick handle) {
+            this.handle = handle;
+        }
+
+        public void register() {
+            LevelAwareRegionScheduler.this.activeCount.getAndIncrement();
+            LevelAwareRegionScheduler.this.managedTasks.add(this);
+        }
+
+        @Override
+        public boolean runTick() {
+            if (LevelAwareRegionScheduler.this.halted.get()) {
+                if (this.thisHalted.compareAndSet(false, true)) {
+                    final int remaining = LevelAwareRegionScheduler.this.activeCount.decrementAndGet();
+
+                    LevelAwareRegionScheduler.this.managedTasks.remove(this);
+
+                    if (remaining == 0) {
+                        LevelAwareRegionScheduler.this.allTaskExitedCallback();
+                    }
+                }
+
+                return false;
+            }
+
+            final boolean notCancelled = this.handle.runTick();
+
+            if (!notCancelled && this.thisHalted.compareAndSet(false, true)) {
+                LevelAwareRegionScheduler.this.activeCount.decrementAndGet();
+                LevelAwareRegionScheduler.this.managedTasks.remove(this);
+            }
+
+            return notCancelled;
+        }
+
+        @Override
+        public boolean hasTasks() {
+            return this.handle.hasTasks() || LevelAwareRegionScheduler.this.halted.get();
+        }
+
+        @Override
+        public boolean runTasks(BooleanSupplier canContinue) {
+            if (LevelAwareRegionScheduler.this.halted.get()) {
+                if (this.thisHalted.compareAndSet(false, true)) {
+                    final int remaining = LevelAwareRegionScheduler.this.activeCount.decrementAndGet();
+
+                    LevelAwareRegionScheduler.this.managedTasks.remove(this);
+
+                    if (remaining == 0) {
+                        LevelAwareRegionScheduler.this.allTaskExitedCallback();
+                    }
+                }
+
+                return false;
+            }
+
+            final boolean notCancelled = this.handle.runTasks(canContinue);
+
+            if (!notCancelled && this.thisHalted.compareAndSet(false, true)) {
+                LevelAwareRegionScheduler.this.activeCount.decrementAndGet();
+                LevelAwareRegionScheduler.this.managedTasks.remove(this);
+            }
+
+            return notCancelled;
+        }
+    }
+
+    @Override
+    public Thread[] getAliveThreads() {
+        return this.parent.getAliveThreads();
+    }
+
+    @Override
+    public Thread[] getCoreThreads() {
+        return this.parent.getCoreThreads();
+    }
+
+    @Override
+    public void halt() {
+        if (!this.halted.compareAndSet(false, true)) {
+            return;
+        }
+
+        // the parent schedule has its ability to handle notify when task is already cancelled
+        // so just do it directly
+        for (WrappedTask task : this.managedTasks) {
+            this.parent.notifyTasks(task);
+        }
+    }
+
+    @Override
+    public boolean join(long msToWait) {
+        return false; // TODO
+    }
+
+    @Override
+    public boolean joinInterruptable(long msToWait) throws InterruptedException {
+        return false; // TODO
+    }
+
+    @Override
+    public void schedule(SchedulableTick tick) {
+        final WrappedTask toSchedule = new WrappedTask(tick);
+
+        if (!SchedulableTickHack.setState(tick, toSchedule)) {
+            throw new IllegalStateException("Already scheduled!");
+        }
+
+        toSchedule.register();
+
+        this.parent.schedule(toSchedule);
+    }
+
+    @Override
+    public void notifyTasks(SchedulableTick tick) {
+        final WrappedTask wrapped = SchedulableTickHack.getState(tick);
+
+        if (wrapped != null) {
+            this.parent.notifyTasks(wrapped);
+        }
+    }
+
+    @Override
+    public boolean cancel(SchedulableTick tick) {
+        final WrappedTask wrapped = SchedulableTickHack.getState(tick);
+
+        if (wrapped != null) {
+            final boolean cancelled = this.parent.cancel(wrapped);
+
+            if (cancelled && wrapped.thisHalted.compareAndSet(false, true)) {
+                final int remaining = this.activeCount.decrementAndGet();
+                this.managedTasks.remove(wrapped);
+
+                if (remaining == 0 && this.halted.get()) {
+                    this.allTaskExitedCallback();
+                }
+            }
+
+            return cancelled;
+        }
+
+        return false;
+    }
+}

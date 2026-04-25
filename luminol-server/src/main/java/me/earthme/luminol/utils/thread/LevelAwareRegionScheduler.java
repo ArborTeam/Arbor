@@ -38,6 +38,13 @@ public class LevelAwareRegionScheduler extends Scheduler {
         return this.haltedCallbacks.isAddBlocked();
     }
 
+    // the parent is already shut down and no tasks will be executed, so just directly retire all callbacks
+    public void onParentHalted() {
+        this.halted.set(true);
+
+        this.allTaskExitedCallback();
+    }
+
     private final class WrappedTask extends SchedulableTick {
         private final SchedulableTick handle;
         private final AtomicBoolean thisHalted = new AtomicBoolean(false);
@@ -51,18 +58,22 @@ public class LevelAwareRegionScheduler extends Scheduler {
             LevelAwareRegionScheduler.this.managedTasks.add(this);
         }
 
+        private void handleParentHalted() {
+            if (this.thisHalted.compareAndSet(false, true)) {
+                final int remaining = LevelAwareRegionScheduler.this.activeCount.decrementAndGet();
+
+                LevelAwareRegionScheduler.this.managedTasks.remove(this);
+
+                if (remaining == 0) {
+                    LevelAwareRegionScheduler.this.allTaskExitedCallback();
+                }
+            }
+        }
+
         @Override
         public boolean runTick() {
             if (LevelAwareRegionScheduler.this.halted.get()) {
-                if (this.thisHalted.compareAndSet(false, true)) {
-                    final int remaining = LevelAwareRegionScheduler.this.activeCount.decrementAndGet();
-
-                    LevelAwareRegionScheduler.this.managedTasks.remove(this);
-
-                    if (remaining == 0) {
-                        LevelAwareRegionScheduler.this.allTaskExitedCallback();
-                    }
-                }
+                this.handleParentHalted();
 
                 return false;
             }
@@ -85,15 +96,7 @@ public class LevelAwareRegionScheduler extends Scheduler {
         @Override
         public boolean runTasks(BooleanSupplier canContinue) {
             if (LevelAwareRegionScheduler.this.halted.get()) {
-                if (this.thisHalted.compareAndSet(false, true)) {
-                    final int remaining = LevelAwareRegionScheduler.this.activeCount.decrementAndGet();
-
-                    LevelAwareRegionScheduler.this.managedTasks.remove(this);
-
-                    if (remaining == 0) {
-                        LevelAwareRegionScheduler.this.allTaskExitedCallback();
-                    }
-                }
+                this.handleParentHalted();
 
                 return false;
             }
@@ -125,7 +128,7 @@ public class LevelAwareRegionScheduler extends Scheduler {
             return;
         }
 
-        // the parent schedule has its ability to handle notify when task is already cancelled
+        // the parent schedule has its ability to handle notify when task is already canceled
         // so just do it directly
         for (WrappedTask task : this.managedTasks) {
             this.parent.notifyTasks(task);

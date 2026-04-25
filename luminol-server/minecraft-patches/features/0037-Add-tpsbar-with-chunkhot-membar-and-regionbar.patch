@@ -17,7 +17,7 @@ index 52dcbcf64c3a510d4a4524b7d0ee226d9a73511d..051d601e7e809518e8d82ae4ae325905
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 1587cd96a51b45840edc1edfca067bf13ffff08a..cc99ede0f544be6febc050e1bb0f8744de18f562 100644
+index e337f5993e2db7be0ca565bd49b301f25f4503f6..6a98eba0e8e2693032cbc33de47244ef9279c3e1 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1754,7 +1754,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -80,7 +80,7 @@ index 78bee796e3ac4be8bb1eee66e83bf20674165d73..0905b1c0a0e9954c8fc68649b5721c97
          super.stopServer();
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index a87127992136cefe282a956b99acb26438d7bc97..80967cf8e4daae2be06cbcfb85cb5c448e7f2ece 100644
+index ad0c4785f7b883a3666222e29cdbcf463a1259ac..219b969095414b1c23667bef810bf911e4089159 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1486,6 +1486,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet

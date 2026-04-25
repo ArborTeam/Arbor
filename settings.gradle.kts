@@ -22,3 +22,15 @@ rootProject.name = "luminol"
 
 include("luminol-api")
 include("luminol-server")
+
+gradle.lifecycle.beforeProject {
+    val mcVersion = providers.gradleProperty("mcVersion").get().trim()
+    val luminolVersionChannel = providers.gradleProperty("channel").get().trim()
+    val luminolBuildNumber = providers.environmentVariable("BUILD_NUMBER").orNull?.trim()?.toInt()
+    val versionString = if (luminolBuildNumber == null) {
+        "$mcVersion.local-SNAPSHOT"
+    } else {
+        "$mcVersion.build.$luminolBuildNumber-${luminolVersionChannel.lowercase()}"
+    }
+    version = versionString
+}

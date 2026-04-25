@@ -2,7 +2,7 @@ From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Helvetica Volubi <suisuroru@blue-millennium.fun>
 Date: Tue, 21 Apr 2026 23:47:15 +0800
 Subject: [PATCH] Leaf: Remove useless creating stats json bases on player name
-  logic
+ logic
 
 Co-authored by: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
 As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/leaf-server/minecraft-patches/features/0043-Remove-useless-creating-stats-json-bases-on-player-n.patch)

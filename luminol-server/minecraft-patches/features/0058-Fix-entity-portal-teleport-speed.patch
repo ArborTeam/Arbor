@@ -5,7 +5,7 @@ Subject: [PATCH] Fix entity portal-teleport speed
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 3f938034888eaf2dea4dce34ea13af44846af5c4..dffe317596a715cc851ea2a623970e2f3ee34714 100644
+index 729c0d88cec89cc49122ccbd2ce4c21a0c63c779..a93bc5d85d499a6b6b517e6ed3bb94a51e1faa20 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1505,7 +1505,27 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet

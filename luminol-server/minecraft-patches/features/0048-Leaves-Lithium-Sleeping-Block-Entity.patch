@@ -240,7 +240,7 @@ index 52cb72d45dcd2606f6406b3525b30983b03d1104..54d99625cfec60530e8a3288871e6dc2
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 74729eee59f576b9be2b5ca9cfdc766b24739c99..db6b78b045e9224646c5ae86d5a5dd828b52a612 100644
+index ee65116dd7cae196ec18f0ceb8232596c07f06f1..7713c3d4d35341e46e575908646082fdc3c4e26c 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -324,7 +324,7 @@ public abstract class Entity
@@ -252,7 +252,7 @@ index 74729eee59f576b9be2b5ca9cfdc766b24739c99..db6b78b045e9224646c5ae86d5a5dd82
      private final VecDeltaCodec packetPositionCodec = new VecDeltaCodec();
      public boolean needsSync;
      public @Nullable PortalProcessor portalProcess;
-@@ -4392,11 +4392,13 @@ public abstract class Entity
+@@ -4391,11 +4391,13 @@ public abstract class Entity
      }
  
      protected Entity transformForAsyncTeleport(ServerLevel destination, Vec3 pos, Float yaw, Float pitch, Vec3 velocity) {
@@ -266,7 +266,7 @@ index 74729eee59f576b9be2b5ca9cfdc766b24739c99..db6b78b045e9224646c5ae86d5a5dd82
          if (copy instanceof net.minecraft.world.entity.boss.enderdragon.EnderDragon dragon) dragon.syncDragonPartsAfterTeleportTransform(); // Luminol - Sync dragon part when teleportation or firstly created
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
-@@ -5942,8 +5944,29 @@ public abstract class Entity
+@@ -5941,8 +5943,29 @@ public abstract class Entity
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box
@@ -600,10 +600,10 @@ index 49b001099ee49a99f9f69a91d2d13f5317093e46..fa588ab87f978b8aeaef0f1849aa532e
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 49a080dec9c31735f645bab8dc8917415404f73a..2e54f3dbfd7cd4d88cc58f7872862176dc4b1f00 100644
+index b6a1c1264c14a02a1ef13d941190d412b71065a7..e06e48dd9c997ac1dc6e404aa0bc590c851e1ba8 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1548,7 +1548,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1550,7 +1550,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          // Paper end - Fix MC-117075 use removeAll
              if (ticker.isRemoved()) {
                  toRemove.add(ticker); // Paper - Fix MC-117075 use removeAll
@@ -612,7 +612,7 @@ index 49a080dec9c31735f645bab8dc8917415404f73a..2e54f3dbfd7cd4d88cc58f7872862176
                  ticker.tick();
                  // Paper start - rewrite chunk system
                  if ((++tickedEntities & 7) == 0) {
-@@ -1627,6 +1627,27 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1628,6 +1628,27 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          return this.shouldTickBlocksAt(ChunkPos.pack(pos));
      }
  
@@ -2645,7 +2645,7 @@ index ed5a5fb38bfe8fb9216c7eab00b833485c4bbade..fc45703525901d700c98b5ad0c6eb10b
      ) {
          for (int x = 0; x < this.width; x++) {
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 4c41763d13a145442d859d25970eccf01f240620..72d36729cde3a224b595b5960293ffcf0985d3ad 100644
+index 75a306f3e6b9ea554a6620560a8c244370da013b..4882df428369e87bcf23b532dd970b13b3adfb88 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -624,6 +624,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
@@ -2664,7 +2664,7 @@ index 4c41763d13a145442d859d25970eccf01f240620..72d36729cde3a224b595b5960293ffcf
          this.tickersInLevel.clear();
      }
  
-@@ -918,10 +920,14 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -919,10 +921,14 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
              this.tickersInLevel.compute(blockEntity.getBlockPos(), (blockPos, existingTicker) -> {
                  TickingBlockEntity actualTicker = this.createTicker(blockEntity, ticker);
                  if (existingTicker != null) {
@@ -2679,7 +2679,7 @@ index 4c41763d13a145442d859d25970eccf01f240620..72d36729cde3a224b595b5960293ffcf
                      this.level.addBlockEntityTicker(result);
                      return result;
                  } else {
-@@ -1026,20 +1032,36 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -1027,20 +1033,36 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
          void run(LevelChunk levelChunk);
      }
  
@@ -2719,7 +2719,7 @@ index 4c41763d13a145442d859d25970eccf01f240620..72d36729cde3a224b595b5960293ffcf
              return this.ticker == null ? null : this.ticker.getTileEntity();
          }
          // Folia end - region threading
-@@ -1068,6 +1090,16 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -1069,6 +1091,16 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
          public String toString() {
              return this.ticker + " <wrapped>";
          }

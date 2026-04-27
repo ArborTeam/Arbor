@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand to Luminol
 
 
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index cf6152c5eaadf2586b00cad19b56401372f8bde0..95361d70182aa5581b19afb6f1adceab56d27531 100644
+index aa15c5c83f04e518c30a9dee7945062099197c25..5b46b224bb0fea3a7e0f721ce9770657ffe0c71d 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
 @@ -103,7 +103,7 @@ public class Main {

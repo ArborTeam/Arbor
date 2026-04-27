@@ -5,10 +5,10 @@ Subject: [PATCH] Fix entity portal-teleport speed
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 729c0d88cec89cc49122ccbd2ce4c21a0c63c779..a93bc5d85d499a6b6b517e6ed3bb94a51e1faa20 100644
+index ea2bf6496558b00ad60e8d56769ec7a3eadd9792..37586b80c78fd6adcd58c7256adc25af1871a616 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1505,7 +1505,27 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1515,7 +1515,27 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          foliaProfiler.startTimer(timerId);
          try {
          // Folia end - profiler
@@ -36,7 +36,7 @@ index 729c0d88cec89cc49122ccbd2ce4c21a0c63c779..a93bc5d85d499a6b6b517e6ed3bb94a5
          entity.tick();
          // Folia start - region threading
          if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
-@@ -1523,6 +1543,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1533,6 +1553,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              worldData.portalRateThrottler.increase(); // Luminol - Portal rate limiter
              return;
          }
@@ -46,7 +46,7 @@ index 729c0d88cec89cc49122ccbd2ce4c21a0c63c779..a93bc5d85d499a6b6b517e6ed3bb94a5
          } else {entity.inactiveTick();} // Paper - EAR 2
          profiler.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index adb834d2a69f23583af9c311bc4c80e2fd44944c..7b0e410afe96dafe67241b9482f6946f5016cef1 100644
+index 8cc512b73c65eeb3c6b67e513f280fc5264785cf..9be8c871c79820faa373005644dd6eda2bc5f65f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -387,6 +387,7 @@ public abstract class Entity

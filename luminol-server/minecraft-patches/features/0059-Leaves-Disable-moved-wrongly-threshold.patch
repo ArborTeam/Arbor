@@ -8,10 +8,10 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/f553c53e4230aa032e54
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 67bfd8061f412d062b432e4974769b1fb0003c02..92cd541dc521dfbd180fb38481376c0fdb637264 100644
+index 1a95e999a228caf7afa463cf4365ef1242cb3ab0..64103812f8466b79781adf7c6b5c85ffa014ed22 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -642,7 +642,7 @@ public class ServerGamePacketListenerImpl
+@@ -641,7 +641,7 @@ public class ServerGamePacketListenerImpl
                      return;
                  }
                  // Paper end - Prevent moving into unloaded chunks
@@ -20,7 +20,7 @@ index 67bfd8061f412d062b432e4974769b1fb0003c02..92cd541dc521dfbd180fb38481376c0f
                      // CraftBukkit end
                      LOGGER.warn(
                          "{} (vehicle of {}) moved too quickly! {},{},{}", vehicle.getPlainTextName(), this.player.getPlainTextName(), xDist, yDist, zDist
-@@ -672,7 +672,7 @@ public class ServerGamePacketListenerImpl
+@@ -671,7 +671,7 @@ public class ServerGamePacketListenerImpl
                  zDist = targetZ - vehicle.getZ();
                  movedDist = xDist * xDist + yDist * yDist + zDist * zDist;
                  boolean fail = false;
@@ -29,7 +29,7 @@ index 67bfd8061f412d062b432e4974769b1fb0003c02..92cd541dc521dfbd180fb38481376c0f
                      fail = true;
                      LOGGER.warn("{} (vehicle of {}) moved wrongly! {}", vehicle.getPlainTextName(), this.player.getPlainTextName(), Math.sqrt(movedDist));
                  }
-@@ -1597,7 +1597,7 @@ public class ServerGamePacketListenerImpl
+@@ -1596,7 +1596,7 @@ public class ServerGamePacketListenerImpl
  
                                      if (this.shouldCheckPlayerMovement(isFallFlying)) {
                                          float metersPerTick = isFallFlying ? 300.0F : 100.0F;
@@ -38,7 +38,7 @@ index 67bfd8061f412d062b432e4974769b1fb0003c02..92cd541dc521dfbd180fb38481376c0f
                                              // CraftBukkit end
                                              // Paper start - Add fail move event
                                              io.papermc.paper.event.player.PlayerFailMoveEvent event = fireFailMove(io.papermc.paper.event.player.PlayerFailMoveEvent.FailReason.MOVED_TOO_QUICKLY,
-@@ -1671,7 +1671,8 @@ public class ServerGamePacketListenerImpl
+@@ -1670,7 +1670,8 @@ public class ServerGamePacketListenerImpl
                                  zDist = targetZ - this.player.getZ();
                                  movedDist = xDist * xDist + yDist * yDist + zDist * zDist;
                                  boolean movedWrongly = false; // Paper - Add fail move event; rename

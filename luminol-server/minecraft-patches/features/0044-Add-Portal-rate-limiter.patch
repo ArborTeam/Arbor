@@ -69,10 +69,10 @@ index 67e23dd297f4d9378b43eb17035e28108cbf1029..6cca80278caf6690d39cbe48f3596ecf
      // this is copy on write to allow packet processing to iterate safely
      private final CopyOnWriteArrayList<ServerPlayer> localPlayers = new CopyOnWriteArrayList<>();
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 6a98eba0e8e2693032cbc33de47244ef9279c3e1..a6c8b66291f6749827487a85e0696dc4c54af6ce 100644
+index 7dbf763f4822ada322697a1319d5483317ff2899..6137ced038c19789fc9c238b80f23536a9dda32f 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1983,6 +1983,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1994,6 +1994,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              //net.minecraft.world.level.block.entity.HopperBlockEntity.skipHopperEvents = level.paperConfig().hopper.disableMoveEvent || org.bukkit.event.inventory.InventoryMoveItemEvent.getHandlerList().getRegisteredListeners().length == 0; // Paper - Perf: Optimize Hoppers // Folia - region threading
              profiler.push(() -> level + " " + level.dimension().identifier());
              profiler.push("tick");
@@ -82,7 +82,7 @@ index 6a98eba0e8e2693032cbc33de47244ef9279c3e1..a6c8b66291f6749827487a85e0696dc4
  
              try {
                  foliaProfiler.startTimer(level.tickTimerId); try { // Folia - profiler
-@@ -1997,6 +2000,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2008,6 +2011,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              profiler.pop();
              profiler.pop();
              regionizedWorldData.explosionDensityCache.clear(); // Paper - Optimize explosions // Folia - region threading
@@ -93,10 +93,10 @@ index 6a98eba0e8e2693032cbc33de47244ef9279c3e1..a6c8b66291f6749827487a85e0696dc4
          //this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked // Folia - region threading
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 219b969095414b1c23667bef810bf911e4089159..0a4b819ff7649195ccaef0e25e4507c8ae5f3ac1 100644
+index 15b57a9ace620529e0376d45b5e325e8c65fe737..6911b43b12f7479ad49e5742daac0291da37c291 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1511,8 +1511,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1521,8 +1521,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              // removed from region while ticking
              return;
          }
@@ -112,7 +112,7 @@ index 219b969095414b1c23667bef810bf911e4089159..0a4b819ff7649195ccaef0e25e4507c8
              return;
          }
          // Folia end - region threading
-@@ -1557,8 +1564,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1567,8 +1574,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
                  // removed from region while ticking
                  return;
              }

@@ -5,10 +5,10 @@ Subject: [PATCH] Add config for username checks
 
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index ed905df09f24363044509e1e3d838fb25a69a002..33a336725e6f01a11c589c925869a1a7267af364 100644
+index c0fa42a220bc25088be543c4f1fef856bbe9663d..a326af393375b17ecaf3bd800f490fa2369cf9b3 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -159,7 +159,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -167,7 +167,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      public void handleHello(final ServerboundHelloPacket packet) {
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
          // Paper start - Validate usernames

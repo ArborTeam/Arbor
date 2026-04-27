@@ -9,10 +9,10 @@ As part of: Leaf (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40
 Licensed under: MIT (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/MIT.txt)
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 41a67c9504790a5a065ba58eecb7b93c7a7bee15..abde3adb2213b2f21baa6fd753cb772895380ec6 100644
+index bafd1e29ec4cccb626d713f5b371793cb31bb05f..63b81f30b8d813a7986ae72842fdc2d3097fa103 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -1296,10 +1296,12 @@ public abstract class PlayerList {
+@@ -1295,10 +1295,12 @@ public abstract class PlayerList {
          if (Files.exists(uuidStatsFile)) {
              return uuidStatsFile;
          } else {
@@ -29,7 +29,7 @@ index 41a67c9504790a5a065ba58eecb7b93c7a7bee15..abde3adb2213b2f21baa6fd753cb7728
                      try {
                          return Files.move(playerNameStatsPath, uuidStatsFile);
                      } catch (IOException var7) {
-@@ -1308,6 +1310,8 @@ public abstract class PlayerList {
+@@ -1307,6 +1309,8 @@ public abstract class PlayerList {
                      }
                  }
              }

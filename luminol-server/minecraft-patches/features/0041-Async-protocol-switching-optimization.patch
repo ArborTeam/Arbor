@@ -5,10 +5,10 @@ Subject: [PATCH] Async protocol switching optimization
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index fb46bbec3f36dcd6a086fd1b3dc5779a5aa6f9d3..3edf8ffec536289ef98c9d7ce2abce035220e9ad 100644
+index f390a2aed9df9885f68a0cf4a14d38571b90bcaf..efbbc1a40d203a2818eeda2a4e938b9a6117f1c3 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -1055,4 +1055,127 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -1057,4 +1057,127 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          }
      }
      // Paper end - Optimize network
@@ -171,10 +171,10 @@ index a9f82554738bc0dc6eb946a7650e8e0b445a8241..54902bdce33c801e1294e57e9f85074d
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a73067ad335502e57fade58966cb31bc59960cbe..67bfd8061f412d062b432e4974769b1fb0003c02 100644
+index b92a6f642247898dcd6273c9f30fa52e843187bf..1a95e999a228caf7afa463cf4365ef1242cb3ab0 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2903,7 +2903,7 @@ public class ServerGamePacketListenerImpl
+@@ -2895,7 +2895,7 @@ public class ServerGamePacketListenerImpl
          // removed from the world
          // Folia end - rewrite login process - fix bad ordering of this field write - move after removed from world
          try { // Folia - rewrite login process - move connection ownership to global region
@@ -183,7 +183,7 @@ index a73067ad335502e57fade58966cb31bc59960cbe..67bfd8061f412d062b432e4974769b1f
          this.removePlayerFromWorld();
          } finally { // Folia start - rewrite login process - move connection ownership to global region
              io.papermc.paper.threadedregions.RegionizedWorldData worldData = this.player.level().getCurrentWorldData();
-@@ -2912,7 +2912,13 @@ public class ServerGamePacketListenerImpl
+@@ -2904,7 +2904,13 @@ public class ServerGamePacketListenerImpl
          } // Folia end - rewrite login process - move connection ownership to global region
          this.waitingForSwitchToConfig = true; // Folia - rewrite login process - fix bad ordering of this field write - moved down
          this.send(ClientboundStartConfigurationPacket.INSTANCE);
@@ -197,7 +197,7 @@ index a73067ad335502e57fade58966cb31bc59960cbe..67bfd8061f412d062b432e4974769b1f
      }
  
      @Override
-@@ -3795,12 +3801,25 @@ public class ServerGamePacketListenerImpl
+@@ -3787,12 +3793,25 @@ public class ServerGamePacketListenerImpl
              throw new IllegalStateException("Client acknowledged config, but none was requested");
          } else {
              final ServerConfigurationPacketListenerImpl listener = new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())); // Paper
@@ -225,10 +225,10 @@ index a73067ad335502e57fade58966cb31bc59960cbe..67bfd8061f412d062b432e4974769b1f
      }
  
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 33a336725e6f01a11c589c925869a1a7267af364..70cc6cc4c940a7f7ca05dc45ff08d1ce30637024 100644
+index a326af393375b17ecaf3bd800f490fa2369cf9b3..92c1ac7d649df74741b8086e6b149cb6262bf6e1 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -432,12 +432,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -440,12 +440,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      public void handleLoginAcknowledgement(final ServerboundLoginAcknowledgedPacket packet) {
          net.minecraft.network.protocol.PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor()); // CraftBukkit
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.PROTOCOL_SWITCHING, "Unexpected login acknowledgement packet");
@@ -262,7 +262,7 @@ index 33a336725e6f01a11c589c925869a1a7267af364..70cc6cc4c940a7f7ca05dc45ff08d1ce
  
      @Override
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 0d6c259673ef86c356eb78a28152dc7675d3066a..41a67c9504790a5a065ba58eecb7b93c7a7bee15 100644
+index 2088a409b60a1dc160e523e8920b2b0b39dab23b..bafd1e29ec4cccb626d713f5b371793cb31bb05f 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -238,9 +238,11 @@ public abstract class PlayerList {

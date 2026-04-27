@@ -17,10 +17,10 @@ index 52dcbcf64c3a510d4a4524b7d0ee226d9a73511d..051d601e7e809518e8d82ae4ae325905
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index e337f5993e2db7be0ca565bd49b301f25f4503f6..6a98eba0e8e2693032cbc33de47244ef9279c3e1 100644
+index 4c33e84af5c9abe438413d456697b16c605ac6ba..7dbf763f4822ada322697a1319d5483317ff2899 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1754,7 +1754,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1764,7 +1764,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          // Folia end - region threading
          //this.tickCount++; // Folia - region threading
          //this.tickRateManager.tick(); // Folia - region threading
@@ -80,10 +80,10 @@ index 78bee796e3ac4be8bb1eee66e83bf20674165d73..0905b1c0a0e9954c8fc68649b5721c97
          super.stopServer();
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index ad0c4785f7b883a3666222e29cdbcf463a1259ac..219b969095414b1c23667bef810bf911e4089159 100644
+index e297a20abe5ff1b30e3e5f27cb7cea0066119540..15b57a9ace620529e0376d45b5e325e8c65fe737 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1486,6 +1486,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1496,6 +1496,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
      public void tickNonPassenger(final Entity entity) {
          // Paper start - log detailed entity tick information
          ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread("Cannot tick an entity off-main");
@@ -92,7 +92,7 @@ index ad0c4785f7b883a3666222e29cdbcf463a1259ac..219b969095414b1c23667bef810bf911
          try {
              // Folia - region threading
              // Paper end - log detailed entity tick information
-@@ -1525,6 +1527,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1535,6 +1537,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          } finally {
              // Folia - region threading
          }
@@ -100,7 +100,7 @@ index ad0c4785f7b883a3666222e29cdbcf463a1259ac..219b969095414b1c23667bef810bf911
          // Paper end - log detailed entity tick information
      }
  
-@@ -1536,6 +1539,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1546,6 +1549,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              final int timerId = isActive ? entity.getType().tickTimerId : entity.getType().inactiveTickTimerId;
              final ca.spottedleaf.leafprofiler.RegionizedProfiler.Handle foliaProfiler = io.papermc.paper.threadedregions.TickRegionScheduler.getProfiler();
              foliaProfiler.startTimer(timerId);
@@ -109,7 +109,7 @@ index ad0c4785f7b883a3666222e29cdbcf463a1259ac..219b969095414b1c23667bef810bf911
              try {
                  // Folia end - profiler
              entity.setOldPosAndRot();
-@@ -1570,6 +1575,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1580,6 +1585,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
                  this.tickPassenger(entity, passenger, isActive); // Paper - EAR 2
              }
              } finally { foliaProfiler.stopTimer(timerId); } // Folia - profiler
@@ -185,10 +185,10 @@ index 1a502cbd8acea9420fa6dd8d716018b5ede4ba6a..a4fc24bc636e17981a981c031d866531
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index eda70d83ef84ae04522d732ca6750f80c954e494..4abdecdf4a102623e3ee68580d23f9400d7dd0a7 100644
+index 136d41043b6a8e39e86c640ef9b70e14203d4f1e..bf296ca3fea564fc5b1eb9f6c4d302b4032f5f6b 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -6274,4 +6274,6 @@ public abstract class Entity
+@@ -6273,4 +6273,6 @@ public abstract class Entity
          return ((ServerLevel) this.level()).isPositionEntityTicking(this.blockPosition());
      }
      // Paper end - Expose entity id counter
@@ -293,7 +293,7 @@ index c8963924b3c2ed099a6dba9e173258f510d26829..1fa37f582823016fd6a442da1c8fac9b
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 5211ee4c8101d96caaff95c8a7b2932eed5567ee..4c41763d13a145442d859d25970eccf01f240620 100644
+index dd8cdb792d8d94b691c40e0c07f04975cb70aa21..75a306f3e6b9ea554a6620560a8c244370da013b 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -113,6 +113,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
@@ -304,7 +304,7 @@ index 5211ee4c8101d96caaff95c8a7b2932eed5567ee..4c41763d13a145442d859d25970eccf0
  
      @Override
      public final boolean moonrise$isPostProcessingDone() {
-@@ -964,6 +965,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -965,6 +966,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
                          ProfilerFiller profiler = Profiler.get();
                          profiler.push(this::getType);
                          foliaProfiler.startTimer(timerId); try { // Folia - profiler
@@ -312,7 +312,7 @@ index 5211ee4c8101d96caaff95c8a7b2932eed5567ee..4c41763d13a145442d859d25970eccf0
                          BlockState blockState = LevelChunk.this.getBlockState(pos);
                          if (this.blockEntity.getType().isValid(blockState)) {
                              this.ticker.tick(LevelChunk.this.level, this.blockEntity.getBlockPos(), blockState, this.blockEntity);
-@@ -977,7 +979,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -978,7 +980,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
                              }
                              // Paper end - Remove the Block Entity if it's invalid
                          }

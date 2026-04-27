@@ -54,10 +54,10 @@ index 51c126735ace8fdde89ad97b5cab62f244212db0..c7d4d944eb198ac53a3eeae717a25c7d
 +    public void moonrise$write(final abomination.IRegionFile regionFile) throws IOException; // Luminol - Configurable region file format
  }
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index abb1d920e6fc505c240dd757eb109ab7d349b46f..7c1a5f3d255d611b47cab57cce45528f700c3ca9 100644
+index 8ec86d7485efbb275c85d8226ea93a7bbd72342c..e299ac8be2b4da6b067d45e398cb51c1dc425add 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1008,10 +1008,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1018,10 +1018,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          if (flush) {
              for (ServerLevel level : this.getAllLevels()) {
                  String storageName = level.getChunkSource().chunkMap.getStorageName();

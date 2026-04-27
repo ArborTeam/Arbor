@@ -8,10 +8,10 @@ As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2e
 Licensed under: GPL-3.0 (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/LICENSE)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 24fefe84e07716255bc3eac45a84b8ffd1483dee..208e12d5cfc2970d6433e3b11c7755dadcf4e0e3 100644
+index f8401f14ad247055db369648ea34e254eb0d15c2..85a9f15314ec15aba955f8aaa4ed9f8c2b132a5c 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4565,14 +4565,18 @@ public abstract class Entity
+@@ -4564,14 +4564,18 @@ public abstract class Entity
                          targetPos, 16, // load 16 blocks to be safe from block physics
                          ca.spottedleaf.concurrentutil.util.Priority.HIGH,
                          (chunks) -> {
@@ -34,7 +34,7 @@ index 24fefe84e07716255bc3eac45a84b8ffd1483dee..208e12d5cfc2970d6433e3b11c7755da
                                      TeleportTransition.PLAY_PORTAL_SOUND.then(TeleportTransition.PLACE_PORTAL_TICKET),
                                      org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.END_PORTAL
                                  )
-@@ -4587,11 +4591,15 @@ public abstract class Entity
+@@ -4586,11 +4590,15 @@ public abstract class Entity
                          ca.spottedleaf.concurrentutil.util.Priority.HIGH,
                          (chunks) -> {
                              BlockPos adjustedSpawn = destination.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawnPos);
@@ -52,7 +52,7 @@ index 24fefe84e07716255bc3eac45a84b8ffd1483dee..208e12d5cfc2970d6433e3b11c7755da
                                      Relative.union(Relative.DELTA, Relative.ROTATION),
                                      TeleportTransition.PLAY_PORTAL_SOUND.then(TeleportTransition.PLACE_PORTAL_TICKET),
                                      org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.END_PORTAL
-@@ -4770,6 +4778,10 @@ public abstract class Entity
+@@ -4769,6 +4777,10 @@ public abstract class Entity
              return false;
          }
  
@@ -63,7 +63,7 @@ index 24fefe84e07716255bc3eac45a84b8ffd1483dee..208e12d5cfc2970d6433e3b11c7755da
          Vec3 initialPosition = this.position();
          ChunkPos initialPositionChunk = new ChunkPos(
              ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkX(initialPosition),
-@@ -4833,9 +4845,14 @@ public abstract class Entity
+@@ -4832,9 +4844,14 @@ public abstract class Entity
                          info.postTeleportTransition().onTransition(teleported);
                      }
  

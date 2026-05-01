@@ -1386,6 +1386,11 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
                 if (superBlock == MASTER_FILE_SUPER_BLOCK) {
                     oldParsed = this.tryParseBlinearV2(rawDataStream, mainFilePath);
+
+                    // false -> v3 -> closed in parse block
+                    if (!oldParsed) {
+                        return;
+                    }
                 }
 
                 if (superBlock == LINEAR_FILE_SUPER_BLOCK) {

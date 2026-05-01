@@ -1266,13 +1266,13 @@ public class BufferedLinearRegionFile implements IRegionFile {
             }
         }
 
-        private void tryParseBlinearV2(@NotNull DataInputStream ioStream, Path file) throws IOException {
+        private boolean tryParseBlinearV2(@NotNull DataInputStream ioStream, Path file) throws IOException {
             final byte version = ioStream.readByte();
 
             // we will parse dynamically (V3)
             if (version == MASTER_FILE_VERSION_BUCKET) {
                 ioStream.close();
-                return;
+                return false;
             }
 
             if (version != MASTER_FILE_VERSION)
@@ -1308,6 +1308,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     }
                 }
             }
+
+            return true;
         }
 
         @Contract(value = "_ -> new", pure = true)
@@ -1383,9 +1385,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 superBlock = rawDataStream.readLong();
 
                 if (superBlock == MASTER_FILE_SUPER_BLOCK) {
-                    this.tryParseBlinearV2(rawDataStream, mainFilePath);
-
-                    oldParsed = true;
+                    oldParsed = this.tryParseBlinearV2(rawDataStream, mainFilePath);
                 }
 
                 if (superBlock == LINEAR_FILE_SUPER_BLOCK) {

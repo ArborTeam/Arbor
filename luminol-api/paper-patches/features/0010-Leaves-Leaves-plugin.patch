@@ -8,10 +8,10 @@ As part of: Leaves (https://github.com/HyacinthHaru/Leaves/blob/90080d238e2fcfc1
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index bfebdc317c71d16db742416db590505c66529673..a8a785b247c09dc825a3661dd38396b7b331bd4c 100644
+index 550c7eef69acde07c05b0cb75bf413186c09a26a..8e96326c55510642df01ef15e1a3edb1e81176cb 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -3039,4 +3039,10 @@ public final class Bukkit {
+@@ -3042,4 +3042,10 @@ public final class Bukkit {
      public static void restart() {
          server.restart();
      }

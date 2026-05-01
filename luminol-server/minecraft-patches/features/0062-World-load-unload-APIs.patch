@@ -1,0 +1,448 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Fri, 1 May 2026 18:37:50 +0800
+Subject: [PATCH] World load/unload APIs
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+好吧这里这一坨需要说明的太多了而且我也不是很会翻译所以就用中文注释了)
+
+这一整个实现使用了一种安全点的思路，相对于folia pr里和canvas的让每个region自己卸载, 我更偏向于将调度器拆分到每个level中然后实现类似于单个level停服的逻辑,这样会更加符合直觉而且实现要更加快速而且易于排查问题
+
+由于世界卸载可能发生在玩家登录或者传送的过程中,所以我使用了引用计数器来避免这个竟态条件的发生
+
+diff --git a/io/papermc/paper/threadedregions/RegionShutdownThread.java b/io/papermc/paper/threadedregions/RegionShutdownThread.java
+index f2208bcd5ccf3bd5a428e8ea3bf3ff26b3c9483b..d5c4e9b82f2ebc135b6747d19678b1a15e808ec8 100644
+--- a/io/papermc/paper/threadedregions/RegionShutdownThread.java
++++ b/io/papermc/paper/threadedregions/RegionShutdownThread.java
+@@ -14,11 +14,11 @@ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.concurrent.TimeUnit;
+ 
+-public final class RegionShutdownThread extends ca.spottedleaf.moonrise.common.util.TickThread {
++public class RegionShutdownThread extends ca.spottedleaf.moonrise.common.util.TickThread { // Luminol - Level schedulers - Make public
+ 
+-    private static final Logger LOGGER = LogUtils.getClassLogger();
++    public static final Logger LOGGER = LogUtils.getClassLogger(); // Luminol - Level schedulers - Make public
+ 
+-    ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> shuttingDown;
++    public ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> shuttingDown; // Luminol - Level schedulers - Make public
+ 
+     public RegionShutdownThread(final String name) {
+         super(name);
+@@ -52,7 +52,7 @@ public final class RegionShutdownThread extends ca.spottedleaf.moonrise.common.u
+     // the data required to do that is regionised, and we can only access it when we OWN the region, and we do not.
+     // Thus, the only operation that the shutdown thread will perform
+ 
+-    private void saveLevelData(final ServerLevel world) {
++    public void saveLevelData(final ServerLevel world) { // Luminol - Level hot unload apis - Make public
+         try {
+             world.saveLevelData(true);
+         } catch (final Throwable thr) {
+@@ -60,7 +60,7 @@ public final class RegionShutdownThread extends ca.spottedleaf.moonrise.common.u
+         }
+     }
+ 
+-    private void finishTeleportations(final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region,
++    public void finishTeleportations(final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region, // Luminol - Level hot unload apis - Make public
+                                       final ServerLevel world) {
+         try {
+             this.shuttingDown = region;
+@@ -94,7 +94,7 @@ public final class RegionShutdownThread extends ca.spottedleaf.moonrise.common.u
+         }
+     }
+ 
+-    private void saveRegionChunks(final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region,
++    public void saveRegionChunks(final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region, // Luminol - Level hot unload apis - Make public
+                                   final boolean last) {
+         ChunkPos center = null;
+         try {
+@@ -109,7 +109,7 @@ public final class RegionShutdownThread extends ca.spottedleaf.moonrise.common.u
+         }
+     }
+ 
+-    private void haltChunkSystem(final ServerLevel world) {
++    public void haltChunkSystem(final ServerLevel world) { // Luminol - Level hot unload apis - Make public
+         try {
+             world.moonrise$getChunkTaskScheduler().chunkHolderManager.close(false, true, true, false, false);
+         } catch (final Throwable thr) {
+@@ -117,7 +117,7 @@ public final class RegionShutdownThread extends ca.spottedleaf.moonrise.common.u
+         }
+     }
+ 
+-    private void closePlayerInventories(final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region) {
++    public void closePlayerInventories(final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region) { // Luminol - Level hot unload apis - Make public
+         ChunkPos center = null;
+         try {
+             this.shuttingDown = region;
+@@ -150,7 +150,7 @@ public final class RegionShutdownThread extends ca.spottedleaf.moonrise.common.u
+     }
+ 
+     @Override
+-    public final void run() {
++    public void run() { // Luminol - Level hot unload apis - Make public
+         // await scheduler termination
+         LOGGER.info("Awaiting scheduler termination for 60s...");
+         if (TickRegions.getScheduler().halt(true, TimeUnit.SECONDS.toNanos(60L))) {
+diff --git a/io/papermc/paper/threadedregions/RegionizedServer.java b/io/papermc/paper/threadedregions/RegionizedServer.java
+index d5ff949f4f459c4358b0130cd20f8ed9cf24b42d..3416445888860746c15a978f401c87245609b64a 100644
+--- a/io/papermc/paper/threadedregions/RegionizedServer.java
++++ b/io/papermc/paper/threadedregions/RegionizedServer.java
+@@ -62,6 +62,12 @@ public final class RegionizedServer {
+         this.worlds.add(world);
+     }
+ 
++    // Luminol start - Level hot unload apis
++    public void removeWorld(final ServerLevel world) {
++        this.worlds.remove(world);
++    }
++    // Luminol end
++
+     public void init() {
+         // call init event _before_ scheduling anything
+         new RegionizedServerInitEvent().callEvent();
+diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
+index 0f4e8ee9438135e24e0f61a1390c59573b9e9c3f..8b09834ec36f62a73e388124129afbdfa47e6c25 100644
+--- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
++++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
+@@ -49,7 +49,7 @@ public final class TickRegionScheduler {
+     }
+     // Folia end - watchdog
+ 
+-    private final Scheduler scheduler;
++    public final Scheduler scheduler; // Luminol - Level schedulers - Make public
+ 
+     public static enum SchedulerType {
+         EDF,
+@@ -239,7 +239,15 @@ public final class TickRegionScheduler {
+      */
+     public void scheduleRegion(final RegionScheduleHandle region) {
+         region.scheduler = this;
++        // this.scheduler.schedule(region); // Luminol - Level schedulers
++        // Luminol start - Level schedulers
++        if(region.region != null) {
++            region.region.world.levelScheduler.schedule(region);
++            return;
++        }
++
+         this.scheduler.schedule(region);
++        // Luminol end
+     }
+ 
+     /**
+@@ -252,13 +260,74 @@ public final class TickRegionScheduler {
+         region.markNonSchedulable();
+     }
+ 
++    // Luminol start - Level schedulers
++    private void handleParentSchedulerDead() {
++        for (ServerLevel level : MinecraftServer.getServer().getAllLevels()) {
++            level.levelScheduler.onParentHalted();
++        }
++    }
++
++    public boolean haltAndWaitLevelSchedulerHalt(final boolean sync, final long maxWaitNS) {
++        final long deadline = System.nanoTime() + maxWaitNS;
++
++        boolean hasUnhaltedLevelScheduler = false;
++        for (net.minecraft.server.level.ServerLevel serverLevel : MinecraftServer.getServer().getAllLevels()) {
++            serverLevel.levelScheduler.halt(); // ensure it's halted so that we could skip running any other new tasks
++
++            // sync not required, directly go next
++            if (!sync && serverLevel.levelScheduler.isFullyExited()) {
++                hasUnhaltedLevelScheduler = true;
++                continue;
++            }
++
++            final boolean writeLockHeld = serverLevel.levelUnloadStateLock.acquireWrite(deadline);
++            // we got the write lock, abort the others unloading logics
++            if (writeLockHeld) {
++                serverLevel.levelUnloadStateLock.acquireUnreachable();
++
++                // since there is no unloading tasks, so the callback would be always empty, just directly go next,
++                // and we'll handle the final saving in global shutdown logics
++                continue;
++            }
++
++            // cannot get write lock, might be marked as unreachable
++            final boolean isUnreachable = serverLevel.levelUnloadStateLock.isUnreachable();
++            // already fully terminated (we mark it as unreachable after all separate unload saving logics), check the scheduler state
++            if (isUnreachable) {
++                continue;
++            }
++
++            // try linearly block wait for halt
++            long failures = 0L;
++            while (!serverLevel.levelScheduler.isFullyExited()) {
++                // check deadline
++                if (deadline - System.nanoTime() <= 0) {
++                    return false;
++                }
++
++                failures = ca.spottedleaf.concurrentutil.util.ConcurrentUtil.linearLongBackoffDeadline(failures, 100, 1000L, deadline);
++            }
++        }
++
++        return !hasUnhaltedLevelScheduler;
++    }
++    // Luminol end - Level schedulers
++
+     public boolean halt(final boolean sync, final long maxWaitNS) {
+-        this.scheduler.halt();
++        final boolean allLevelSchedulersExited = this.haltAndWaitLevelSchedulerHalt(sync, maxWaitNS); // Luminol - Level schedulers
++        if (allLevelSchedulersExited) this.scheduler.halt(); // Luminol - Level schedulers
+         if (!sync) {
+             return this.scheduler.getAliveThreads().length == 0;
+         }
+ 
+-        return this.scheduler.join(maxWaitNS == 0L ? 0L : Math.max(1L, TimeUnit.NANOSECONDS.toMillis(maxWaitNS)));
++        // return this.scheduler.join(maxWaitNS == 0L ? 0L : Math.max(1L, TimeUnit.NANOSECONDS.toMillis(maxWaitNS))); // Luminol - Level schedulers
++        // Luminol start - Level schedulers
++        final boolean waitResult = allLevelSchedulersExited && this.scheduler.join(maxWaitNS == 0L ? 0L : Math.max(1L, TimeUnit.NANOSECONDS.toMillis(maxWaitNS)));
++
++        this.handleParentSchedulerDead();
++
++        return waitResult;
++        // Luminol - end
+     }
+ 
+     void dumpAliveThreadTraces(final String reason) {
+@@ -270,7 +339,15 @@ public final class TickRegionScheduler {
+     }
+ 
+     public void setHasTasks(final RegionScheduleHandle region) {
++        //this.scheduler.notifyTasks(region); // Luminol - Level schedulers
++        // Luminol start - Level schedulers
++        if (region.region != null) {
++            region.region.world.levelScheduler.notifyTasks(region);
++            return;
++        }
++
+         this.scheduler.notifyTasks(region);
++        // Luminol end
+     }
+ 
+     private void uncaughtException(final Thread thread, final Throwable thr) {
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index 37586b80c78fd6adcd58c7256adc25af1871a616..98f34f63dae132907660a7c724e16d3489c4ea62 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -220,6 +220,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+     private final StructureCheck structureCheck;
+     public final boolean tickTime; // Folia - region threading
+     private final LevelDebugSynchronizers debugSynchronizers = new LevelDebugSynchronizers(this);
++    // Luminol start - Level schedulers
++    private static final java.util.concurrent.atomic.AtomicInteger UNLOADER_ID_GEN = new java.util.concurrent.atomic.AtomicInteger(0);
++    public final me.earthme.luminol.utils.thread.LevelAwareRegionScheduler levelScheduler = new me.earthme.luminol.utils.thread.LevelAwareRegionScheduler(io.papermc.paper.threadedregions.TickRegions.getScheduler().scheduler);
++    public final me.earthme.luminol.utils.thread.SimpleReferenceRWLock levelUnloadStateLock = new me.earthme.luminol.utils.thread.SimpleReferenceRWLock();
++    public final me.earthme.luminol.utils.thread.LevelSubRegionShutdownThread levelUnloader = new me.earthme.luminol.utils.thread.LevelSubRegionShutdownThread("Level Unload Thread - " + UNLOADER_ID_GEN.getAndIncrement(), this);
++    // Luminol end
+ 
+     // CraftBukkit start
+     private final ResourceKey<LevelStem> typeKey;
+diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
+index 2dba7cf154c85e605b3a1afa08ce736630a711e5..82a29fe693a0f3c7116a3a51da979c820f7c5edd 100644
+--- a/net/minecraft/server/level/ServerPlayer.java
++++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -1749,7 +1749,30 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+ 
+         ServerLevel origin = this.level();
+         ServerPlayer.RespawnConfig respawnConfig = this.getRespawnConfig();
+-        ServerLevel respawnWorld = this.server.getLevel(ServerPlayer.RespawnConfig.getDimensionOrDefault(respawnConfig));
++        ServerLevel respawnWorldLookup = this.server.getLevel(ServerPlayer.RespawnConfig.getDimensionOrDefault(respawnConfig)); // Luminol - Level hot unload apis
++        // Luminol start - Level hot unload apis
++        var toLockRelease = (ServerLevel)null;
++        if (respawnWorldLookup != null) {
++            if (respawnWorldLookup.levelUnloadStateLock.acquireRead()) {
++                toLockRelease = respawnWorldLookup;
++            } else {
++                respawnWorldLookup = null;
++            }
++        }
++
++        final ServerLevel respawnWorld = respawnWorldLookup;
++        final ServerLevel finalToLockRelease = toLockRelease;
++
++        var finalRespawnCompleteCallback = (java.util.function.Consumer<ServerPlayer>) player -> {
++            if (finalToLockRelease != null) {
++                finalToLockRelease.levelUnloadStateLock.releaseRead();
++            }
++
++            if (respawnComplete != null) {
++                respawnComplete.accept(player);
++            }
++        };
++        // Luminol end
+ 
+         // modified based off PlayerList#respawn
+ 
+@@ -1800,8 +1823,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+                     // now the respawn logic is complete
+ 
+                     // last, call the function callback
+-                    if (respawnComplete != null) {
+-                        respawnComplete.accept(ServerPlayer.this);
++                    if (finalRespawnCompleteCallback != null) { // Luminol - Level hot unload apis
++                        finalRespawnCompleteCallback.accept(ServerPlayer.this); // Luminol - Level hot unload apis
+                     }
+                     // Luminol - Add missing teleportation apis
+                     new me.earthme.luminol.api.entity.player.PostPlayerRespawnEvent(ServerPlayer.this.getBukkitEntity()).callEvent();
+diff --git a/net/minecraft/server/network/config/PrepareSpawnTask.java b/net/minecraft/server/network/config/PrepareSpawnTask.java
+index a7f0cc98e65f79ab1f5a170aade9173d6adeef3e..cc13161d6128169e936abe38d6046b26256a18f2 100644
+--- a/net/minecraft/server/network/config/PrepareSpawnTask.java
++++ b/net/minecraft/server/network/config/PrepareSpawnTask.java
+@@ -105,6 +105,16 @@ public class PrepareSpawnTask implements ConfigurationTask {
+                     spawnLevel = spawnDataLevel;
+                 }
+             }
++            // Luminol start - Level hot unload apis
++            if (!spawnLevel.levelUnloadStateLock.acquireRead()) {
++                spawnLevel = spawnDataLevel;
++
++                // the apis don't allow devs to unload overworld, so just simply do a check withoud fail-processing logics on it
++                if (!spawnLevel.levelUnloadStateLock.acquireRead()) {
++                    throw new java.lang.IllegalStateException("Default level should be acquirable!");
++                }
++            }
++            // Luminol end
+             // Folia start - region threading
+             CompletableFuture<Vec3> spawnPosition = new java.util.concurrent.CompletableFuture<>();
+             if (loadedPosition.position().isPresent()) {
+@@ -124,6 +134,10 @@ public class PrepareSpawnTask implements ConfigurationTask {
+             }
+             // Folia end - region threading
+             // Paper end - move logic in Entity to here, to use bukkit supplied world UUID & reset to main world spawn if no valid world is found
++            // Luminol start - Level hot unload apis
++            final ServerLevel finalSpawnLevel = spawnLevel;
++            spawnPosition.whenComplete((_, _) -> finalSpawnLevel.levelUnloadStateLock.releaseRead());
++            // Luminol end
+             Vec2 spawnAngle = loadedPosition.rotation().orElse(new Vec2(respawnData.yaw(), respawnData.pitch()));
+             this.state = new PrepareSpawnTask.Preparing(spawnLevel, spawnPosition, spawnAngle);
+         }
+@@ -275,9 +289,20 @@ public class PrepareSpawnTask implements ConfigurationTask {
+                         this.spawnPosition = CompletableFuture.completedFuture(spawnPosition);
+                         this.spawnAngle = new Vec2(location.getYaw(), location.getPitch());
+                     }
++                    // Luminol start - Level hot unload apis
++                    if (!this.spawnLevel.levelUnloadStateLock.acquireRead()) {
++                        LOGGER.warn("Could not fetch read reference lock for level {}! Falling back to overworld!", this.spawnLevel);
++
++                        this.spawnLevel = net.minecraft.server.MinecraftServer.getServer().overworld();
++                        if (!this.spawnLevel.levelUnloadStateLock.acquireRead()) {
++                            throw new java.lang.IllegalStateException();
++                        }
++                    }
++                    // Luminol end
+                     // Paper end - PlayerSpawnLocationEvent
+                     ChunkPos spawnChunk = ChunkPos.containing(BlockPos.containing(spawnPosition));
+                     this.chunkLoadFuture = ((ca.spottedleaf.moonrise.patches.chunk_system.MoonriseChunkLoadCounter)this.chunkLoadCounter).trackLoadWithRadius(this.spawnLevel, spawnChunk, 3, net.minecraft.world.level.chunk.status.ChunkStatus.FULL, ca.spottedleaf.concurrentutil.util.Priority.HIGH, () -> { Preparing.this.spawnLevel.getChunkSource().addTicketWithRadius(TicketType.PLAYER_SPAWN, spawnChunk, 3); }); // Paper - rewrite chunk system
++                    this.chunkLoadFuture.whenComplete((_,_) -> this.spawnLevel.levelUnloadStateLock.releaseRead()); // Luminol - Level hot unload apis
+                     PrepareSpawnTask.this.loadListener.start(LevelLoadListener.Stage.LOAD_PLAYER_CHUNKS, this.chunkLoadCounter.totalChunks());
+                     PrepareSpawnTask.this.loadListener.updateFocus(this.spawnLevel.dimension(), spawnChunk);
+                 }
+@@ -295,7 +320,7 @@ public class PrepareSpawnTask implements ConfigurationTask {
+     }
+ 
+     private final class Ready implements PrepareSpawnTask.State {
+-        private final ServerLevel spawnLevel;
++        private ServerLevel spawnLevel; // Luminol - Level hot unloaad apis - Make public
+         private final Vec3 spawnPosition;
+         private final Vec2 spawnAngle;
+ 
+@@ -323,6 +348,16 @@ public class PrepareSpawnTask implements ConfigurationTask {
+ 
+         // Folia start - region threading - split out createPlayer and spawn
+         public ServerPlayer createPlayer(final Connection connection, final CommonListenerCookie cookie) {
++            // Luminol start - Level hot unload apis
++            if (!this.spawnLevel.levelUnloadStateLock.acquireRead()) {
++                LOGGER.warn("Failed to fetch read reference for level {}! Falling back to overworld.", this.spawnLevel);
++
++                this.spawnLevel = net.minecraft.server.MinecraftServer.getServer().overworld();
++                if (!this.spawnLevel.levelUnloadStateLock.acquireRead()) {
++                    throw new java.lang.IllegalStateException();
++                }
++            }
++            // Luminol end
+             //ChunkPos spawnChunk = ChunkPos.containing(BlockPos.containing(this.spawnPosition));
+             //this.spawnLevel.waitForEntities(spawnChunk, 3); // Not needed on Moonrise chunk system
+             // Folia end - region threading
+@@ -381,6 +416,11 @@ public class PrepareSpawnTask implements ConfigurationTask {
+                 });
+                 var7 = player;
+             }
++            // Luminol start - Level hot unload apis
++            finally {
++                this.spawnLevel.levelUnloadStateLock.releaseRead();
++            }
++            // Luminol end
+ 
+             return var7;
+         }
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 9be8c871c79820faa373005644dd6eda2bc5f65f..91514b88ac0dfd48fd644556c90d00f05ed380f3 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -392,6 +392,9 @@ public abstract class Entity
+     public void inactiveTick() {
+     }
+     // Paper end - EAR 2
++    // Luminol start - Level hot unload apis
++    public me.earthme.luminol.utils.TeleportRecord lastTeleportRecord;
++    // Luminol end
+     // CraftBukkit end
+ 
+     // Paper start
+@@ -4458,6 +4461,17 @@ public abstract class Entity
+             }
+         }
+ 
++        // Luminol start - Level hot unload apis
++        if (!destination.levelUnloadStateLock.acquireRead()) {
++            return false;
++        }
++        final java.util.function.Consumer<Entity> finalTeleportComplete = entity -> {
++            destination.levelUnloadStateLock.releaseRead();
++
++            if (teleportComplete != null) teleportComplete.accept(entity);
++        };
++        // Luminol end
++
+         // TODO any events that can modify go HERE
+         // Luminol start - Add missing teleportation apis
+         org.bukkit.Location destinationLoc;
+@@ -4501,6 +4515,14 @@ public abstract class Entity
+             }
+ 
+             for (EntityTreeNode entity : passengerTree.getFullTree()) {
++                // Luminol start - Level hot unload apis
++                entity.root.lastTeleportRecord = me.earthme.luminol.utils.TeleportRecord.create(
++                        (ServerLevel) entity.root.level,
++                        entity.root.position,
++                        entity.root.yRot,
++                        entity.root.xRot
++                );
++                // Luminol end
+                 entity.root.teleportSyncSameRegion(pos, yaw, pitch, velocity);
+             }
+ 
+@@ -4516,8 +4538,8 @@ public abstract class Entity
+                 // performs add/remove from world logic which will also perform add/remove tracker logic
+             }
+ 
+-            if (teleportComplete != null) {
+-                teleportComplete.accept(this);
++            if (finalTeleportComplete != null) { // Luminol - Level hot unload apis
++                finalTeleportComplete.accept(this); // Luminol - Level hot unload apis
+             }
+             return true;
+         }
+@@ -4534,7 +4556,7 @@ public abstract class Entity
+             node.root = node.root.transformForAsyncTeleport(destination, pos, yaw, pitch, velocity);
+         }
+ 
+-        passengerTree.root.placeInAsync(originWorld, destination, teleportFlags, passengerTree, teleportComplete);
++        passengerTree.root.placeInAsync(originWorld, destination, teleportFlags, passengerTree, finalTeleportComplete); // Luminol - Level hot unload apis
+ 
+         return true;
+     }

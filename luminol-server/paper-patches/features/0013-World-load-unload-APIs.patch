@@ -1,0 +1,63 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Fri, 1 May 2026 18:37:51 +0800
+Subject: [PATCH] World load/unload APIs
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+好吧这里这一坨需要说明的太多了而且我也不是很会翻译所以就用中文注释了)
+
+这一整个实现使用了一种安全点的思路，相对于folia pr里和canvas的让每个region自己卸载, 我更偏向于将调度器拆分到每个level中然后实现类似于单个level停服的逻辑,这样会更加符合直觉而且实现要更加快速而且易于排查问题
+
+由于世界卸载可能发生在玩家登录或者传送的过程中,所以我使用了引用计数器来避免这个竟态条件的发生
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 6562b922e33328f7e52747c4291712c18b59aa7b..8e5ba5ecfa909ba816884c229992d00d028f568e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1203,7 +1203,8 @@ public final class CraftServer implements Server {
+ 
+     @Override
+     public World createWorld(WorldCreator creator) {
+-        if (true) throw new UnsupportedOperationException(); // Folia - not implemented properly yet
++        // if (true) throw new UnsupportedOperationException(); // Folia - not implemented properly yet // Luminol - Level hot load apis
++        io.papermc.paper.threadedregions.RegionizedServer.ensureGlobalTickThread("Call createWorld off global region!"); // Luminol - Level hot load apis
+         Preconditions.checkState(this.console.getAllLevels().iterator().hasNext(), "Cannot create additional worlds on STARTUP");
+         //Preconditions.checkState(!this.console.isIteratingOverLevels, "Cannot create a world while worlds are being ticked"); // Paper - Cat - Temp disable. We'll see how this goes.
+         Preconditions.checkArgument(creator != null, "WorldCreator cannot be null");
+@@ -1357,7 +1358,8 @@ public final class CraftServer implements Server {
+ 
+     @Override
+     public boolean unloadWorld(World world, boolean save) {
+-        if (true) throw new UnsupportedOperationException(); // Folia - not implemented properly yet
++        // if (true) throw new UnsupportedOperationException(); // Folia - not implemented properly yet // Luminol - Level hot unload apis
++        io.papermc.paper.threadedregions.RegionizedServer.ensureGlobalTickThread("Call unloadWorld off global region!"); // Luminol - Level hot unload apis
+         //Preconditions.checkState(!this.console.isIteratingOverLevels, "Cannot unload a world while worlds are being ticked"); // Paper - Cat - Temp disable. We'll see how this goes.
+         if (world == null) {
+             return false;
+@@ -1382,7 +1384,7 @@ public final class CraftServer implements Server {
+             return false;
+         }
+ 
+-        try {
++        /*try { // Luminol - Level hot unload apis
+             if (save) {
+                 handle.save(null, true, false); // Paper - Fix saving in unloadWorld
+             }
+@@ -1394,7 +1396,14 @@ public final class CraftServer implements Server {
+         }
+ 
+         this.worlds.remove(world.getName().toLowerCase(Locale.ROOT));
+-        this.console.removeLevel(handle);
++        this.console.removeLevel(handle);*/ // Luminol - Level hot unload apis
++        // Luminol start - Level hot unload apis
++        handle.levelUnloader.getUnloadCallback().addWaiter((ret, ex) -> {
++            this.worlds.remove(world.getName().toLowerCase(Locale.ROOT));
++        });
++        handle.levelUnloader.start();
++        handle.levelUnloader.waitForComplete();
++        // Luminol end
+         return true;
+     }
+ 

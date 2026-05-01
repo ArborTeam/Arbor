@@ -19,15 +19,30 @@ public class LevelAwareRegionScheduler extends Scheduler {
     private final MultiThreadedQueue<Runnable> haltedCallbacks = new MultiThreadedQueue<>();
     private final Set<WrappedTask> managedTasks = new CopyOnWriteArraySet<>();
 
+    private final AtomicBoolean fullyExited = new AtomicBoolean(false);
+
     public LevelAwareRegionScheduler(Scheduler parent) {
         this.parent = parent;
+        System.out.println(this.parent);
     }
 
     private void allTaskExitedCallback() {
-        Runnable callback;
-        while ((callback = this.haltedCallbacks.pollOrBlockAdds()) != null) {
-            callback.run();
+        try {
+            Runnable callback;
+            while ((callback = this.haltedCallbacks.pollOrBlockAdds()) != null) {
+                callback.run();
+            }
+        }finally {
+            this.fullyExited.set(true);
         }
+    }
+
+    public boolean isFullyExited() {
+        return this.fullyExited.get();
+    }
+
+    public boolean addHaltCallback(Runnable task) {
+        return this.haltedCallbacks.offer(task);
     }
 
     public boolean isHaltSignalled() {
@@ -51,6 +66,9 @@ public class LevelAwareRegionScheduler extends Scheduler {
 
         private WrappedTask(SchedulableTick handle) {
             this.handle = handle;
+
+            // resync deadline
+            SchedulableTickHack.setScheduledStart(this, SchedulableTickHack.getScheduledStart(this.handle));
         }
 
         public void register() {
@@ -85,6 +103,8 @@ public class LevelAwareRegionScheduler extends Scheduler {
                 LevelAwareRegionScheduler.this.managedTasks.remove(this);
             }
 
+            // resync deadline
+            SchedulableTickHack.setScheduledStart(this, SchedulableTickHack.getScheduledStart(this.handle));
             return notCancelled;
         }
 
@@ -133,6 +153,10 @@ public class LevelAwareRegionScheduler extends Scheduler {
         for (WrappedTask task : this.managedTasks) {
             this.parent.notifyTasks(task);
         }
+
+        if (this.activeCount.get() == 0) {
+            this.allTaskExitedCallback();
+        }
     }
 
     @Override
@@ -141,12 +165,16 @@ public class LevelAwareRegionScheduler extends Scheduler {
     }
 
     @Override
-    public boolean joinInterruptable(long msToWait) throws InterruptedException {
+    public boolean joinInterruptable(long msToWait) {
         return false; // TODO
     }
 
     @Override
     public void schedule(SchedulableTick tick) {
+        if (this.halted.get()) {
+            return;
+        }
+
         final WrappedTask toSchedule = new WrappedTask(tick);
 
         if (!SchedulableTickHack.setState(tick, toSchedule)) {
@@ -160,6 +188,10 @@ public class LevelAwareRegionScheduler extends Scheduler {
 
     @Override
     public void notifyTasks(SchedulableTick tick) {
+        if (this.halted.get()) {
+            return;
+        }
+
         final WrappedTask wrapped = SchedulableTickHack.getState(tick);
 
         if (wrapped != null) {

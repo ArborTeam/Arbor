@@ -12,4 +12,13 @@ public class SchedulableTickHack {
     public static <T> T getState(@NonNull SchedulableTick tick) {
         return (T) tick.state;
     }
+
+    @Contract(pure = true)
+    public static long getScheduledStart(@NonNull SchedulableTick tick) {
+        return tick.getScheduledStart();
+    }
+
+    public static void setScheduledStart(@NonNull SchedulableTick tick, long newValue) {
+        tick.setScheduledStart(newValue);
+    }
 }

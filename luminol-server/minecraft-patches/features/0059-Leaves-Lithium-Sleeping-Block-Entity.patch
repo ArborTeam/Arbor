@@ -9,7 +9,7 @@ Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 6cca80278caf6690d39cbe48f3596ecffd3f435b..102b53a6d4b2cc8ec0d794250e8f25f132cb1e17 100644
+index 2b9c6a426d80952072ec3f68145e1172c0b61d97..b9f78bf27dda744cbfa87de16e1b7a167fcfdef8 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -62,6 +62,10 @@ import java.util.Set;
@@ -145,7 +145,7 @@ index 6cca80278caf6690d39cbe48f3596ecffd3f435b..102b53a6d4b2cc8ec0d794250e8f25f1
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -478,6 +547,11 @@ public final class RegionizedWorldData {
+@@ -482,6 +551,11 @@ public final class RegionizedWorldData {
      // Redstone
      public final alternate.current.wire.WireHandler wireHandler;
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;
@@ -240,7 +240,7 @@ index 52cb72d45dcd2606f6406b3525b30983b03d1104..54d99625cfec60530e8a3288871e6dc2
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ee65116dd7cae196ec18f0ceb8232596c07f06f1..7713c3d4d35341e46e575908646082fdc3c4e26c 100644
+index ec85b0cd490d29f600146e00c8a5a17fbe33635b..dff6fef815a68eb36706a650bedc79a21e110bfd 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -324,7 +324,7 @@ public abstract class Entity
@@ -252,7 +252,7 @@ index ee65116dd7cae196ec18f0ceb8232596c07f06f1..7713c3d4d35341e46e575908646082fd
      private final VecDeltaCodec packetPositionCodec = new VecDeltaCodec();
      public boolean needsSync;
      public @Nullable PortalProcessor portalProcess;
-@@ -4391,11 +4391,13 @@ public abstract class Entity
+@@ -4396,11 +4396,13 @@ public abstract class Entity
      }
  
      protected Entity transformForAsyncTeleport(ServerLevel destination, Vec3 pos, Float yaw, Float pitch, Vec3 velocity) {
@@ -266,7 +266,7 @@ index ee65116dd7cae196ec18f0ceb8232596c07f06f1..7713c3d4d35341e46e575908646082fd
          if (copy instanceof net.minecraft.world.entity.boss.enderdragon.EnderDragon dragon) dragon.syncDragonPartsAfterTeleportTransform(); // Luminol - Sync dragon part when teleportation or firstly created
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
-@@ -5941,8 +5943,29 @@ public abstract class Entity
+@@ -5978,8 +5980,29 @@ public abstract class Entity
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box
@@ -297,7 +297,7 @@ index ee65116dd7cae196ec18f0ceb8232596c07f06f1..7713c3d4d35341e46e575908646082fd
      }
  
 diff --git a/net/minecraft/world/entity/item/ItemEntity.java b/net/minecraft/world/entity/item/ItemEntity.java
-index 4f39b96a4af8865af6a968d64643712840359851..2c6debc8c3ec90df0bca9a9147ed1f397637018e 100644
+index 8c16f7b6d1d25b3185a427058e8aa5b17ef8107a..aed1641b4e09384d40da1ac6e66c1641ca34b063 100644
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
 @@ -34,8 +34,12 @@ import net.minecraft.world.level.storage.ValueInput;

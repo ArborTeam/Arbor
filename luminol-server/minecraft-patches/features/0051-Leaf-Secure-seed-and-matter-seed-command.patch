@@ -63,10 +63,10 @@ index 022593220923b28d61b458bee827d21be4dd2f2c..27389ff98942e27c2a877ea5b671caa3
      }
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 6911b43b12f7479ad49e5742daac0291da37c291..ea2bf6496558b00ad60e8d56769ec7a3eadd9792 100644
+index 782ebba067a4e81f70a6b63a72fc1a45d62200ba..c380ab9f059da6219691e8bccd4f82b9ec5483b3 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -630,6 +630,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -636,6 +636,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              generator = new org.bukkit.craftbukkit.generator.CustomChunkGenerator(this, generator, gen);
          }
          // CraftBukkit end

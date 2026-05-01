@@ -93,10 +93,10 @@ index 7dbf763f4822ada322697a1319d5483317ff2899..6137ced038c19789fc9c238b80f23536
          //this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked // Folia - region threading
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 15b57a9ace620529e0376d45b5e325e8c65fe737..6911b43b12f7479ad49e5742daac0291da37c291 100644
+index 47aafbc88a5d4fb6fc4b9dad45b46e5b00d2ef4b..14907258f9f47086767fa0f2c0dbcccb8bc80f89 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1521,8 +1521,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1547,8 +1547,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              // removed from region while ticking
              return;
          }
@@ -111,8 +111,8 @@ index 15b57a9ace620529e0376d45b5e325e8c65fe737..6911b43b12f7479ad49e5742daac0291
 +            worldData.portalRateThrottler.increase(); // Luminol - Portal rate limiter
              return;
          }
-         // Folia end - region threading
-@@ -1567,8 +1574,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+         }
+@@ -1595,8 +1602,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
                  // removed from region while ticking
                  return;
              }

@@ -103,7 +103,7 @@ index d5ff949f4f459c4358b0130cd20f8ed9cf24b42d..3416445888860746c15a978f401c8724
          // call init event _before_ scheduling anything
          new RegionizedServerInitEvent().callEvent();
 diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-index 0f4e8ee9438135e24e0f61a1390c59573b9e9c3f..8b09834ec36f62a73e388124129afbdfa47e6c25 100644
+index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..b73245d7d69ba38cbb3a31aa6522fded70b76cb3 100644
 --- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
 +++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
 @@ -49,7 +49,7 @@ public final class TickRegionScheduler {
@@ -115,7 +115,7 @@ index 0f4e8ee9438135e24e0f61a1390c59573b9e9c3f..8b09834ec36f62a73e388124129afbdf
  
      public static enum SchedulerType {
          EDF,
-@@ -239,7 +239,15 @@ public final class TickRegionScheduler {
+@@ -220,7 +220,15 @@ public final class TickRegionScheduler {
       */
      public void scheduleRegion(final RegionScheduleHandle region) {
          region.scheduler = this;
@@ -131,7 +131,7 @@ index 0f4e8ee9438135e24e0f61a1390c59573b9e9c3f..8b09834ec36f62a73e388124129afbdf
      }
  
      /**
-@@ -252,13 +260,74 @@ public final class TickRegionScheduler {
+@@ -233,13 +241,74 @@ public final class TickRegionScheduler {
          region.markNonSchedulable();
      }
  
@@ -208,7 +208,7 @@ index 0f4e8ee9438135e24e0f61a1390c59573b9e9c3f..8b09834ec36f62a73e388124129afbdf
      }
  
      void dumpAliveThreadTraces(final String reason) {
-@@ -270,7 +339,15 @@ public final class TickRegionScheduler {
+@@ -251,7 +320,15 @@ public final class TickRegionScheduler {
      }
  
      public void setHasTasks(final RegionScheduleHandle region) {
@@ -225,7 +225,7 @@ index 0f4e8ee9438135e24e0f61a1390c59573b9e9c3f..8b09834ec36f62a73e388124129afbdf
  
      private void uncaughtException(final Thread thread, final Throwable thr) {
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 37586b80c78fd6adcd58c7256adc25af1871a616..98f34f63dae132907660a7c724e16d3489c4ea62 100644
+index fbcbaf1840a1ee4f354da0245e9cf5708ef5f84e..c7cdf8a2d6856e7cac1d0809bc9bc5e9c45ba84f 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -220,6 +220,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -242,10 +242,10 @@ index 37586b80c78fd6adcd58c7256adc25af1871a616..98f34f63dae132907660a7c724e16d34
      // CraftBukkit start
      private final ResourceKey<LevelStem> typeKey;
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 2dba7cf154c85e605b3a1afa08ce736630a711e5..82a29fe693a0f3c7116a3a51da979c820f7c5edd 100644
+index 7136575074c3c10ab1e5d30c7fb1f2805b5c4122..8c87378879e9a0d45ddb7ee9702deea00378ee9a 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1749,7 +1749,30 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1720,7 +1720,30 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
          ServerLevel origin = this.level();
          ServerPlayer.RespawnConfig respawnConfig = this.getRespawnConfig();
@@ -277,7 +277,7 @@ index 2dba7cf154c85e605b3a1afa08ce736630a711e5..82a29fe693a0f3c7116a3a51da979c82
  
          // modified based off PlayerList#respawn
  
-@@ -1800,8 +1823,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1771,8 +1794,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      // now the respawn logic is complete
  
                      // last, call the function callback
@@ -286,8 +286,8 @@ index 2dba7cf154c85e605b3a1afa08ce736630a711e5..82a29fe693a0f3c7116a3a51da979c82
 +                    if (finalRespawnCompleteCallback != null) { // Luminol - Level hot unload apis
 +                        finalRespawnCompleteCallback.accept(ServerPlayer.this); // Luminol - Level hot unload apis
                      }
-                     // Luminol - Add missing teleportation apis
-                     new me.earthme.luminol.api.entity.player.PostPlayerRespawnEvent(ServerPlayer.this.getBukkitEntity()).callEvent();
+                 }
+             );
 diff --git a/net/minecraft/server/network/config/PrepareSpawnTask.java b/net/minecraft/server/network/config/PrepareSpawnTask.java
 index a7f0cc98e65f79ab1f5a170aade9173d6adeef3e..cc13161d6128169e936abe38d6046b26256a18f2 100644
 --- a/net/minecraft/server/network/config/PrepareSpawnTask.java
@@ -380,7 +380,7 @@ index a7f0cc98e65f79ab1f5a170aade9173d6adeef3e..cc13161d6128169e936abe38d6046b26
              return var7;
          }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 9be8c871c79820faa373005644dd6eda2bc5f65f..91514b88ac0dfd48fd644556c90d00f05ed380f3 100644
+index a62229803ad77e2f257c09b51a553b983d2b3026..c716333699819dbff2fc4731f3ae524f543a37ce 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -392,6 +392,9 @@ public abstract class Entity
@@ -393,7 +393,7 @@ index 9be8c871c79820faa373005644dd6eda2bc5f65f..91514b88ac0dfd48fd644556c90d00f0
      // CraftBukkit end
  
      // Paper start
-@@ -4458,6 +4461,17 @@ public abstract class Entity
+@@ -4463,6 +4466,17 @@ public abstract class Entity
              }
          }
  
@@ -409,9 +409,9 @@ index 9be8c871c79820faa373005644dd6eda2bc5f65f..91514b88ac0dfd48fd644556c90d00f0
 +        // Luminol end
 +
          // TODO any events that can modify go HERE
-         // Luminol start - Add missing teleportation apis
-         org.bukkit.Location destinationLoc;
-@@ -4501,6 +4515,14 @@ public abstract class Entity
+ 
+         // check for same region
+@@ -4481,6 +4495,14 @@ public abstract class Entity
              }
  
              for (EntityTreeNode entity : passengerTree.getFullTree()) {
@@ -426,7 +426,7 @@ index 9be8c871c79820faa373005644dd6eda2bc5f65f..91514b88ac0dfd48fd644556c90d00f0
                  entity.root.teleportSyncSameRegion(pos, yaw, pitch, velocity);
              }
  
-@@ -4516,8 +4538,8 @@ public abstract class Entity
+@@ -4496,8 +4518,8 @@ public abstract class Entity
                  // performs add/remove from world logic which will also perform add/remove tracker logic
              }
  
@@ -437,7 +437,7 @@ index 9be8c871c79820faa373005644dd6eda2bc5f65f..91514b88ac0dfd48fd644556c90d00f0
              }
              return true;
          }
-@@ -4534,7 +4556,7 @@ public abstract class Entity
+@@ -4514,7 +4536,7 @@ public abstract class Entity
              node.root = node.root.transformForAsyncTeleport(destination, pos, yaw, pitch, velocity);
          }
  

@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: mrhua269 <mrhua269@gmail.com>
-Date: Sat, 23 Aug 2025 19:19:21 +0800
+From: MrHua269 <mrhua269@gmail.com>
+Date: Fri, 1 May 2026 21:48:40 +0800
 Subject: [PATCH] Pufferfish: Throttle goal selector during inactive ticking
 
 A part of Pufferfish(https://github.com/Pufferfish-gg/Pufferfish)
@@ -9,10 +9,10 @@ Original patch: https://github.com/pufferfish-gg/Pufferfish/blob/ver/1.21/puffer
 Original license(GPL-3.0): https://github.com/pufferfish-gg/Pufferfish/blob/ver/1.21/PATCH-LICENSE
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index dcd1ea74e807456fa111954138dac73fb849130d..d5ff175cbc905fc6e104900bbaa59cf84666e227 100644
+index e68d15119ab137236739e72ed11beac6564340c7..731330ae22e7954513475b7d7f7911dc8d379737 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -217,11 +217,13 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -211,12 +211,14 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
          return this.lookControl;
      }
  
@@ -21,6 +21,7 @@ index dcd1ea74e807456fa111954138dac73fb849130d..d5ff175cbc905fc6e104900bbaa59cf8
      @Override
      public void inactiveTick() {
          super.inactiveTick();
+         if (!this.aware) return; // Paper - Do not tick AI for inactive unaware mobs
 -        if (this.goalSelector.inactiveTick()) {
 +        boolean isThrottled = me.earthme.luminol.config.modules.optimizations.EntityGoalSelectorInactiveTickConfig.enabled && _pufferfish_inactiveTickDisableCounter++ % 20 != 0; // Pufferfish - throttle inactive goal selector ticking
 +        if (this.goalSelector.inactiveTick() && !isThrottled) { // Pufferfish

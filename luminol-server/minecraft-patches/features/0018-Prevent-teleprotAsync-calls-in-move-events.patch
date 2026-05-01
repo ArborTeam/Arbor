@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <novau233@163.com>
-Date: Fri, 25 Jul 2025 13:29:22 +0000
+From: MrHua269 <mrhua269@gmail.com>
+Date: Fri, 1 May 2026 21:52:07 +0800
 Subject: [PATCH] Prevent teleprotAsync calls in move events
 
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 52c87838ccaf6d852b89424dd2d2babdbcffc1a9..bd344bbebc867f89061694edc0feeab9d679c90c 100644
+index 4924915ec3adf4d68ca537518fdffa52ec926bf7..6b90695716aa95a8ff66d5d43aee5ceb9e8616c6 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -718,7 +718,9 @@ public class ServerGamePacketListenerImpl
+@@ -727,7 +727,9 @@ public class ServerGamePacketListenerImpl
  
                      Location oldTo = to.clone();
                      PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
@@ -18,7 +18,7 @@ index 52c87838ccaf6d852b89424dd2d2babdbcffc1a9..bd344bbebc867f89061694edc0feeab9
  
                      // If the event is cancelled we move the player back to their old location.
                      if (event.isCancelled()) {
-@@ -1712,7 +1714,9 @@ public class ServerGamePacketListenerImpl
+@@ -1750,7 +1752,9 @@ public class ServerGamePacketListenerImpl
  
                                          Location oldTo = to.clone();
                                          PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
@@ -29,10 +29,10 @@ index 52c87838ccaf6d852b89424dd2d2babdbcffc1a9..bd344bbebc867f89061694edc0feeab9
                                          // If the event is cancelled we move the player back to their old location.
                                          if (event.isCancelled()) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 080a287e86915312ac8caaecbcb2741ea6c85564..9036cc990ceaf2e036cee6da3a0ab060b9f86736 100644
+index ff7e282eda93e07184c7fc59c92ff735abd16bd3..10721cd22a10266e50f78c0d0f4c59a7f1c097c6 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4370,12 +4370,25 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4401,12 +4401,25 @@ public abstract class Entity
              teleportTarget.cause(), teleportFlags, teleportComplete
          );
      }
@@ -59,7 +59,7 @@ index 080a287e86915312ac8caaecbcb2741ea6c85564..9036cc990ceaf2e036cee6da3a0ab060
              return false;
          }
 diff --git a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
-index 6b337848d91cc4f24655d053bc69b0cd22447dda..fc1b3501114108d0166256c514a225337955e461 100644
+index de254df4f13dd1544481fc8a3762ced649930da8..6d61a8e06c23ea704cdf46d0ddc311b1502a5f80 100644
 --- a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 +++ b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 @@ -282,7 +282,9 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
@@ -73,10 +73,10 @@ index 6b337848d91cc4f24655d053bc69b0cd22447dda..fc1b3501114108d0166256c514a22533
          this.lastLocation = vehicle.getLocation();
          // CraftBukkit end
 diff --git a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
-index 1123ec0038552e0b40774f4a433ff325695ea071..cce9213bd1ad544871b085d32d615175e6e887dd 100644
+index 7ba197b9bda1f98e24882be40d78fabb0db9d36b..c203964667f18b5b50dfe52ea83f0c6396b96a1a 100644
 --- a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
-@@ -307,7 +307,9 @@ public abstract class AbstractMinecart extends VehicleEntity {
+@@ -318,7 +318,9 @@ public abstract class AbstractMinecart extends VehicleEntity {
          new org.bukkit.event.vehicle.VehicleUpdateEvent(vehicle).callEvent();
  
          if (!from.equals(to)) {
@@ -85,4 +85,4 @@ index 1123ec0038552e0b40774f4a433ff325695ea071..cce9213bd1ad544871b085d32d615175
 +            this.blockTeleportAsync = false; // Luminol - Prevent teleprotAsync calls during move events
          }
          // CraftBukkit end
-         this.updateInWaterStateAndDoFluidPushing();
+         this.updateFluidInteraction();

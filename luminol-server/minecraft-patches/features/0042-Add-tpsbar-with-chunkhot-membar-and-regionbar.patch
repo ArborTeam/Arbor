@@ -80,10 +80,10 @@ index 78bee796e3ac4be8bb1eee66e83bf20674165d73..0905b1c0a0e9954c8fc68649b5721c97
          super.stopServer();
          //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index e297a20abe5ff1b30e3e5f27cb7cea0066119540..15b57a9ace620529e0376d45b5e325e8c65fe737 100644
+index 0e323ab55346f4790ca936f227917e5809e5e05c..47aafbc88a5d4fb6fc4b9dad45b46e5b00d2ef4b 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1496,6 +1496,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1502,6 +1502,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
      public void tickNonPassenger(final Entity entity) {
          // Paper start - log detailed entity tick information
          ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread("Cannot tick an entity off-main");
@@ -92,7 +92,7 @@ index e297a20abe5ff1b30e3e5f27cb7cea0066119540..15b57a9ace620529e0376d45b5e325e8
          try {
              // Folia - region threading
              // Paper end - log detailed entity tick information
-@@ -1535,6 +1537,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1563,6 +1565,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          } finally {
              // Folia - region threading
          }
@@ -100,7 +100,7 @@ index e297a20abe5ff1b30e3e5f27cb7cea0066119540..15b57a9ace620529e0376d45b5e325e8
          // Paper end - log detailed entity tick information
      }
  
-@@ -1546,6 +1549,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1574,6 +1577,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              final int timerId = isActive ? entity.getType().tickTimerId : entity.getType().inactiveTickTimerId;
              final ca.spottedleaf.leafprofiler.RegionizedProfiler.Handle foliaProfiler = io.papermc.paper.threadedregions.TickRegionScheduler.getProfiler();
              foliaProfiler.startTimer(timerId);
@@ -109,7 +109,7 @@ index e297a20abe5ff1b30e3e5f27cb7cea0066119540..15b57a9ace620529e0376d45b5e325e8
              try {
                  // Folia end - profiler
              entity.setOldPosAndRot();
-@@ -1580,6 +1585,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1608,6 +1613,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
                  this.tickPassenger(entity, passenger, isActive); // Paper - EAR 2
              }
              } finally { foliaProfiler.stopTimer(timerId); } // Folia - profiler
@@ -118,7 +118,7 @@ index e297a20abe5ff1b30e3e5f27cb7cea0066119540..15b57a9ace620529e0376d45b5e325e8
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 7136575074c3c10ab1e5d30c7fb1f2805b5c4122..32219754dbe2446695a6854c986594ca0a79a1c9 100644
+index 8c87378879e9a0d45ddb7ee9702deea00378ee9a..3eb1a2034e2601f0f85c9b48ec8d724a8cc00bf1 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -454,7 +454,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -185,10 +185,10 @@ index 1a502cbd8acea9420fa6dd8d716018b5ede4ba6a..a4fc24bc636e17981a981c031d866531
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 136d41043b6a8e39e86c640ef9b70e14203d4f1e..bf296ca3fea564fc5b1eb9f6c4d302b4032f5f6b 100644
+index 9ebaad7e08ab8146e1e106f77decfb7b07dac011..73864f1cb8c0f942628320daeddd8030cbad60f8 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -6273,4 +6273,6 @@ public abstract class Entity
+@@ -6310,4 +6310,6 @@ public abstract class Entity
          return ((ServerLevel) this.level()).isPositionEntityTicking(this.blockPosition());
      }
      // Paper end - Expose entity id counter

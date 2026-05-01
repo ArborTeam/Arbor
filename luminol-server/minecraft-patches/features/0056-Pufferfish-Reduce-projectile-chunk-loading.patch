@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: mrhua269 <mrhua269@gmail.com>
-Date: Sat, 23 Aug 2025 19:49:51 +0800
+From: MrHua269 <mrhua269@gmail.com>
+Date: Fri, 1 May 2026 21:47:48 +0800
 Subject: [PATCH] Pufferfish: Reduce projectile chunk loading
 
 A part of Pufferfish(https://github.com/Pufferfish-gg/Pufferfish)
@@ -9,10 +9,10 @@ Original patch: https://github.com/pufferfish-gg/Pufferfish/blob/ver/1.21/puffer
 Original license(GPL-3.0): https://github.com/pufferfish-gg/Pufferfish/blob/ver/1.21/PATCH-LICENSE
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index b974742a0fb2dc18cfc9a61159ab0a2567a4dca4..962c8ae73bcbdc2a4102a3ebdfa9938cf9db1690 100644
+index 6cca80278caf6690d39cbe48f3596ecffd3f435b..2b9c6a426d80952072ec3f68145e1172c0b61d97 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-@@ -333,6 +333,10 @@ public final class RegionizedWorldData {
+@@ -336,6 +336,10 @@ public final class RegionizedWorldData {
  
      private RegionizedServer.WorldLevelData tickData;
  
@@ -24,11 +24,11 @@ index b974742a0fb2dc18cfc9a61159ab0a2567a4dca4..962c8ae73bcbdc2a4102a3ebdfa9938c
      public final List<Connection> connections = new ArrayList<>();
  
 diff --git a/net/minecraft/world/entity/projectile/Projectile.java b/net/minecraft/world/entity/projectile/Projectile.java
-index ce9d3bb182d8f1b90236492f92a0a10eb1d901f1..1e57dc326f0517df4efc30598b483e0fc76ab465 100644
+index 1fa37f582823016fd6a442da1c8fac9b4969f8b5..586a9544635247102ea578933aafc894399ca2aa 100644
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
-@@ -50,6 +50,38 @@ public abstract class Projectile extends Entity implements TraceableEntity {
-         super(type, level);
+@@ -58,6 +58,38 @@ public abstract class Projectile extends Entity implements TraceableEntity {
+         this.setOwner(EntityReference.of(owner));
      }
  
 +    // Pufferfish start
@@ -37,7 +37,7 @@ index ce9d3bb182d8f1b90236492f92a0a10eb1d901f1..1e57dc326f0517df4efc30598b483e0f
 +    public void setPos(double x, double y, double z) {
 +        var currRegionData = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegionizedWorldData();
 +        // we might run this on a chunk system worker(chunk gen), so skip this check if no world data was fetched
-+        if (currRegionData == null) {
++        if (currRegionData == null || currRegionData.world != this.level()) {
 +            return;
 +        }
 +        long currentTick = currRegionData.getRedstoneGameTime();
@@ -63,6 +63,6 @@ index ce9d3bb182d8f1b90236492f92a0a10eb1d901f1..1e57dc326f0517df4efc30598b483e0f
 +    }
 +    // Pufferfish end
 +
-     protected void setOwner(@Nullable EntityReference<Entity> owner) {
-         this.owner = owner;
-         this.refreshProjectileSource(false); // Paper
+     // Folia start - region threading
+     // In general, this is an entire mess. At the time of writing, there are fifty usages of getOwner.
+     // Usage of this function is to avoid concurrency issues, even if it sacrifices behavior.

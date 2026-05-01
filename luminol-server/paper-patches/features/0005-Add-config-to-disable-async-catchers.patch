@@ -1,46 +1,94 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrHua269 <mrhua269@gmail.com>
-Date: Sat, 18 Apr 2026 09:47:28 +0800
+Date: Sat, 18 Apr 2026 09:47:06 +0800
 Subject: [PATCH] Add config to disable async catchers
 
-Co-authored-by: Helvetica Volubi <88063803+suisuroru@users.noreply.github.com>
 
-diff --git a/src/main/java/io/papermc/paper/plugin/provider/type/paper/PaperPluginProviderFactory.java b/src/main/java/io/papermc/paper/plugin/provider/type/paper/PaperPluginProviderFactory.java
-index 6369b13e1fcdbdb25dd9d6e4d3bffdedbee4f739..c20c04938b2f62b9e75831c5fdfabbd6ec51538a 100644
---- a/src/main/java/io/papermc/paper/plugin/provider/type/paper/PaperPluginProviderFactory.java
-+++ b/src/main/java/io/papermc/paper/plugin/provider/type/paper/PaperPluginProviderFactory.java
-@@ -25,7 +25,7 @@ class PaperPluginProviderFactory implements PluginTypeFactory<PaperPluginParent,
-     @Override
-     public PaperPluginParent build(JarFile file, PaperPluginMeta configuration, Path source) {
-         // Folia start - block plugins not marked as supported
--        if (!configuration.isFoliaSupported()) {
-+        if (!configuration.isFoliaSupported() && !me.earthme.luminol.config.modules.unsupported.DisableCheckForFoliaSupported.disableForPaper) { // Luminol - disable check for folia supported
-             throw new RuntimeException("Could not load plugin '" + configuration.getDisplayName() + "' as it is not marked as supporting Folia!");
+diff --git a/src/main/java/ca/spottedleaf/moonrise/common/util/TickThread.java b/src/main/java/ca/spottedleaf/moonrise/common/util/TickThread.java
+index 6c74787321748702022787b65ff5465f8bcec4ad..8e5f470fd0b98d3894d7a5234386ff4cbe127f78 100644
+--- a/src/main/java/ca/spottedleaf/moonrise/common/util/TickThread.java
++++ b/src/main/java/ca/spottedleaf/moonrise/common/util/TickThread.java
+@@ -48,14 +48,14 @@ public class TickThread extends Thread {
+      */
+     @Deprecated
+     public static void ensureTickThread(final String reason) {
+-        if (!isTickThread()) {
++        if (!isTickThread() && !me.earthme.luminol.config.modules.experiment.DisableAsyncCatcherConfig.enabled) { // Luminol
+             LOGGER.error("Thread failed main thread check: " + reason + ", context=" + getThreadContext(), new Throwable());
+             throw new IllegalStateException(reason);
          }
-         // Folia end - block plugins not marked as supported
-diff --git a/src/main/java/io/papermc/paper/plugin/provider/type/spigot/SpigotPluginProviderFactory.java b/src/main/java/io/papermc/paper/plugin/provider/type/spigot/SpigotPluginProviderFactory.java
-index 6ef0042a355c65262bdb89dcf151bd644653216d..8f0b7b2985d3aadaacd5313d52d48ac916d871c9 100644
---- a/src/main/java/io/papermc/paper/plugin/provider/type/spigot/SpigotPluginProviderFactory.java
-+++ b/src/main/java/io/papermc/paper/plugin/provider/type/spigot/SpigotPluginProviderFactory.java
-@@ -27,7 +27,7 @@ class SpigotPluginProviderFactory implements PluginTypeFactory<SpigotPluginProvi
-     @Override
-     public SpigotPluginProvider build(JarFile file, PluginDescriptionFile configuration, Path source) throws InvalidDescriptionException {
-         // Folia start - block plugins not marked as supported
--        if (!configuration.isFoliaSupported()) {
-+        if (!configuration.isFoliaSupported() && !me.earthme.luminol.config.modules.unsupported.DisableCheckForFoliaSupported.disableForPaper) { // Luminol - disable check for folia supported
-             throw new RuntimeException("Could not load plugin '" + configuration.getDisplayName() + "' as it is not marked as supporting Folia!");
-         }
-         // Folia end - block plugins not marked as supported
-diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index c414da018d73baa0a2612772f45899b642ea3a5d..fa3e2bf2b31ca5173d71082e93eb7eaa4faa2816 100644
---- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-+++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-@@ -376,7 +376,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
-         }
+     }
  
-         // Folia start - block plugins not marked as supported
--        if (!descriptionFile.isFoliaSupported()) {
-+        if (!descriptionFile.isFoliaSupported() && !me.earthme.luminol.config.modules.unsupported.DisableCheckForFoliaSupported.disableForPaper) { // Luminol - disable check for folia supported
-             throw new InvalidPluginException("Plugin " + descriptionFile.getFullName() + " is not marked as supporting regionised multithreading");
+     public static void ensureTickThread(final Level world, final BlockPos pos, final String reason) {
+-        if (!isTickThreadFor(world, pos)) {
++        if (!isTickThreadFor(world, pos) && !me.earthme.luminol.config.modules.experiment.DisableAsyncCatcherConfig.enabled) { // Luminol
+             final String ex = "Thread failed main thread check: " +
+                                reason + ", context=" + getThreadContext() + ", world=" + WorldUtil.getWorldName(world) + ", block_pos=" + pos;
+             LOGGER.error(ex, new Throwable());
+@@ -64,7 +64,7 @@ public class TickThread extends Thread {
+     }
+ 
+     public static void ensureTickThread(final Level world, final BlockPos pos, final int blockRadius, final String reason) {
+-        if (!isTickThreadFor(world, pos, blockRadius)) {
++        if (!isTickThreadFor(world, pos, blockRadius) && !me.earthme.luminol.config.modules.experiment.DisableAsyncCatcherConfig.enabled) { // Luminol
+             final String ex = "Thread failed main thread check: " +
+                 reason + ", context=" + getThreadContext() + ", world=" + WorldUtil.getWorldName(world) + ", block_pos=" + pos + ", block_radius=" + blockRadius;
+             LOGGER.error(ex, new Throwable());
+@@ -73,7 +73,7 @@ public class TickThread extends Thread {
+     }
+ 
+     public static void ensureTickThread(final Level world, final ChunkPos pos, final String reason) {
+-        if (!isTickThreadFor(world, pos)) {
++        if (!isTickThreadFor(world, pos) && !me.earthme.luminol.config.modules.experiment.DisableAsyncCatcherConfig.enabled) { // Luminol
+             final String ex = "Thread failed main thread check: " +
+                 reason + ", context=" + getThreadContext() + ", world=" + WorldUtil.getWorldName(world) + ", chunk_pos=" + pos;
+             LOGGER.error(ex, new Throwable());
+@@ -82,7 +82,7 @@ public class TickThread extends Thread {
+     }
+ 
+     public static void ensureTickThread(final Level world, final int chunkX, final int chunkZ, final String reason) {
+-        if (!isTickThreadFor(world, chunkX, chunkZ)) {
++        if (!isTickThreadFor(world, chunkX, chunkZ) && !me.earthme.luminol.config.modules.experiment.DisableAsyncCatcherConfig.enabled) { // Luminol
+             final String ex = "Thread failed main thread check: " +
+                 reason + ", context=" + getThreadContext() + ", world=" + WorldUtil.getWorldName(world) + ", chunk_pos=" + new ChunkPos(chunkX, chunkZ);
+             LOGGER.error(ex, new Throwable());
+@@ -91,7 +91,7 @@ public class TickThread extends Thread {
+     }
+ 
+     public static void ensureTickThread(final Entity entity, final String reason) {
+-        if (!isTickThreadFor(entity)) {
++        if (!isTickThreadFor(entity) && !me.earthme.luminol.config.modules.experiment.DisableAsyncCatcherConfig.enabled) { // Luminol
+             final String ex = "Thread failed main thread check: " +
+                 reason + ", context=" + getThreadContext() + ", entity=" + EntityUtil.dumpEntity(entity);
+             LOGGER.error(ex, new Throwable());
+@@ -100,7 +100,7 @@ public class TickThread extends Thread {
+     }
+ 
+     public static void ensureTickThread(final Level world, final AABB aabb, final String reason) {
+-        if (!isTickThreadFor(world, aabb)) {
++        if (!isTickThreadFor(world, aabb) && !me.earthme.luminol.config.modules.experiment.DisableAsyncCatcherConfig.enabled) { // Luminol
+             final String ex = "Thread failed main thread check: " +
+                 reason + ", context=" + getThreadContext() + ", world=" + WorldUtil.getWorldName(world) + ", aabb=" + aabb;
+             LOGGER.error(ex, new Throwable());
+@@ -109,7 +109,7 @@ public class TickThread extends Thread {
+     }
+ 
+     public static void ensureTickThread(final Level world, final double blockX, final double blockZ, final String reason) {
+-        if (!isTickThreadFor(world, blockX, blockZ)) {
++        if (!isTickThreadFor(world, blockX, blockZ) && !me.earthme.luminol.config.modules.experiment.DisableAsyncCatcherConfig.enabled) { // Luminol
+             final String ex = "Thread failed main thread check: " +
+                 reason + ", context=" + getThreadContext() + ", world=" + WorldUtil.getWorldName(world) + ", block_pos=" + new Vec3(blockX, 0.0, blockZ);
+             LOGGER.error(ex, new Throwable());
+diff --git a/src/main/java/org/spigotmc/AsyncCatcher.java b/src/main/java/org/spigotmc/AsyncCatcher.java
+index 7e7a0ed944961af5ab7a49bc659da2862d2e2c82..f2867e3758ebfc5ea1066b0d5d2fe6f2dfab8248 100644
+--- a/src/main/java/org/spigotmc/AsyncCatcher.java
++++ b/src/main/java/org/spigotmc/AsyncCatcher.java
+@@ -5,7 +5,7 @@ import net.minecraft.server.MinecraftServer;
+ public class AsyncCatcher {
+ 
+     public static void catchOp(String reason) {
+-        if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThread()) { // Paper - chunk system
++        if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThread() && !me.earthme.luminol.config.modules.experiment.DisableAsyncCatcherConfig.enabled) { // Paper - chunk system  // Luminol
+             MinecraftServer.LOGGER.error("Thread {} failed main thread check: {}", Thread.currentThread().getName(), reason, new Throwable()); // Paper
+             throw new IllegalStateException("Asynchronous " + reason + "!");
          }
-         // Folia end - block plugins not marked as supported

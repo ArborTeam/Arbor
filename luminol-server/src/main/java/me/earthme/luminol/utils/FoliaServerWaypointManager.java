@@ -11,6 +11,7 @@ import net.minecraft.world.waypoints.WaypointManager;
 import net.minecraft.world.waypoints.WaypointTransmitter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,7 +22,15 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
     private final Map<ServerPlayer, Map<WaypointTransmitter, WaypointTransmitter.Connection>> connections = new ConcurrentHashMap<>();
 
     public void breakAllConnections() {
-        throw new UnsupportedOperationException("Unused");
+        Iterator<Map.Entry<ServerPlayer, Map<WaypointTransmitter, WaypointTransmitter.Connection>>> connectionTablesEntryIterator = this.connections.entrySet().iterator();
+        while (connectionTablesEntryIterator.hasNext()) {
+            final Map<WaypointTransmitter, WaypointTransmitter.Connection> table = connectionTablesEntryIterator.next().getValue();
+            connectionTablesEntryIterator.remove();
+
+            for (WaypointTransmitter.Connection connection : table.values()) {
+                connection.disconnect();
+            }
+        }
     }
 
     public void remakeConnections(WaypointTransmitter waypoint) {
@@ -54,10 +63,11 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
 
         if (this.waypoints.contains(waypoint)) {
             for (ServerPlayer player : this.trackingPlayers) {
-                Map<WaypointTransmitter, WaypointTransmitter.Connection> connectionsOfThisPlayer = this.connections.get(player);
+                final Map<WaypointTransmitter, WaypointTransmitter.Connection> connections = this.connections.get(player);
 
-                if (connectionsOfThisPlayer != null) {
-                    WaypointTransmitter.Connection connection = connectionsOfThisPlayer.get(waypoint);
+                if (connections != null) {
+                    final WaypointTransmitter.Connection connection = connections.get(waypoint);
+
                     if (connection != null) {
                         this.updateConnection(player, waypoint, connection);
                     } else {
@@ -80,9 +90,9 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
             final Map<WaypointTransmitter, WaypointTransmitter.Connection> connectionsOfCurr = connectionMapEntry.getValue();
             final ServerPlayer ownerOfCurr = connectionMapEntry.getKey();
 
-            final WaypointTransmitter.Connection connectionOfCurr = connectionsOfCurr.remove(waypoint);
-            if (connectionOfCurr != null) {
-                scheduleIfOffTarget(((Entity) ownerOfCurr), connectionOfCurr::disconnect);
+            final WaypointTransmitter.Connection removed = connectionsOfCurr.remove(waypoint);
+            if (removed != null) {
+                scheduleIfOffTarget(ownerOfCurr, removed::disconnect);
             }
         }
 
@@ -90,13 +100,13 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
     }
 
     public void addPlayer(ServerPlayer player) {
-        this.trackingPlayers.add(player);
+        scheduleIfOffTarget(player, () -> {
+            this.trackingPlayers.add(player);
 
-        for (WaypointTransmitter waypointTransmitter : this.waypoints) {
-            this.createConnection(player, waypointTransmitter);
-        }
+            for (WaypointTransmitter transmitter : this.waypoints) {
+                this.createConnection(player, transmitter);
+            }
 
-        scheduleIfOffTarget(((Entity) player), () -> {
             if (player.isTransmittingWaypoint()) {
                 this.trackWaypoint(player);
             }
@@ -104,52 +114,45 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
     }
 
     public void updatePlayer(ServerPlayer player) {
-        Map<WaypointTransmitter, WaypointTransmitter.Connection> connectionsOfCurr = this.connections.get(player);
+        Map<WaypointTransmitter, WaypointTransmitter.Connection> conneections = this.connections.get(player);
 
-        if (connectionsOfCurr == null) {
+        if (conneections == null) {
             return;
         }
 
-        Sets.SetView<WaypointTransmitter> set = Sets.difference(this.waypoints, connectionsOfCurr.keySet());
+        Sets.SetView<WaypointTransmitter> newTransmitters = Sets.difference(this.waypoints, conneections.keySet());
 
-        for (Map.Entry<WaypointTransmitter, WaypointTransmitter.Connection> entry : connectionsOfCurr.entrySet()) {
+        for (Map.Entry<WaypointTransmitter, WaypointTransmitter.Connection> entry : conneections.entrySet()) {
             this.updateConnection(player, entry.getKey(), entry.getValue());
         }
 
-        for (WaypointTransmitter waypointTransmitter : set) {
+        for (WaypointTransmitter waypointTransmitter : newTransmitters) {
             this.createConnection(player, waypointTransmitter);
         }
     }
 
     public void removePlayer(ServerPlayer player) {
-        final Map<WaypointTransmitter, WaypointTransmitter.Connection> removedConnections = this.connections.remove(player);
+        scheduleIfOffTarget(player, () -> {
+            final Map<WaypointTransmitter, WaypointTransmitter.Connection> removedConnections = this.connections.remove(player);
 
-        if (removedConnections != null) {
-            for (WaypointTransmitter.Connection connection : removedConnections.values()) {
-                connection.disconnect();
+            if (removedConnections != null) {
+                for (WaypointTransmitter.Connection connection : removedConnections.values()) {
+                    connection.disconnect();
+                }
             }
-        }
 
-        this.untrackWaypoint(player);
-        this.trackingPlayers.remove(player);
+            this.untrackWaypoint(player);
+            this.trackingPlayers.remove(player);
+        });
     }
 
     private static boolean isLocatorBarEnabledFor(@NotNull ServerPlayer player) {
         return player.level().getGameRules().get(GameRules.LOCATOR_BAR);
     }
 
-    private static void scheduleIfOffTarget(WaypointTransmitter transmitter, Runnable action) {
-        if (transmitter instanceof LivingEntity ent && !TickThread.isTickThreadFor(ent)) {
-            ent.getBukkitEntity().taskScheduler.schedule(unused -> action.run(), null, 1L);
-            return;
-        }
-
-        action.run();
-    }
-
-    private static void scheduleIfOffTarget(Entity ent, Runnable action) {
-        if (!TickThread.isTickThreadFor(ent)) {
-            ent.getBukkitEntity().taskScheduler.schedule(unused -> action.run(), null, 1L);
+    private static void scheduleIfOffTarget(Entity entity, Runnable action) {
+        if (!TickThread.isTickThreadFor(entity)) {
+            entity.getBukkitEntity().taskScheduler.schedule(_ -> action.run(), _ -> action.run(), 1L);
             return;
         }
 
@@ -160,19 +163,19 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
         if (player != waypoint) {
             if (isLocatorBarEnabledFor(player)) {
                 // -> waypoint
-                scheduleIfOffTarget(waypoint, () -> waypoint.makeWaypointConnectionWith(player).ifPresentOrElse(connection -> {
-                    final Map<WaypointTransmitter, WaypointTransmitter.Connection> connectionsOfThisPlayer = this.connections.computeIfAbsent(player, o -> new ConcurrentHashMap<>());
+                scheduleIfOffTarget(player, () -> waypoint.makeWaypointConnectionWith(player).ifPresentOrElse(newConnection -> {
+                    final Map<WaypointTransmitter, WaypointTransmitter.Connection> connectionsOfThisPlayer = this.connections.computeIfAbsent(player, _ -> new ConcurrentHashMap<>());
 
-                    connectionsOfThisPlayer.put(waypoint, connection);
+                    connectionsOfThisPlayer.put(waypoint, newConnection);
 
-                    scheduleIfOffTarget((Entity) player, connection::connect);
+                    newConnection.connect();
                 }, () -> {
                     final Map<WaypointTransmitter, WaypointTransmitter.Connection> connectionsOfThisPlayer = this.connections.get(player);
 
                     if (connectionsOfThisPlayer != null) {
                         WaypointTransmitter.Connection removedConnection = connectionsOfThisPlayer.remove(waypoint);
                         if (removedConnection != null) {
-                            scheduleIfOffTarget((Entity) player, removedConnection::disconnect);
+                            removedConnection.disconnect();
                         }
                     }
                 }));
@@ -183,43 +186,25 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
     private void updateConnection(ServerPlayer player, WaypointTransmitter waypoint, WaypointTransmitter.Connection connection) {
         if (player != waypoint) {
             if (isLocatorBarEnabledFor(player)) {
-                scheduleIfOffTarget((Entity) player, () -> {
+                scheduleIfOffTarget(player, () -> {
                     if (!connection.isBroken()) {
                         connection.update();
                     } else {
-                        scheduleIfOffTarget(waypoint, () -> {
-                            var ref = new Object() {
-                                boolean connectionOrDisconnect = true;
-                                WaypointTransmitter.Connection target;
-                            };
+                        waypoint.makeWaypointConnectionWith(player).ifPresentOrElse(newConnection -> {
+                            final Map<WaypointTransmitter, WaypointTransmitter.Connection> connectionsOfThisPlayer = this.connections.computeIfAbsent(player, _ -> new ConcurrentHashMap<>());
 
-                            waypoint.makeWaypointConnectionWith(player).ifPresentOrElse(connection1 -> {
-                                final Map<WaypointTransmitter, WaypointTransmitter.Connection> connectionsOfThisPlayer = this.connections.computeIfAbsent(player, o -> new ConcurrentHashMap<>());
-
-                                connectionsOfThisPlayer.put(waypoint, connection1);
+                            connectionsOfThisPlayer.put(waypoint, newConnection);
 
 
-                                ref.target = connection1;
-                                ref.connectionOrDisconnect = true;
-                            }, () -> {
-                                final Map<WaypointTransmitter, WaypointTransmitter.Connection> connectionsOfThisPlayer = this.connections.get(player);
+                            newConnection.connect();
+                        }, () -> {
+                            final Map<WaypointTransmitter, WaypointTransmitter.Connection> connectionsOfThisPlayer = this.connections.get(player);
 
-                                if (connectionsOfThisPlayer != null) {
-                                    connectionsOfThisPlayer.remove(waypoint);
-                                }
+                            if (connectionsOfThisPlayer != null) {
+                                connectionsOfThisPlayer.remove(waypoint);
+                            }
 
-                                ref.target = connection;
-                                ref.connectionOrDisconnect = false;
-                            });
-
-                            scheduleIfOffTarget((Entity) player, () -> {
-                                if (ref.connectionOrDisconnect) {
-                                    ref.target.connect();
-                                    return;
-                                }
-
-                                ref.target.disconnect();
-                            });
+                            connection.disconnect();
                         });
                     }
                 });

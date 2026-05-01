@@ -5,10 +5,10 @@ Subject: [PATCH] Fix entity portal-teleport speed
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index ea2bf6496558b00ad60e8d56769ec7a3eadd9792..37586b80c78fd6adcd58c7256adc25af1871a616 100644
+index a51a9e7a0fa5727690046d814eb0b26d5742cd74..fbcbaf1840a1ee4f354da0245e9cf5708ef5f84e 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1515,7 +1515,27 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1503,7 +1503,27 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          foliaProfiler.startTimer(timerId);
          try {
          // Folia end - profiler
@@ -36,8 +36,8 @@ index ea2bf6496558b00ad60e8d56769ec7a3eadd9792..37586b80c78fd6adcd58c7256adc25af
          entity.tick();
          // Folia start - region threading
          if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
-@@ -1533,6 +1553,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
-             worldData.portalRateThrottler.increase(); // Luminol - Portal rate limiter
+@@ -1514,6 +1534,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+             // portalled
              return;
          }
 +        }
@@ -46,7 +46,7 @@ index ea2bf6496558b00ad60e8d56769ec7a3eadd9792..37586b80c78fd6adcd58c7256adc25af
          } else {entity.inactiveTick();} // Paper - EAR 2
          profiler.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 8cc512b73c65eeb3c6b67e513f280fc5264785cf..9be8c871c79820faa373005644dd6eda2bc5f65f 100644
+index 3417f86c9d5f16e91404a1252f72d5344b37ea34..ff7e282eda93e07184c7fc59c92ff735abd16bd3 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -387,6 +387,7 @@ public abstract class Entity
@@ -57,7 +57,7 @@ index 8cc512b73c65eeb3c6b67e513f280fc5264785cf..9be8c871c79820faa373005644dd6eda
  
      public void inactiveTick() {
      }
-@@ -3549,6 +3550,7 @@ public abstract class Entity
+@@ -3530,6 +3531,7 @@ public abstract class Entity
          } else {
              if (this.portalProcess == null || !this.portalProcess.isSamePortal(portal)) {
                  this.portalProcess = new PortalProcessor(portal, pos.immutable());

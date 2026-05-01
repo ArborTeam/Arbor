@@ -23,7 +23,6 @@ public class LevelAwareRegionScheduler extends Scheduler {
 
     public LevelAwareRegionScheduler(Scheduler parent) {
         this.parent = parent;
-        System.out.println(this.parent);
     }
 
     private void allTaskExitedCallback() {

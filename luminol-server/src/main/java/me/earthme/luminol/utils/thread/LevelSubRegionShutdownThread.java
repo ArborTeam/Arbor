@@ -14,18 +14,40 @@ import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class LevelSubRegionShutdownThread extends RegionShutdownThread {
     private final ServerLevel toUnload;
     private final CallbackCompletable<ServerLevel> unloadCallback = new CallbackCompletable<>();
 
+    @NotNull
+    private Duration schedulerHaltTimeout = Duration.ZERO;
+    private boolean doSaving = true;
+
     public LevelSubRegionShutdownThread(String name, ServerLevel toUnload) {
         super(name);
         this.toUnload = toUnload;
+    }
+
+    public void applySettings(
+            Duration schedulerHaltTimeout,
+            boolean doSaving
+    ) {
+        Objects.requireNonNull(schedulerHaltTimeout);
+
+        RegionizedServer.ensureGlobalTickThread("Apply world shutdown settings off global region!");
+
+        this.schedulerHaltTimeout = schedulerHaltTimeout;
+        this.doSaving = doSaving;
     }
 
     public CallbackCompletable<ServerLevel> getUnloadCallback() {
@@ -52,8 +74,19 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
         this.toUnload.levelScheduler.halt();
 
         // wait full scheduler exit
-        // TODO: timeout handling ?
-        haltCallbackTask.join();
+        if (this.schedulerHaltTimeout != Duration.ZERO) {
+            try {
+                haltCallbackTask.get(this.schedulerHaltTimeout.toNanos(), TimeUnit.NANOSECONDS);
+            } catch (InterruptedException e) {
+                LOGGER.error("Shutdown thread was interrupted by another threads! An incorrect nms call?", e);
+            } catch (TimeoutException e) {
+                LOGGER.warn("Timed out for waiting scheduler exit of level {}! Forcing unloading.", this.toUnload.dimension());
+            } catch (ExecutionException e) {
+                LOGGER.error("Exception caught while waiting scheduler exit!", e);
+            }
+        } else {
+            haltCallbackTask.join();
+        }
 
         LOGGER.info("Halted sub scheduler of level {}.", this.toUnload.dimension());
 
@@ -167,11 +200,15 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
         }
         LOGGER.info("Migrated out players");
 
-        LOGGER.info("Saving chunks...");
-        for (int i = 0, len = currRegions.size(); i < len; ++i) {
-            this.saveRegionChunks(currRegions.get(i), (i + 1) == len);
+        if (this.doSaving) {
+            LOGGER.info("Saving chunks...");
+            for (int i = 0, len = currRegions.size(); i < len; ++i) {
+                this.saveRegionChunks(currRegions.get(i), (i + 1) == len);
+            }
+            LOGGER.info("Saved chunks");
+        } else {
+            LOGGER.info("Do saving is not required for level {}. Skipping saving chunks.", this.toUnload.dimension());
         }
-        LOGGER.info("Saved chunks");
 
         LOGGER.info("Saving level data...");
         this.saveLevelData(this.toUnload);

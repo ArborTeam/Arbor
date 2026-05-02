@@ -171,7 +171,7 @@ index 8fd27a342f7302284c48b3db7d085bb692e08cdc..8992e13df499333235e1a51b725c0ad3
  
      public static <E> NonNullList<E> create() {
 diff --git a/net/minecraft/core/component/PatchedDataComponentMap.java b/net/minecraft/core/component/PatchedDataComponentMap.java
-index e91a0159d3b41f40db188c2ada99683c18c73928..12f5f77b10d7d84162503717fb685875ab36b8fe 100644
+index 299cf8825f50b17b82808a39f7937efdc69352e3..c67a6246cd0d72d28a156f6a07e8f37e0c0e4b99 100644
 --- a/net/minecraft/core/component/PatchedDataComponentMap.java
 +++ b/net/minecraft/core/component/PatchedDataComponentMap.java
 @@ -14,7 +14,7 @@ import java.util.Map.Entry;
@@ -191,7 +191,7 @@ index e91a0159d3b41f40db188c2ada99683c18c73928..12f5f77b10d7d84162503717fb685875
          if (this.copyOnWrite) {
              this.patch = new Reference2ObjectArrayMap<>(this.patch);
              this.copyOnWrite = false;
-@@ -237,4 +238,22 @@ public final class PatchedDataComponentMap implements DataComponentMap {
+@@ -249,4 +250,22 @@ public final class PatchedDataComponentMap implements DataComponentMap {
      public String toString() {
          return "{" + this.stream().map(TypedDataComponent::toString).collect(Collectors.joining(", ")) + "}";
      }

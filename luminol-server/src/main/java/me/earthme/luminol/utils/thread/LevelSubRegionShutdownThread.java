@@ -11,8 +11,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -114,8 +112,7 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
         this.toUnload.levelUnloadStateLock.acquireUnreachable();
     }
 
-    private void migrateAllPlayersOnThisRegion(final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region,
-                                               final ServerLevel world) {
+    private void migrateAllPlayersOnThisRegion(final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region) {
         ChunkPos center = null;
         try {
             this.shuttingDown = region;
@@ -160,7 +157,7 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
                         player.connection.connection.disconnect((DisconnectionDetails) null);
                     }
                 } catch (final Throwable thr) {
-                    LOGGER.error("Failed to close player inventory for player: " + player, thr);
+                    LOGGER.error("Failed to migrate out player: " + player, thr);
                 }
             }
         } catch (final Throwable thr) {
@@ -176,34 +173,34 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
 
         LOGGER.info("Halted chunk systems");
 
-        final List<ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData>> currRegions = new ArrayList<>();
+        final List<ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData>> regions = new ArrayList<>();
 
-        this.toUnload.regioniser.computeForAllRegions(currRegions::add); // COW
+        this.toUnload.regioniser.computeForAllRegions(regions::add); // COW
 
         LOGGER.info("Finishing pending teleports...");
-        for (int i = 0, len = currRegions.size(); i < len; ++i) {
-            this.finishTeleportations(currRegions.get(i), this.toUnload);
+        for (var region : regions) {
+            this.finishTeleportations(region, this.toUnload);
         }
         LOGGER.info("Finished pending teleports");
 
         LOGGER.info("Saving world data for world '" + WorldUtil.getWorldName(this.toUnload) + "'");
 
         LOGGER.info("Closing player inventories...");
-        for (int i = 0, len = currRegions.size(); i < len; ++i) {
-            this.closePlayerInventories(currRegions.get(i));
+        for (var region : regions) {
+            this.closePlayerInventories(region);
         }
         LOGGER.info("Closed player inventories");
 
         LOGGER.info("Migrating out players");
-        for (int i = 0, len = currRegions.size(); i < len; ++i) {
-            this.migrateAllPlayersOnThisRegion(currRegions.get(i), this.toUnload);
+        for (var region : regions) {
+            this.migrateAllPlayersOnThisRegion(region);
         }
         LOGGER.info("Migrated out players");
 
         if (this.doSaving) {
             LOGGER.info("Saving chunks...");
-            for (int i = 0, len = currRegions.size(); i < len; ++i) {
-                this.saveRegionChunks(currRegions.get(i), (i + 1) == len);
+            for (int i = 0, len = regions.size(); i < len; ++i) {
+                this.saveRegionChunks(regions.get(i), (i + 1) == len);
             }
             LOGGER.info("Saved chunks");
         } else {

@@ -9,7 +9,7 @@ public class GlobalServerBarManager {
     private final static Map<EnumBarType, AbstractGlobalServerBar> bars = new ConcurrentHashMap<>();
 
     public static AbstractGlobalServerBar get(EnumBarType type) {
-        return bars.computeIfAbsent(type, (unused) -> type.newInstance());
+        return bars.computeIfAbsent(type, (_) -> type.newInstance());
     }
 
     public static void cancelAll() {

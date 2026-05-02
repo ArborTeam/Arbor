@@ -20,9 +20,7 @@ public class ThreadedRegionizerImpl implements ThreadedRegionizer {
     public Collection<ThreadedRegion> getAllRegions() {
         final List<ThreadedRegion> ret = new ArrayList<>();
 
-        this.internal.regioniser.computeForAllRegions(region -> {
-            ret.add(region.threadedRegionAPI);
-        });
+        this.internal.regioniser.computeForAllRegions(region -> ret.add(region.threadedRegionAPI));
 
         return ret;
     }

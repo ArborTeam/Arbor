@@ -57,11 +57,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
             StandardOpenOption.DELETE_ON_CLOSE
     };
 
-    private static final StandardOpenOption[] MASTER_TMP_FILE_CHANNEL_OPTIONS = new StandardOpenOption[]{
-            StandardOpenOption.CREATE,
-            StandardOpenOption.WRITE
-    };
-
     private static final class Bucket {
         private final Object lock = new Object();
 

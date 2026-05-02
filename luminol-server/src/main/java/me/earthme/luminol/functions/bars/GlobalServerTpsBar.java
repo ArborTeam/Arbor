@@ -38,7 +38,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
     public ScheduledTask createBossBarForPlayer(@NotNull Player apiPlayer) {
         final UUID playerUUID = apiPlayer.getUniqueId();
 
-        return apiPlayer.getScheduler().runAtFixedRate(NULL_PLUGIN, (n) -> {
+        return apiPlayer.getScheduler().runAtFixedRate(NULL_PLUGIN, _ -> {
             if (checkAndRemove(apiPlayer, playerUUID)) return;
 
             final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region = TickRegionScheduler.getCurrentRegion();
@@ -50,7 +50,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
             if (TpsBarConfig.display == EnumStatusBarDisplay.BOSS_BAR) {
                 targetBossbar = uuid2Bossbars.computeIfAbsent(
                         playerUUID,
-                        unused -> BossBar.bossBar(Component.text(""), 0.0F, TpsBarConfig.tpsColors.get(3), BossBar.Overlay.NOTCHED_20)
+                        _ -> BossBar.bossBar(Component.text(""), 0.0F, TpsBarConfig.tpsColors.get(3), BossBar.Overlay.NOTCHED_20)
                 );
 
                 apiPlayer.showBossBar(targetBossbar);

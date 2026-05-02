@@ -35,7 +35,7 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
 
     public ScheduledTask createBossBarForPlayer(@NotNull Player apiPlayer) {
         final UUID playerUUID = apiPlayer.getUniqueId();
-        return apiPlayer.getScheduler().runAtFixedRate(NULL_PLUGIN, (unused) -> {
+        return apiPlayer.getScheduler().runAtFixedRate(NULL_PLUGIN, _ -> {
             if (checkAndRemove(apiPlayer)) return;
 
             MemoryUsage heap = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
@@ -48,7 +48,7 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
             if (MembarConfig.display == EnumStatusBarDisplay.BOSS_BAR) {
                 targetBossbar = uuid2Bossbars.computeIfAbsent(
                         playerUUID,
-                        (unused1) -> BossBar.bossBar(Component.text(""), 0.0F, MembarConfig.memColors.get(3), BossBar.Overlay.NOTCHED_20)
+                        _ -> BossBar.bossBar(Component.text(""), 0.0F, MembarConfig.memColors.get(3), BossBar.Overlay.NOTCHED_20)
                 );
 
                 apiPlayer.showBossBar(targetBossbar);

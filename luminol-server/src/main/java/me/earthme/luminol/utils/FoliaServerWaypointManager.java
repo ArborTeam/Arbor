@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import me.earthme.luminol.config.modules.experiment.CommandConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.waypoints.WaypointManager;
 import net.minecraft.world.waypoints.WaypointTransmitter;
@@ -35,7 +34,6 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
 
     public void remakeConnections(WaypointTransmitter waypoint) {
         throw new UnsupportedOperationException("Unused");
-
     }
 
     public Set<WaypointTransmitter> transmitters() {

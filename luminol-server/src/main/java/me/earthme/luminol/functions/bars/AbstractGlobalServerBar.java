@@ -33,7 +33,7 @@ public abstract class AbstractGlobalServerBar {
             disabled = false;
             cancelBarUpdateTask();
 
-            this.scannerTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(NULL_PLUGIN, unused -> {
+            this.scannerTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(NULL_PLUGIN, _ -> {
                 try {
                     update();
                     cleanUp();
@@ -97,7 +97,7 @@ public abstract class AbstractGlobalServerBar {
 
     private void update() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            scheduledTasks.computeIfAbsent(player.getUniqueId(), unused -> createBossBarForPlayer(player));
+            scheduledTasks.computeIfAbsent(player.getUniqueId(), _ -> createBossBarForPlayer(player));
         }
     }
 

@@ -13,6 +13,8 @@ import net.jpountz.xxhash.XXHash32;
 import net.jpountz.xxhash.XXHashFactory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.storage.RegionFile;
+import net.minecraft.world.level.chunk.storage.RegionFileStorage;
 import net.openhft.hashing.LongHashFunction;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Contract;
@@ -49,6 +51,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
     private static final int BUCKET_SHIFT = 6;
     private static final int BUCKET_SIZE = 1 << BUCKET_SHIFT;
     private static final int BUCKET_COUNT = 1024 / BUCKET_SIZE;
+
+    private static final long MAX_SIZE_PER_CHUNK = RegionFile.MAX_CHUNK_SIZE;
 
     private static final StandardOpenOption[] SWAP_FILE_CHANNEL_OPTIONS = new StandardOpenOption[]{
             StandardOpenOption.CREATE,
@@ -565,6 +569,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
     private void writeChunk(int x, int z, @NotNull ByteBuffer data) throws IOException {
         final int chunkIndex = getChunkIndex(x, z);
+
+        if (data.remaining() > MAX_SIZE_PER_CHUNK) {
+            throw new RegionFileStorage.RegionFileSizeException("Writing too large chunk, limit : " + MAX_SIZE_PER_CHUNK + " but got : " + data.remaining());
+        }
 
         final int oldPositionOfData = data.position();
         final int xxHash32OfData = this.xxHash32.hash(data, this.xxHash32Seed);

@@ -1169,95 +1169,97 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
 
         private void parseLinearV2(@NonNull DataInputStream ioStream, Path file) throws IOException {
-            ioStream.readLong(); // Skip newestTimestamp (Long)
+            try (ioStream) {
+                ioStream.readLong(); // Skip newestTimestamp (Long)
 
-            byte gridSize = ioStream.readByte();
-            if (gridSize != 1 && gridSize != 2 && gridSize != 4 && gridSize != 8 && gridSize != 16 && gridSize != 32)
-                throw new RuntimeException("Invalid grid size: " + gridSize + " file " + file);
-            int bucketSize = 32 / gridSize;
+                byte gridSize = ioStream.readByte();
+                if (gridSize != 1 && gridSize != 2 && gridSize != 4 && gridSize != 8 && gridSize != 16 && gridSize != 32)
+                    throw new RuntimeException("Invalid grid size: " + gridSize + " file " + file);
+                int bucketSize = 32 / gridSize;
 
-            ioStream.readInt(); // Skip region_x (Int)
-            ioStream.readInt(); // Skip region_z (Int)
+                ioStream.readInt(); // Skip region_x (Int)
+                ioStream.readInt(); // Skip region_z (Int)
 
-            ioStream.skipBytes(128); // Skip existence bitmap
+                ioStream.skipBytes(128); // Skip existence bitmap
 
-            // Skip NBT features
-            while (true) {
-                byte featureNameLength = ioStream.readByte();
-                if (featureNameLength == 0) break;
-                byte[] featureNameBytes = new byte[featureNameLength];
-                ioStream.readFully(featureNameBytes);
-                ioStream.readInt(); // featureValue
-            }
+                // Skip NBT features
+                while (true) {
+                    byte featureNameLength = ioStream.readByte();
+                    if (featureNameLength == 0) break;
+                    byte[] featureNameBytes = new byte[featureNameLength];
+                    ioStream.readFully(featureNameBytes);
+                    ioStream.readInt(); // featureValue
+                }
 
-            // Read bucket metadata
-            int totalBuckets = gridSize * gridSize;
-            int[] bucketSizes = new int[totalBuckets];
-            byte[] bucketCompressionLevels = new byte[totalBuckets];
-            long[] bucketHashes = new long[totalBuckets];
-            for (int i = 0; i < totalBuckets; i++) {
-                bucketSizes[i] = ioStream.readInt();
-                bucketCompressionLevels[i] = ioStream.readByte();
-                bucketHashes[i] = ioStream.readLong();
-            }
+                // Read bucket metadata
+                int totalBuckets = gridSize * gridSize;
+                int[] bucketSizes = new int[totalBuckets];
+                byte[] bucketCompressionLevels = new byte[totalBuckets];
+                long[] bucketHashes = new long[totalBuckets];
+                for (int i = 0; i < totalBuckets; i++) {
+                    bucketSizes[i] = ioStream.readInt();
+                    bucketCompressionLevels[i] = ioStream.readByte();
+                    bucketHashes[i] = ioStream.readLong();
+                }
 
-            // Read and decompress each bucket, load chunks into swap
-            for (int bx = 0; bx < gridSize; bx++) {
-                for (int bz = 0; bz < gridSize; bz++) {
-                    int bucketIdx = bx * gridSize + bz;
+                // Read and decompress each bucket, load chunks into swap
+                for (int bx = 0; bx < gridSize; bx++) {
+                    for (int bz = 0; bz < gridSize; bz++) {
+                        int bucketIdx = bx * gridSize + bz;
 
-                    if (bucketSizes[bucketIdx] <= 0) continue;
+                        if (bucketSizes[bucketIdx] <= 0) continue;
 
-                    byte[] compressedBucket = new byte[bucketSizes[bucketIdx]];
-                    ioStream.readFully(compressedBucket);
+                        byte[] compressedBucket = new byte[bucketSizes[bucketIdx]];
+                        ioStream.readFully(compressedBucket);
 
-                    long rawHash = LongHashFunction.xx().hashBytes(compressedBucket);
-                    if (rawHash != bucketHashes[bucketIdx]) {
-                        throw new IOException("Region file hash incorrect for bucket " + bucketIdx + " in " + file);
-                    }
+                        long rawHash = LongHashFunction.xx().hashBytes(compressedBucket);
+                        if (rawHash != bucketHashes[bucketIdx]) {
+                            throw new IOException("Region file hash incorrect for bucket " + bucketIdx + " in " + file);
+                        }
 
-                    ByteArrayInputStream bucketByteStream = new ByteArrayInputStream(compressedBucket);
-                    ZstdInputStream zstdStream = new ZstdInputStream(bucketByteStream);
-                    ByteBuffer bucketBuffer = ByteBuffer.wrap(zstdStream.readAllBytes());
-                    zstdStream.close();
+                        ByteArrayInputStream bucketByteStream = new ByteArrayInputStream(compressedBucket);
+                        ZstdInputStream zstdStream = new ZstdInputStream(bucketByteStream);
+                        ByteBuffer bucketBuffer = ByteBuffer.wrap(zstdStream.readAllBytes());
+                        zstdStream.close();
 
-                    for (int cx = 0; cx < bucketSize; cx++) {
-                        for (int cz = 0; cz < bucketSize; cz++) {
-                            int chunkX = bx * bucketSize + cx;
-                            int chunkZ = bz * bucketSize + cz;
-                            int chunkIndex = chunkX + chunkZ * 32;
+                        for (int cx = 0; cx < bucketSize; cx++) {
+                            for (int cz = 0; cz < bucketSize; cz++) {
+                                int chunkX = bx * bucketSize + cx;
+                                int chunkZ = bz * bucketSize + cz;
+                                int chunkIndex = chunkX + chunkZ * 32;
 
-                            int chunkSize = bucketBuffer.getInt();
-                            long timestamp = bucketBuffer.getLong();
+                                int chunkSize = bucketBuffer.getInt();
+                                long timestamp = bucketBuffer.getLong();
 
-                            if (chunkSize > 0) {
-                                // chunkSize includes the 8 bytes of timestamp already written
-                                int dataLen = chunkSize - 8;
-                                byte[] chunkData = new byte[dataLen];
-                                bucketBuffer.get(chunkData);
+                                if (chunkSize > 0) {
+                                    // chunkSize includes the 8 bytes of timestamp already written
+                                    int dataLen = chunkSize - 8;
+                                    byte[] chunkData = new byte[dataLen];
+                                    bucketBuffer.get(chunkData);
 
-                                // Mark bucket as loaded and dirty so it gets synced to new master format
-                                final int blinearBucketIndex = chunkIndex >> BUCKET_SHIFT;
-                                final Bucket bucket = BufferedLinearRegionFile.this.buckets[blinearBucketIndex];
+                                    // Mark bucket as loaded and dirty so it gets synced to new master format
+                                    final int blinearBucketIndex = chunkIndex >> BUCKET_SHIFT;
+                                    final Bucket bucket = BufferedLinearRegionFile.this.buckets[blinearBucketIndex];
 
-                                bucket.dirty = true;
+                                    bucket.dirty = true;
 
-                                synchronized (bucket.lock) {
-                                    bucket.loaded = true;
+                                    synchronized (bucket.lock) {
+                                        bucket.loaded = true;
+                                    }
+
+                                    // Use writeChunk to go through the full path (adds length + timestamp + xxhash header)
+                                    BufferedLinearRegionFile.this.writeChunk(chunkX, chunkZ, ByteBuffer.wrap(chunkData));
                                 }
-
-                                // Use writeChunk to go through the full path (adds length + timestamp + xxhash header)
-                                BufferedLinearRegionFile.this.writeChunk(chunkX, chunkZ, ByteBuffer.wrap(chunkData));
                             }
                         }
                     }
                 }
-            }
 
-            // Footer validation
-            long footerSuperBlock = ioStream.readLong();
-            if (footerSuperBlock != LINEAR_FILE_SUPER_BLOCK) {
-                throw new IOException("Footer superblock invalid " + file);
+                // Footer validation
+                long footerSuperBlock = ioStream.readLong();
+                if (footerSuperBlock != LINEAR_FILE_SUPER_BLOCK) {
+                    throw new IOException("Footer superblock invalid " + file);
+                }
             }
         }
 

@@ -8,7 +8,7 @@ Some of changes from: Leaves (https://github.com/LeavesMC/Leaves/blob/6a2b9ee6b3
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index d43be966a04456ba1a85c20f8b12f91de62a873d..f390a2aed9df9885f68a0cf4a14d38571b90bcaf 100644
+index a3a314d7bd1fde7efb3d8d76ffaa8d3df5fbcf81..efbbc1a40d203a2818eeda2a4e938b9a6117f1c3 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -258,8 +258,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -23,7 +23,7 @@ index d43be966a04456ba1a85c20f8b12f91de62a873d..f390a2aed9df9885f68a0cf4a14d3857
                      synchronized (PACKET_LIMIT_LOCK) {
                          if (this.allPacketCounts != null) {
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 6b90695716aa95a8ff66d5d43aee5ceb9e8616c6..8dab28a355cf98315477ee9745331adb587dabb6 100644
+index 892f95bd32cb2b946a38d0e0fd96f8573a6236ad..eeaae616d26b9859cbfaf310018f06ee7920e518 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -876,7 +876,7 @@ public class ServerGamePacketListenerImpl
@@ -51,7 +51,7 @@ index 6b90695716aa95a8ff66d5d43aee5ceb9e8616c6..8dab28a355cf98315477ee9745331adb
          // CraftBukkit start - replaced with thread safe throttle
          if (org.spigotmc.SpigotConfig.enableSpamExclusions) {
              for (String exclude : org.spigotmc.SpigotConfig.spamExclusions) {
-@@ -3478,7 +3480,7 @@ public class ServerGamePacketListenerImpl
+@@ -3484,7 +3486,7 @@ public class ServerGamePacketListenerImpl
      @Override
      public void handlePlaceRecipe(final ServerboundPlaceRecipePacket packet) {
          // Paper start - auto recipe limit

@@ -101,11 +101,12 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.masterFilePath = masterFilePath;
         this.swapFilePath = Path.of(this.masterFilePath.toString() + ".swp");
 
+        Validate.inclusiveBetween(1, 22, compressionLevel);
+
         for (int i = 0; i < this.buckets.length; i++) {
             this.buckets[i] = new Bucket();
         }
 
-        Validate.inclusiveBetween(1, 22, compressionLevel);
         this.compressionLevel = (byte) compressionLevel;
 
         this.cleanUpSwapFile();
@@ -113,8 +114,23 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.tryLoadOldBlinearMasterFileData();
 
         this.flusher = flusher;
-
         this.flusher.addFile(this);
+    }
+
+    private static void writeFullyAt(FileChannel channel, @NonNull ByteBuffer buf, long startOffset) throws IOException {
+        long offset = startOffset;
+        while (buf.hasRemaining()) {
+            offset += channel.write(buf, offset);
+        }
+    }
+
+    private static void readFullyAt(FileChannel channel, @NonNull ByteBuffer buf, long startOffset) throws IOException {
+        long offset = startOffset;
+        while (buf.hasRemaining()) {
+            final int read = channel.read(buf, offset);
+            if (read < 0) throw new EOFException("Unexpected EOF at offset " + offset);
+            offset += read;
+        }
     }
 
     private void cleanUpSwapFile() throws IOException {
@@ -143,7 +159,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         bucket.dirty = true;
     }
 
-    private void markAsNotDirty(int bucketIndex) {
+    private void cleanBucketDirty(int bucketIndex) {
         final Bucket bucket = this.buckets[bucketIndex];
 
         bucket.dirty = false;
@@ -265,10 +281,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
         buffer.flip();
 
-        long offset = 0;
-        while (buffer.hasRemaining()) {
-            offset += this.swapFileChannel.write(buffer, offset);
-        }
+        writeFullyAt(this.swapFileChannel, buffer, 0);
 
         if (forceFile) {
             this.swapFileChannel.force(forceMeta);
@@ -493,12 +506,12 @@ public class BufferedLinearRegionFile implements IRegionFile {
         );
     }
 
-    private void writeChunkDataRaw(int chunkOrdinal, ByteBuffer chunkData, boolean skipSync) throws IOException {
-        final ByteBuffer committed = this.compressingOps.commitSectionData(chunkData); // run compression out of lock
+    private void writeChunkDataRaw(int index, ByteBuffer chunkData, boolean skipSync) throws IOException {
+        final ByteBuffer committed = this.compressingOps.compress(chunkData); // run compression out of lock
 
         this.regionObjectLock.writeLock().lock();
         try {
-            final Sector sector = this.sectors[chunkOrdinal];
+            final Sector sector = this.sectors[index];
 
             sector.store(committed, this.swapFileChannel);
         } finally {
@@ -512,12 +525,12 @@ public class BufferedLinearRegionFile implements IRegionFile {
         this.markAsToSync();
     }
 
-    private @Nullable ByteBuffer readChunkDataRaw(int chunkOrdinal) throws IOException {
+    private @Nullable ByteBuffer readChunkDataRaw(int index) throws IOException {
         final ByteBuffer raw;
 
         this.regionObjectLock.readLock().lock();
         try {
-            final Sector sector = this.sectors[chunkOrdinal];
+            final Sector sector = this.sectors[index];
 
             if (!sector.hasData()) {
                 return null;
@@ -528,22 +541,22 @@ public class BufferedLinearRegionFile implements IRegionFile {
             this.regionObjectLock.readLock().unlock();
         }
 
-        return this.compressingOps.fromCommitedSection(raw);
+        return this.compressingOps.decompress(raw);
     }
 
-    private void clearChunkData(int chunkOrdinal) throws IOException {
-        this.ensureBucketLoaded(chunkOrdinal);
+    private void clearChunkData(int index) throws IOException {
+        this.ensureBucketLoaded(index);
 
         this.regionObjectLock.writeLock().lock();
         try {
-            final Sector sector = this.sectors[chunkOrdinal];
+            final Sector sector = this.sectors[index];
 
             sector.clear();
         } finally {
             this.regionObjectLock.writeLock().unlock();
         }
 
-        this.makeBucketDirty(chunkOrdinal);
+        this.makeBucketDirty(index);
         this.markAsToSync();
     }
 
@@ -556,12 +569,12 @@ public class BufferedLinearRegionFile implements IRegionFile {
         return (x & 31) + ((z & 31) << 5);
     }
 
-    private boolean hasData(int chunkOrdinal) throws IOException {
-        this.ensureBucketLoaded(chunkOrdinal);
+    private boolean hasData(int index) throws IOException {
+        this.ensureBucketLoaded(index);
 
         this.regionObjectLock.readLock().lock();
         try {
-            return this.sectors[chunkOrdinal].hasData();
+            return this.sectors[index].hasData();
         } finally {
             this.regionObjectLock.readLock().unlock();
         }
@@ -751,7 +764,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         private final LZ4Compressor lz4Compressor = LZ4Factory.fastestInstance().fastCompressor();
         private final LZ4FastDecompressor lz4Decompressor = LZ4Factory.fastestInstance().fastDecompressor();
 
-        public @NotNull ByteBuffer commitSectionData(@NotNull ByteBuffer in) {
+        public @NotNull ByteBuffer compress(@NotNull ByteBuffer in) {
             final int bufferLenToAllocate = this.lz4Compressor.maxCompressedLength(in.remaining());
             final ByteBuffer result = ByteBuffer.allocate(bufferLenToAllocate + 4);
 
@@ -761,7 +774,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
             return result.flip();
         }
 
-        public @NotNull ByteBuffer fromCommitedSection(@NotNull ByteBuffer flippedIn) {
+        public @NotNull ByteBuffer decompress(@NotNull ByteBuffer flippedIn) {
             final int originalLen = flippedIn.getInt();
             final byte[] raw = new byte[flippedIn.remaining()];
             flippedIn.get(raw);
@@ -798,15 +811,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         public @NotNull ByteBuffer read(@NotNull FileChannel channel) throws IOException {
             final ByteBuffer result = ByteBuffer.allocate((int) this.length);
 
-            int totalRead = 0;
-            while (totalRead < this.length) {
-                int read = channel.read(result, this.offset + totalRead);
-                if (read == -1) {
-                    throw new IOException("Unexpected EOF while reading sector " + this.index +
-                            ", expected " + this.length + " bytes, got " + totalRead);
-                }
-                totalRead += read;
-            }
+            readFullyAt(channel, result, this.offset);
 
             result.flip();
             return result;
@@ -821,10 +826,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             // data is smaller or its length equals to the local buffer we hold, write it directly
             if (newDataLength <= oldLength) {
-                long localOffset = this.offset;
-                while (newData.hasRemaining()) {
-                    localOffset += channel.write(newData, localOffset);
-                }
+                writeFullyAt(channel, newData, this.offset);
 
                 return;
             }
@@ -834,10 +836,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             BufferedLinearRegionFile.this.currentAcquiredIndex += this.length;
 
-            long localOffset = this.offset;
-            while (newData.hasRemaining()) {
-                localOffset += channel.write(newData, localOffset);
-            }
+            writeFullyAt(channel, newData, this.offset);
         }
 
         private @NotNull ByteBuffer getEncoded() {
@@ -1072,7 +1071,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
             for (int i = 0; i < syncedBuckets.length; i++) {
                 if (syncedBuckets[i]) {
-                    BufferedLinearRegionFile.this.markAsNotDirty(i);
+                    BufferedLinearRegionFile.this.cleanBucketDirty(i);
                 }
             }
         }
@@ -1158,23 +1157,6 @@ public class BufferedLinearRegionFile implements IRegionFile {
                 BufferedLinearRegionFile.this.writeChunkDataRaw(chunkIndex, ByteBuffer.wrap(chunkSectionData), true);
             }
         }
-
-        private static void writeFullyAt(FileChannel channel, @NonNull ByteBuffer buf, long startOffset) throws IOException {
-            long offset = startOffset;
-            while (buf.hasRemaining()) {
-                offset += channel.write(buf, offset);
-            }
-        }
-
-        private static void readFullyAt(FileChannel channel, @NonNull ByteBuffer buf, long startOffset) throws IOException {
-            long offset = startOffset;
-            while (buf.hasRemaining()) {
-                final int read = channel.read(buf, offset);
-                if (read < 0) throw new EOFException("Unexpected EOF at offset " + offset);
-                offset += read;
-            }
-        }
-
 
         private void parseLinearV2(@NonNull DataInputStream ioStream, Path file) throws IOException {
             try (ioStream) {
@@ -1318,7 +1300,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
         }
 
         @Contract(value = "_ -> new", pure = true)
-        public static int @NotNull [] coordinatesFromOrdinal(int chunkIndex) {
+        public static int @NotNull [] coordinatesFromIndex(int chunkIndex) {
             int x = chunkIndex & 31;
             int z = (chunkIndex >> 5) & 31;
             return new int[]{x, z};
@@ -1351,7 +1333,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
                         final ByteBuffer chunkDataNioBuffer = ByteBuffer.wrap(chunkData);
 
-                        final int[] posByAxis = coordinatesFromOrdinal(i);
+                        final int[] posByAxis = coordinatesFromIndex(i);
 
                         final int x = posByAxis[0];
                         final int z = posByAxis[1];

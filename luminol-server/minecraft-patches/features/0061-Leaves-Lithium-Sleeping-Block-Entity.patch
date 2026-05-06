@@ -678,7 +678,7 @@ index 3eb65e5ed0241330ebde3e05f7865e294d4b48e7..e8f16b5a1089a7446a5472958de6a519
          private final LevelAccessor level;
          private final BlockPos pos;
 diff --git a/net/minecraft/world/level/block/DiodeBlock.java b/net/minecraft/world/level/block/DiodeBlock.java
-index 79b597f398e0e953883acbf5e31746fbd5c95442..df63eca98d975ca6708c08bc622ab1f050d3405c 100644
+index 609e1693a7796b9bcbacc6fb97e21a848b73c647..3457a1fa8f5efc4bf173bf155165ab5e5ae9f303 100644
 --- a/net/minecraft/world/level/block/DiodeBlock.java
 +++ b/net/minecraft/world/level/block/DiodeBlock.java
 @@ -177,6 +177,7 @@ public abstract class DiodeBlock extends HorizontalDirectionalBlock {

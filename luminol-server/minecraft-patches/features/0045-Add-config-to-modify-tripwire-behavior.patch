@@ -6,10 +6,10 @@ Subject: [PATCH] Add config to modify tripwire behavior
 Co-authored-by: Helvetica Volubi <88063803+suisuroru@users.noreply.github.com>
 
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index a495a96a65f2326e218261b6cb1b3700454fe4ae..735f6a1ed890a9f3567a83c706a31fa33ddfc184 100644
+index 82713a22a7c9c54c64616cbd96aac9dfb10cf4e3..fd808353181e05f2fc527a391ce7bb990f61b4c7 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
-@@ -211,10 +211,17 @@ public class TripWireHookBlock extends Block {
+@@ -201,10 +201,17 @@ public class TripWireHookBlock extends Block {
                      BlockPos testPosx = pos.relative(direction, i);
                      BlockState wireData = wireStates[i];
                      if (wireData != null) {

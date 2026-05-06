@@ -225,10 +225,10 @@ index 6b90695716aa95a8ff66d5d43aee5ceb9e8616c6..892f95bd32cb2b946a38d0e0fd96f857
      }
  
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index c0fa42a220bc25088be543c4f1fef856bbe9663d..694e94d9ab0c7b1b53ecd28edd414e74f2c2fffb 100644
+index d924369285878ff73811b8186cdb16e76f5dda90..82f4680c4b12a09ce91216be9a0b598b387d9fd8 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -439,12 +439,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -437,12 +437,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      public void handleLoginAcknowledgement(final ServerboundLoginAcknowledgedPacket packet) {
          net.minecraft.network.protocol.PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor()); // CraftBukkit
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.PROTOCOL_SWITCHING, "Unexpected login acknowledgement packet");

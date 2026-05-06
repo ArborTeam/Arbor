@@ -78,7 +78,7 @@ index 82a29fe693a0f3c7116a3a51da979c820f7c5edd..23149683dfa72f0f8243c08b0f3925bf
                  waypointManager.addPlayer(this);
              } else {
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index f1db892a9d6a27889e983eae3e4c029b8c44315c..5a4ac3406232cecc034f79915642fa2e9f317e1b 100644
+index 201bcd06b965e2e92758a1066f1c4a0cf187b26a..e512467e45d98dcb3eef031ff126cc84d1d1b590 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -1369,7 +1369,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

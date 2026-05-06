@@ -289,7 +289,7 @@ index 7136575074c3c10ab1e5d30c7fb1f2805b5c4122..8c87378879e9a0d45ddb7ee9702deea0
                  }
              );
 diff --git a/net/minecraft/server/network/config/PrepareSpawnTask.java b/net/minecraft/server/network/config/PrepareSpawnTask.java
-index a7f0cc98e65f79ab1f5a170aade9173d6adeef3e..cc13161d6128169e936abe38d6046b26256a18f2 100644
+index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..7f007c4604785f936591e29824a9495ecaf791a9 100644
 --- a/net/minecraft/server/network/config/PrepareSpawnTask.java
 +++ b/net/minecraft/server/network/config/PrepareSpawnTask.java
 @@ -105,6 +105,16 @@ public class PrepareSpawnTask implements ConfigurationTask {

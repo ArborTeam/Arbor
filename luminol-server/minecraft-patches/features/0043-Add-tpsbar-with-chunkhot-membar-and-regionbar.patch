@@ -260,10 +260,10 @@ index 4c7fad3444dd8718e31bda8a8ab2efdaf0a736a1..e9d7d950cc2621ec9ad82f1db56bc772
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 1c8a3867bfd11d45fd63512f83e0810cc855925d..57be1c239209414c6a9d9f96dd16d8fc109833f9 100644
+index 4b57e9024f66810510886f8115d42007e374ee27..c157aa170d5879206810f4852a96120396b69db7 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -2225,4 +2225,12 @@ public abstract class Player extends Avatar implements ContainerUser {
+@@ -2233,4 +2233,12 @@ public abstract class Player extends Avatar implements ContainerUser {
          public static final Player.BedSleepingProblem NOT_SAFE = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.not_safe"));
          public static final Player.BedSleepingProblem EXPLOSION = new Player.BedSleepingProblem(null); // Paper - Added to properly handle explosions in bed events
      }

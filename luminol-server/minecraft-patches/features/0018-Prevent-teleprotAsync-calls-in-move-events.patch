@@ -59,7 +59,7 @@ index ff7e282eda93e07184c7fc59c92ff735abd16bd3..10721cd22a10266e50f78c0d0f4c59a7
              return false;
          }
 diff --git a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
-index de254df4f13dd1544481fc8a3762ced649930da8..6d61a8e06c23ea704cdf46d0ddc311b1502a5f80 100644
+index 619776a20aeac1ddef1991f8a32a88c8aac250ee..05176458264b110ef3280342866ace22ec5a3333 100644
 --- a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 +++ b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 @@ -282,7 +282,9 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {

@@ -72,27 +72,45 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
         this.toUnload.levelScheduler.halt();
 
         // wait full scheduler exit
-        if (this.schedulerHaltTimeout != Duration.ZERO) {
-            try {
-                haltCallbackTask.get(this.schedulerHaltTimeout.toNanos(), TimeUnit.NANOSECONDS);
-            } catch (InterruptedException e) {
-                LOGGER.error("Shutdown thread was interrupted by another threads! An incorrect nms call?", e);
-            } catch (TimeoutException e) {
-                LOGGER.warn("Timed out for waiting scheduler exit of level {}! Forcing unloading.", this.toUnload.dimension());
-            } catch (ExecutionException e) {
-                LOGGER.error("Exception caught while waiting scheduler exit!", e);
+        try {
+            if (this.schedulerHaltTimeout != Duration.ZERO) {
+                try {
+                    haltCallbackTask.get(this.schedulerHaltTimeout.toNanos(), TimeUnit.NANOSECONDS);
+                } catch (InterruptedException e) {
+                    LOGGER.error("Shutdown thread was interrupted by another threads! An incorrect nms call?", e);
+                } catch (TimeoutException e) {
+                    LOGGER.warn("Timed out for waiting scheduler exit of level {}! Forcing unloading.", this.toUnload.dimension());
+                } catch (ExecutionException e) {
+                    LOGGER.error("Exception caught while waiting scheduler exit!", e);
+                }
+            } else {
+                haltCallbackTask.join();
             }
-        } else {
-            haltCallbackTask.join();
+        } catch (Throwable ex){
+            LOGGER.error("Exception caught while await sub scheduler termination of level !", ex);
         }
 
         LOGGER.info("Halted sub scheduler of level {}.", this.toUnload.dimension());
 
-        this.handleOnHalted();
+        try {
+            this.handleOnHalted();
+        } catch (Throwable ex) {
+            LOGGER.error("Exception caught while processing unload logics!", ex);
+        }finally {
+            this.doRemoveLevel();
+            this.finalizeLock();
+            this.retireCallback();
+        }
+    }
 
-        this.finalizeLock();
+    private void doRemoveLevel() {
+        LOGGER.info("Removing level...");
+        RegionizedServer.getInstance().addTask(() -> {
+            MinecraftServer.getServer().removeLevel(this.toUnload);
+            RegionizedServer.getInstance().removeWorld(this.toUnload);
 
-        this.retireCallback();
+            LOGGER.info("Removed level");
+        });
     }
 
     public void waitForComplete() {
@@ -210,13 +228,5 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
         LOGGER.info("Saving level data...");
         this.saveLevelData(this.toUnload);
         LOGGER.info("Saved level data");
-
-        LOGGER.info("Removing level...");
-        RegionizedServer.getInstance().addTask(() -> {
-            MinecraftServer.getServer().removeLevel(this.toUnload);
-            RegionizedServer.getInstance().removeWorld(this.toUnload);
-
-            LOGGER.info("Removed level");
-        });
     }
 }

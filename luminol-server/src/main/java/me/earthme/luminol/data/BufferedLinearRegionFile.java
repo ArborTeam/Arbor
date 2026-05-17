@@ -526,6 +526,10 @@ public class BufferedLinearRegionFile implements IRegionFile {
     }
 
     private @Nullable ByteBuffer readChunkDataRaw(int index) throws IOException {
+        return this.readChunkDataRaw(index, true);
+    }
+
+    private @Nullable ByteBuffer readChunkDataRaw(int index, boolean acquireLock) throws IOException {
         final ByteBuffer raw;
 
         this.regionObjectLock.readLock().lock();
@@ -951,6 +955,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     }
                 }
 
+                BufferedLinearRegionFile.this.regionObjectLock.readLock().lock();
                 try (FileChannel outChannel = FileChannel.open(tmpFilePath,
                         StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
 
@@ -979,7 +984,7 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
                             for (int i = 0; i < BUCKET_SIZE; i++) {
                                 // swap read lock
-                                final ByteBuffer data = BufferedLinearRegionFile.this.readChunkDataRaw(baseChunk + i);
+                                final ByteBuffer data = BufferedLinearRegionFile.this.readChunkDataRaw(baseChunk + i, false);
 
                                 // note: null -> no data contained
                                 if (data == null) {
@@ -1046,6 +1051,8 @@ public class BufferedLinearRegionFile implements IRegionFile {
 
                     outChannel.force(true);
                 } finally {
+                    BufferedLinearRegionFile.this.regionObjectLock.readLock().unlock();
+
                     if (oldChannel != null) {
                         oldChannel.close();
                     }

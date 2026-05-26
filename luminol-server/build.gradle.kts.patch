@@ -148,12 +148,3 @@
  
  // Compile tests with -parameters for better junit parameterized test names
  tasks.compileTestJava {
-@@ -341,7 +_,7 @@
- }
- 
- fill {
--    project("folia")
-+    project("luminol")
-     versionFamily(paperweight.minecraftVersion.map { it.split(".", "-").takeWhile { part -> part.toIntOrNull() != null }.take(2).joinToString(".") })
-     version(paperweight.minecraftVersion)
- 

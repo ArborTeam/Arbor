@@ -288,8 +288,53 @@ index 7136575074c3c10ab1e5d30c7fb1f2805b5c4122..8c87378879e9a0d45ddb7ee9702deea0
                      }
                  }
              );
+diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+index a9f82554738bc0dc6eb946a7650e8e0b445a8241..bad89e319fb44ae90eb3cb5a93e956b97a08730e 100644
+--- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+@@ -210,8 +210,23 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+ 
+             this.switchToMain = serverPlayer;
+             // now the connection responsibility is transferred to the region
+-            final net.minecraft.server.level.ServerLevel world = this.prepareSpawnTask.getSpawnWorld();
++            net.minecraft.server.level.ServerLevel worldLookup = this.prepareSpawnTask.getSpawnWorld(); // Luminol - Level hot unload apis - world -> worldLookup, make mutable
+             final net.minecraft.world.level.ChunkPos chunkPos = net.minecraft.world.level.ChunkPos.containing(net.minecraft.core.BlockPos.containing(this.prepareSpawnTask.getSpawnPosition()));
++            // Luminol start - Level hot unload apis
++            if (!worldLookup.levelUnloadStateLock.acquireRead()) {
++                LOGGER.warn("Failed to acquire read reference for level {} for player placement, sending back to overworld!", worldLookup.dimension());
++
++                worldLookup = net.minecraft.server.MinecraftServer.getServer().overworld();
++                if (!worldLookup.levelUnloadStateLock.acquireRead()) {
++                    throw new java.lang.IllegalStateException("Reference read for overworld should be always acquirable!");
++                }
++
++                serverPlayer.setServerLevel(worldLookup);
++            }
++            var world = worldLookup;
++            // note: the following logics would always be successfully executed, otherwise the server go crashed
++            // so do not care the exception handling of the callbacks following
++            // Luminol end
+             world.moonrise$getChunkTaskScheduler().scheduleTickingState(
+                     chunkPos.x(), chunkPos.z(), net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING, true,
+                     ca.spottedleaf.concurrentutil.util.Priority.HIGHER,
+@@ -223,9 +238,15 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+                         );
+                         io.papermc.paper.threadedregions.RegionizedServer.getInstance().taskQueue.queueTickTaskQueue(
+                                 world, chunkPos.x(), chunkPos.z(), () -> {
++                                    try { // Luminol - Level hot unload apis
+                                     net.minecraft.server.network.ServerConfigurationPacketListenerImpl.this.prepareSpawnTask.spawnPlayer(
+                                             this.connection, commonListenerCookie, serverPlayer
+                                     );
++                                    // Luminol start - Level hot unload apis
++                                    } finally {
++                                        world.levelUnloadStateLock.releaseRead();
++                                    }
++                                    // Luminol end
+                                 }
+                         );
+                     }
 diff --git a/net/minecraft/server/network/config/PrepareSpawnTask.java b/net/minecraft/server/network/config/PrepareSpawnTask.java
-index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..7f007c4604785f936591e29824a9495ecaf791a9 100644
+index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..643086a4e0ad68517bb1e1e33b2474bd437e56f8 100644
 --- a/net/minecraft/server/network/config/PrepareSpawnTask.java
 +++ b/net/minecraft/server/network/config/PrepareSpawnTask.java
 @@ -105,6 +105,16 @@ public class PrepareSpawnTask implements ConfigurationTask {
@@ -350,35 +395,6 @@ index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..7f007c4604785f936591e29824a9495e
          private final Vec3 spawnPosition;
          private final Vec2 spawnAngle;
  
-@@ -323,6 +348,16 @@ public class PrepareSpawnTask implements ConfigurationTask {
- 
-         // Folia start - region threading - split out createPlayer and spawn
-         public ServerPlayer createPlayer(final Connection connection, final CommonListenerCookie cookie) {
-+            // Luminol start - Level hot unload apis
-+            if (!this.spawnLevel.levelUnloadStateLock.acquireRead()) {
-+                LOGGER.warn("Failed to fetch read reference for level {}! Falling back to overworld.", this.spawnLevel);
-+
-+                this.spawnLevel = net.minecraft.server.MinecraftServer.getServer().overworld();
-+                if (!this.spawnLevel.levelUnloadStateLock.acquireRead()) {
-+                    throw new java.lang.IllegalStateException();
-+                }
-+            }
-+            // Luminol end
-             //ChunkPos spawnChunk = ChunkPos.containing(BlockPos.containing(this.spawnPosition));
-             //this.spawnLevel.waitForEntities(spawnChunk, 3); // Not needed on Moonrise chunk system
-             // Folia end - region threading
-@@ -381,6 +416,11 @@ public class PrepareSpawnTask implements ConfigurationTask {
-                 });
-                 var7 = player;
-             }
-+            // Luminol start - Level hot unload apis
-+            finally {
-+                this.spawnLevel.levelUnloadStateLock.releaseRead();
-+            }
-+            // Luminol end
- 
-             return var7;
-         }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
 index a62229803ad77e2f257c09b51a553b983d2b3026..c716333699819dbff2fc4731f3ae524f543a37ce 100644
 --- a/net/minecraft/world/entity/Entity.java

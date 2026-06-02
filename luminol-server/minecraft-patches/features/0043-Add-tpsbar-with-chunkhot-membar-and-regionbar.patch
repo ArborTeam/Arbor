@@ -68,7 +68,7 @@ index 4c33e84af5c9abe438413d456697b16c605ac6ba..7dbf763f4822ada322697a1319d54833
              this.lastServerStatus = nano;
              this.status = this.buildServerStatus();
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 78bee796e3ac4be8bb1eee66e83bf20674165d73..0905b1c0a0e9954c8fc68649b5721c975febf777 100644
+index dfac07850b02abba160f8f143eba4569172ab9e9..3707b03b6d7ebdf47a38f4feff5b738eb41f38e1 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -950,6 +950,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface

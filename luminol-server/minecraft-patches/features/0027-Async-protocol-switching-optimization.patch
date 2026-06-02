@@ -137,7 +137,7 @@ index d43be966a04456ba1a85c20f8b12f91de62a873d..a3a314d7bd1fde7efb3d8d76ffaa8d3d
 +
  }
 diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index a9f82554738bc0dc6eb946a7650e8e0b445a8241..54902bdce33c801e1294e57e9f85074d389379f3 100644
+index bad89e319fb44ae90eb3cb5a93e956b97a08730e..58cb031a717d5366768cff55cd6be5716fa2706e 100644
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 @@ -188,8 +188,9 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
@@ -151,7 +151,7 @@ index a9f82554738bc0dc6eb946a7650e8e0b445a8241..54902bdce33c801e1294e57e9f85074d
          try {
              PlayerList playerList = this.server.getPlayerList();
              if (playerList.getPlayer(this.gameProfile.id()) != null) {
-@@ -235,6 +236,18 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+@@ -256,6 +257,18 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
              LOGGER.error("Couldn't place player in world", (Throwable)var4);
              this.disconnect(DISCONNECT_REASON_INVALID_DATA);
          }

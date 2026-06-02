@@ -2,6 +2,7 @@ package me.earthme.luminol.utils.thread;
 
 import ca.spottedleaf.concurrentutil.completable.CallbackCompletable;
 import ca.spottedleaf.moonrise.common.util.WorldUtil;
+import io.papermc.paper.FeatureHooks;
 import io.papermc.paper.threadedregions.*;
 import me.earthme.luminol.utils.TeleportRecord;
 import net.minecraft.network.DisconnectionDetails;
@@ -185,6 +186,15 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
         }
     }
 
+    private void closeOtherMiscResources() {
+        this.toUnload.noSave = false;
+        this.toUnload.getChunkSource().getDataStorage().close();
+
+        // close entity manager is empty, no need to call it currently
+
+        MinecraftServer.getServer().saveGlobalData(true);
+    }
+
     private void handleOnHalted() {
         this.toUnload.moonrise$getChunkTaskScheduler().halt(false, 0L);
         this.haltChunkSystem(this.toUnload);
@@ -228,5 +238,9 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
         LOGGER.info("Saving level data...");
         this.saveLevelData(this.toUnload);
         LOGGER.info("Saved level data");
+
+        LOGGER.info("Closing other misc resources...");
+        this.closeOtherMiscResources();
+        LOGGER.info("Closed other misc resources");
     }
 }

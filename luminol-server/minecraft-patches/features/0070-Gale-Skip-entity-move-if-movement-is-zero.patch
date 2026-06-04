@@ -5,7 +5,7 @@ Subject: [PATCH] Gale: Skip entity move if movement is zero
 
 Co-authored by: Martijn Muijsers <martijnmuijsers@live.nl>
 ishland <ishlandmc@yeah.net>
-As part of: Gale (https://github.com/GaleMC/Gale/blob/276e903b2688f23b19bdc8d493c0bf87656d2400/patches/server/0103-Skip-entity-move-if-movement-is-zero.patch)
+A part of: Gale (https://github.com/GaleMC/Gale/blob/276e903b2688f23b19bdc8d493c0bf87656d2400/patches/server/0103-Skip-entity-move-if-movement-is-zero.patch)
 VMP (https://github.com/RelativityMC/VMP-fabric)
 Licensed under: MIT (https://opensource.org/licenses/MIT)
 

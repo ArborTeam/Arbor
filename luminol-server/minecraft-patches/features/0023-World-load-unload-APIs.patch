@@ -103,7 +103,7 @@ index d5ff949f4f459c4358b0130cd20f8ed9cf24b42d..3416445888860746c15a978f401c8724
          // call init event _before_ scheduling anything
          new RegionizedServerInitEvent().callEvent();
 diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..b73245d7d69ba38cbb3a31aa6522fded70b76cb3 100644
+index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..bea08d4a2e3b228e1fbce1b5e70635416ab972e9 100644
 --- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
 +++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
 @@ -49,7 +49,7 @@ public final class TickRegionScheduler {
@@ -131,7 +131,7 @@ index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..b73245d7d69ba38cbb3a31aa6522fded
      }
  
      /**
-@@ -233,13 +241,74 @@ public final class TickRegionScheduler {
+@@ -233,13 +241,77 @@ public final class TickRegionScheduler {
          region.markNonSchedulable();
      }
  
@@ -154,6 +154,9 @@ index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..b73245d7d69ba38cbb3a31aa6522fded
 +                hasUnhaltedLevelScheduler = true;
 +                continue;
 +            }
++
++            // block any new reading reference acquiring going into this lock
++            serverLevel.levelUnloadStateLock.blockReadingReferencing();
 +
 +            final boolean writeLockHeld = serverLevel.levelUnloadStateLock.acquireWrite(deadline);
 +            // we got the write lock, abort the others unloading logics
@@ -208,7 +211,7 @@ index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..b73245d7d69ba38cbb3a31aa6522fded
      }
  
      void dumpAliveThreadTraces(final String reason) {
-@@ -251,7 +320,15 @@ public final class TickRegionScheduler {
+@@ -251,7 +323,15 @@ public final class TickRegionScheduler {
      }
  
      public void setHasTasks(final RegionScheduleHandle region) {

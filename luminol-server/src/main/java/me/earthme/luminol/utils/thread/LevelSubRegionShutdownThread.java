@@ -57,6 +57,8 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
     public void run() {
         LOGGER.info("Beginning unload task of level {}.", this.toUnload.dimension());
 
+        this.toUnload.levelUnloadStateLock.blockReadingReferencing(); // stop accepting any new reading reference prely
+
         final boolean shutdownWriteLockHeld = this.toUnload.levelUnloadStateLock.acquireWrite();
         if (!shutdownWriteLockHeld) {
             // already unreachable

@@ -22,8 +22,10 @@ import java.lang.invoke.VarHandle;
 // additionally, the blocking write lock is to ensure those async place tasks
 public class SimpleReferenceRWLock {
     private int count;
+    private boolean readReferencingBlocked = false;
 
     private static final VarHandle COUNT_HANDLE = ConcurrentUtil.getVarHandle(SimpleReferenceRWLock.class, "count", int.class);
+    private static final VarHandle READ_REFERENCE_BLOCKED = ConcurrentUtil.getVarHandle(SimpleReferenceRWLock.class, "readReferencingBlocked", boolean.class);
 
     public void acquireUnreachable() {
         final int curr = (int) COUNT_HANDLE.getVolatile(this);
@@ -35,6 +37,14 @@ public class SimpleReferenceRWLock {
 
         if (!COUNT_HANDLE.compareAndSet(this, curr, -2))
             throw new IllegalStateException("race cond!");
+    }
+
+    public void blockReadingReferencing() {
+        READ_REFERENCE_BLOCKED.setVolatile(this, true);
+    }
+
+    public boolean isReadReferencingBlocked() {
+        return (boolean) READ_REFERENCE_BLOCKED.getVolatile(this);
     }
 
     public void releaseWrite() {
@@ -180,6 +190,11 @@ public class SimpleReferenceRWLock {
 
         for (;;) {
             final int curr = (int) COUNT_HANDLE.getVolatile(this);
+
+            // read referencing blocked
+            if ((boolean) READ_REFERENCE_BLOCKED.getVolatile(this)) {
+                return false;
+            }
 
             // unreachable acquired
             if (curr == -2) {

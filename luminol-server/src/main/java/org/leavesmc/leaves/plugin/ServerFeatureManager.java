@@ -19,7 +19,7 @@ public class ServerFeatureManager implements FeatureManager {
                     UPDATE_SUPPRESSION_EVENT
             ));
         }
-        if (Boolean.getBoolean("leavesclip.enable.mixin")) {
+        if (Boolean.getBoolean("leavesclip.enable.mixin") || Boolean.getBoolean("hyacinthusclip.enable.mixin")) {
             availableFeatures.add(MIXIN);
         }
     }

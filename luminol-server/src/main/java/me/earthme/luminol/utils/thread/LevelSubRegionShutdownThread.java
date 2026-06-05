@@ -31,6 +31,7 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
     @NotNull
     private Duration schedulerHaltTimeout = Duration.ZERO;
     private boolean doSaving = true;
+    private boolean started = false;
 
     public LevelSubRegionShutdownThread(String name, ServerLevel toUnload) {
         super(name);
@@ -51,6 +52,16 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
 
     public CallbackCompletable<ServerLevel> getUnloadCallback() {
         return this.unloadCallback;
+    }
+
+    public boolean startUnloading() {
+        if (this.started) {
+            return false;
+        }
+
+        this.started = true;
+        this.start();
+        return true;
     }
 
     @Override
@@ -192,7 +203,7 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
         this.toUnload.noSave = false;
         this.toUnload.getChunkSource().getDataStorage().close();
 
-        // close entity manager is empty, no need to call it currently
+        io.papermc.paper.FeatureHooks.closeEntityManager(this.toUnload, this.doSaving);
 
         MinecraftServer.getServer().saveGlobalData(true);
     }

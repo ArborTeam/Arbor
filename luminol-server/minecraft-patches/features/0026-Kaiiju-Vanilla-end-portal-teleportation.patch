@@ -8,7 +8,7 @@ As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2e
 Licensed under: GPL-3.0 (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/LICENSE)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index c716333699819dbff2fc4731f3ae524f543a37ce..03b833cdb911691e7a5080fb796ec04b07f98847 100644
+index c716333699819dbff2fc4731f3ae524f543a37ce..640c87c0bf11b8d2ecc901b7c2c8f246c3665445 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4601,14 +4601,18 @@ public abstract class Entity
@@ -58,7 +58,7 @@ index c716333699819dbff2fc4731f3ae524f543a37ce..03b833cdb911691e7a5080fb796ec04b
  
 +        // Kaiiju start - sync end platform spawning & entity teleportation
 +        final java.util.function.Consumer<Entity> tpComplete = type == PortalType.END && destination.getTypeKey() == net.minecraft.world.level.dimension.LevelStem.END ?
-+                e -> net.minecraft.world.level.levelgen.feature.EndPlatformFeature.createEndPlatform(destination, ServerLevel.END_SPAWN_POINT.below(), true, null) : teleportComplete;
++                e -> {net.minecraft.world.level.levelgen.feature.EndPlatformFeature.createEndPlatform(destination, ServerLevel.END_SPAWN_POINT.below(), true, null); teleportComplete.accept(e);} : teleportComplete;
 +        // Kaiiju end
          Vec3 initialPosition = this.position();
          ChunkPos initialPositionChunk = new ChunkPos(

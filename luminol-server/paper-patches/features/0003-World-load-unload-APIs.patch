@@ -13,7 +13,7 @@ Content-Transfer-Encoding: 8bit
 由于世界卸载可能发生在玩家登录或者传送的过程中,所以我使用了引用计数器来避免这个竟态条件的发生
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 61bd2dc2d2b4f5783a3251aad340079b9cc3ae30..8c17e281e47f39bd78428b422a3c1a10e5da2d52 100644
+index 61bd2dc2d2b4f5783a3251aad340079b9cc3ae30..081cf4ecbeec9851505b0d2647eb3ab9278085b0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -275,7 +275,7 @@ public final class CraftServer implements Server {
@@ -54,7 +54,7 @@ index 61bd2dc2d2b4f5783a3251aad340079b9cc3ae30..8c17e281e47f39bd78428b422a3c1a10
              if (save) {
                  handle.save(null, true, false); // Paper - Fix saving in unloadWorld
              }
-@@ -1390,7 +1392,16 @@ public final class CraftServer implements Server {
+@@ -1390,10 +1392,70 @@ public final class CraftServer implements Server {
          }
  
          this.worlds.remove(world.getName().toLowerCase(Locale.ROOT));
@@ -66,9 +66,63 @@ index 61bd2dc2d2b4f5783a3251aad340079b9cc3ae30..8c17e281e47f39bd78428b422a3c1a10
 +        });
 +        // use the timeout of folia by default
 +        handle.levelUnloader.applySettings(java.time.Duration.ofSeconds(60), save);
-+        handle.levelUnloader.start();
++
++        if (!handle.levelUnloader.startUnloading()) {
++            return false;
++        }
++
 +        handle.levelUnloader.waitForComplete();
 +        // Luminol end
          return true;
      }
  
++    // Luminol start - Async world unloading api
++    @Override
++    public void unloadWorld(World world, boolean save, java.util.concurrent.CompletableFuture<Boolean> callback) {
++        io.papermc.paper.threadedregions.RegionizedServer.ensureGlobalTickThread("Call unloadWorld off global region!"); // Luminol - Level hot unload apis
++
++        if (world == null) {
++            callback.complete(false);
++            return;
++        }
++
++        ServerLevel handle = ((CraftWorld) world).getHandle();
++
++        if (this.console.getLevel(handle.dimension()) == null) {
++            callback.complete(false);
++            return;
++        }
++
++        if (handle.dimension() == net.minecraft.world.level.Level.OVERWORLD) {
++            callback.complete(false);
++            return;
++        }
++
++        if (!handle.players().isEmpty()) {
++            callback.complete(false);
++            return;
++        }
++
++        WorldUnloadEvent event = new WorldUnloadEvent(handle.getWorld());
++        if (!event.callEvent()) {
++            callback.complete(false);
++            return;
++        }
++
++        handle.levelUnloader.getUnloadCallback().addWaiter((_, _) -> {
++            this.worlds.remove(world.getName().toLowerCase(Locale.ROOT));
++
++            callback.complete(true);
++        });
++        // use the timeout of folia by default
++        handle.levelUnloader.applySettings(java.time.Duration.ofSeconds(60), save);
++
++        if (!handle.levelUnloader.startUnloading()) {
++            callback.complete(false);
++        }
++    }
++    // Luminol end
++
+     @Override
+     public World getRespawnWorld() {
+         return this.console.findRespawnDimension().getWorld();

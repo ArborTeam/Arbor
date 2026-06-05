@@ -69,7 +69,7 @@ index 67e23dd297f4d9378b43eb17035e28108cbf1029..6cca80278caf6690d39cbe48f3596ecf
      // this is copy on write to allow packet processing to iterate safely
      private final CopyOnWriteArrayList<ServerPlayer> localPlayers = new CopyOnWriteArrayList<>();
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 7dbf763f4822ada322697a1319d5483317ff2899..6137ced038c19789fc9c238b80f23536a9dda32f 100644
+index 92efd27c9ae17c2b29c09445287be5d2a80d7401..388e2830cc8881ad1fa1cc3c55a659c17d5c317d 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1994,6 +1994,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

@@ -227,6 +227,36 @@ index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..bea08d4a2e3b228e1fbce1b5e7063541
      }
  
      private void uncaughtException(final Thread thread, final Throwable thr) {
+diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
+index 3d3cfa227341c3061552c694a94427f971b15366..2cc272ddd930db04b8701eb3ae47fef1e265ed9d 100644
+--- a/net/minecraft/server/MinecraftServer.java
++++ b/net/minecraft/server/MinecraftServer.java
+@@ -237,7 +237,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     private String localIp;
+     private int port = -1;
+     private final LayeredRegistryAccess<RegistryLayer> registries;
+-    private Map<ResourceKey<Level>, ServerLevel> levels = Maps.newLinkedHashMap();
++    private volatile Map<ResourceKey<Level>, ServerLevel> levels = Maps.newLinkedHashMap(); // Luminol - World hot load/unload apis
+     private PlayerList playerList;
+     private volatile boolean running = true;
+     private volatile boolean isRestarting = false; // Paper - flag to signify we're attempting to restart
+@@ -2055,14 +2055,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     }
+ 
+     // CraftBukkit start
+-    public void addLevel(ServerLevel level) {
++    public synchronized void addLevel(ServerLevel level) { // Luminol - World hot load/unload apis
+         Map<ResourceKey<Level>, ServerLevel> oldLevels = this.levels;
+         Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
+         newLevels.put(level.dimension(), level);
+         this.levels = Collections.unmodifiableMap(newLevels);
+     }
+ 
+-    public void removeLevel(ServerLevel level) {
++    public synchronized void removeLevel(ServerLevel level) { // Luminol - World hot load/unload apis
+         Map<ResourceKey<Level>, ServerLevel> oldLevels = this.levels;
+         Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
+         newLevels.remove(level.dimension());
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
 index fbcbaf1840a1ee4f354da0245e9cf5708ef5f84e..c7cdf8a2d6856e7cac1d0809bc9bc5e9c45ba84f 100644
 --- a/net/minecraft/server/level/ServerLevel.java

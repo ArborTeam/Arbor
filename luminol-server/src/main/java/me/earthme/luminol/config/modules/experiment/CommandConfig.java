@@ -23,4 +23,9 @@ public class CommandConfig implements IConfigModule {
             """)
     @HotReloadUnsupported
     public static boolean waypointsAndWaypointCommand = false;
+    @ConfigInfo(name = "enable_tick_command", comments = """
+            Only freeze/unfreeze/step/query command is allowed if you enabled it.
+            WARN: This should disabled in production environment!
+            """)
+    public static boolean tick = false;
 }

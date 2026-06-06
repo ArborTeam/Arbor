@@ -79,7 +79,7 @@ index c380ab9f059da6219691e8bccd4f82b9ec5483b3..047c605eb087667e10da557864ad931d
              if (this.isRainingAt(pos)) {
                  DifficultyInstance difficulty = this.getCurrentDifficultyAt(pos);
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 4882df428369e87bcf23b532dd970b13b3adfb88..e54479b88cd02e7ef73b5c234b6baa479241c51c 100644
+index 4882df428369e87bcf23b532dd970b13b3adfb88..da9706f866aabee6939cacbfbcc9def01fde0326 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -145,6 +145,19 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
@@ -107,7 +107,7 @@ index 4882df428369e87bcf23b532dd970b13b3adfb88..e54479b88cd02e7ef73b5c234b6baa47
          this.defaultBlockState = empty ? VOID_AIR_BLOCKSTATE : AIR_BLOCKSTATE;
          // Paper end - get block chunk optimisation
 +
-+        this.lightningTick = this.level.simpleRandom.nextInt(100000) << 1; // Gale - Airplane - optimize random calls in chunk ticking - initialize lightning tick
++        this.lightningTick = io.papermc.paper.threadedregions.util.SimpleThreadLocalRandomSource.INSTANCE.nextInt(100000) << 1; // Gale - Airplane - optimize random calls in chunk ticking - initialize lightning tick
      }
  
      public LevelChunk(final ServerLevel level, final ProtoChunk protoChunk, final LevelChunk.@Nullable PostLoadProcessor postLoad) {

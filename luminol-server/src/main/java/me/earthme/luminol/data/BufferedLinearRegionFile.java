@@ -1094,7 +1094,11 @@ public class BufferedLinearRegionFile implements IRegionFile {
                     final int snapshot = bucketDirtyCounterSnapshots[i];
 
                     flushDirtyFailed |= !BufferedLinearRegionFile.this.tryResetBucketDirtyState(i, snapshot);
+                    continue;
                 }
+
+                // else: newly dirty marked
+                flushDirtyFailed |= BufferedLinearRegionFile.this.isBucketDirty(i);
             }
 
             if (flushDirtyFailed) {

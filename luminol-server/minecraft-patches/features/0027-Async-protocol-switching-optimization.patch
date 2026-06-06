@@ -171,18 +171,9 @@ index bad89e319fb44ae90eb3cb5a93e956b97a08730e..58cb031a717d5366768cff55cd6be571
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 6b90695716aa95a8ff66d5d43aee5ceb9e8616c6..892f95bd32cb2b946a38d0e0fd96f8573a6236ad 100644
+index 6b90695716aa95a8ff66d5d43aee5ceb9e8616c6..04e498d7b3bae9d66f324003738a6cba82bfdd40 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2891,7 +2891,7 @@ public class ServerGamePacketListenerImpl
-         // removed from the world
-         // Folia end - rewrite login process - fix bad ordering of this field write - move after removed from world
-         try { // Folia - rewrite login process - move connection ownership to global region
--            this.hackSwitchingConfig = true; // Folia - rewrite login process - avoid adding logout ticket here
-+            this.hackSwitchingConfig = true; // Folia - rewrite login process - avoid adding logout ticket here and retiring scheduler
-         this.removePlayerFromWorld();
-         } finally { // Folia start - rewrite login process - move connection ownership to global region
-             io.papermc.paper.threadedregions.RegionizedWorldData worldData = this.player.level().getCurrentWorldData();
 @@ -2900,7 +2900,13 @@ public class ServerGamePacketListenerImpl
          } // Folia end - rewrite login process - move connection ownership to global region
          this.waitingForSwitchToConfig = true; // Folia - rewrite login process - fix bad ordering of this field write - moved down

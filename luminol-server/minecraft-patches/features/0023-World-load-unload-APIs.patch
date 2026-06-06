@@ -429,7 +429,7 @@ index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..643086a4e0ad68517bb1e1e33b2474bd
          private final Vec2 spawnAngle;
  
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a62229803ad77e2f257c09b51a553b983d2b3026..c716333699819dbff2fc4731f3ae524f543a37ce 100644
+index a62229803ad77e2f257c09b51a553b983d2b3026..c6f2cdd541f6f827195882536e6c6f6aeafad29f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -392,6 +392,9 @@ public abstract class Entity
@@ -495,3 +495,28 @@ index a62229803ad77e2f257c09b51a553b983d2b3026..c716333699819dbff2fc4731f3ae524f
  
          return true;
      }
+@@ -4789,6 +4811,13 @@ public abstract class Entity
+             ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkX(initialPosition),
+             ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkZ(initialPosition)
+         );
++        // Luminol start - Level hot load/unload apis
++        // let's acquire read reference first
++        if (!destination.levelUnloadStateLock.acquireRead()) {
++            // failed, destination is under unloading process
++            return false;
++        }
++        // Luminol end
+ 
+         // first, remove entity/passengers from world
+         EntityTreeNode passengerTree = this.detachPassengers();
+@@ -4846,6 +4875,10 @@ public abstract class Entity
+                     if (info.postTeleportTransition() != null) {
+                         info.postTeleportTransition().onTransition(teleported);
+                     }
++                    // Luminol start - Level hot load/unload apis
++                    // all done, release the read reference
++                    destination.levelUnloadStateLock.releaseRead();
++                    // Luminol end
+ 
+                     if (teleportComplete != null) {
+                         teleportComplete.accept(teleported);

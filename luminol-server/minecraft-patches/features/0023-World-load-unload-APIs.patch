@@ -103,7 +103,7 @@ index d5ff949f4f459c4358b0130cd20f8ed9cf24b42d..3416445888860746c15a978f401c8724
          // call init event _before_ scheduling anything
          new RegionizedServerInitEvent().callEvent();
 diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..bea08d4a2e3b228e1fbce1b5e70635416ab972e9 100644
+index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..8b204d5b5fa0356b248c5236709d98da03972a05 100644
 --- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
 +++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
 @@ -49,7 +49,7 @@ public final class TickRegionScheduler {
@@ -149,14 +149,14 @@ index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..bea08d4a2e3b228e1fbce1b5e7063541
 +        for (net.minecraft.server.level.ServerLevel serverLevel : MinecraftServer.getServer().getAllLevels()) {
 +            serverLevel.levelScheduler.halt(); // ensure it's halted so that we could skip running any other new tasks
 +
-+            // sync not required, directly go next
-+            if (!sync && serverLevel.levelScheduler.isFullyExited()) {
-+                hasUnhaltedLevelScheduler = true;
-+                continue;
-+            }
-+
 +            // block any new reading reference acquiring going into this lock
 +            serverLevel.levelUnloadStateLock.blockReadingReferencing();
++
++            // sync not required, directly go next
++            if (!sync) {
++                hasUnhaltedLevelScheduler |= !serverLevel.levelScheduler.isFullyExited();
++                continue;
++            }
 +
 +            final boolean writeLockHeld = serverLevel.levelUnloadStateLock.acquireWrite(deadline);
 +            // we got the write lock, abort the others unloading logics

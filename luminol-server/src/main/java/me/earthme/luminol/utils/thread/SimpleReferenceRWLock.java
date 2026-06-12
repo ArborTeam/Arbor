@@ -50,7 +50,7 @@ public class SimpleReferenceRWLock {
     public void releaseWrite() {
         long failures = 1L;
 
-        for (;;) {
+        for (; ; ) {
             final int curr = (int) COUNT_HANDLE.getVolatile(this);
 
             // unreachable acquired
@@ -76,7 +76,7 @@ public class SimpleReferenceRWLock {
     public boolean acquireWrite(long deadline) {
         long failures = 1L;
 
-        for (;;) {
+        for (; ; ) {
             // deadline reached
             if (deadline <= System.nanoTime()) {
                 return false;
@@ -90,7 +90,7 @@ public class SimpleReferenceRWLock {
             }
 
             // have remaining read operations
-            if (curr > 0){
+            if (curr > 0) {
                 // max sleep for 2us
                 Thread.yield();
                 failures = ConcurrentUtil.linearLongBackoff(failures, 100L, 2000);
@@ -118,7 +118,7 @@ public class SimpleReferenceRWLock {
     public boolean acquireWrite() {
         long failures = 1L;
 
-        for (;;) {
+        for (; ; ) {
             final int curr = (int) COUNT_HANDLE.getVolatile(this);
 
             // unreachable acquired
@@ -127,7 +127,7 @@ public class SimpleReferenceRWLock {
             }
 
             // have remaining read operations
-            if (curr > 0){
+            if (curr > 0) {
                 // max sleep for 2us
                 Thread.yield();
                 failures = ConcurrentUtil.linearLongBackoff(failures, 100L, 2000);
@@ -152,13 +152,13 @@ public class SimpleReferenceRWLock {
     }
 
     public boolean isReadLocked() {
-        return (int)COUNT_HANDLE.getVolatile(this) > 0;
+        return (int) COUNT_HANDLE.getVolatile(this) > 0;
     }
 
     public void releaseRead() {
         long failures = 1L;
 
-        for (;;) {
+        for (; ; ) {
             final int curr = (int) COUNT_HANDLE.getVolatile(this);
 
             // unreachable acquired
@@ -188,7 +188,7 @@ public class SimpleReferenceRWLock {
     public boolean acquireRead() {
         long failures = 1L;
 
-        for (;;) {
+        for (; ; ) {
             final int curr = (int) COUNT_HANDLE.getVolatile(this);
 
             // read referencing blocked
@@ -222,6 +222,6 @@ public class SimpleReferenceRWLock {
     }
 
     public boolean isUnreachable() {
-        return (int)COUNT_HANDLE.getVolatile(this) == -2;
+        return (int) COUNT_HANDLE.getVolatile(this) == -2;
     }
 }

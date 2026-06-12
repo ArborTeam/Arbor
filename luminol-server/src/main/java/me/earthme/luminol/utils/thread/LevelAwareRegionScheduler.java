@@ -31,7 +31,7 @@ public class LevelAwareRegionScheduler extends Scheduler {
             while ((callback = this.haltedCallbacks.pollOrBlockAdds()) != null) {
                 callback.run();
             }
-        }finally {
+        } finally {
             this.fullyExited.set(true);
         }
     }

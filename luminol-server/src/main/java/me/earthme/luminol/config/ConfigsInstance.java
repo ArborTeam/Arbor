@@ -887,35 +887,35 @@ public class ConfigsInstance {
     /**
      * Get all configuration data
      */
-    public Set<ConfigPair> getAllData() {
+    public Set<ConfigDataPair> getAllData() {
         return getData("", false, false);
     }
 
     /**
      * Get configuration data with specified prefix
      */
-    public Set<ConfigPair> getData(String prefix) {
+    public Set<ConfigDataPair> getData(String prefix) {
         return getData(prefix, false, false);
     }
 
     /**
      * Get all configuration data with comments
      */
-    public Set<ConfigPair> getAllDataFull() {
+    public Set<ConfigDataPair> getAllDataFull() {
         return getData("", true, true);
     }
 
     /**
      * Get configuration data with comments and specified prefix
      */
-    public Set<ConfigPair> getDataFull(String prefix) {
+    public Set<ConfigDataPair> getDataFull(String prefix) {
         return getData(prefix, true, true);
     }
 
     /**
      * Get configuration data with specified prefix
      */
-    public Set<ConfigPair> getData(String prefix, boolean _comment, boolean _withSuggestions) {
+    public Set<ConfigDataPair> getData(String prefix, boolean _comment, boolean _withSuggestions) {
         List<String> keys = getAllConfigPaths(prefix);
         return getData(keys, _comment, _withSuggestions);
     }
@@ -923,26 +923,26 @@ public class ConfigsInstance {
     /**
      * Get configuration data for specified keys
      */
-    public Set<ConfigPair> getData(List<String> list) {
+    public Set<ConfigDataPair> getData(List<String> list) {
         return getData(list, false, false);
     }
 
     /**
      * Get configuration data with comments for specified keys
      */
-    public Set<ConfigPair> getDataWithComment(List<String> list) {
+    public Set<ConfigDataPair> getDataWithComment(List<String> list) {
         return getData(list, true, false);
     }
 
-    public Set<ConfigPair> getFullData(List<String> list) {
+    public Set<ConfigDataPair> getFullData(List<String> list) {
         return getData(list, true, true);
     }
 
     /**
      * Get configuration data for specified keys
      */
-    private Set<ConfigPair> getData(List<String> list, boolean _comment, boolean _withSuggestions) {
-        Set<ConfigPair> result = new HashSet<>();
+    private Set<ConfigDataPair> getData(List<String> list, boolean _comment, boolean _withSuggestions) {
+        Set<ConfigDataPair> result = new HashSet<>();
         for (String key : list) {
             Object valueOrigin = configFileInstance.get(key);
             Object value = valueOrigin;
@@ -972,7 +972,7 @@ public class ConfigsInstance {
                     }
                 }
             }
-            result.add(new ConfigPair(key, value, comment, suggestions));
+            result.add(new ConfigDataPair(key, value, comment, suggestions));
         }
         return result;
     }
@@ -993,6 +993,4 @@ public class ConfigsInstance {
         saveConfigs();
     }
 
-    public record ConfigPair(String key, Object value, String comment, String[] suggestions) {
-    }
 }

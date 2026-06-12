@@ -2,7 +2,6 @@ package me.earthme.luminol.utils.thread;
 
 import ca.spottedleaf.concurrentutil.completable.CallbackCompletable;
 import ca.spottedleaf.moonrise.common.util.WorldUtil;
-import io.papermc.paper.FeatureHooks;
 import io.papermc.paper.threadedregions.*;
 import me.earthme.luminol.utils.TeleportRecord;
 import net.minecraft.network.DisconnectionDetails;
@@ -100,7 +99,7 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
             } else {
                 haltCallbackTask.join();
             }
-        } catch (Throwable ex){
+        } catch (Throwable ex) {
             LOGGER.error("Exception caught while await sub scheduler termination of level !", ex);
         }
 
@@ -110,7 +109,7 @@ public class LevelSubRegionShutdownThread extends RegionShutdownThread {
             this.handleOnHalted();
         } catch (Throwable ex) {
             LOGGER.error("Exception caught while processing unload logics!", ex);
-        }finally {
+        } finally {
             this.doRemoveLevel();
             this.finalizeLock();
             this.retireCallback();

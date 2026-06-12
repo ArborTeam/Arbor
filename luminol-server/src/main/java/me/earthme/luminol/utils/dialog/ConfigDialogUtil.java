@@ -1,7 +1,7 @@
 package me.earthme.luminol.utils.dialog;
 
 import com.mojang.datafixers.util.Pair;
-import me.earthme.luminol.config.ConfigsInstance;
+import me.earthme.luminol.config.ConfigDataPair;
 import net.minecraft.core.Holder;
 import net.minecraft.server.dialog.Dialog;
 import org.jetbrains.annotations.NotNull;
@@ -12,17 +12,17 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class ConfigDialogUtil {
-    public static Holder<Dialog> createHolder(String title, Set<ConfigsInstance.ConfigPair> configs, String commandPrefix) {
+    public static Holder<Dialog> createHolder(String title, Set<ConfigDataPair> configs, String commandPrefix) {
         return DialogUtil.createHolder(title, generateConfigMap(configs), commandPrefix);
     }
 
-    public static DialogUtil.DialogBuilder addInputs(Set<ConfigsInstance.ConfigPair> configs, String commandPrefix, @NotNull DialogUtil.DialogBuilder builder) {
+    public static DialogUtil.DialogBuilder addInputs(Set<ConfigDataPair> configs, String commandPrefix, @NotNull DialogUtil.DialogBuilder builder) {
         return DialogUtil.addInputs(generateConfigMap(configs), commandPrefix, builder);
     }
 
-    private static @NonNull Map<String, Pair<Object, String>> generateConfigMap(Set<ConfigsInstance.ConfigPair> configs) {
+    private static @NonNull Map<String, Pair<Object, String>> generateConfigMap(Set<ConfigDataPair> configs) {
         Map<String, Pair<Object, String>> map = new TreeMap<>();
-        for (ConfigsInstance.ConfigPair config : configs) {
+        for (ConfigDataPair config : configs) {
             String key = config.key();
             Object value = config.value();
             String[] suggestions = config.suggestions();

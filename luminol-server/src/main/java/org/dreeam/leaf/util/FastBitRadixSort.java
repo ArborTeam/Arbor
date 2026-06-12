@@ -1,6 +1,6 @@
 /**
  * This file is a part of Leaf(
- *  * This file is a part of Leaf(https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/src/main/java/org/dreeam/leaf/world/biome/PositionalBiomeGetter.java))
+ * * This file is a part of Leaf(https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/leaf-server/src/main/java/org/dreeam/leaf/world/biome/PositionalBiomeGetter.java))
  * Original license: https://github.com/Winds-Studio/Leaf/blob/ver/1.21.11/LICENSE.md
  */
 package org.dreeam.leaf.util;

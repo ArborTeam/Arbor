@@ -4,6 +4,8 @@ import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import io.papermc.paper.threadedregions.RegionizedServer;
+import me.earthme.luminol.api.config.ConfigDataPair;
+import me.earthme.luminol.api.config.LuminolConfigsInstance;
 import me.earthme.luminol.commands.config.ConfigCommand;
 import me.earthme.luminol.config.flags.*;
 import me.earthme.luminol.enums.EnumConfigCategory;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * Configuration instance manager that handles loading, reloading and managing configuration modules.
  */
-public class ConfigsInstance {
+public class ConfigsInstance implements LuminolConfigsInstance {
     public final Logger logger = LogUtils.getClassLogger();
 
     // Basic configuration properties
@@ -934,14 +936,14 @@ public class ConfigsInstance {
         return getData(list, true, false);
     }
 
-    public Set<ConfigDataPair> getFullData(List<String> list) {
+    public Set<ConfigDataPair> getDataFull(List<String> list) {
         return getData(list, true, true);
     }
 
     /**
      * Get configuration data for specified keys
      */
-    private Set<ConfigDataPair> getData(List<String> list, boolean _comment, boolean _withSuggestions) {
+    public Set<ConfigDataPair> getData(List<String> list, boolean _comment, boolean _withSuggestions) {
         Set<ConfigDataPair> result = new HashSet<>();
         for (String key : list) {
             Object valueOrigin = configFileInstance.get(key);

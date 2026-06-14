@@ -63,7 +63,7 @@ public class ConfigCommandDialog {
         }
 
         ConfigDialogUtil.addInputs(
-                config.getFullData(keySingleConfigs),
+                config.getDataFull(keySingleConfigs),
                 name + " submit ",
                 builder
         );

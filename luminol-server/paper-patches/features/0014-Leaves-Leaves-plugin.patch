@@ -244,12 +244,12 @@ index 26422904751647a061397ce978bba752149003cd..884ed63dab16acca83fe8f421762f256
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 880c73da8ac0bb54c7c9ac4d2f248b16b6f619ae..63176a938619615646f864054380752d400e1ad4 100644
+index 61dd29c5e22a4050b337ff7a48903bafe2f6a43c..ba0779211405b8b83f7c7e7b1c55b3e4846029a3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -3097,6 +3097,13 @@ public final class CraftServer implements Server {
-         this.console.addPluginAllowingSleep(plugin.getName(), value);
+@@ -3104,6 +3104,13 @@ public final class CraftServer implements Server {
      }
+     // Luminol end - Config API
  
 +    // Leaves start - Feature API
 +    @Override

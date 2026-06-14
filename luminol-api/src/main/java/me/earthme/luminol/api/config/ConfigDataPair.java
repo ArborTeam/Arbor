@@ -1,4 +1,4 @@
-package me.earthme.luminol.config;
+package me.earthme.luminol.api.config;
 
 import org.jspecify.annotations.Nullable;
 

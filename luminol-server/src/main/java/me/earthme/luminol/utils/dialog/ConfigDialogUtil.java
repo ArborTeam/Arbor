@@ -1,7 +1,7 @@
 package me.earthme.luminol.utils.dialog;
 
 import com.mojang.datafixers.util.Pair;
-import me.earthme.luminol.config.ConfigDataPair;
+import me.earthme.luminol.api.config.ConfigDataPair;
 import net.minecraft.core.Holder;
 import net.minecraft.server.dialog.Dialog;
 import org.jetbrains.annotations.NotNull;

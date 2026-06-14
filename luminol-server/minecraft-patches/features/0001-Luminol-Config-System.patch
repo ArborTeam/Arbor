@@ -1,18 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: MrHua269 <mrhua269@gmail.com>
-Date: Fri, 17 Apr 2026 22:45:58 +0800
-Subject: [PATCH] Rebrand to Luminol
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Sun, 14 Jun 2026 18:10:20 +0800
+Subject: [PATCH] Luminol Config System
 
 
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index aa15c5c83f04e518c30a9dee7945062099197c25..5b46b224bb0fea3a7e0f721ce9770657ffe0c71d 100644
+index aa15c5c83f04e518c30a9dee7945062099197c25..143ad4e342b184aa02b6fbbe81508e244eebc7a2 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -103,7 +103,7 @@ public class Main {
-             if (options.has("jfrProfile")) { // CraftBukkit
+@@ -104,6 +104,7 @@ public class Main {
                  JvmProfiler.INSTANCE.start(Environment.SERVER);
              }
--
+ 
 +            me.earthme.luminol.config.ConfigManager.initConfigs(); // Luminol - Luminol config
              io.papermc.paper.plugin.PluginInitializerManager.load(options); // Paper
              Bootstrap.bootStrap();

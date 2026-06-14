@@ -1,8 +1,8 @@
 package me.earthme.luminol.commands.bar.sub;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import me.earthme.luminol.api.config.LuminolConfigsInstance;
 import me.earthme.luminol.config.ConfigManager;
-import me.earthme.luminol.config.ConfigsInstance;
 import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
 import me.earthme.luminol.functions.bars.GlobalServerBarManager;
@@ -47,7 +47,7 @@ public class ConfigEditCommand extends LiteralNode {
                                 .text("Bar type with " + barType.getName() + " was already " + (value ? "enabled" : "disabled") + "!")
                                 .color(TextColor.color(255, 0, 0)));
             } else {
-                ConfigsInstance config = ConfigManager.getConfigs(barType.getConfigOrigin());
+                LuminolConfigsInstance config = ConfigManager.getConfigs(barType.getConfigOrigin());
                 if (config.setConfig(barType.getConfigPath(), value)) {
                     config.reloadAsync(true).thenAccept(nullValue -> context.getSender().sendMessage(
                             Component

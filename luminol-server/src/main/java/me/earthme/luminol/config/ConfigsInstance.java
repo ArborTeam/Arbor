@@ -151,6 +151,61 @@ public class ConfigsInstance implements LuminolConfigsInstance {
         setupLatch();
     }
 
+    /**
+     * Re-apply staged configuration values to module fields after beforeFinalLoad tasks
+     * This ensures that any config changes made in beforeFinalLoad are properly reflected
+     */
+    public void reApplyStagedConfigs() {
+        if (stagedConfigMap.isEmpty()) {
+            return;
+        }
+
+        // For each staged config value, update the corresponding field
+        for (Map.Entry<IConfigModule, Set<Exception>> entry : allInstanced.entrySet()) {
+            IConfigModule module = entry.getKey();
+            Field[] fields = module.getClass().getDeclaredFields();
+
+            for (Field field : fields) {
+                int modifiers = field.getModifiers();
+                if (!(Modifier.isStatic(modifiers) && !Modifier.isFinal(modifiers))) {
+                    continue;
+                }
+
+                ConfigInfo configInfo = field.getAnnotation(ConfigInfo.class);
+                if (configInfo == null || field.getAnnotation(DoNotLoad.class) != null) {
+                    continue;
+                }
+
+                // Build full configuration key
+                ConfigClassInfo classInfo = getConfigClassInfo(module);
+                if (classInfo == null) continue;
+
+                final List<String> keys = new ArrayList<>();
+                String name = classInfo.category().getBaseKeyName();
+                if (name != null) keys.add(name);
+                keys.addAll(List.of(classInfo.directory()));
+                keys.add(classInfo.name());
+                keys.addAll(List.of(configInfo.directory()));
+                keys.add(configInfo.name());
+                final String fullConfigKeyName = String.join(".", keys);
+
+                // Check if this config has a staged value
+                if (stagedConfigMap.containsKey(fullConfigKeyName)) {
+                    try {
+                        field.setAccessible(true);
+                        Object stagedValue = getActualConfigValue(fullConfigKeyName);
+                        if (stagedValue != null) {
+                            stagedValue = tryTransform(field, stagedValue);
+                            field.set(null, stagedValue);
+                        }
+                    } catch (Exception e) {
+                        logger.error("Failed to re-apply staged config value for {}", fullConfigKeyName, e);
+                    }
+                }
+            }
+        }
+    }
+
     // Configuration loading methods
     // ========================================================================
 

@@ -43,6 +43,7 @@ public class ConfigManager {
 
     public static void loadConfigFiles() {
         runTaskBeforeFinalLoad();
+        // Finalize loading
         CompletableFuture<?>[] futures = configfiles.values().stream()
                 .map(config -> CompletableFuture.runAsync(config::finalizeLoadConfig))
                 .toArray(CompletableFuture[]::new);
@@ -68,6 +69,20 @@ public class ConfigManager {
     private static void runTaskBeforeFinalLoad() {
         runnableBeforeFinalLoad.forEach(Runnable::run);
         runnableBeforeFinalLoad.clear();
+    }
+
+    public static void reApplyStagedConfigs() {
+        CompletableFuture<?>[] futures = configfiles.values().stream()
+                .map(config -> CompletableFuture.runAsync(config::reApplyStagedConfigs))
+                .toArray(CompletableFuture[]::new);
+        CompletableFuture.allOf(futures).join();
+    }
+
+    public static void saveConfigs() {
+        CompletableFuture<?>[] futures = configfiles.values().stream()
+                .map(config -> CompletableFuture.runAsync(config::saveConfigs))
+                .toArray(CompletableFuture[]::new);
+        CompletableFuture.allOf(futures).join();
     }
 
     private static void acceptTransformedConfigs() {

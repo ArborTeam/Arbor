@@ -2,6 +2,7 @@ package me.earthme.luminol.api.config;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -11,6 +12,17 @@ import java.util.concurrent.CompletableFuture;
  * Provides methods for loading, saving, modifying, and querying configuration values.
  */
 public interface LuminolConfigsInstance {
+    /**
+     * Initialize the configuration subsystem for this instance.
+     * Implementations should load configuration files, apply defaults and
+     * prepare any internal caches or state needed for subsequent operations.
+     * This method may perform I/O and therefore can throw an {@link IOException}
+     * if initialization fails.
+     *
+     * @throws IOException if an I/O error occurs while initializing
+     */
+    void initialize() throws IOException;
+
     /**
      * Reloads all configurations asynchronously
      * @param keepComments whether to preserve existing comments in the config file
@@ -152,4 +164,21 @@ public interface LuminolConfigsInstance {
      * @return set of configuration data
      */
     Set<ConfigDataPair> getData(List<String> list, boolean _comment, boolean _withSuggestions);
+
+    /**
+     * Remove a configuration entry by its key.
+     * If the key does not exist this should be a no-op.
+     *
+     * @param key the configuration key to remove
+     */
+    void removeConfig(String key);
+
+    /**
+     * Remove multiple configuration entries by their keys.
+     * Implementations should attempt to remove each key provided. If some
+     * keys do not exist they may be ignored.
+     *
+     * @param keys an array of configuration keys to remove
+     */
+    void removeConfig(String[] keys);
 }

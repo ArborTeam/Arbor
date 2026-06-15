@@ -23,8 +23,12 @@ public class ConfigManager {
     // 3 -> target full path
 
     public static void initConfigs() {
-        configfiles.put("luminol", ConfigsInstance.of("luminol", "me.earthme.luminol.config.modules"));
+        registerConfig("luminol", ConfigsInstance.of("luminol", "me.earthme.luminol.config.modules"));
         preLoad();
+    }
+
+    public static void registerConfig(String name, ConfigsInstance config) {
+        configfiles.put(name, config);
     }
 
     public static void preLoad() {
@@ -66,7 +70,7 @@ public class ConfigManager {
         return configfiles.get(name);
     }
 
-    private static void runTaskBeforeFinalLoad() {
+    static void runTaskBeforeFinalLoad() {
         runnableBeforeFinalLoad.forEach(Runnable::run);
         runnableBeforeFinalLoad.clear();
     }
@@ -85,7 +89,7 @@ public class ConfigManager {
         CompletableFuture.allOf(futures).join();
     }
 
-    private static void acceptTransformedConfigs() {
+    static void acceptTransformedConfigs() {
         Set<ConfigsInstance> toReload = new HashSet<>();
         for (Map.Entry<TransformedConfig, String[]> entry : needTransformedConfigs.entrySet()) {
             String[] config = entry.getValue();

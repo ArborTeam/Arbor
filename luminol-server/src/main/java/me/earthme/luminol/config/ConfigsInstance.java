@@ -2,6 +2,7 @@ package me.earthme.luminol.config;
 
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.toml.TomlFormat;
 import com.mojang.logging.LogUtils;
 import io.papermc.paper.threadedregions.RegionizedServer;
 import me.earthme.luminol.api.config.ConfigDataPair;
@@ -44,7 +45,7 @@ public class ConfigsInstance implements LuminolConfigsInstance {
 
     // Constants and state flags
     public boolean alreadyInit = false;
-    private CommentedFileConfig configFileInstance;
+    private CommentedFileConfig configFileInstance = null;
 
     /**
      * Private constructor to create a configuration instance
@@ -101,7 +102,11 @@ public class ConfigsInstance implements LuminolConfigsInstance {
      * Reload configuration with option to keep comments
      */
     public void reload(boolean keepComments) {
-        RegionizedServer.ensureGlobalTickThread("Reload " + baseConfigFile.getName() + " off global region thread!");
+        reload(keepComments, true);
+    }
+
+    public void reload(boolean keepComments, boolean needGlobal) {
+        if (needGlobal) RegionizedServer.ensureGlobalTickThread("Reload " + baseConfigFile.getName() + " off global region thread!");
         runUnloadTasks();
         dropAllInstanced();
         try {
@@ -110,6 +115,17 @@ public class ConfigsInstance implements LuminolConfigsInstance {
         } catch (Exception e) {
             logger.error("Fail to load config file of {}.", name, e);
         }
+    }
+
+    /**
+     * Initialize configuration if this config not register in server load stage
+     */
+    @Override
+    public void initialize() throws IOException {
+        preLoadConfig(true);
+        ConfigManager.acceptTransformedConfigs();
+        ConfigManager.runTaskBeforeFinalLoad();
+        finalizeLoadConfig();
     }
 
     /**
@@ -225,8 +241,11 @@ public class ConfigsInstance implements LuminolConfigsInstance {
         if (!baseConfigFile.exists()) {
             baseConfigFile.createNewFile();
         }
+        if (configFileInstance != null) {
+            configFileInstance.close();
+        }
 
-        configFileInstance = CommentedFileConfig.of(baseConfigFile);
+        configFileInstance = CommentedFileConfig.builder(baseConfigFile, TomlFormat.instance()).autosave().build();
         configFileInstance.load();
 
         try {
@@ -585,9 +604,17 @@ public class ConfigsInstance implements LuminolConfigsInstance {
     public void removeConfig(String name, String[] keys) {
         configFileInstance.remove(name);
         Object configAtPath = configFileInstance.get(String.join(".", keys));
-        if (configAtPath instanceof UnmodifiableConfig && ((UnmodifiableConfig) configAtPath).isEmpty()) {
+        if (configAtPath instanceof UnmodifiableConfig && ((UnmodifiableConfig) configAtPath).isEmpty() || configAtPath == null) {
             removeConfig(keys);
         }
+    }
+
+    /**
+     * Remove a configuration entry
+     */
+    public void removeConfig(String key) {
+        // split on literal dot to get path segments
+        removeConfig(key, key.split("\\."));
     }
 
     /**

@@ -117,15 +117,15 @@ public class ToggleCommand extends LiteralNode {
     @SuppressWarnings("unchecked")
     public void register() { // register for old version command
         PaperCommands.INSTANCE.setValid();
-        PaperCommands.INSTANCE.getDispatcher().register((LiteralArgumentBuilder<io.papermc.paper.command.brigadier.CommandSourceStack>) compile0());
+        PaperCommands.INSTANCE.getDispatcher().register((LiteralArgumentBuilder<CommandSourceStack>) compile0());
         PaperCommands.INSTANCE.invalidate();
-        Bukkit.getOnlinePlayers().forEach(org.bukkit.entity.Player::updateCommands);
+        Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
     }
 
     public void unregister() { // unregister for old version command
         PaperCommands.INSTANCE.setValid();
         PaperCommands.INSTANCE.getDispatcher().getRoot().removeCommand(this.barType.getCommandName());
         PaperCommands.INSTANCE.invalidate();
-        Bukkit.getOnlinePlayers().forEach(org.bukkit.entity.Player::updateCommands);
+        Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
     }
 }

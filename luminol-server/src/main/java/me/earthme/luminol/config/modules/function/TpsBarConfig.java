@@ -9,7 +9,6 @@ import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
-import me.earthme.luminol.functions.bars.GlobalServerBarManager;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
@@ -45,12 +44,13 @@ public class TpsBarConfig implements IConfigModule {
 
     @Override
     public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
-        AbstractGlobalServerBar tpsbar = GlobalServerBarManager.get(EnumBarType.TPS);
-
         if (tpsbarEnabled) {
-            tpsbar.init();
+            EnumBarType.TPS.get().init();
         } else {
-            tpsbar.cancelBarUpdateTask();
+            AbstractGlobalServerBar tpsbar = EnumBarType.TPS.getOrNull();
+            if (tpsbar != null) {
+                tpsbar.cancelBarUpdateTask();
+            }
         }
 
         if (!inited) { // command has moved to CommandRegister
@@ -60,9 +60,11 @@ public class TpsBarConfig implements IConfigModule {
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        AbstractGlobalServerBar tpsbar = GlobalServerBarManager.get(EnumBarType.TPS);
-        tpsbar.cancelBarUpdateTask();
-        tpsbar.runUnloadTask();
+        AbstractGlobalServerBar tpsbar = EnumBarType.TPS.getOrNull();
+        if (tpsbar != null) {
+            tpsbar.cancelBarUpdateTask();
+            tpsbar.runUnloadTask();
+        }
         Bukkit.getCommandMap().getKnownCommands().remove("luminol:tpsbar");
     }
 }

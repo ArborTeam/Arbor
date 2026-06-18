@@ -12,7 +12,6 @@ import io.papermc.paper.command.brigadier.PaperCommands;
 import me.earthme.luminol.commands.bar.BarCommand;
 import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
-import me.earthme.luminol.functions.bars.GlobalServerBarManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -46,17 +45,12 @@ public class ToggleCommand extends LiteralNode {
     }
 
     public boolean execute0(@NotNull CommandContext context, Player player) {
-        AbstractGlobalServerBar bar;
+        AbstractGlobalServerBar bar = barType.getOrNull();
+        boolean enabled = bar != null && bar.enabled();
 
-        try {
-            bar = GlobalServerBarManager.get(this.barType);
-        } catch (IllegalArgumentException e) {
-            context.getSender().sendMessage(Component.text(e.getMessage()).color(TextColor.color(255, 0, 0)));
-            return true;
-        }
-
-        if (!bar.enabled()) {
+        if (!enabled) {
             context.getSender().sendMessage(Component.text("Bar type with " + this.barType.getName() + " was already disabled!").color(TextColor.color(255, 0, 0)));
+            return true;
         }
 
         if (bar.isPlayerVisible(player)) {

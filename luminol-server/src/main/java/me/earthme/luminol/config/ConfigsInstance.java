@@ -106,7 +106,9 @@ public class ConfigsInstance implements LuminolConfigsInstance {
     }
 
     public void reload(boolean keepComments, boolean needGlobal) {
-        if (needGlobal) RegionizedServer.ensureGlobalTickThread("Reload " + baseConfigFile.getName() + " off global region thread!");
+        if (needGlobal) {
+            RegionizedServer.ensureGlobalTickThread("Reload " + baseConfigFile.getName() + " off global region thread!");
+        }
         runUnloadTasks();
         dropAllInstanced();
         try {

@@ -5,7 +5,6 @@ import me.earthme.luminol.api.config.LuminolConfigsInstance;
 import me.earthme.luminol.config.ConfigManager;
 import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
-import me.earthme.luminol.functions.bars.GlobalServerBarManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
@@ -31,17 +30,11 @@ public class ConfigEditCommand extends LiteralNode {
 
         @Override
         protected boolean execute(@NotNull CommandContext context) {
-            AbstractGlobalServerBar bar;
-
-            try {
-                bar = GlobalServerBarManager.get(barType);
-            } catch (IllegalArgumentException e) {
-                context.getSender().sendMessage(Component.text(e.getMessage()).color(TextColor.color(255, 0, 0)));
-                return true;
-            }
+            AbstractGlobalServerBar bar = barType.getOrNull();
+            boolean enabled = bar != null && bar.enabled();
 
             boolean value = context.getArgument(BooleanArgument.class);
-            if (value == bar.enabled()) {
+            if (value == enabled) {
                 context.getSender().sendMessage(
                         Component
                                 .text("Bar type with " + barType.getName() + " was already " + (value ? "enabled" : "disabled") + "!")

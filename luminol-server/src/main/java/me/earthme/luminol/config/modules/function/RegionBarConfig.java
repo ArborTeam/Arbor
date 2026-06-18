@@ -9,7 +9,6 @@ import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
-import me.earthme.luminol.functions.bars.GlobalServerBarManager;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
@@ -35,11 +34,13 @@ public class RegionBarConfig implements IConfigModule {
 
     @Override
     public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
-        AbstractGlobalServerBar regionbar = GlobalServerBarManager.get(EnumBarType.REGION);
         if (regionbarEnabled) {
-            regionbar.init();
+            EnumBarType.REGION.get().init();
         } else {
-            regionbar.cancelBarUpdateTask();
+            AbstractGlobalServerBar regionbar = EnumBarType.REGION.getOrNull();
+            if (regionbar != null) {
+                regionbar.cancelBarUpdateTask();
+            }
         }
 
         if (!inited) { // command has moved to CommandRegister
@@ -49,9 +50,11 @@ public class RegionBarConfig implements IConfigModule {
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        AbstractGlobalServerBar regionbar = GlobalServerBarManager.get(EnumBarType.REGION);
-        regionbar.cancelBarUpdateTask();
-        regionbar.runUnloadTask();
+        AbstractGlobalServerBar regionbar = EnumBarType.REGION.getOrNull();
+        if (regionbar != null) {
+            regionbar.cancelBarUpdateTask();
+            regionbar.runUnloadTask();
+        }
         Bukkit.getCommandMap().getKnownCommands().remove("luminol:regionbar");
     }
 }

@@ -1,11 +1,9 @@
 package me.earthme.luminol.enums;
 
 import com.mojang.datafixers.util.Pair;
-import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
-import me.earthme.luminol.functions.bars.GlobalServerMemoryBar;
-import me.earthme.luminol.functions.bars.GlobalServerRegionBar;
-import me.earthme.luminol.functions.bars.GlobalServerTpsBar;
+import me.earthme.luminol.functions.bars.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public enum EnumBarType {
     TPS(
@@ -49,6 +47,16 @@ public enum EnumBarType {
         this.commandName = commandName;
         this.configPath = configPath.getSecond();
         this.configOrigin = configPath.getFirst();
+    }
+
+    @NotNull
+    public AbstractGlobalServerBar get() {
+        return GlobalServerBarManager.get(this);
+    }
+
+    @Nullable
+    public AbstractGlobalServerBar getOrNull() {
+        return GlobalServerBarManager.getOrNull(this);
     }
 
     @NotNull

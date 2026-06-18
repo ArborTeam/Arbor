@@ -12,6 +12,10 @@ public class GlobalServerBarManager {
         return bars.computeIfAbsent(type, (_) -> type.newInstance());
     }
 
+    public static AbstractGlobalServerBar getOrNull(EnumBarType type) {
+        return bars.get(type);
+    }
+
     public static void cancelAll() {
         bars.values().forEach(AbstractGlobalServerBar::cancelBarUpdateTask);
     }

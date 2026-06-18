@@ -23,12 +23,14 @@ public class TpsBarConfig implements IConfigModule {
     public static boolean tpsbarEnabled = false;
     @ConfigInfo(name = "format")
     public static String tpsBarFormat = "<gray>TPS<yellow>:</yellow> <tps> MSPT<yellow>:</yellow> <mspt> Ping<yellow>:</yellow> <ping>ms ChunkHot<yellow>:</yellow> <chunkhot>";
+    @ConfigInfo(name = "bar_color_list")
+    public static List<BossBar.Color> barColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
     @ConfigInfo(name = "tps_color_list")
-    public static List<BossBar.Color> tpsColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
+    public static List<String> tpsColors = List.of("<gradient:#55ff55:#00aa00><text></gradient>", "<gradient:#ffff55:#ffaa00><text></gradient>", "<gradient:#ff5555:#aa0000><text></gradient>", "<gradient:#55ff55:#00aa00><text></gradient>");
     @ConfigInfo(name = "ping_color_list")
-    public static List<BossBar.Color> pingColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
+    public static List<String> pingColors = List.of("<gradient:#55ff55:#00aa00><text></gradient>", "<gradient:#ffff55:#ffaa00><text></gradient>", "<gradient:#ff5555:#aa0000><text></gradient>", "<gradient:#55ff55:#00aa00><text></gradient>");
     @ConfigInfo(name = "chunkhot_color_list")
-    public static List<BossBar.Color> chunkHotColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
+    public static List<String> chunkHotColors = List.of("<gradient:#55ff55:#00aa00><text></gradient>", "<gradient:#ffff55:#ffaa00><text></gradient>", "<gradient:#ff5555:#aa0000><text></gradient>", "<gradient:#55ff55:#00aa00><text></gradient>");
     @ConfigInfo(name = "update_interval_ticks")
     public static int updateInterval = 15;
     @ConfigInfo(name = "precision_of_tps_value", comments = "Example(if tps is 20.00000000)(value -> result): 2 -> 20.00, 1 -> 20.0")

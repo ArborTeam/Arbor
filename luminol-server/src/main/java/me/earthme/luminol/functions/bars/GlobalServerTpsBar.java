@@ -50,7 +50,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
             if (TpsBarConfig.display == EnumStatusBarDisplay.BOSS_BAR) {
                 targetBossbar = uuid2Bossbars.computeIfAbsent(
                         playerUUID,
-                        _ -> BossBar.bossBar(Component.text(""), 0.0F, TpsBarConfig.tpsColors.get(3), BossBar.Overlay.NOTCHED_20)
+                        _ -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.PURPLE, BossBar.Overlay.NOTCHED_20)
                 );
 
                 apiPlayer.showBossBar(targetBossbar);
@@ -84,7 +84,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
             case ACTION_BAR -> player.sendActionBar(message);
 
             case BOSS_BAR ->
-                    bar.name(message).color(barColorFromTps(tps)).progress((float) Math.clamp(mspt / 50, 0, (float) 1));
+                    bar.name(message).color(barColorForTps(tps)).progress((float) Math.clamp(mspt / 50, 0, (float) 1));
 
             case TAB_LIST -> player.sendPlayerListFooter(message);
 
@@ -93,16 +93,22 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
     }
 
     private @NotNull Component getPingComponent(int ping) {
-        final BossBar.Color colorBukkit = barColorFromPing(ping);
-        final String colorString = colorBukkit.name();
-
-        final String content = "<%s><text></%s>";
-        final String replaced = String.format(content, colorString, colorString);
-
-        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.valueOf(ping)));
+        return MiniMessage.miniMessage().deserialize(textPlaceholderForPing(ping), Placeholder.parsed("text", String.valueOf(ping)));
     }
 
-    private BossBar.Color barColorFromPing(int ping) {
+    private @NotNull Component getMsptComponent(double mspt) {
+        return MiniMessage.miniMessage().deserialize(textPlaceholderForMspt(mspt), Placeholder.parsed("text", String.format("%." + TpsBarConfig.precisionOfMSPT + "f", mspt)));
+    }
+
+    private @NotNull Component getChunkHotComponent(long chunkHot) {
+        return MiniMessage.miniMessage().deserialize(textPlaceholderForChunkHot(chunkHot), Placeholder.parsed("text", String.valueOf(chunkHot)));
+    }
+
+    private @NotNull Component getTpsComponent(double tps) {
+        return MiniMessage.miniMessage().deserialize(textPlaceholderForTps(tps), Placeholder.parsed("text", String.format("%." + TpsBarConfig.precisionOfTPS + "f", tps)));
+    }
+
+    private String textPlaceholderForPing(int ping) {
         if (ping == -1) {
             return TpsBarConfig.pingColors.get(3);
         }
@@ -118,27 +124,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
         return TpsBarConfig.pingColors.get(2);
     }
 
-    private @NotNull Component getMsptComponent(double mspt) {
-        final BossBar.Color colorBukkit = barColorFromMspt(mspt);
-        final String colorString = colorBukkit.name();
-
-        final String content = "<%s><text></%s>";
-        final String replaced = String.format(content, colorString, colorString);
-
-        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.format("%." + TpsBarConfig.precisionOfMSPT + "f", mspt)));
-    }
-
-    private @NotNull Component getChunkHotComponent(long chunkHot) {
-        final BossBar.Color colorBukkit = barColorFromChunkHot(chunkHot);
-        final String colorString = colorBukkit.name();
-
-        final String content = "<%s><text></%s>";
-        final String replaced = String.format(content, colorString, colorString);
-
-        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.valueOf(chunkHot)));
-    }
-
-    private BossBar.Color barColorFromChunkHot(long chunkHot) {
+    private String textPlaceholderForChunkHot(long chunkHot) {
         if (chunkHot == -1) {
             return TpsBarConfig.chunkHotColors.get(3);
         }
@@ -154,7 +140,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
         return TpsBarConfig.chunkHotColors.get(2);
     }
 
-    private BossBar.Color barColorFromMspt(double mspt) {
+    private String textPlaceholderForMspt(double mspt) {
         if (mspt == -1) {
             return TpsBarConfig.tpsColors.get(3);
         }
@@ -170,22 +156,28 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
         return TpsBarConfig.tpsColors.get(2);
     }
 
-    private @NotNull Component getTpsComponent(double tps) {
-        final BossBar.Color colorBukkit = barColorFromTps(tps);
-        final String colorString = colorBukkit.name();
+    private BossBar.Color barColorForTps(double tps) {
+        if (tps == -1) {
+            return TpsBarConfig.barColors.get(3);
+        }
 
-        final String content = "<%s><text></%s>";
-        final String replaced = String.format(content, colorString, colorString);
+        if (tps >= 19) {
+            return TpsBarConfig.barColors.get(0);
+        }
 
-        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.format("%." + TpsBarConfig.precisionOfTPS + "f", tps)));
+        if (tps >= 15) {
+            return TpsBarConfig.barColors.get(1);
+        }
+
+        return TpsBarConfig.barColors.get(2);
     }
 
-    private BossBar.Color barColorFromTps(double tps) {
+    private String textPlaceholderForTps(double tps) {
         if (tps == -1) {
             return TpsBarConfig.tpsColors.get(3);
         }
 
-        if (tps >= 18) {
+        if (tps >= 19) {
             return TpsBarConfig.tpsColors.get(0);
         }
 

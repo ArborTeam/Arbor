@@ -69,18 +69,18 @@ public enum EnumBarType {
     }
 
     public String getCommandName() {
-        return commandName;
+        return this.commandName;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getConfigOrigin() {
-        return configOrigin;
+        return this.configOrigin;
     }
 
     public String getConfigPath() {
-        return configPath;
+        return this.configPath;
     }
 }

@@ -166,6 +166,8 @@ public class ConfigsInstance implements LuminolConfigsInstance {
         for (Map.Entry<IConfigModule, Set<Exception>> entry : allInstanced.entrySet()) {
             entry.getKey().onLoaded(configFileInstance, entry.getValue());
         }
+        // if the config load with exceptions but allowed, remove exceptions from the map
+        allInstanced.replaceAll((_, _) -> null);
         setupLatch();
     }
 
@@ -283,14 +285,14 @@ public class ConfigsInstance implements LuminolConfigsInstance {
      */
     private void loadCategoryComments() {
         for (EnumConfigCategory category : EnumConfigCategory.values()) {
-            String mainKey = category.getBaseKeyName();
-            if (mainKey == null) continue;
-            for (String key : defaultvalueMap.keySet()) {
-                if (key.startsWith(mainKey)) {
-                    String comment = configFileInstance.getComment(key);
-                    if (comment != null && !comment.isEmpty()) {
-                        configFileInstance.setComment(key, comment);
-                    }
+            String key = category.getBaseKeyName();
+            if (key == null) continue;
+            String comment = category.getKeyComment();
+            if (comment == null) continue;
+            if (!completeConfigPath(key).isEmpty()) {
+                String comment0 = configFileInstance.getComment(key);
+                if (comment0 == null) {
+                    configFileInstance.setComment(key, comment);
                 }
             }
         }

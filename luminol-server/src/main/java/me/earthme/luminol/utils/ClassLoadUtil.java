@@ -9,15 +9,16 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Enumeration;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ClassLoadUtil {
-    public static @NotNull Set<Class<?>> getClasses(String pack) {
-        Set<Class<?>> classes = new LinkedHashSet<>();
+    public static @NotNull Collection<Class<?>> getClasses(String pack) {
+        Set<Class<?>> classes = new HashSet<>();
         String packageDirName = pack.replace('.', '/');
         Enumeration<URL> dirs;
 

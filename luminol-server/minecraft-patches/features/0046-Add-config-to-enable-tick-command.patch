@@ -31,10 +31,10 @@ index 3416445888860746c15a978f401c87245609b64a..11cacb26ce260373476dad764014ba18
          }
      }
 diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-index 949df2390d30694ad5ae3ad46da8643d786c218c..f60b3b40c7dc5820abc726abc8d094ed873edf6c 100644
+index 047a20d0c0e7dd9f9ff4ee61a348c2010b89ba51..86c51506c518ee445d00f7eef36ee2c9adbd9b4c 100644
 --- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
 +++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-@@ -578,6 +578,11 @@ public final class TickRegionScheduler {
+@@ -559,6 +559,11 @@ public final class TickRegionScheduler {
              try {
                  // next start isn't updated until the end of this tick
                  this.tickRegion(tickCount, tickStart, scheduledEnd);

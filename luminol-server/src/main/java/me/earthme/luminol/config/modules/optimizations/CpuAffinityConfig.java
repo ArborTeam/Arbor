@@ -8,8 +8,10 @@ import me.earthme.luminol.config.flags.ConfigInfo;
 import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.config.flags.HotReloadUnsupported;
 import me.earthme.luminol.enums.EnumConfigCategory;
+import me.earthme.luminol.utils.AffinityRunnableWrapper;
 import net.openhft.affinity.Affinity;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
 import java.util.BitSet;
@@ -19,12 +21,31 @@ import java.util.Set;
 @ConfigClassInfo(category = EnumConfigCategory.OPTIMIZATIONS, name = "cpu_affinity")
 public class CpuAffinityConfig implements IConfigModule {
     @HotReloadUnsupported
-    @ConfigInfo(name = "enabled", comments = "Using this you could pin the threads of tick region scheduler to cpu cores listed in the config 'tickregion_affinity' following, \n" +
+    @ConfigInfo(name = "enabled_for_tickregion", comments = "Using this you could pin the threads of tick region scheduler(Following are the same) to cpu cores listed in the config 'tickregion_affinity' following, \n" +
             "which is useful for those CPU with P and E cores (such as 12/13/14 gen Intel Core CPUs and so on.)")
-    public static boolean cpuAffinityEnabled = false;
+    public static boolean enabledForTickRegion = false;
+    @HotReloadUnsupported
+    @ConfigInfo(name = "enable_for_chunksystem_worker")
+    public static boolean enabledForChunkSystemWorker = false;
+    @HotReloadUnsupported
+    @ConfigInfo(name = "enable_for_chunksystem_io")
+    public static boolean enabledForChunkSystemIo = false;
+
     @HotReloadUnsupported
     @ConfigInfo(name = "tickregion_affinity", comments = "The core number you want the tick region threads to bind on")
     public static List<String> tickRegionAffinity = Affinity.getAffinity()
+            .stream()
+            .mapToObj(String::valueOf)
+            .toList();
+    @HotReloadUnsupported
+    @ConfigInfo(name = "chunksystem_worker_affinity")
+    public static List<String> chunkSystemWorkerAffinity = Affinity.getAffinity()
+            .stream()
+            .mapToObj(String::valueOf)
+            .toList();
+    @HotReloadUnsupported
+    @ConfigInfo(name = "chunksystem_io_affinity")
+    public static List<String> chunkSystemIoAffinity = Affinity.getAffinity()
             .stream()
             .mapToObj(String::valueOf)
             .toList();
@@ -34,21 +55,47 @@ public class CpuAffinityConfig implements IConfigModule {
     @DoNotLoad
     private static final Logger LOGGER = LogUtils.getLogger();
     @DoNotLoad
-    public static BitSet tickRegionAffinityBitSet;
+    public static AffinityRunnableWrapper tickRegionRunnableWrapper;
+    @DoNotLoad
+    public static AffinityRunnableWrapper chunkSystemWorkerRunnableWrapper;
+    @DoNotLoad
+    public static AffinityRunnableWrapper chunkSystemIoRunnableWrapper;
+
+    public static Runnable wrapForTickRegion(Runnable in) {
+        return tickRegionRunnableWrapper == null ? in : tickRegionRunnableWrapper.wrap(in);
+    }
+
+    public static Runnable wrapForChunkSystemWorker(Runnable in) {
+        return chunkSystemWorkerRunnableWrapper == null ? in : chunkSystemWorkerRunnableWrapper.wrap(in);
+    }
+
+    public static Runnable wrapForChunkSystemIo(Runnable in) {
+        return chunkSystemIoRunnableWrapper == null ? in : chunkSystemIoRunnableWrapper.wrap(in);
+    }
 
     @Override
     public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
-        if (!cpuAffinityEnabled) return;
+        if (enabledForTickRegion) {
+            tickRegionRunnableWrapper = new AffinityRunnableWrapper("tick_region", parseAffinity(tickRegionAffinity));
+            LOGGER.info("Tick region thread now bound to: {}", tickRegionRunnableWrapper.getAffinity());
+        }
 
-        tickRegionAffinityBitSet = parseAffinity(tickRegionAffinity);
-        LOGGER.info("Tick region thread now bound to: {}", tickRegionAffinityBitSet);
+        if (enabledForChunkSystemIo) {
+            chunkSystemIoRunnableWrapper = new AffinityRunnableWrapper("chunk_system_io", parseAffinity(chunkSystemIoAffinity));
+            LOGGER.info("Chunk system I/O thread now bound to: {}", chunkSystemIoRunnableWrapper.getAffinity());
+        }
+
+        if (enabledForChunkSystemWorker) {
+            chunkSystemWorkerRunnableWrapper = new AffinityRunnableWrapper("chunk_system_worker", parseAffinity(chunkSystemWorkerAffinity));
+            LOGGER.info("Chunk system worker thread now bound to: {}", chunkSystemIoRunnableWrapper.getAffinity());
+        }
 
         if (!inited) {
             inited = true;
         }
     }
 
-    private BitSet parseAffinity(List<String> affinity) {
+    private @NonNull BitSet parseAffinity(@NonNull List<String> affinity) {
         int maxAvailable = Runtime.getRuntime().availableProcessors();
         BitSet affinitySet = new BitSet(affinity.size());
         affinity.stream()

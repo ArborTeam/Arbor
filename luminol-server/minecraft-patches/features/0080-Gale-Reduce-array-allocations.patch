@@ -137,7 +137,7 @@ index 468a70d396e228d84f6bbae4e11f871ba6690e02..91d6aef1e028c46ca49d7fc7aa1eb574
                  if (!itemStack.isEmpty()) {
                      slots.add(Pair.of(slot, itemStack.copy()));
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 6cedc129f31289eaf4e3580219fc1988c0f3c5a1..1d17ab4775916bcd820666259e840e98eb9aa792 100644
+index a38174a2a02bfe533daef89e379db198e47e6780..1a920148ca7ea9a5be79dd4a93e56b0dfa16de0a 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1440,7 +1440,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -252,7 +252,7 @@ index 4b018c64d3123bb7a0687491d2ac3a535302890c..0e4d6c9a35d29c240a0cf30694211ea3
  
      private static Map<EquipmentSlot, Float> createForAllSlots(final List<EquipmentSlot> slots, final float dropChance) {
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 17483ffff6cb2a9e86db7079e7c3a9a800654c62..0a403e859169e0dcc4b0fd6fde7bd8bd7037e8b3 100644
+index 0ba789adda0c061253abf832d4c78ae68a846f1d..cd2fb9e2110d0dba1358daa283af767db3f4e80a 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3598,7 +3598,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

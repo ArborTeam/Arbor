@@ -3,7 +3,9 @@ package me.earthme.luminol.utils;
 import ca.spottedleaf.moonrise.common.util.TickThread;
 import com.google.common.collect.Sets;
 import me.earthme.luminol.config.modules.experiment.CommandConfig;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.waypoints.ServerWaypointManager;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.waypoints.WaypointManager;
@@ -15,11 +17,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class FoliaServerWaypointManager implements WaypointManager<@NotNull WaypointTransmitter> {
+public class FoliaServerWaypointManager extends ServerWaypointManager {
     private final Set<WaypointTransmitter> waypoints = ConcurrentHashMap.newKeySet();
     private final Set<ServerPlayer> trackingPlayers = ConcurrentHashMap.newKeySet();
     private final Map<ServerPlayer, Map<WaypointTransmitter, WaypointTransmitter.Connection>> connections = new ConcurrentHashMap<>();
 
+    public FoliaServerWaypointManager(ServerLevel serverLevel) {
+        super(serverLevel);
+    }
+
+    @Override
     public void breakAllConnections() {
         Iterator<Map.Entry<ServerPlayer, Map<WaypointTransmitter, WaypointTransmitter.Connection>>> connectionTablesEntryIterator = this.connections.entrySet().iterator();
         while (connectionTablesEntryIterator.hasNext()) {
@@ -32,10 +39,12 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
         }
     }
 
+    @Override
     public void remakeConnections(WaypointTransmitter waypoint) {
         throw new UnsupportedOperationException("Unused");
     }
 
+    @Override
     public Set<WaypointTransmitter> transmitters() {
         return this.waypoints;
     }
@@ -97,6 +106,7 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
         this.waypoints.remove(waypoint);
     }
 
+    @Override
     public void addPlayer(ServerPlayer player) {
         scheduleIfOffTarget(player, () -> {
             this.trackingPlayers.add(player);
@@ -111,6 +121,7 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
         });
     }
 
+    @Override
     public void updatePlayer(ServerPlayer player) {
         Map<WaypointTransmitter, WaypointTransmitter.Connection> conneections = this.connections.get(player);
 
@@ -129,6 +140,7 @@ public class FoliaServerWaypointManager implements WaypointManager<@NotNull Wayp
         }
     }
 
+    @Override
     public void removePlayer(ServerPlayer player) {
         scheduleIfOffTarget(player, () -> {
             final Map<WaypointTransmitter, WaypointTransmitter.Connection> removedConnections = this.connections.remove(player);

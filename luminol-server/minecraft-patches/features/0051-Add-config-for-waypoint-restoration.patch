@@ -18,7 +18,7 @@ index 4a81f07c3502949166768a59173afdfc596a36b6..89f61f5715942d2b521e04b9fdc8b1b3
          WorldBorderCommand.register(this.dispatcher);
          if (JvmProfiler.INSTANCE.isAvailable()) {
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 388e2830cc8881ad1fa1cc3c55a659c17d5c317d..83178b9a0b017c8945c0f41981838f40263c9a12 100644
+index 388e2830cc8881ad1fa1cc3c55a659c17d5c317d..28384f9ebfcdbfbd07fc7fe3c929786eb9e2ccd3 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -3134,8 +3134,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -27,69 +27,25 @@ index 388e2830cc8881ad1fa1cc3c55a659c17d5c317d..83178b9a0b017c8945c0f41981838f40
              // this.getAllLevels().forEach(level -> { // Paper - per-world game rules
 -                ServerWaypointManager waypointManager = level.getWaypointManager();
 -                waypointManager.locatorBarEnabled = (Boolean) value; // Paper - optimize ServerWaypointManager with locator bar disabled
-+                me.earthme.luminol.utils.FoliaServerWaypointManager waypointManager = level.getWaypointManager(); // Luminol - Restore waypoints
++                ServerWaypointManager waypointManager = level.getWaypointManager(); // Luminol - Restore waypoints
 +                //waypointManager.locatorBarEnabled = (Boolean) value; // Paper - optimize ServerWaypointManager with locator bar disabled // Luminol - Restore waypoints
                  if ((Boolean)value) {
                      level.players().forEach(waypointManager::updatePlayer);
                  } else {
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 14907258f9f47086767fa0f2c0dbcccb8bc80f89..782ebba067a4e81f70a6b63a72fc1a45d62200ba 100644
+index 14907258f9f47086767fa0f2c0dbcccb8bc80f89..075d67e8125444dcff9581418b4c1fca85c64399 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -196,7 +196,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
-     private final MinecraftServer server;
-     public final io.papermc.paper.world.saveddata.PaperLevelOverrides serverLevelData; // Paper - type
-     //private final EntityTickList entityTickList = new EntityTickList(); // Folia - region threading
--    private final ServerWaypointManager waypointManager;
-+    private final me.earthme.luminol.utils.FoliaServerWaypointManager waypointManager; // Luminol - Restore waypoints
-     private EnvironmentAttributeSystem environmentAttributes;
-     // Paper - rewrite chunk system
-     private final GameEventDispatcher gameEventDispatcher;
 @@ -686,7 +686,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
  
          this.sleepStatus = new SleepStatus();
          this.gameEventDispatcher = new GameEventDispatcher(this);
 -        this.waypointManager = new ServerWaypointManager(this); // Paper - optimize ServerWaypointManager with locator bar disabled
 +        //this.waypointManager = new ServerWaypointManager(this); // Paper - optimize ServerWaypointManager with locator bar disabled // Luminol - Restore waypoints
-+        this.waypointManager = new me.earthme.luminol.utils.FoliaServerWaypointManager(); // Luminol - Restore waypoints
++        this.waypointManager = new me.earthme.luminol.utils.FoliaServerWaypointManager(this); // Luminol - Restore waypoints
          this.environmentAttributes = EnvironmentAttributeSystem.builder().addDefaultLayers(this).build();
          //this.updateSkyBrightness(); // Folia - region threading - delay until first tick
          // Paper start - rewrite chunk system
-@@ -1297,7 +1298,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
-         return this.server.getScoreboard();
-     }
- 
--    public ServerWaypointManager getWaypointManager() {
-+    public me.earthme.luminol.utils.FoliaServerWaypointManager getWaypointManager() { // Luminol - Restore waypoints
-         return this.waypointManager;
-     }
- 
-diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 82a29fe693a0f3c7116a3a51da979c820f7c5edd..23149683dfa72f0f8243c08b0f3925bf572de101 100644
---- a/net/minecraft/server/level/ServerPlayer.java
-+++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1650,7 +1650,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
-     @Override
-     protected void onAttributeUpdated(final Holder<Attribute> attribute) {
-         if (attribute.is(Attributes.WAYPOINT_RECEIVE_RANGE)) {
--            ServerWaypointManager waypointManager = this.level().getWaypointManager();
-+            me.earthme.luminol.utils.FoliaServerWaypointManager waypointManager = this.level().getWaypointManager(); // Luminol - Restore waypoints
-             if (this.getAttributes().getValue(attribute) > 0.0) {
-                 waypointManager.addPlayer(this);
-             } else {
-diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 201bcd06b965e2e92758a1066f1c4a0cf187b26a..e512467e45d98dcb3eef031ff126cc84d1d1b590 100644
---- a/net/minecraft/world/entity/LivingEntity.java
-+++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -1369,7 +1369,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
-         } else if (attribute.is(Attributes.SCALE)) {
-             this.refreshDimensions();
-         } else if (attribute.is(Attributes.WAYPOINT_TRANSMIT_RANGE) && this.level() instanceof ServerLevel serverLevel) {
--            ServerWaypointManager waypointManager = serverLevel.getWaypointManager();
-+            me.earthme.luminol.utils.FoliaServerWaypointManager waypointManager = serverLevel.getWaypointManager(); // Luminol - Restore waypoints
-             if (this.attributes.getValue(attribute) > 0.0) {
-                 waypointManager.trackWaypoint((WaypointTransmitter)this);
-             } else {
 diff --git a/net/minecraft/world/waypoints/WaypointTransmitter.java b/net/minecraft/world/waypoints/WaypointTransmitter.java
 index d6f842cbd2060eb56a1e4384b3ea97feea3e73ba..ffb77661f5a68a9d6830967180571296d8913868 100644
 --- a/net/minecraft/world/waypoints/WaypointTransmitter.java

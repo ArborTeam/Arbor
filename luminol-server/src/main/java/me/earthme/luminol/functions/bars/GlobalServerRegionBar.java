@@ -52,7 +52,7 @@ public class GlobalServerRegionBar extends AbstractGlobalServerBar {
             if (RegionBarConfig.display == EnumStatusBarDisplay.BOSS_BAR) {
                 targetBossbar = uuid2Bossbars.computeIfAbsent(
                         playerUUID,
-                        _ -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.GREEN, BossBar.Overlay.NOTCHED_20)
+                        _ -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.PURPLE, BossBar.Overlay.NOTCHED_20)
                 );
 
                 apiPlayer.showBossBar(targetBossbar);
@@ -90,7 +90,7 @@ public class GlobalServerRegionBar extends AbstractGlobalServerBar {
             case ACTION_BAR -> player.sendActionBar(message);
 
             case BOSS_BAR ->
-                    bar.name(message).color(barColorFromUtil(utilisationPercent)).progress((float) Math.clamp(utilisation, 0, 1.0));
+                    bar.name(message).color(barColorForUtil(utilisationPercent)).progress((float) Math.clamp(utilisation, 0, 1.0));
 
             case TAB_LIST -> player.sendPlayerListFooter(message);
 
@@ -114,16 +114,26 @@ public class GlobalServerRegionBar extends AbstractGlobalServerBar {
     }
 
     private @NotNull Component getUtilComponent(String formattedUtil) {
-        final BossBar.Color colorBukkit = barColorFromUtil(Double.parseDouble(formattedUtil));
-        final String colorString = colorBukkit.name();
-
-        final String content = "<%s><text></%s>";
-        final String replaced = String.format(content, colorString, colorString);
-
-        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", formattedUtil + "%"));
+        return MiniMessage.miniMessage().deserialize(textPlaceholderForUtil(Double.parseDouble(formattedUtil)), Placeholder.parsed("text", formattedUtil + "%"));
     }
 
-    private BossBar.Color barColorFromUtil(double util) {
+    private BossBar.Color barColorForUtil(double util) {
+        if (util > 100) {
+            return RegionBarConfig.barColors.get(3);
+        }
+
+        if (util >= 70) {
+            return RegionBarConfig.barColors.get(2);
+        }
+
+        if (util >= 50) {
+            return RegionBarConfig.barColors.get(1);
+        }
+
+        return RegionBarConfig.barColors.get(0);
+    }
+
+    private String textPlaceholderForUtil(double util) {
         if (util > 100) {
             return RegionBarConfig.utilColors.get(3);
         }

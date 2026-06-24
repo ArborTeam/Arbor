@@ -22,8 +22,10 @@ public class RegionBarConfig implements IConfigModule {
     public static boolean regionbarEnabled = false;
     @ConfigInfo(name = "format")
     public static String regionBarFormat = "<gray>Util<yellow>:</yellow> <util> Chunks<yellow>:</yellow> <green><chunks></green> Players<yellow>:</yellow> <green><players></green> Entities<yellow>:</yellow> <green><entities></green>";
+    @ConfigInfo(name = "bar_color_list")
+    public static List<BossBar.Color> barColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
     @ConfigInfo(name = "util_color_list")
-    public static List<BossBar.Color> utilColors = List.of(BossBar.Color.GREEN, BossBar.Color.YELLOW, BossBar.Color.RED, BossBar.Color.PURPLE);
+    public static List<String> utilColors = List.of("<gradient:#55ff55:#00aa00><text></gradient>", "<gradient:#ffff55:#ffaa00><text></gradient>", "<gradient:#ff5555:#aa0000><text></gradient>", "<gradient:#55ff55:#00aa00><text></gradient>");
     @ConfigInfo(name = "update_interval_ticks")
     public static int updateInterval = 15;
     @ConfigInfo(name = "display", comments = "Available displays: BOSS_BAR, ACTION_BAR, TAB_LIST")

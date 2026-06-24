@@ -48,7 +48,7 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
             if (MembarConfig.display == EnumStatusBarDisplay.BOSS_BAR) {
                 targetBossbar = uuid2Bossbars.computeIfAbsent(
                         playerUUID,
-                        _ -> BossBar.bossBar(Component.text(""), 0.0F, MembarConfig.memColors.get(3), BossBar.Overlay.NOTCHED_20)
+                        _ -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.PURPLE, BossBar.Overlay.NOTCHED_20)
                 );
 
                 apiPlayer.showBossBar(targetBossbar);
@@ -73,7 +73,7 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
         );
 
         switch (MembarConfig.display) {
-            case BOSS_BAR -> bar.name(message).color(barColorFromMemory(percent)).progress((float) percent);
+            case BOSS_BAR -> bar.name(message).color(barColorForMemory(percent)).progress((float) percent);
 
             case ACTION_BAR -> player.sendActionBar(message);
 
@@ -94,16 +94,26 @@ public class GlobalServerMemoryBar extends AbstractGlobalServerBar {
     }
 
     private @NotNull Component getMemoryComponent(long used, long max) {
-        final BossBar.Color colorBukkit = barColorFromMemory(Math.clamp((float) used / max, 0.0F, 1.0F));
-        final String colorString = colorBukkit.name();
-
-        final String content = "<%s><text></%s>";
-        final String replaced = String.format(content, colorString, colorString);
-
-        return MiniMessage.miniMessage().deserialize(replaced, Placeholder.parsed("text", String.format("%.2f", (double) used / (1024 * 1024))));
+        return MiniMessage.miniMessage().deserialize(textPlaceholderForMemory(Math.clamp((float) used / max, 0.0F, 1.0F)), Placeholder.parsed("text", String.format("%.2f", (double) used / (1024 * 1024))));
     }
 
-    private BossBar.Color barColorFromMemory(double memPercent) {
+    private BossBar.Color barColorForMemory(double memPercent) {
+        if (memPercent == -1) {
+            return MembarConfig.barColors.get(3);
+        }
+
+        if (memPercent <= 50) {
+            return MembarConfig.barColors.get(0);
+        }
+
+        if (memPercent <= 70) {
+            return MembarConfig.barColors.get(1);
+        }
+
+        return MembarConfig.barColors.get(2);
+    }
+
+    private String textPlaceholderForMemory(double memPercent) {
         if (memPercent == -1) {
             return MembarConfig.memColors.get(3);
         }

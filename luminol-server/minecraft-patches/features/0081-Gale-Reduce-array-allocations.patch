@@ -137,7 +137,7 @@ index 468a70d396e228d84f6bbae4e11f871ba6690e02..91d6aef1e028c46ca49d7fc7aa1eb574
                  if (!itemStack.isEmpty()) {
                      slots.add(Pair.of(slot, itemStack.copy()));
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index a38174a2a02bfe533daef89e379db198e47e6780..1a920148ca7ea9a5be79dd4a93e56b0dfa16de0a 100644
+index d6d28b7d85b3e342426dcecb4e715bc4ba1de952..fecab5bfbc35fbecef8c559369de70c198bfe1e7 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1440,7 +1440,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc

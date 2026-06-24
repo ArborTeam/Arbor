@@ -275,7 +275,7 @@ index fbcbaf1840a1ee4f354da0245e9cf5708ef5f84e..c7cdf8a2d6856e7cac1d0809bc9bc5e9
      // CraftBukkit start
      private final ResourceKey<LevelStem> typeKey;
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 7136575074c3c10ab1e5d30c7fb1f2805b5c4122..8c87378879e9a0d45ddb7ee9702deea00378ee9a 100644
+index 6d425480157a0141100244afb32eaa843aff68f8..38add520ad63946c9c753870017334380547924e 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1720,7 +1720,30 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc

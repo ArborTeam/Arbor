@@ -126,17 +126,17 @@ public class SimpleReferenceRWLock {
                 return false;
             }
 
+            // write acquired (we do not allow multiple write competitions)
+            if (curr == -1) {
+                return false;
+            }
+
             // have remaining read operations
             if (curr > 0) {
                 // max sleep for 2us
                 Thread.yield();
                 failures = ConcurrentUtil.linearLongBackoff(failures, 100L, 2000);
                 continue;
-            }
-
-            // write acquired (we do not allow multiple write competitions)
-            if (curr == -1) {
-                throw new IllegalStateException("Already write held!");
             }
 
             if (COUNT_HANDLE.compareAndSet(this, curr, -1)) {
@@ -203,10 +203,7 @@ public class SimpleReferenceRWLock {
 
             // write acquired
             if (curr == -1) {
-                // max sleep for 2us
-                Thread.yield();
-                failures = ConcurrentUtil.linearLongBackoff(failures, 100L, 2000);
-                continue;
+                return false;
             }
 
             if (COUNT_HANDLE.compareAndSet(this, curr, curr + 1)) {

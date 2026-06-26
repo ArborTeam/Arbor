@@ -32,10 +32,10 @@ index 57861c747c0ab3989d1694874b4618d2d5a65eb1..a62229803ad77e2f257c09b51a553b98
          // Paper end - detailed watchdog information
          if (this.noPhysics) {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index aa1aa6d2b2eb1f8ec370a1ccf815b7df50a73ca0..32f93ac699f5f80b88247f7e389bfd050435f952 100644
+index 35305205047240dc91ed1bb60e742411a76e2a22..eb9a8284436ac497dfd3cbb06509d981b29f3dc7 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1568,7 +1568,25 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1567,7 +1567,25 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      public <T extends Entity> void guardEntityTick(final Consumer<T> tick, final T entity) {
          try {
              tick.accept(entity);

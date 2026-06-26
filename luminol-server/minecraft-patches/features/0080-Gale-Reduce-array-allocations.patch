@@ -361,10 +361,10 @@ index d5f749fd0745555fa91e184abea0c40ab873c182..146bc477f2f55db97373a995dcd3f85f
              if (predicate.test(item)) {
                  ItemEnchantments enchantments = item.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index e06e48dd9c997ac1dc6e404aa0bc590c851e1ba8..f0ae87545bd38c38cffbc2217acb9008a4183531 100644
+index d4d166e991c6faf53395b6b2d36a23bf3ee55c74..8c051d7322d8efc1ae2e151964fd0124740fd04d 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1963,7 +1963,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1962,7 +1962,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      public org.bukkit.entity.Entity[] getChunkEntities(int chunkX, int chunkZ) {
          ca.spottedleaf.moonrise.patches.chunk_system.level.entity.ChunkEntitySlices slices = ((ServerLevel)this).moonrise$getEntityLookup().getChunk(chunkX, chunkZ);
          if (slices == null) {
@@ -373,7 +373,7 @@ index e06e48dd9c997ac1dc6e404aa0bc590c851e1ba8..f0ae87545bd38c38cffbc2217acb9008
          }
  
          List<org.bukkit.entity.Entity> ret = new java.util.ArrayList<>();
-@@ -1974,7 +1974,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1973,7 +1973,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
              }
          }
  

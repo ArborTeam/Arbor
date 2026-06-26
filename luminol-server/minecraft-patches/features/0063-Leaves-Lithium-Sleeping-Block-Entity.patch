@@ -600,10 +600,10 @@ index 49b001099ee49a99f9f69a91d2d13f5317093e46..fa588ab87f978b8aeaef0f1849aa532e
 +    // Leaves end - Lithium Sleeping Block Entity
  }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index b6a1c1264c14a02a1ef13d941190d412b71065a7..e06e48dd9c997ac1dc6e404aa0bc590c851e1ba8 100644
+index 76f0cf41b365fc10020f20b97a5a736f4decdfdf..d4d166e991c6faf53395b6b2d36a23bf3ee55c74 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1550,7 +1550,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1549,7 +1549,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          // Paper end - Fix MC-117075 use removeAll
              if (ticker.isRemoved()) {
                  toRemove.add(ticker); // Paper - Fix MC-117075 use removeAll
@@ -612,7 +612,7 @@ index b6a1c1264c14a02a1ef13d941190d412b71065a7..e06e48dd9c997ac1dc6e404aa0bc590c
                  ticker.tick();
                  // Paper start - rewrite chunk system
                  if ((++tickedEntities & 7) == 0) {
-@@ -1628,6 +1628,27 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1627,6 +1627,27 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          return this.shouldTickBlocksAt(ChunkPos.pack(pos));
      }
  

@@ -8,7 +8,7 @@ import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
-import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
+import me.earthme.luminol.functions.bars.TickableStatusBarList;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
@@ -36,14 +36,7 @@ public class RegionBarConfig implements IConfigModule {
 
     @Override
     public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
-        if (regionbarEnabled) {
-            EnumBarType.REGION.get().init();
-        } else {
-            AbstractGlobalServerBar regionbar = EnumBarType.REGION.getOrNull();
-            if (regionbar != null) {
-                regionbar.cancelBarUpdateTask();
-            }
-        }
+        TickableStatusBarList.raiseGlobalReload(EnumBarType.REGION);
 
         if (!inited) { // command has moved to CommandRegister
             inited = true;
@@ -52,11 +45,6 @@ public class RegionBarConfig implements IConfigModule {
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        AbstractGlobalServerBar regionbar = EnumBarType.REGION.getOrNull();
-        if (regionbar != null) {
-            regionbar.cancelBarUpdateTask();
-            regionbar.runUnloadTask();
-        }
         Bukkit.getCommandMap().getKnownCommands().remove("luminol:regionbar");
     }
 }

@@ -11,10 +11,11 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.PaperCommands;
 import me.earthme.luminol.commands.bar.BarCommand;
 import me.earthme.luminol.enums.EnumBarType;
-import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
+import me.earthme.luminol.functions.bars.TickableStatusBarList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.leavesmc.leaves.command.ArgumentNode;
@@ -45,22 +46,23 @@ public class ToggleCommand extends LiteralNode {
     }
 
     public boolean execute0(@NotNull CommandContext context, Player player) {
-        AbstractGlobalServerBar bar = barType.getOrNull();
-        boolean enabled = bar != null && bar.enabled();
+        final TickableStatusBarList barList = ((CraftPlayer) player).getHandle().statusBarList;
+
+        boolean enabled = barList.isEnabled(this.barType);
 
         if (!enabled) {
             context.getSender().sendMessage(Component.text("Bar type with " + this.barType.getName() + " was already disabled!").color(TextColor.color(255, 0, 0)));
             return true;
         }
 
-        if (bar.isPlayerVisible(player)) {
+        if (barList.isVisible(this.barType)) {
             context.getSender().sendMessage(Component.text("Disabled Bar type with " + this.barType.getName() + " for " + player.getName()).color(TextColor.color(0, 255, 0)));
-            bar.setVisibilityForPlayer(player, false);
+            barList.setVisible(this.barType, false);
             return true;
         }
 
         context.getSender().sendMessage(Component.text("Enabled Bar type with " + this.barType.getName() + " for " + player.getName()).color(TextColor.color(0, 255, 0)));
-        bar.setVisibilityForPlayer(player, true);
+        barList.setVisible(this.barType, true);
         return true;
     }
 

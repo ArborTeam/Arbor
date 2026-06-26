@@ -137,10 +137,10 @@ index 468a70d396e228d84f6bbae4e11f871ba6690e02..91d6aef1e028c46ca49d7fc7aa1eb574
                  if (!itemStack.isEmpty()) {
                      slots.add(Pair.of(slot, itemStack.copy()));
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index d6d28b7d85b3e342426dcecb4e715bc4ba1de952..fecab5bfbc35fbecef8c559369de70c198bfe1e7 100644
+index e5ee5f9c7392575b84a53b858712320efe09c47c..ad50feba5cbc5fe904850e6da06a866eeb23b519 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1440,7 +1440,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1443,7 +1443,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      this.getInventory().getNonEquipmentItems().set(i, net.minecraft.world.item.ItemStack.EMPTY);
                  }
              }
@@ -287,10 +287,10 @@ index fc4fce0b1d57a62c1e5c80a5b91c2b1a77d4bace..d6927b8f6393c1cedf50ba8daff82774
              if (!itemStack.isEmpty() && !EnchantmentHelper.has(itemStack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
                  this.drops.add(new DefaultDrop(itemStack, stack -> Block.popResource(this.level(), this.blockPosition().above(), stack))); // CraftBukkit - add to drops // Paper - Restore vanilla drops behavior; mirror so we can destroy it later - though this call site was safe & spawn drops correctly}
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index c157aa170d5879206810f4852a96120396b69db7..1413286ddc63c5978e745eb26f6012230e4b1cd6 100644
+index 840bbd8625fd34f6dafe8778eed3f137d41e4245..592ce8beb28ebe8aaac2ed167abb24148afb0bc3 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -341,7 +341,7 @@ public abstract class Player extends Avatar implements ContainerUser {
+@@ -342,7 +342,7 @@ public abstract class Player extends Avatar implements ContainerUser {
      }
  
      private boolean isEquipped(final Item item) {

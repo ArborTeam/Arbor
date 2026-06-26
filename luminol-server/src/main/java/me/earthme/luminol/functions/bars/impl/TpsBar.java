@@ -1,114 +1,91 @@
-package me.earthme.luminol.functions.bars;
+package me.earthme.luminol.functions.bars.impl;
 
 import ca.spottedleaf.moonrise.common.time.TickData;
 import io.papermc.paper.threadedregions.ThreadedRegionizer;
 import io.papermc.paper.threadedregions.TickRegionScheduler;
 import io.papermc.paper.threadedregions.TickRegions;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.earthme.luminol.config.modules.function.TpsBarConfig;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
+import me.earthme.luminol.functions.bars.TickableStatusBar;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.minecraft.world.entity.player.Player;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
+import org.jspecify.annotations.NonNull;
 
-import java.util.UUID;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-public class GlobalServerTpsBar extends AbstractGlobalServerBar {
-    public void init() {
-        init(TpsBarConfig.updateInterval);
+public class TpsBar extends TickableStatusBar {
+    public TpsBar(Player player) {
+        super(player);
     }
 
-    public boolean isPlayerVisible(Player player) {
-        return ((CraftPlayer) player).getHandle().isTpsBarVisible && super.isPlayerVisible(player);
-    }
+    public static @NonNull @UnmodifiableView Map<String, Object> buildSettings() {
+        final HashMap<String, Object> ret = new HashMap<>();
 
-    public void setVisibilityForPlayer(Player target, boolean canSee) {
-        ((CraftPlayer) target).getHandle().isTpsBarVisible = canSee;
+        ret.put(TickableStatusBar.SETTING_KEY_ENABLED, TpsBarConfig.tpsbarEnabled);
+        ret.put(TickableStatusBar.SETTING_DISPLAY, TpsBarConfig.display);
+        ret.put(TickableStatusBar.SETTING_KEY_UPDATE_INTERVALS, TpsBarConfig.updateInterval);
+
+        return Collections.unmodifiableMap(ret);
     }
 
     @Override
-    public boolean enabled() {
-        return TpsBarConfig.tpsbarEnabled;
-    }
+    public void updateDisplay(@Nullable BossBar bar, @NotNull Player owner) {
+        final EnumStatusBarDisplay display = this.getDisplay();
+        final CraftPlayer apiOwner = (CraftPlayer) owner.getBukkitEntity();
 
-    public ScheduledTask createBossBarForPlayer(@NotNull Player apiPlayer) {
-        final UUID playerUUID = apiPlayer.getUniqueId();
+        final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region = TickRegionScheduler.getCurrentRegion();
+        final TickData.TickReportData reportData = region.getData().getRegionSchedulingHandle().getTickReport5s(System.nanoTime());
+        final TickData.SegmentData tpsData = reportData.tpsData().segmentAll();
 
-        return apiPlayer.getScheduler().runAtFixedRate(NULL_PLUGIN, _ -> {
-            if (checkAndRemove(apiPlayer, playerUUID)) return;
+        final double tps = tpsData.average();
+        final double mspt = reportData.timePerTickData().segmentAll().average() / 1.0E6;
 
-            final ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData, TickRegions.TickRegionSectionData> region = TickRegionScheduler.getCurrentRegion();
-            final TickData.TickReportData reportData = region.getData().getRegionSchedulingHandle().getTickReport5s(System.nanoTime());
-
-
-            BossBar targetBossbar = null;
-
-            if (TpsBarConfig.display == EnumStatusBarDisplay.BOSS_BAR) {
-                targetBossbar = uuid2Bossbars.computeIfAbsent(
-                        playerUUID,
-                        _ -> BossBar.bossBar(Component.text(""), 0.0F, BossBar.Color.PURPLE, BossBar.Overlay.NOTCHED_20)
-                );
-
-                apiPlayer.showBossBar(targetBossbar);
-            }
-
-            if (reportData != null) {
-                final TickData.SegmentData tpsData = reportData.tpsData().segmentAll();
-                final double mspt = reportData.timePerTickData().segmentAll().average() / 1.0E6;
-
-                updateTpsBar(tpsData.average(), mspt, targetBossbar, apiPlayer);
-            }
-        }, () -> {
-            final BossBar removed = uuid2Bossbars.remove(playerUUID); // Auto clean up it
-
-            if (removed != null) {
-                apiPlayer.hideBossBar(removed);
-            }
-        }, 1, TpsBarConfig.updateInterval);
-    }
-
-    private void updateTpsBar(double tps, double mspt, @NotNull BossBar bar, @NotNull Player player) {
         final Component message = MiniMessage.miniMessage().deserialize(
                 TpsBarConfig.tpsBarFormat,
                 Placeholder.component("tps", getTpsComponent(tps)),
                 Placeholder.component("mspt", getMsptComponent(mspt)),
-                Placeholder.component("ping", getPingComponent(player.getPing())),
-                Placeholder.component("chunkhot", getChunkHotComponent(player.getNearbyChunkHot()))
+                Placeholder.component("ping", getPingComponent(apiOwner.getPing())),
+                Placeholder.component("chunkhot", getChunkHotComponent(apiOwner.getNearbyChunkHot()))
         );
 
-        switch (TpsBarConfig.display) {
-            case ACTION_BAR -> player.sendActionBar(message);
+        switch (display) {
+            case ACTION_BAR -> apiOwner.sendActionBar(message);
 
             case BOSS_BAR ->
                     bar.name(message).color(barColorForTps(tps)).progress((float) Math.clamp(mspt / 50, 0, (float) 1));
 
-            case TAB_LIST -> player.sendPlayerListFooter(message);
+            case TAB_LIST -> apiOwner.sendPlayerListFooter(message);
 
             default -> throw new IllegalStateException();
         }
     }
 
-    private @NotNull Component getPingComponent(int ping) {
+    private static @NotNull Component getPingComponent(int ping) {
         return MiniMessage.miniMessage().deserialize(textPlaceholderForPing(ping), Placeholder.parsed("text", String.valueOf(ping)));
     }
 
-    private @NotNull Component getMsptComponent(double mspt) {
+    private static @NotNull Component getMsptComponent(double mspt) {
         return MiniMessage.miniMessage().deserialize(textPlaceholderForMspt(mspt), Placeholder.parsed("text", String.format("%." + TpsBarConfig.precisionOfMSPT + "f", mspt)));
     }
 
-    private @NotNull Component getChunkHotComponent(long chunkHot) {
+    private static @NotNull Component getChunkHotComponent(long chunkHot) {
         return MiniMessage.miniMessage().deserialize(textPlaceholderForChunkHot(chunkHot), Placeholder.parsed("text", String.valueOf(chunkHot)));
     }
 
-    private @NotNull Component getTpsComponent(double tps) {
+    private static @NotNull Component getTpsComponent(double tps) {
         return MiniMessage.miniMessage().deserialize(textPlaceholderForTps(tps), Placeholder.parsed("text", String.format("%." + TpsBarConfig.precisionOfTPS + "f", tps)));
     }
 
-    private String textPlaceholderForPing(int ping) {
+    private static String textPlaceholderForPing(int ping) {
         if (ping == -1) {
             return TpsBarConfig.pingColors.get(3);
         }
@@ -124,7 +101,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
         return TpsBarConfig.pingColors.get(2);
     }
 
-    private String textPlaceholderForChunkHot(long chunkHot) {
+    private static String textPlaceholderForChunkHot(long chunkHot) {
         if (chunkHot == -1) {
             return TpsBarConfig.chunkHotColors.get(3);
         }
@@ -140,7 +117,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
         return TpsBarConfig.chunkHotColors.get(2);
     }
 
-    private String textPlaceholderForMspt(double mspt) {
+    private static String textPlaceholderForMspt(double mspt) {
         if (mspt == -1) {
             return TpsBarConfig.tpsColors.get(3);
         }
@@ -156,7 +133,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
         return TpsBarConfig.tpsColors.get(2);
     }
 
-    private BossBar.Color barColorForTps(double tps) {
+    private static BossBar.Color barColorForTps(double tps) {
         if (tps == -1) {
             return TpsBarConfig.barColors.get(3);
         }
@@ -172,7 +149,7 @@ public class GlobalServerTpsBar extends AbstractGlobalServerBar {
         return TpsBarConfig.barColors.get(2);
     }
 
-    private String textPlaceholderForTps(double tps) {
+    private static String textPlaceholderForTps(double tps) {
         if (tps == -1) {
             return TpsBarConfig.tpsColors.get(3);
         }

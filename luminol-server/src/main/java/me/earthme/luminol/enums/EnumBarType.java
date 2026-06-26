@@ -2,70 +2,76 @@ package me.earthme.luminol.enums;
 
 import com.mojang.datafixers.util.Pair;
 import me.earthme.luminol.functions.bars.*;
+import me.earthme.luminol.functions.bars.impl.Membar;
+import me.earthme.luminol.functions.bars.impl.RegionBar;
+import me.earthme.luminol.functions.bars.impl.TpsBar;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+
+import java.util.Map;
+import java.util.function.Supplier;
 
 public enum EnumBarType {
     TPS(
-            GlobalServerTpsBar.class,
+            TpsBar.class,
             "tps",
-            "function.tpsbar.enabled"
+            "function.tpsbar.enabled",
+            TpsBar::buildSettings
     ),
     MEMORY(
-            GlobalServerMemoryBar.class,
+            Membar.class,
             "memory",
             "membar",
-            "function.membar.enabled"
+            "function.membar.enabled",
+            Membar::buildSettings
     ),
     REGION(
-            GlobalServerRegionBar.class,
+            RegionBar.class,
             "region",
-            "function.regionbar.enabled"
+            "function.regionbar.enabled",
+            RegionBar::buildSettings
     );
 
-    private final Class<? extends AbstractGlobalServerBar> clazz;
+    private final Class<? extends TickableStatusBar> clazz;
     private final String name;
     private final String commandName;
     private final String configPath;
     private final String configOrigin;
+    private final Supplier<Map<String, Object>> settingsProvider;
 
-    EnumBarType(Class<? extends AbstractGlobalServerBar> clazz, String name, String configPath) {
-        this(clazz, name, name + "bar", configPath);
+    EnumBarType(Class<? extends TickableStatusBar> clazz, String name, String configPath, Supplier<Map<String, Object>> settingsProvider) {
+        this(clazz, name, name + "bar", configPath, settingsProvider);
     }
 
-    EnumBarType(Class<? extends AbstractGlobalServerBar> clazz, String name, Pair<String, String> configPath) {
-        this(clazz, name, name + "bar", configPath);
+    EnumBarType(Class<? extends TickableStatusBar> clazz, String name, Pair<String, String> configPath, Supplier<Map<String, Object>> settingsProvider) {
+        this(clazz, name, name + "bar", configPath, settingsProvider);
     }
 
-    EnumBarType(Class<? extends AbstractGlobalServerBar> clazz, String name, String commandName, String configPath) {
-        this(clazz, name, commandName, new Pair<>("luminol", configPath));
+    EnumBarType(Class<? extends TickableStatusBar> clazz, String name, String commandName, String configPath, Supplier<Map<String, Object>> settingsProvider) {
+        this(clazz, name, commandName, new Pair<>("luminol", configPath), settingsProvider);
     }
 
-    EnumBarType(Class<? extends AbstractGlobalServerBar> clazz, String name, String commandName, Pair<String, String> configPath) {
+    EnumBarType(Class<? extends TickableStatusBar> clazz, String name, String commandName, @NonNull Pair<String, String> configPath, Supplier<Map<String, Object>> settingsProvider) {
         this.clazz = clazz;
         this.name = name;
         this.commandName = commandName;
         this.configPath = configPath.getSecond();
         this.configOrigin = configPath.getFirst();
+        this.settingsProvider = settingsProvider;
     }
 
     @NotNull
-    public AbstractGlobalServerBar get() {
-        return GlobalServerBarManager.get(this);
-    }
-
-    @Nullable
-    public AbstractGlobalServerBar getOrNull() {
-        return GlobalServerBarManager.getOrNull(this);
-    }
-
-    @NotNull
-    public AbstractGlobalServerBar newInstance() {
+    public TickableStatusBar newBar(Player player) {
         try {
-            return this.clazz.getConstructor().newInstance();
+            return this.clazz.getConstructor(Player.class).newInstance(player);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Map<String, Object> getSettings() {
+        return this.settingsProvider.get();
     }
 
     public String getCommandName() {

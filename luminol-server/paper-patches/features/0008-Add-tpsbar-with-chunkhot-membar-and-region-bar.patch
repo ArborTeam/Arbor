@@ -22,42 +22,10 @@ index c8d179d936d57e8222d87b7fd943dbddfa8446a0..e0ecc487098d78447d0959ac27a1c1e8
 +    // KioCG end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index fbf31420cb83287c080c1832bccc167c81526563..47926ff2fba43bb83e2d9747420a526cce8ebe65 100644
+index fbf31420cb83287c080c1832bccc167c81526563..59e3a15cce0ed34aa3b75b92db9e349c9fe481fa 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2192,6 +2192,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
-             handle.newLevel = data.getIntOr("newLevel", 0);
-             handle.expToDrop = data.getIntOr("expToDrop", 0);
-             handle.keepLevel = data.getBooleanOr("keepLevel", false);
-+            //Luminol start - Tpsbar
-+            getHandle().isTpsBarVisible = data.getBooleanOr("tpsbarVisible", false);
-+            //Luminol end
-+            //Luminol start - Membar
-+            getHandle().isMemBarVisible = data.getBooleanOr("membarVisible", false);
-+            //Luminol end
-+            //Luminol start - Regionbar
-+            getHandle().isRegionBarVisible = data.getBooleanOr("regionbarVisible", false);
-+            //Luminol end
-         });
-     }
- 
-@@ -2209,6 +2218,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
-         data.putLong("lastPlayed", System.currentTimeMillis());
-         data.putString("lastKnownName", handle.getGameProfile().name());
- 
-+        //Luminol start - Tpsbar
-+        data.putBoolean("tpsbarVisible",handle.isTpsBarVisible);
-+        //Luminol end
-+        //Luminol start - Membar
-+        data.putBoolean("membarVisible", handle.isMemBarVisible);
-+        //Luminol end
-+        //Luminol start - Regionbar
-+        data.putBoolean("regionbarVisible", handle.isRegionBarVisible);
-+        //Luminol end
-         // Paper start - persist for use in offline save data
-         ValueOutput paper = output.child("Paper");
-         paper.putLong("LastLogin", handle.loginTime);
-@@ -3399,4 +3417,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -3399,4 +3399,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          super.knockback(strength, directionX, directionZ);
          this.entity.hurtMarked = true;
      }

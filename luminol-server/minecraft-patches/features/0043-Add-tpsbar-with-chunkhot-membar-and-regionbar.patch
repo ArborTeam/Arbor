@@ -67,18 +67,6 @@ index c37087313390908571b03d57e0125ae16461951e..92efd27c9ae17c2b29c09445287be5d2
          if (false && nano - this.lastServerStatus >= STATUS_EXPIRE_TIME_NANOS) { // Folia - region threading
              this.lastServerStatus = nano;
              this.status = this.buildServerStatus();
-diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index dfac07850b02abba160f8f143eba4569172ab9e9..3707b03b6d7ebdf47a38f4feff5b738eb41f38e1 100644
---- a/net/minecraft/server/dedicated/DedicatedServer.java
-+++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -950,6 +950,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
- 
-     @Override
-     public void stopServer() { // Folia - region threading - public
-+        me.earthme.luminol.functions.bars.GlobalServerBarManager.cancelAll(); // Luminol - turn off all bars
-         this.notificationManager().serverShuttingDown();
-         super.stopServer();
-         //Util.shutdownExecutors(); // Paper - Improved watchdog support; moved into super
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
 index 0e323ab55346f4790ca936f227917e5809e5e05c..47aafbc88a5d4fb6fc4b9dad45b46e5b00d2ef4b 100644
 --- a/net/minecraft/server/level/ServerLevel.java
@@ -118,7 +106,7 @@ index 0e323ab55346f4790ca936f227917e5809e5e05c..47aafbc88a5d4fb6fc4b9dad45b46e5b
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 38add520ad63946c9c753870017334380547924e..ba2f1b54ea80506f304a264d32c18e0fdc4f444f 100644
+index 38add520ad63946c9c753870017334380547924e..451974ccf2dea148d5465d7fbb0f702e5260fd07 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -454,7 +454,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -132,7 +120,17 @@ index 38add520ad63946c9c753870017334380547924e..ba2f1b54ea80506f304a264d32c18e0f
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
      private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();
-@@ -970,8 +972,35 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -910,6 +912,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+ 
+     @Override
+     public void tick() {
++        // Luminol start - Status bars
++        this.statusBarList.tick();
++        // Luminol end - Status bars
+         // CraftBukkit start
+         if (this.joining) {
+             this.joining = false;
+@@ -970,8 +975,35 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.trackEnteredOrExitedLavaOnVehicle();
          this.updatePlayerAttributes();
          this.advancements.flushDirty(this, true);
@@ -260,10 +258,34 @@ index 4c7fad3444dd8718e31bda8a8ab2efdaf0a736a1..e9d7d950cc2621ec9ad82f1db56bc772
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 4b57e9024f66810510886f8115d42007e374ee27..c157aa170d5879206810f4852a96120396b69db7 100644
+index 4b57e9024f66810510886f8115d42007e374ee27..840bbd8625fd34f6dafe8778eed3f137d41e4245 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -2233,4 +2233,12 @@ public abstract class Player extends Avatar implements ContainerUser {
+@@ -170,6 +170,7 @@ public abstract class Player extends Avatar implements ContainerUser {
+     private ItemStack lastItemInMainHand = ItemStack.EMPTY;
+     private final ItemCooldowns cooldowns = this.createItemCooldowns();
+     private Optional<GlobalPos> lastDeathLocation = Optional.empty();
++    public me.earthme.luminol.functions.bars.TickableStatusBarList statusBarList = new me.earthme.luminol.functions.bars.TickableStatusBarList(this); // Luminol status bars
+     public @Nullable FishingHook fishing;
+     public float hurtDir;
+     public boolean affectsSpawning = true; // Paper - Affects Spawning API
+@@ -675,6 +676,7 @@ public abstract class Player extends Avatar implements ContainerUser {
+         this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.abilities.getWalkingSpeed());
+         this.enderChestInventory.fromSlots(input.listOrEmpty("EnderItems", ItemStackWithSlot.CODEC));
+         this.setLastDeathLocation(input.read("LastDeathLocation", GlobalPos.CODEC));
++        this.statusBarList.load(input); // Luminol - Status bars
+     }
+ 
+     @Override
+@@ -693,6 +695,7 @@ public abstract class Player extends Avatar implements ContainerUser {
+         output.store("abilities", Abilities.Packed.CODEC, this.abilities.pack());
+         this.enderChestInventory.storeAsSlots(output.list("EnderItems", ItemStackWithSlot.CODEC));
+         this.lastDeathLocation.ifPresent(pos -> output.store("LastDeathLocation", GlobalPos.CODEC, pos));
++        this.statusBarList.save(output); // Luminol - Status bars
+     }
+ 
+     @Override
+@@ -2233,4 +2236,12 @@ public abstract class Player extends Avatar implements ContainerUser {
          public static final Player.BedSleepingProblem NOT_SAFE = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.not_safe"));
          public static final Player.BedSleepingProblem EXPLOSION = new Player.BedSleepingProblem(null); // Paper - Added to properly handle explosions in bed events
      }

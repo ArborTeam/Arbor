@@ -8,7 +8,7 @@ import me.earthme.luminol.config.flags.DoNotLoad;
 import me.earthme.luminol.enums.EnumBarType;
 import me.earthme.luminol.enums.EnumConfigCategory;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
-import me.earthme.luminol.functions.bars.AbstractGlobalServerBar;
+import me.earthme.luminol.functions.bars.TickableStatusBarList;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
@@ -36,14 +36,7 @@ public class MembarConfig implements IConfigModule {
 
     @Override
     public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
-        if (memoryBarEnabled) {
-            EnumBarType.MEMORY.get().init();
-        } else {
-            AbstractGlobalServerBar membar = EnumBarType.MEMORY.getOrNull();
-            if (membar != null) {
-                membar.cancelBarUpdateTask();
-            }
-        }
+        TickableStatusBarList.raiseGlobalReload(EnumBarType.MEMORY);
 
         if (!inited) { // command has moved to CommandRegister
             inited = true;
@@ -52,11 +45,6 @@ public class MembarConfig implements IConfigModule {
 
     @Override
     public void onUnloaded(CommentedFileConfig configInstance) {
-        AbstractGlobalServerBar membar = EnumBarType.MEMORY.getOrNull();
-        if (membar != null) {
-            membar.cancelBarUpdateTask();
-            membar.runUnloadTask();
-        }
         Bukkit.getCommandMap().getKnownCommands().remove("luminol:membar");
     }
 }

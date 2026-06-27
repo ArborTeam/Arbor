@@ -8,7 +8,7 @@ A part of Leaf(https://github.com/Winds-Studio/Leaf/blob/edb0504069139beaa6f39ef
 License: https://github.com/Winds-Studio/Leaf/blob/edb0504069139beaa6f39efa4702370c2576b3fc/LICENSE.md
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 82f4680c4b12a09ce91216be9a0b598b387d9fd8..875e3bd8e9c680ec320ea864be661e907957f14b 100644
+index 82f4680c4b12a09ce91216be9a0b598b387d9fd8..8a4939e801cf80ec676d276f4c949775b1528d26 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -167,11 +167,20 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -50,6 +50,15 @@ index 82f4680c4b12a09ce91216be9a0b598b387d9fd8..875e3bd8e9c680ec320ea864be661e90
  
                          gameprofile = ServerLoginPacketListenerImpl.this.callPlayerPreLoginEvents(gameprofile); // Paper - Add more fields to AsyncPlayerPreLoginEvent
                          ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", gameprofile.name(), gameprofile.id());
+@@ -343,7 +361,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+         server.getPluginManager().callEvent(asyncEvent);
+         profile = asyncEvent.getPlayerProfile();
+         profile.complete(true); // Paper - setPlayerProfileAPI
+-        gameprofile = com.destroystokyo.paper.profile.CraftPlayerProfile.asAuthlibCopy(profile);
++        gameprofile = com.destroystokyo.paper.profile.CraftPlayerProfile.asAuthlibCopyCustomValidation(profile); // Leaf - Configurable vanilla username check
+         playerName = gameprofile.name();
+         uniqueId = gameprofile.id();
+         // Paper end - Add more fields to AsyncPlayerPreLoginEvent
 diff --git a/net/minecraft/server/players/CachedUserNameToIdResolver.java b/net/minecraft/server/players/CachedUserNameToIdResolver.java
 index aecbdddf4cf3ab627477156cd314f2872e7a5dbb..d2da9f3c5e53ceaeb85c6d3d7443e124a4d93bb8 100644
 --- a/net/minecraft/server/players/CachedUserNameToIdResolver.java

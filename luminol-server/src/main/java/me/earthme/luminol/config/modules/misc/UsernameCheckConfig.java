@@ -54,7 +54,7 @@ public class UsernameCheckConfig implements IConfigModule {
     public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
         try {
             usernameRegex = Pattern.compile(usernameCheckRegex);
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             LOGGER.error("Failed to parse regex! Falling back to default", ex);
 
             usernameRegex = Pattern.compile(defaultUsernameCheckRegex);

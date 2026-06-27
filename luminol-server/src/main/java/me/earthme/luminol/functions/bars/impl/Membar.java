@@ -1,7 +1,6 @@
 package me.earthme.luminol.functions.bars.impl;
 
 import me.earthme.luminol.config.modules.function.MembarConfig;
-import me.earthme.luminol.config.modules.function.MembarConfig;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import me.earthme.luminol.functions.bars.TickableStatusBar;
 import net.kyori.adventure.bossbar.BossBar;

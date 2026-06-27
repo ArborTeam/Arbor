@@ -5,7 +5,6 @@ import io.papermc.paper.threadedregions.ThreadedRegionizer;
 import io.papermc.paper.threadedregions.TickRegionScheduler;
 import io.papermc.paper.threadedregions.TickRegions;
 import me.earthme.luminol.config.modules.function.RegionBarConfig;
-import me.earthme.luminol.config.modules.function.RegionBarConfig;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import me.earthme.luminol.functions.bars.TickableStatusBar;
 import net.kyori.adventure.bossbar.BossBar;

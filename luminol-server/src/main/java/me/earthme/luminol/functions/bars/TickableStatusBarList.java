@@ -19,7 +19,7 @@ public class TickableStatusBarList {
     private final EnumMap<EnumBarType, TickableStatusBar> managedBars = new EnumMap<>(EnumBarType.class);
     private final Player player;
 
-    public TickableStatusBarList(Player player){
+    public TickableStatusBarList(Player player) {
         this.player = player;
 
         for (EnumBarType type : EnumBarType.values()) {

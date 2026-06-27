@@ -7,8 +7,6 @@ package me.titaniumtown;
 
 public final class ArrayConstants {
 
-    private ArrayConstants() {}
-
     public static final Object[] emptyObjectArray = new Object[0];
     public static final short[] emptyShortArray = new short[0];
     public static final int[] emptyIntArray = new int[0];

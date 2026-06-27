@@ -43,10 +43,10 @@ public abstract class TickableStatusBar {
 
     /**
      * Handle the update of the status bar display update
-     * @param bar the bossbar instance if the display mode is BOSS_BAR, else it's null
-     * @see EnumStatusBarDisplay
      *
+     * @param bar   the bossbar instance if the display mode is BOSS_BAR, else it's null
      * @param owner the player that is displayed for
+     * @see EnumStatusBarDisplay
      */
     public abstract void updateDisplay(@Nullable BossBar bar, Player owner);
 

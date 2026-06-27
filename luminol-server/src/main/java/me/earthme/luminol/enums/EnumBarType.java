@@ -1,7 +1,7 @@
 package me.earthme.luminol.enums;
 
 import com.mojang.datafixers.util.Pair;
-import me.earthme.luminol.functions.bars.*;
+import me.earthme.luminol.functions.bars.TickableStatusBar;
 import me.earthme.luminol.functions.bars.impl.Membar;
 import me.earthme.luminol.functions.bars.impl.RegionBar;
 import me.earthme.luminol.functions.bars.impl.TpsBar;

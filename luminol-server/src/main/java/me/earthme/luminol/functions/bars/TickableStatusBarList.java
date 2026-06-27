@@ -81,10 +81,6 @@ public class TickableStatusBarList {
 
     public void tick() {
         for (TickableStatusBar bar : this.managedBars.values()) {
-            if (bar == null) {
-                continue;
-            }
-
             bar.tick();
         }
     }

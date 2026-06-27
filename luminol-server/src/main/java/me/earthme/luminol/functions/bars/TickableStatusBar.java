@@ -22,7 +22,7 @@ public abstract class TickableStatusBar {
     protected final Player player;
     private BossBar bar = null;
 
-    private int tickedCount = 0;
+    private long tickedCount = 0;
     private boolean lastIsVisible = false;
     private EnumStatusBarDisplay lastDisplay;
 
@@ -76,11 +76,12 @@ public abstract class TickableStatusBar {
         this.enabled = (boolean) settings.getOrDefault(SETTING_KEY_ENABLED, false);
         this.allowPlayerDisplaySwitch = (boolean) settings.getOrDefault(SETTING_ALLOW_PLAYER_DISPLAY_SWITCH, false);
 
-        // pre init
+        // pre init(the value might not be initialized if it's a new player)
         if (this.storedDisplay == null) {
             this.storedDisplay = (EnumStatusBarDisplay) settings.getOrDefault(SETTING_DISPLAY, EnumStatusBarDisplay.BOSS_BAR);
         }
 
+        // pre init(the value might not be initialized if it's a new player)
         if (this.display == null) {
             this.display = (EnumStatusBarDisplay) settings.getOrDefault(SETTING_DISPLAY, EnumStatusBarDisplay.BOSS_BAR);
         }

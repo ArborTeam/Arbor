@@ -17,6 +17,7 @@ public abstract class TickableStatusBar {
     public static final String SETTING_KEY_UPDATE_INTERVALS = "update_intervals";
     public static final String SETTING_KEY_ENABLED = "enabled";
     public static final String SETTING_DISPLAY = "display";
+    public static final String SETTING_ALLOW_PLAYER_DISPLAY_SWITCH = "allow_player_display_switch";
 
     protected final Player player;
     private BossBar bar = null;
@@ -27,9 +28,11 @@ public abstract class TickableStatusBar {
 
     private boolean visible = false;
     private boolean enabled = false;
+    private boolean allowPlayerDisplaySwitch = false;
 
     private int updateIntervalInTicks;
     private EnumStatusBarDisplay display;
+    private EnumStatusBarDisplay storedDisplay;
 
     public TickableStatusBar(Player player) {
         this.player = player;
@@ -39,6 +42,13 @@ public abstract class TickableStatusBar {
         return this.display;
     }
 
+    /**
+     * Handle the update of the status bar display update
+     * @param bar the bossbar instance if the display mode is BOSS_BAR, else it's null
+     * @see EnumStatusBarDisplay
+     *
+     * @param owner the player that is displayed for
+     */
     public abstract void updateDisplay(@Nullable BossBar bar, Player owner);
 
     public void handleDisplayUpdate(Player owner, EnumStatusBarDisplay old, EnumStatusBarDisplay newDisplay) {
@@ -64,7 +74,16 @@ public abstract class TickableStatusBar {
     public void applySettings(@NotNull Map<String, Object> settings) {
         this.updateIntervalInTicks = (int) settings.getOrDefault(SETTING_KEY_UPDATE_INTERVALS, 20);
         this.enabled = (boolean) settings.getOrDefault(SETTING_KEY_ENABLED, false);
-        this.display = (EnumStatusBarDisplay) settings.getOrDefault(SETTING_DISPLAY, EnumStatusBarDisplay.BOSS_BAR);
+        this.allowPlayerDisplaySwitch = (boolean) settings.getOrDefault(SETTING_ALLOW_PLAYER_DISPLAY_SWITCH, false);
+
+        // pre init
+        if (this.storedDisplay == null) {
+            this.storedDisplay = (EnumStatusBarDisplay) settings.getOrDefault(SETTING_DISPLAY, EnumStatusBarDisplay.BOSS_BAR);
+        }
+
+        if (this.display == null) {
+            this.display = (EnumStatusBarDisplay) settings.getOrDefault(SETTING_DISPLAY, EnumStatusBarDisplay.BOSS_BAR);
+        }
     }
 
     public boolean isEnabled() {
@@ -146,9 +165,26 @@ public abstract class TickableStatusBar {
 
     public void store(@NotNull ValueOutput output) {
         output.putBoolean("visible", this.visible);
+        output.putByte("display", (byte) this.storedDisplay.ordinal());
     }
 
     public void load(@NotNull ValueInput input) {
         this.visible = input.getBooleanOr("visible", false);
+
+        EnumStatusBarDisplay display = EnumStatusBarDisplay.fromOrdinal(input.getByteOr("display", (byte) 0));
+        // null -> not found
+        // also we only change it when custom switch is enabled
+        if (display == null) {
+            // init (by default it's that configured value)
+            this.storedDisplay = this.display;
+        } else {
+            // value is present, sync
+            this.storedDisplay = display;
+
+            // then sync to mainline if custom switch is allowed
+            if (this.allowPlayerDisplaySwitch) {
+                this.display = display;
+            }
+        }
     }
 }

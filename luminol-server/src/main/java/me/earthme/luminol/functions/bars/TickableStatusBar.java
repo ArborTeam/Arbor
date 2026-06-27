@@ -111,7 +111,10 @@ public abstract class TickableStatusBar {
         if (usesBossbarBefore && !usesBossbar) {
             apiPlayer.hideBossBar(this.bar);
         }
-        // other -> bossbar is no needed, we'll handle it following
+        // other -> bossbar
+        if (!usesBossbarBefore && usesBossbar) {
+            apiPlayer.showBossBar(this.bar);
+        }
         // sync display state
         if (this.lastDisplay != this.display) {
             this.handleDisplayUpdate(this.player, this.lastDisplay, this.display);

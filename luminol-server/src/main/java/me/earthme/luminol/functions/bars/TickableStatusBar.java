@@ -1,6 +1,5 @@
 package me.earthme.luminol.functions.bars;
 
-import com.mojang.logging.LogUtils;
 import me.earthme.luminol.enums.EnumStatusBarDisplay;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;

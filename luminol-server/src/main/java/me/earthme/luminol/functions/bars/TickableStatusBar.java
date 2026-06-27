@@ -82,7 +82,8 @@ public abstract class TickableStatusBar {
         }
 
         // pre init(the value might not be initialized if it's a new player)
-        if (this.display == null) {
+        // also force update when custom switch is not allowed
+        if (this.display == null || !this.allowPlayerDisplaySwitch) {
             this.display = (EnumStatusBarDisplay) settings.getOrDefault(SETTING_DISPLAY, EnumStatusBarDisplay.BOSS_BAR);
         }
     }

@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.waypoints.ServerWaypointManager;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.gamerules.GameRules;
-import net.minecraft.world.waypoints.WaypointManager;
 import net.minecraft.world.waypoints.WaypointTransmitter;
 import org.jetbrains.annotations.NotNull;
 
@@ -108,9 +107,9 @@ public class FoliaServerWaypointManager extends ServerWaypointManager {
 
     @Override
     public void addPlayer(ServerPlayer player) {
-        scheduleIfOffTarget(player, () -> {
-            this.trackingPlayers.add(player);
+        this.trackingPlayers.add(player);
 
+        scheduleIfOffTarget(player, () -> {
             for (WaypointTransmitter transmitter : this.waypoints) {
                 this.createConnection(player, transmitter);
             }
@@ -142,6 +141,8 @@ public class FoliaServerWaypointManager extends ServerWaypointManager {
 
     @Override
     public void removePlayer(ServerPlayer player) {
+        this.trackingPlayers.remove(player);
+
         scheduleIfOffTarget(player, () -> {
             final Map<WaypointTransmitter, WaypointTransmitter.Connection> removedConnections = this.connections.remove(player);
 
@@ -152,7 +153,6 @@ public class FoliaServerWaypointManager extends ServerWaypointManager {
             }
 
             this.untrackWaypoint(player);
-            this.trackingPlayers.remove(player);
         });
     }
 

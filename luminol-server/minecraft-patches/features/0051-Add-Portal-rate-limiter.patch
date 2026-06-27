@@ -5,7 +5,7 @@ Subject: [PATCH] Add Portal rate limiter
 
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 67e23dd297f4d9378b43eb17035e28108cbf1029..6cca80278caf6690d39cbe48f3596ecffd3f435b 100644
+index 091a257c3089ff746b215c8400fd6a57764e1f18..adef1ec5c5011cb343c2626e4d7057481e9c9057 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -154,6 +154,10 @@ public final class RegionizedWorldData {

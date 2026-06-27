@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sat, 27 Jun 2026 11:14:49 +0800
+Subject: [PATCH] Fix typo in RegionizedWorldData
+
+A fix from Folia PR: https://github.com/PaperMC/Folia/pull/462
+
+diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
+index bc946ce8f24d7654eefd77a99ac9d037f3d0fb7e..df53efb5fb3bbb15cc4659324292094d5bf549d7 100644
+--- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
++++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
+@@ -701,7 +701,7 @@ public final class RegionizedWorldData {
+     }
+ 
+     public void setTickingBlockEntities(final boolean to) {
+-        this.tickingBlockEntities = true;
++        this.tickingBlockEntities = to; // Luminol - Fix typo in RegionizedWorldData, see folia PR: https://github.com/PaperMC/Folia/pull/462
+     }
+ 
+     public List<TickingBlockEntity> getBlockEntityTickers() {

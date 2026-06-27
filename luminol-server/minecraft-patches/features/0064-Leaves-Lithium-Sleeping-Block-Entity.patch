@@ -9,7 +9,7 @@ Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 2fad749c4d9c08fcdc7ac7cdb7edc71daeb4c66e..0cf5815672ac62d8caf7f18165be1f0f8e067aed 100644
+index c187e97797ec0b34d9430c2190eba073aec0181d..eedbeb005d3c8090333c36b9857c837dfb75dbd4 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -62,6 +62,10 @@ import java.util.Set;

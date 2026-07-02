@@ -32,7 +32,7 @@ index 08745a35b1ce8cc56d970472088de3cd17b9e43a..fcdfd4f6de5e1c2d5e80c7f3d8cb0b33
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index 4d2936f6818c38e2844cba78ffad339e93ff29ab..a5f2e4454258886536251288c3694f58386c7420 100644
+index 4d2936f6818c38e2844cba78ffad339e93ff29ab..45611868dfdfee05380c390a11e8041685a76a19 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -40,8 +40,8 @@ public class PaperVersionFetcher implements VersionFetcher {
@@ -55,6 +55,15 @@ index 4d2936f6818c38e2844cba78ffad339e93ff29ab..a5f2e4454258886536251288c3694f58
                  distance = fetchDistanceFromSiteApi(buildNumber.getAsInt());
              } else {
                  final Optional<String> gitBranch = BUILD_INFO.gitBranch();
+@@ -110,7 +110,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+         int distance = DISTANCE_ERROR;
+ 
+         final OptionalInt buildNumber = PaperVersionFetcher.BUILD_INFO.buildNumber();
+-        if (buildNumber.isPresent()) {
++        if (buildNumber.isPresent() && false) { // Luminol
+             distance = fetchDistanceFromSiteApi(buildNumber.getAsInt());
+         } else {
+             final Optional<String> gitBranch = PaperVersionFetcher.BUILD_INFO.gitBranch();
 diff --git a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 index 10a0be7a4db1a51579d113d279af7a9effe7f438..4ada790812957657d580cb748077c4961987d0cb 100644
 --- a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java

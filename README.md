@@ -57,7 +57,7 @@ chmod 755 ./scripts/setup_and_build.sh && ./scripts/setup_and_build.sh
 ```kotlin
 repositories {
     maven {
-        url = "https://repo.menthamc.org/repository/maven-public/"
+        url = "https://repo.bacteriawa.com/repository/maven-public/"
     }
 }
 
@@ -71,8 +71,8 @@ dependencies {
 ```xml
 <repositories>
     <repository>
-        <id>menthamc</id>
-        <url>https://repo.menthamc.org/repository/maven-public/</url>
+        <id>repository</id>
+        <url>https://repo.bacteriawa.com/repository/maven-public/</url>
     </repository>
 </repositories>
 

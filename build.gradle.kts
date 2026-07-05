@@ -39,7 +39,7 @@ paperweight {
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-val menthaMavenPublicUrl = "https://repo.menthamc.org/repository/maven-public/";
+val bacteriawaMavenPublicUrl = "https://repo.bacteriawa.com/repository/maven-public/";
 
 subprojects {
     apply(plugin = "java-library")
@@ -54,7 +54,7 @@ subprojects {
     repositories {
         mavenCentral()
         maven(paperMavenPublicUrl)
-        maven(menthaMavenPublicUrl)
+        maven(bacteriawaMavenPublicUrl)
     }
 
     dependencies {
@@ -86,8 +86,8 @@ subprojects {
 
     extensions.configure<PublishingExtension> {
         repositories {
-            maven("https://repo.menthamc.org/repository/maven-releases/") {
-                name = "MenthaMC"
+            maven("https://repo.bacteriawa.com/repository/maven-releases/") {
+                name = "Bacteriawa"
                 credentials(PasswordCredentials::class) {
                     username = System.getenv("PRIVATE_MAVEN_REPO_USERNAME")
                     password = System.getenv("PRIVATE_MAVEN_REPO_PASSWORD")

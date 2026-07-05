@@ -58,7 +58,7 @@ After building, you can find the generated JAR file in the `build/libs` director
 ```kotlin
 repositories {
     maven {
-        url = "https://repo.menthamc.org/repository/maven-public/"
+        url = "https://repo.bacteriawa.com/repository/maven-public/"
     }
 }
 
@@ -72,8 +72,8 @@ dependencies {
 ```xml
 <repositories>
     <repository>
-        <id>menthamc</id>
-        <url>https://repo.menthamc.org/repository/maven-public/</url>
+        <id>repository</id>
+        <url>https://repo.bacteriawa.com/repository/maven-public/</url>
     </repository>
 </repositories>
 

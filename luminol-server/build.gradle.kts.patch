@@ -10,7 +10,7 @@
  }
  
  val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-+val menthaMavenPublicUrl = "https://repo.menthamc.org/repository/maven-public/"
++val bacteriawaMavenPublicUrl = "https://repo.bacteriawa.com/repository/maven-public/"
  
  dependencies {
      mache("io.papermc:mache:26.1.2+build.1")
@@ -57,7 +57,7 @@
      libraryRepositories.addAll(
          "https://repo.maven.apache.org/maven2/",
          paperMavenPublicUrl,
-+        menthaMavenPublicUrl
++        bacteriawaMavenPublicUrl
      )
  }
  

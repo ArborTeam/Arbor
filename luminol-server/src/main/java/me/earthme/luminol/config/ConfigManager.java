@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConfigManager {
     private static boolean initialized = false;
+    private static final ConfigsInstanceBuilder builder = new ConfigsInstanceBuilder();
     private static final Map<String, ConfigsInstance> configfiles = new HashMap<>();
     private static final Collection<Runnable> runnableBeforeFinalLoad = new ConcurrentLinkedQueue<>();
     private static final Map<TransformedConfig, String[]> needTransformedConfigs = new ConcurrentHashMap<>();
@@ -23,7 +24,7 @@ public class ConfigManager {
     // 3 -> target full path
 
     public static void initConfigs() {
-        registerConfig("luminol", ConfigsInstance.of("luminol", "me.earthme.luminol.config.modules"));
+        registerConfig("luminol", builder.of("luminol", "me.earthme.luminol.config.modules"));
         preLoad();
     }
 
@@ -70,6 +71,10 @@ public class ConfigManager {
         return configfiles.get(name);
     }
 
+    public static ConfigsInstanceBuilder getBuilder() {
+        return builder;
+    }
+
     static void runTaskBeforeFinalLoad() {
         runnableBeforeFinalLoad.forEach(Runnable::run);
         runnableBeforeFinalLoad.clear();
@@ -83,13 +88,21 @@ public class ConfigManager {
     }
 
     public static void saveConfigs() {
-        CompletableFuture<?>[] futures = configfiles.values().stream()
-                .map(config -> CompletableFuture.runAsync(config::saveConfigs))
-                .toArray(CompletableFuture[]::new);
-        CompletableFuture.allOf(futures).join();
+        saveConfigs(true);
     }
 
-    static void acceptTransformedConfigs() {
+    public static void saveConfigs(boolean async) {
+        if (async) {
+            CompletableFuture<?>[] futures = configfiles.values().stream()
+                    .map(config -> CompletableFuture.runAsync(config::saveConfigs))
+                    .toArray(CompletableFuture[]::new);
+            CompletableFuture.allOf(futures).join();
+        } else {
+            configfiles.values().forEach(ConfigsInstance::saveConfigs);
+        }
+    }
+
+    public static void acceptTransformedConfigs() {
         Set<ConfigsInstance> toReload = new HashSet<>();
         for (Map.Entry<TransformedConfig, String[]> entry : needTransformedConfigs.entrySet()) {
             String[] config = entry.getValue();

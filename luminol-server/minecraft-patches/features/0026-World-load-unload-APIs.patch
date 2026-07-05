@@ -228,7 +228,7 @@ index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..8b204d5b5fa0356b248c5236709d98da
  
      private void uncaughtException(final Thread thread, final Throwable thr) {
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 3d3cfa227341c3061552c694a94427f971b15366..2cc272ddd930db04b8701eb3ae47fef1e265ed9d 100644
+index 515414a63b95fb7318e136533aa6d8193ef3d4c5..becdb28efdd4402aa28dc1d6c29a57c0274b7982 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -237,7 +237,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -240,7 +240,7 @@ index 3d3cfa227341c3061552c694a94427f971b15366..2cc272ddd930db04b8701eb3ae47fef1
      private PlayerList playerList;
      private volatile boolean running = true;
      private volatile boolean isRestarting = false; // Paper - flag to signify we're attempting to restart
-@@ -2055,14 +2055,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2058,14 +2058,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      // CraftBukkit start

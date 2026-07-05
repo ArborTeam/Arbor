@@ -1,6 +1,5 @@
 package me.earthme.luminol.utils;
 
-import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -17,13 +16,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ClassLoadUtil {
-    public static @NotNull Collection<Class<?>> getClasses(String pack) {
+    public static @NotNull Collection<Class<?>> getClasses(String pack, ClassLoader loader) {
         Set<Class<?>> classes = new HashSet<>();
         String packageDirName = pack.replace('.', '/');
         Enumeration<URL> dirs;
 
         try {
-            dirs = MinecraftServer.class.getClassLoader().getResources(packageDirName);
+            dirs = loader.getResources(packageDirName);
             while (dirs.hasMoreElements()) {
                 URL url = dirs.nextElement();
                 String protocol = url.getProtocol();

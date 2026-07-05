@@ -25,6 +25,7 @@ public interface LuminolConfigsInstance {
 
     /**
      * Reloads all configurations asynchronously
+     *
      * @param keepComments whether to preserve existing comments in the config file
      * @return CompletableFuture that completes when reload is finished
      */
@@ -32,7 +33,8 @@ public interface LuminolConfigsInstance {
 
     /**
      * Sets a configuration value by key
-     * @param key the configuration key (dot-separated path)
+     *
+     * @param key   the configuration key (dot-separated path)
      * @param value the value to set
      * @return true if the key exists and value was set, false otherwise
      */
@@ -45,12 +47,14 @@ public interface LuminolConfigsInstance {
 
     /**
      * Resets a configuration value to its default
+     *
      * @param key the configuration key to reset
      */
     void resetConfig(String key);
 
     /**
      * Gets the default value of a configuration as string
+     *
      * @param key the configuration key
      * @return the default value as string
      */
@@ -58,6 +62,7 @@ public interface LuminolConfigsInstance {
 
     /**
      * Gets the current value of a configuration as string
+     *
      * @param key the configuration key
      * @return the current value as string
      */
@@ -65,6 +70,7 @@ public interface LuminolConfigsInstance {
 
     /**
      * Gets the original (untransformed) value of a configuration
+     *
      * @param key the configuration key
      * @param <T> the expected type of the value
      * @return the original configuration value
@@ -73,6 +79,7 @@ public interface LuminolConfigsInstance {
 
     /**
      * Gets available suggestions for a configuration key
+     *
      * @param key the configuration key
      * @return array of suggestion strings, or null if no suggestions available
      */
@@ -80,6 +87,7 @@ public interface LuminolConfigsInstance {
 
     /**
      * Completes a partial configuration path by finding matching keys
+     *
      * @param partialPath the partial path to complete
      * @return list of possible completions
      */
@@ -87,14 +95,16 @@ public interface LuminolConfigsInstance {
 
     /**
      * Completes a partial configuration path with specific depth
+     *
      * @param partialPath the partial path to complete
-     * @param dotIndex the maximum number of dots (depth) in the result
+     * @param dotIndex    the maximum number of dots (depth) in the result
      * @return list of possible completions
      */
     List<String> completeConfigPath(String partialPath, int dotIndex);
 
     /**
      * Gets all configuration paths that start with the given prefix
+     *
      * @param currentPath the prefix to search for
      * @return list of matching configuration paths
      */
@@ -102,12 +112,14 @@ public interface LuminolConfigsInstance {
 
     /**
      * Gets all configuration data pairs without prefix filter
+     *
      * @return set of all configuration data
      */
     Set<ConfigDataPair> getAllData();
 
     /**
      * Gets configuration data pairs filtered by prefix
+     *
      * @param prefix the prefix to filter by
      * @return set of matching configuration data
      */
@@ -115,12 +127,14 @@ public interface LuminolConfigsInstance {
 
     /**
      * Gets all configuration data pairs with full information (comments and suggestions)
+     *
      * @return set of all configuration data with full details
      */
     Set<ConfigDataPair> getAllDataFull();
 
     /**
      * Gets configuration data pairs with full information filtered by prefix
+     *
      * @param prefix the prefix to filter by
      * @return set of matching configuration data with full details
      */
@@ -128,8 +142,9 @@ public interface LuminolConfigsInstance {
 
     /**
      * Gets configuration data pairs with optional comments and suggestions
-     * @param prefix the prefix to filter by
-     * @param _comment whether to include comments
+     *
+     * @param prefix           the prefix to filter by
+     * @param _comment         whether to include comments
      * @param _withSuggestions whether to include suggestions
      * @return set of matching configuration data
      */
@@ -137,6 +152,7 @@ public interface LuminolConfigsInstance {
 
     /**
      * Gets configuration data pairs for specified keys
+     *
      * @param list list of configuration keys
      * @return set of configuration data for the specified keys
      */
@@ -144,6 +160,7 @@ public interface LuminolConfigsInstance {
 
     /**
      * Gets configuration data pairs with comments for specified keys
+     *
      * @param list list of configuration keys
      * @return set of configuration data with comments
      */
@@ -151,6 +168,7 @@ public interface LuminolConfigsInstance {
 
     /**
      * Gets configuration data pairs with full information for specified keys
+     *
      * @param list list of configuration keys
      * @return set of configuration data with full details
      */
@@ -158,8 +176,9 @@ public interface LuminolConfigsInstance {
 
     /**
      * Gets configuration data pairs for specified keys with optional features
-     * @param list list of configuration keys
-     * @param _comment whether to include comments
+     *
+     * @param list             list of configuration keys
+     * @param _comment         whether to include comments
      * @param _withSuggestions whether to include suggestions
      * @return set of configuration data
      */

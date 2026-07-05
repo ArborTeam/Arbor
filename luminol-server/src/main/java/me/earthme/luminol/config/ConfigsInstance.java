@@ -2,7 +2,6 @@ package me.earthme.luminol.config;
 
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.electronwill.nightconfig.toml.TomlFormat;
 import com.mojang.logging.LogUtils;
 import io.papermc.paper.threadedregions.RegionizedServer;
 import me.earthme.luminol.api.config.ConfigDataPair;
@@ -31,6 +30,7 @@ public class ConfigsInstance implements LuminolConfigsInstance {
     public final Logger logger = LogUtils.getClassLogger();
 
     // Basic configuration properties
+    private final ClassLoader loader;
     private final File baseConfigFolder;
     private final File baseConfigFile;
     private final String name;          // Used to transform config to another config system
@@ -50,8 +50,9 @@ public class ConfigsInstance implements LuminolConfigsInstance {
     /**
      * Private constructor to create a configuration instance
      */
-    protected ConfigsInstance(@NotNull File base, @NotNull String name, @NotNull String file_name,
-                    @NotNull String command_name, @NotNull String pack) {
+    protected ConfigsInstance(@NotNull ClassLoader loader, @NotNull File base, @NotNull String name, @NotNull String file_name,
+                              @NotNull String command_name, @NotNull String pack) {
+        this.loader = loader;
         this.baseConfigFolder = base;
         this.name = name;
         this.pack = pack;
@@ -283,7 +284,7 @@ public class ConfigsInstance implements LuminolConfigsInstance {
      */
     private void instanceAllModule() throws NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
-        for (Class<?> clazz : ClassLoadUtil.getClasses(pack)) {
+        for (Class<?> clazz : ClassLoadUtil.getClasses(pack, loader)) {
             if (IConfigModule.class.isAssignableFrom(clazz)) {
                 allInstanced.put((IConfigModule) clazz.getConstructor().newInstance(), null);
             }

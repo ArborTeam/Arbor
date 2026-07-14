@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="./public/image/Luminol_5.png" alt="Luminol Logo" width="300">
+  <img src="./public/image/Arbor_5.png" alt="Arbor Logo" width="300">
   
-  # Luminol
+  # Arbor
   
   *专为生存和无政府服务器设计，提供优化、可配置的原版特性和丰富的 API 支持*
   
@@ -18,6 +18,19 @@
   
   [English](./README_EN.md) | **中文**
 </div>
+
+---
+
+## 📌 关于本分支
+
+**Arbor** 是 [**Luminol**](https://github.com/LuminolMC/Luminol) 的一个社区分支（fork）。
+
+- **原始项目**：Luminol，由原作者 **EarthMe** 创建与维护。
+- **分支说明**：原作者 EarthMe 欢迎社区自行分支并独立维护，**前提是必须标明原作者与许可证**。本项目遵循这一要求。
+- **当前维护者**：**Little**（本分支 Arbor 的维护者）。
+- **许可证**：本项目继承上游许可证，以 [GNU 通用公共许可证第 3 版（GPLv3）](LICENSE.md) 授权发布，该许可证由 Luminol → Folia → Paper / Spigot / Bukkit / CraftBukkit 逐级继承而来。详见 [LICENSE.md](LICENSE.md)。
+
+> 感谢 EarthMe 及 Luminol 全体贡献者的工作。Arbor 在其成果之上继续开发，所有原始版权与署名均予保留。
 
 ---
 
@@ -42,13 +55,13 @@
 ```bash
 # 克隆项目
 git clone https://github.com/LuminolMC/Luminol.git
-cd Luminol
+cd Arbor
 
 # 应用补丁并构建 Paperclip JAR
 chmod 755 ./scripts/setup_and_build.sh && ./scripts/setup_and_build.sh
 ```
 
-构建完成后，您可以在 `luminol-server/build/libs` 目录中找到生成的 JAR 文件。
+构建完成后，您可以在 `arbor-server/build/libs` 目录中找到生成的 JAR 文件。
 
 ## 🔌 API 使用
 
@@ -62,7 +75,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("me.earthme.luminol:luminol-api:26.1.2.build.+")
+    compileOnly("zone.little.arbor:arbor-api:26.1.2.build.+")
 }
 ```
 
@@ -78,8 +91,8 @@ dependencies {
 
 <dependencies>
     <dependency>
-        <groupId>me.earthme.luminol</groupId>
-        <artifactId>luminol-api</artifactId>
+        <groupId>zone.little.arbor</groupId>
+        <artifactId>arbor-api</artifactId>
         <version>[26.1.2.build,)</version>
         <scope>provided</scope>
     </dependency>
@@ -94,7 +107,7 @@ dependencies {
 
 - **QQ群**: [1015048616](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=QML5kIVsniPi1PlZvnjHQT_02EHsZ5Jc&authKey=%2FTCJsZC7JFQ9sxAroPCKuYnlV57Z5fyqp36ewXZk3Sn4iJ9p4MB1JKdc%2FFcX3HOM&noverify=0&group_code=1015048616)
 - **QQ频道**: [点击加入](https://pd.qq.com/s/eq9krf9j)
-- **Telegram**: [点击加入](https://t.me/LuminolMinecraft)
+- **Telegram**: [点击加入](https://t.me/ArborMinecraft)
 - **Discord**: [点击加入](https://discord.gg/Qd7m3V6eDx)
 
 ### 获取帮助
@@ -123,7 +136,7 @@ dependencies {
 
 ### BStats 数据
 
-![bStats](https://bstats.org/signatures/server-implementation/Luminol.svg "bStats")
+![bStats](https://bstats.org/signatures/server-implementation/Arbor.svg "bStats")
 
 ## 🎉 特别感谢
 

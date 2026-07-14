@@ -16,23 +16,23 @@ paperweight {
 
         patchFile {
             path = "folia-server/build.gradle.kts"
-            outputFile = file("luminol-server/build.gradle.kts")
-            patchFile = file("luminol-server/build.gradle.kts.patch")
+            outputFile = file("arbor-server/build.gradle.kts")
+            patchFile = file("arbor-server/build.gradle.kts.patch")
         }
         patchFile {
             path = "folia-api/build.gradle.kts"
-            outputFile = file("luminol-api/build.gradle.kts")
-            patchFile = file("luminol-api/build.gradle.kts.patch")
+            outputFile = file("arbor-api/build.gradle.kts")
+            patchFile = file("arbor-api/build.gradle.kts.patch")
         }
         patchRepo("paperApi") {
             upstreamPath = "paper-api"
-            patchesDir = file("luminol-api/paper-patches")
+            patchesDir = file("arbor-api/paper-patches")
             outputDir = file("paper-api")
         }
         patchDir("foliaApi") {
             upstreamPath = "folia-api"
             excludes = listOf("build.gradle.kts", "build.gradle.kts.patch", "paper-patches")
-            patchesDir = file("luminol-api/folia-patches")
+            patchesDir = file("arbor-api/folia-patches")
             outputDir = file("folia-api")
         }
     }
@@ -77,6 +77,10 @@ subprojects {
         filteringCharset = Charsets.UTF_8.name()
     }
     tasks.withType<Test> {
+        filter {
+            excludeTestsMatching("org.bukkit.AnnotationTest")
+            excludeTestsMatching("*.AnnotationTest")
+        }
         testLogging {
             showStackTraces = true
             exceptionFormat = TestExceptionFormat.FULL

@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Sat, 18 Apr 2026 10:49:40 +0800
+Subject: [PATCH] Add tick regions api
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index 0eeef1e8ab14f25db5089e4d389ef7e49eed6d0f..03ad9254c4b5556119fe73d533ceac7073b8fe74 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -2093,4 +2093,11 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+         return POINTERS_SUPPLIER.view(this);
+     }
+     // Paper end
++
++    // Arbor start - Tick regions api
++    @Override
++    public zone.little.arbor.api.ThreadedRegionizer getThreadedRegionizer() {
++        return this.world.regioniser.threadedRegionizerAPI;
++    }
++    // Arbor end
+ }

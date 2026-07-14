@@ -2,8 +2,8 @@ prop() {
   grep "^[[:space:]]*${1}" gradle.properties | cut -d'=' -f2 | sed 's/^[[:space:]]*//; s/\r//'
 }
 
-project_id="luminol"
-project_id_b="Luminol"
+project_id="arbor"
+project_id_b="Arbor"
 
 commitid=$(git log --pretty='%h' -1)
 mcversion=$(prop mcVersion)
@@ -11,7 +11,7 @@ release=$(prop release)
 pushRepo=$(prop pushRepo)
 release_tag="$mcversion-$commitid"
 jarName="$project_id-$mcversion-paperclip.jar"
-jarName_dir="luminol-server/build/libs/$jarName"
+jarName_dir="arbor-server/build/libs/$jarName"
 
 flag_push_repo=false
 flag_release=false
@@ -34,7 +34,7 @@ elif [ "$pushRepo" = "false" ]; then
   flag_push_repo=false
 fi
 
-actual_jar=$(ls luminol-server/build/libs/$project_id-paperclip-*.jar 2>/dev/null | head -n 1)
+actual_jar=$(ls arbor-server/build/libs/$project_id-paperclip-*.jar 2>/dev/null | head -n 1)
 if [ -n "$actual_jar" ]; then
   mv "$actual_jar" "$jarName_dir"
 else

@@ -18,15 +18,15 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-rootProject.name = "luminol"
+rootProject.name = "arbor"
 
-for (name in listOf("luminol-api", "luminol-server")) {
+for (name in listOf("arbor-api", "arbor-server")) {
     include(name)
     file(name).mkdirs()
 }
 
 optionalInclude("test-plugin")
-optionalInclude("luminol-generator")
+optionalInclude("arbor-generator")
 
 fun optionalInclude(name: String, op: (ProjectDescriptor.() -> Unit)? = null) {
     val settingsFile = file("$name.settings.gradle.kts")
@@ -46,12 +46,12 @@ fun optionalInclude(name: String, op: (ProjectDescriptor.() -> Unit)? = null) {
 
 gradle.lifecycle.beforeProject {
     val mcVersion = providers.gradleProperty("mcVersion").get().trim()
-    val luminolVersionChannel = providers.gradleProperty("channel").get().trim()
-    val luminolBuildNumber = providers.environmentVariable("BUILD_NUMBER").orNull?.trim()?.toInt()
-    val versionString = if (luminolBuildNumber == null) {
+    val arborVersionChannel = providers.gradleProperty("channel").get().trim()
+    val arborBuildNumber = providers.environmentVariable("BUILD_NUMBER").orNull?.trim()?.toInt()
+    val versionString = if (arborBuildNumber == null) {
         "$mcVersion.local-SNAPSHOT"
     } else {
-        "$mcVersion.build.$luminolBuildNumber-${luminolVersionChannel.lowercase()}"
+        "$mcVersion.build.$arborBuildNumber-${arborVersionChannel.lowercase()}"
     }
     version = versionString
 }

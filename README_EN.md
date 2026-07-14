@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="./public/image/Luminol_5.png" alt="Luminol Logo" width="300">
+  <img src="./public/image/Arbor_5.png" alt="Arbor Logo" width="300">
   
-  # Luminol
+  # Arbor
   
   *Designed for survival and anarchy servers, providing optimizations, configurable vanilla features, and rich API support*
   
@@ -18,6 +18,19 @@
   
   **English** | [中文](./README.md)
 </div>
+
+---
+
+## 📌 About This Fork
+
+**Arbor** is a community fork of [**Luminol**](https://github.com/LuminolMC/Luminol).
+
+- **Original Project**: Luminol, created and maintained by its original author **EarthMe** (me.earthme.luminol).
+- **Fork Notice**: The original author EarthMe welcomes the community to fork and maintain the project independently, **provided that the original author and license are clearly credited**. This project honors that requirement.
+- **Current Maintainer**: **Little** (maintainer of this Arbor fork).
+- **License**: This project inherits its upstream license and is released under the [GNU General Public License version 3 (GPLv3)](LICENSE.md), inherited through Luminol → Folia → Paper / Spigot / Bukkit / CraftBukkit. See [LICENSE.md](LICENSE.md) for details.
+
+> Thanks to EarthMe and all Luminol contributors for their work. Arbor continues development on top of their efforts, preserving all original copyright and attribution.
 
 ---
 
@@ -43,7 +56,7 @@ If you want to experience the latest features, you can build it yourself followi
 ```bash
 # Clone the project
 git clone https://github.com/LuminolMC/Luminol.git
-cd Luminol
+cd Arbor
 
 # Apply patches and build Paperclip JAR
 chmod 755 ./scripts/setup_and_build.sh && ./scripts/setup_and_build.sh
@@ -63,7 +76,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("me.earthme.luminol:luminol-api:26.1.2.build.+")
+    compileOnly("zone.little.arbor:arbor-api:26.1.2.build.+")
 }
 ```
 
@@ -79,8 +92,8 @@ dependencies {
 
 <dependencies>
     <dependency>
-        <groupId>me.earthme.luminol</groupId>
-        <artifactId>luminol-api</artifactId>
+        <groupId>zone.little.arbor</groupId>
+        <artifactId>arbor-api</artifactId>
         <version>[26.1.2.build,)</version>
         <scope>provided</scope>
     </dependency>
@@ -95,7 +108,7 @@ dependencies {
 
 - **QQ Group**: [1015048616](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=QML5kIVsniPi1PlZvnjHQT_02EHsZ5Jc&authKey=%2FTCJsZC7JFQ9sxAroPCKuYnlV57Z5fyqp36ewXZk3Sn4iJ9p4MB1JKdc%2FFcX3HOM&noverify=0&group_code=1015048616)
 - **QQ Channel**: [Join Here](https://pd.qq.com/s/eq9krf9j)
-- **Telegram**: [Join Here](https://t.me/LuminolMinecraft)
+- **Telegram**: [Join Here](https://t.me/ArborMinecraft)
 - **Discord**: [Join Here](https://discord.gg/Qd7m3V6eDx)
 
 ### Get Help

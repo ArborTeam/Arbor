@@ -1,4 +1,4 @@
-name: Luminol CI
+name: Arbor CI
 
 on:
   push:
@@ -44,7 +44,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Configure Git User Details
-        run: git config --global user.email "ci@luminolmc.com" && git config --global user.name "LuminolMC CI"
+        run: git config --global user.email "ci@luminolmc.com" && git config --global user.name "Arbor CI"
 
       - name: Build All
         run: chmod 755 ./scripts/setup_and_build.sh && ./scripts/setup_and_build.sh
@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: ${{ env.project_id_b }} CI Artifacts
-          path: luminol-server/build/libs/*-paperclip-*.jar
+          path: arbor-server/build/libs/*-paperclip-*.jar
 
       - name: Set Environment
         if: github.event_name != 'pull_request'

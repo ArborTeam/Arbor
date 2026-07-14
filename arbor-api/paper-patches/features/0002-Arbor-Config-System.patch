@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Sun, 14 Jun 2026 18:10:20 +0800
+Subject: [PATCH] Arbor Config System
+
+
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 23901bb9e01a90dc5f12e458b7188d51e91022b4..8f4136b2d63fdfb35bffbbee99fe961d18a38027 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -2780,6 +2780,11 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+      */
+     void allowPausing(@NotNull org.bukkit.plugin.Plugin plugin, boolean value);
+     // Paper end - API to check if the server is sleeping
++
++    // Arbor start - Arbor Config API
++    zone.little.arbor.api.config.ArborConfigsInstance getArborConfigs(String name);
++    // Arbor end - Arbor Config API
++
+     // Folia start - region TPS API
+     /**
+      * Gets the TPS from the region which owns the specified location, or {@code null} if no region owns

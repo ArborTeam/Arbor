@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Libalpm64 <libalpm@proton.me>
+Date: Mon, 2 Mar 2026 00:00:00 +0000
+Subject: [PATCH] Arbor: Add secure seed V2 with Blake3
+
+
+diff --git a/net/minecraft/world/level/levelgen/RandomState.java b/net/minecraft/world/level/levelgen/RandomState.java
+index 64e115805d9d685c521641893cac5b33d591d327..4c0e33a4794a425f62829024a4339e085b7f6f5f 100644
+--- a/net/minecraft/world/level/levelgen/RandomState.java
++++ b/net/minecraft/world/level/levelgen/RandomState.java
+@@ -34,10 +34,28 @@ public final class RandomState {
+     }
+ 
+     private RandomState(final NoiseGeneratorSettings settings, final HolderGetter<NormalNoise.NoiseParameters> noises, final long seed) {
+-        this.random = settings.getRandomSource().newInstance(seed).forkPositional();
++        // this.random = settings.getRandomSource().newInstance(seed).forkPositional(); // Arbor - Add secure seed V2 with Blake3
++        // Arbor start - Add secure seed V2 with Blake3
++        final long[] secureWorldSeed = (zone.little.arbor.config.modules.function.SecureSeedConfig.enabled && zone.little.arbor.config.modules.function.SecureSeedConfig.version == 2)
++                ? su.plo.matter.HashingV2.expandLevelSeedTo1024Bits(seed)
++                : null;
++
++        long terrainSeed = (zone.little.arbor.config.modules.function.SecureSeedConfig.enabled && zone.little.arbor.config.modules.function.SecureSeedConfig.version == 2)
++                ? su.plo.matter.HashingV2.getTerrainSeed(secureWorldSeed, su.plo.matter.HashingV2.TerrainType.BASE_TERRAIN)
++                : seed;
++        long aquiferSeed = (zone.little.arbor.config.modules.function.SecureSeedConfig.enabled && zone.little.arbor.config.modules.function.SecureSeedConfig.version == 2)
++                ? su.plo.matter.HashingV2.getTerrainSeed(secureWorldSeed, su.plo.matter.HashingV2.TerrainType.AQUIFER)
++                : seed;
++        long oreSeed = (zone.little.arbor.config.modules.function.SecureSeedConfig.enabled && zone.little.arbor.config.modules.function.SecureSeedConfig.version == 2)
++                ? su.plo.matter.HashingV2.getTerrainSeed(secureWorldSeed, su.plo.matter.HashingV2.TerrainType.ORE)
++                : seed;
++        // Arbor end
++        this.random = settings.getRandomSource().newInstance(terrainSeed).forkPositional(); // Arbor - Add secure seed V2 with Blake3
+         this.noises = noises;
+-        this.aquiferRandom = this.random.fromHashOf(Identifier.withDefaultNamespace("aquifer")).forkPositional();
+-        this.oreRandom = this.random.fromHashOf(Identifier.withDefaultNamespace("ore")).forkPositional();
++        //this.aquiferRandom = this.random.fromHashOf(Identifier.withDefaultNamespace("aquifer")).forkPositional(); // Arbor - Add secure seed V2 with Blake3
++        //this.oreRandom = this.random.fromHashOf(Identifier.withDefaultNamespace("ore")).forkPositional(); // Arbor - Add secure seed V2 with Blake3
++        this.aquiferRandom = settings.getRandomSource().newInstance(aquiferSeed).forkPositional(); // Arbor - Add secure seed V2 with Blake3
++        this.oreRandom = settings.getRandomSource().newInstance(oreSeed).forkPositional(); // Arbor - Add secure seed V2 with Blake3
+         this.noiseIntances = new ConcurrentHashMap<>();
+         this.positionalRandoms = new ConcurrentHashMap<>();
+         this.surfaceSystem = new SurfaceSystem(this, settings.defaultBlock(), settings.seaLevel(), this.random);
+@@ -53,6 +71,12 @@ public final class RandomState {
+             }
+ 
+             private RandomSource newLegacyInstance(final long seedOffset) {
++                // Arbor start - Add secure seed V2 with Blake3
++                if (zone.little.arbor.config.modules.function.SecureSeedConfig.enabled && zone.little.arbor.config.modules.function.SecureSeedConfig.version == 2) {
++                    long climateSeed = su.plo.matter.HashingV2.getTerrainSeed(secureWorldSeed, su.plo.matter.HashingV2.TerrainType.CLIMATE);
++                    return new su.plo.matter.WorldgenCryptoRandom(0, 0, su.plo.matter.Globals.Salt.UNDEFINED, climateSeed + seed);
++                }
++                // Arbor end
+                 return new LegacyRandomSource(seed + seedOffset);
+             }
+ 
+@@ -79,7 +103,12 @@ public final class RandomState {
+                     return noise.withNewRandom(terrainRandom);
+                 } else {
+                     return (DensityFunction)(function instanceof DensityFunctions.EndIslandDensityFunction
+-                        ? new DensityFunctions.EndIslandDensityFunction(seed)
++                        //? new DensityFunctions.EndIslandDensityFunction(seed) // Arbor - Add secure seed V2 with Blake3
++                        // Arbor start - Add secure seed V2 with Blake3
++                        ? new DensityFunctions.EndIslandDensityFunction((zone.little.arbor.config.modules.function.SecureSeedConfig.enabled && zone.little.arbor.config.modules.function.SecureSeedConfig.version == 2)
++                        ? su.plo.matter.HashingV2.getTerrainSeed(secureWorldSeed, su.plo.matter.HashingV2.TerrainType.SURFACE)
++                        : seed)
++                        // Arbor end
+                         : function);
+                 }
+             }

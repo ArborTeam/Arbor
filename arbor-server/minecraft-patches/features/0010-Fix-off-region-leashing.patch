@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrHua269 <mrhua269@gmail.com>
+Date: Fri, 17 Apr 2026 23:16:45 +0800
+Subject: [PATCH] Fix off region leashing
+
+PS: My friend reported me this bug and I still need to check the details of how the bug was caused
+
+XD
+
+diff --git a/net/minecraft/world/entity/Leashable.java b/net/minecraft/world/entity/Leashable.java
+index ff401fa35aab040b319789acb245ac300660399c..0e2b66182f41ace7a289be7fbe706cc9cc3ac07f 100644
+--- a/net/minecraft/world/entity/Leashable.java
++++ b/net/minecraft/world/entity/Leashable.java
+@@ -95,10 +95,28 @@ public interface Leashable {
+             if (leashUuid.isPresent()) {
+                 Entity leasher = serverLevel.getEntity(leashUuid.get());
+                 if (leasher != null) {
++                    // Arbor start - Fix off region leashing
++                    if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(leasher)) {
++                        entity.forceDrops = true;
++                        entity.spawnAtLocation(serverLevel, Items.LEAD);
++                        entity.forceDrops = false;
++                        entity.setLeashData(null);
++                        return;
++                    }
++                    // Arbor end
+                     setLeashedTo(entity, leasher, true);
+                     return;
+                 }
+             } else if (pos.isPresent()) {
++                // Arbor start - Fix off region leashing
++                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(serverLevel, pos.get())) {
++                    entity.forceDrops = true;
++                    entity.spawnAtLocation(serverLevel, Items.LEAD);
++                    entity.forceDrops = false;
++                    entity.setLeashData(null);
++                    return;
++                }
++                // Arbor end
+                 setLeashedTo(entity, LeashFenceKnotEntity.getOrCreateKnot(serverLevel, pos.get()), true);
+                 return;
+             }

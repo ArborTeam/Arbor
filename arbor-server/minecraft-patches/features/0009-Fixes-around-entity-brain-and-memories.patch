@@ -1,0 +1,287 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bacteriawa <A3167717663@hotmail.com>
+Date: Tue, 21 Apr 2026 00:55:21 +0800
+Subject: [PATCH] Fixes around entity brain and memories
+
+
+diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
+index c9554552b194060135951a036c589be6fb27151c..3beabbe07058c096615b3a037a54d2f42a89c6e9 100644
+--- a/net/minecraft/world/entity/Mob.java
++++ b/net/minecraft/world/entity/Mob.java
+@@ -295,6 +295,11 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
+         if (Objects.equals(currentTarget, target)) {
+             return false;
+         }
++        // Arbor start - Fix off-region targeting
++        if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(target)) {
++            return false;
++        }
++        // Arbor end
+         LivingEntity originalTarget = target;
+         target = asValidTarget(target);
+         if (reason != null) {
+diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
+index 8bf489874cd4d2b7e3779a6565f13511938754ed..ee416907adace680c5e2774e6cf6a8f270fe68b3 100644
+--- a/net/minecraft/world/entity/ai/Brain.java
++++ b/net/minecraft/world/entity/ai/Brain.java
+@@ -387,7 +387,7 @@ public class Brain<E extends LivingEntity> {
+     }
+ 
+     public void tick(final ServerLevel level, final E body) {
+-        this.forgetOutdatedMemories();
++        this.forgetOutdatedMemories(body); // Arbor - Add config to force clean entity memory that don't belong to current tick region
+         this.tickSensors(level, body);
+         this.startEachNonRunningBehavior(level, body);
+         this.tickEachRunningBehavior(level, body);
+@@ -399,8 +399,8 @@ public class Brain<E extends LivingEntity> {
+         }
+     }
+ 
+-    private void forgetOutdatedMemories() {
+-        this.memories.values().forEach(MemorySlot::tick);
++    private void forgetOutdatedMemories(E body) { // Arbor - Add config to force clean entity memory that don't belong to current tick region
++        this.memories.values().forEach(slot -> slot.tick(body)); // Arbor - Add config to force clean entity memory that don't belong to current tick region
+     }
+ 
+     public void stopAll(final ServerLevel level, final E body) {
+diff --git a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
+index 7172721045c7b40f49c714260c31c72073ea9cc4..2b22c3f21102b032478f2bd9015ba676c5105434 100644
+--- a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
++++ b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
+@@ -81,6 +81,11 @@ public class BehaviorUtils {
+     public static void setWalkAndLookTargetMemories(
+         final LivingEntity walker, final PositionTracker target, final float speedModifier, final int closeEnoughDistance
+     ) {
++        // Arbor - Do not set walk target if target position is out of current tick region
++        if (!target.checkThread(walker.level())) {
++            return;
++        }
++        // Arbor end
+         WalkTarget walkTarget = new WalkTarget(target, speedModifier, closeEnoughDistance);
+         walker.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, target);
+         walker.getBrain().setMemory(MemoryModuleType.WALK_TARGET, walkTarget);
+diff --git a/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java b/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java
+index 68251875edfa47ac34c64f99510998ad4bbb14b4..d83b353395bad7c6c41dfaa24018fd207904d995 100644
+--- a/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java
++++ b/net/minecraft/world/entity/ai/behavior/BlockPosTracker.java
+@@ -37,4 +37,11 @@ public class BlockPosTracker implements PositionTracker {
+     public String toString() {
+         return "BlockPosTracker{blockPos=" + this.blockPos + ", centerPosition=" + this.centerPosition + "}";
+     }
++
++    // Arbor start - Fix a series issue around entity memory typed GlobalPos and WalkTarget
++    @Override
++    public boolean checkThread(net.minecraft.world.level.Level currOwnedByLevel) {
++        return ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(currOwnedByLevel, this.blockPos);
++    }
++    // Arbor end
+ }
+diff --git a/net/minecraft/world/entity/ai/behavior/EntityTracker.java b/net/minecraft/world/entity/ai/behavior/EntityTracker.java
+index 97fdbe40be1fb924e186936404edda7e9810f70a..9186d7a317ac9f67eeb547fc86aee8895eafabc3 100644
+--- a/net/minecraft/world/entity/ai/behavior/EntityTracker.java
++++ b/net/minecraft/world/entity/ai/behavior/EntityTracker.java
+@@ -55,4 +55,11 @@ public class EntityTracker implements PositionTracker {
+     public String toString() {
+         return "EntityTracker for " + this.entity;
+     }
++
++    // Arbor start - Fix a series issue around entity memory typed GlobalPos and WalkTarget
++    @Override
++    public boolean checkThread(net.minecraft.world.level.Level currOwnedByLevel) {
++        return ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.entity);
++    }
++    // Arbor end
+ }
+diff --git a/net/minecraft/world/entity/ai/behavior/PositionTracker.java b/net/minecraft/world/entity/ai/behavior/PositionTracker.java
+index ce6cf5ecfb190428e3ef9b7dd39c98e3d27a7b9d..3334da2236fbe90cbdc3e67884f9c6ed80ac0f56 100644
+--- a/net/minecraft/world/entity/ai/behavior/PositionTracker.java
++++ b/net/minecraft/world/entity/ai/behavior/PositionTracker.java
+@@ -10,4 +10,7 @@ public interface PositionTracker {
+     BlockPos currentBlockPosition();
+ 
+     boolean isVisibleBy(final LivingEntity body);
++
++
++    boolean checkThread(net.minecraft.world.level.Level currOwnedByLevel); // Arbor - Fix a series issue around entity memory typed GlobalPos and WalkTarget
+ }
+diff --git a/net/minecraft/world/entity/ai/behavior/SleepInBed.java b/net/minecraft/world/entity/ai/behavior/SleepInBed.java
+index 112572f5a6813abd3cf3bd26e2b087b7edb48f41..b88549614b978e14b4dac82d155c6bcc28393fef 100644
+--- a/net/minecraft/world/entity/ai/behavior/SleepInBed.java
++++ b/net/minecraft/world/entity/ai/behavior/SleepInBed.java
+@@ -55,6 +55,11 @@ public class SleepInBed extends Behavior<LivingEntity> {
+                     }
+                 }
+ 
++                // Arbor - Prevent off-tick-region chunk operations
++                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(level, target.pos())) {
++                    return false;
++                }
++                // Arbor -end
+                 BlockState blockState = level.getBlockStateIfLoaded(target.pos()); // Paper - Prevent sync chunk loads when villagers try to find beds
+                 if (blockState == null) { return false; } // Paper - Prevent sync chunk loads when villagers try to find beds
+                 return target.pos().closerToCenterThan(body.position(), 2.0) && blockState.is(BlockTags.BEDS) && !blockState.getValue(BedBlock.OCCUPIED);
+diff --git a/net/minecraft/world/entity/ai/memory/MemorySlot.java b/net/minecraft/world/entity/ai/memory/MemorySlot.java
+index 88a89b4c72cc99dc89d3f3cc928b2dfda4125759..3b51a44ab700740047c9e725547ceec65c0c80b1 100644
+--- a/net/minecraft/world/entity/ai/memory/MemorySlot.java
++++ b/net/minecraft/world/entity/ai/memory/MemorySlot.java
+@@ -13,7 +13,7 @@ public class MemorySlot<T> {
+         this.timeToLive = timeToLive;
+     }
+ 
+-    public void tick() {
++    public void tick(net.minecraft.world.entity.Entity owner) { // Arbor - Add config to force clean entity memory that don't belong to current tick region
+         if (this.hasValue() && this.canExpire()) {
+             if (this.hasExpired()) {
+                 this.clear();
+@@ -21,6 +21,41 @@ public class MemorySlot<T> {
+                 this.timeToLive--;
+             }
+         }
++        // Arbor start - Add config to force clean entity memory that don't belong to current tick region
++        final net.minecraft.world.level.Level ownerLevel = owner.level();
++
++        // type: entity
++        if (zone.little.arbor.config.modules.fixes.ForceCleanupEntityBrainMemoryConfig.enabledForEntity && this.value instanceof net.minecraft.world.entity.Entity entity) {
++            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(entity)) {
++                this.clear();
++            }
++        }
++
++        // type: block_pos
++        if (zone.little.arbor.config.modules.fixes.ForceCleanupEntityBrainMemoryConfig.enabledForBlockPos && this.value instanceof net.minecraft.core.BlockPos blockPos) {
++            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(ownerLevel, blockPos)) {
++                this.clear();
++            }
++        }
++
++
++        //type: position_tracker and walk_target
++        if (zone.little.arbor.config.modules.fixes.ForceCleanupEntityBrainMemoryConfig.enabledForPositionTracker) {
++            net.minecraft.world.entity.ai.behavior.PositionTracker tracker = null;
++
++            if (value instanceof net.minecraft.world.entity.ai.behavior.PositionTracker positionTracker) {
++                tracker = positionTracker;
++            }
++
++            if (value instanceof net.minecraft.world.entity.ai.memory.WalkTarget walkTarget) {
++                tracker = walkTarget.getTarget();
++            }
++
++            if (tracker != null && !tracker.checkThread(owner.level())) {
++                this.clear();
++            }
++        }
++        // Arbor end
+     }
+ 
+     public static <T> MemorySlot<T> create() {
+diff --git a/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java b/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
+index e44814cfb6afb594456b8215bd13a92e93de2c85..c18e2071c699d9c5f4d46b7a58191df4f4d8ab5d 100644
+--- a/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
++++ b/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
+@@ -60,6 +60,17 @@ public class FlyingPathNavigation extends PathNavigation {
+ 
+             if (!this.isDone()) {
+                 Vec3 target = this.path.getNextEntityPos(this.mob);
++                // Arbor - Recompute path when path finding out of current tick region
++                if (zone.little.arbor.config.modules.fixes.PathfindingFixesConfig.breakDownPathfindingWhenOutOfRegion) {
++                    // we assume that:
++                    // 1. The code above doesn't touch the 'main thread context' with the position from 'this.path'
++                    // 2. The pathfinder could correctly recompute or discard the incorrect target position and this situation is happening rarely
++                    if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.mob.level(), target)) {
++                        this.hasDelayedRecomputation = true;
++                        return;
++                    }
++                }
++                // Arbor end
+                 this.mob.getMoveControl().setWantedPosition(target.x, target.y, target.z, this.speedModifier);
+             }
+         }
+diff --git a/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
+index 21ead01c326b187dc1117b549dbdf706730a2147..7175577ee381de438877e327bd8373450fbb8f7a 100644
+--- a/net/minecraft/world/entity/ai/navigation/PathNavigation.java
++++ b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
+@@ -181,6 +181,18 @@ public abstract class PathNavigation {
+                 }
+             }
+             // Paper end - EntityPathfindEvent
++            // Arbor - Do not path find for targets out of current region
++            if (zone.little.arbor.config.modules.fixes.PathfindingFixesConfig.doNotPathfindToNotOwnedTargets) {
++                // filter the targets not owned by current region
++                targets = new java.util.HashSet<>(targets); // well no idea about how to determine if this should be copied to a modifiable one
++                targets.removeIf(pos -> !ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.mob.level(), pos));
++
++                // return if no available (observe the logic in the first if block)
++                if (targets.isEmpty()) {
++                    return null;
++                }
++            }
++            // Arbor end
+             ProfilerFiller profiler = Profiler.get();
+             profiler.push("pathfind");
+             BlockPos fromPos = above ? this.mob.blockPosition().above() : this.mob.blockPosition();
+@@ -282,6 +294,17 @@ public abstract class PathNavigation {
+ 
+             if (!this.isDone()) {
+                 Vec3 target = this.path.getNextEntityPos(this.mob);
++                // Arbor - Recompute path when path finding out of current tick region
++                if (zone.little.arbor.config.modules.fixes.PathfindingFixesConfig.breakDownPathfindingWhenOutOfRegion) {
++                    // we assume that:
++                    // 1. The code above doesn't touch the 'main thread context' with the position from 'this.path'
++                    // 2. The pathfinder could correctly recompute or discard the incorrect target position and this situation is happening rarely
++                    if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.mob.level(), target)) {
++                        this.hasDelayedRecomputation = true;
++                        return;
++                    }
++                }
++                // Arbor end
+                 this.mob.getMoveControl().setWantedPosition(target.x, this.getGroundY(target), target.z, this.speedModifier);
+             }
+         }
+diff --git a/net/minecraft/world/entity/animal/allay/AllayAi.java b/net/minecraft/world/entity/animal/allay/AllayAi.java
+index 05436572581d369fe392566ec9c0afa8d8f03c6e..6a9c9743eff605733198e9539d4e445c47256367 100644
+--- a/net/minecraft/world/entity/animal/allay/AllayAi.java
++++ b/net/minecraft/world/entity/animal/allay/AllayAi.java
+@@ -112,6 +112,17 @@ public class AllayAi {
+         Optional<GlobalPos> likedNoteblockPos = brain.getMemory(MemoryModuleType.LIKED_NOTEBLOCK_POSITION);
+         if (likedNoteblockPos.isPresent()) {
+             GlobalPos position = likedNoteblockPos.get();
++            // Arbor start - Do not like item if they were out of current tickregion
++            final Level targetLevel = allay.level().getServer().getLevel(position.dimension());
++            final BlockPos targetPos = position.pos();
++
++            // thread checks
++            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(targetLevel, targetPos)) {
++                brain.eraseMemory(MemoryModuleType.LIKED_NOTEBLOCK_POSITION); // The memory value is not being belong to current tick region anymore
++                return Optional.empty();
++            }
++            // Arbor end
++
+             if (shouldDepositItemsAtLikedNoteblock(allay, brain, position)) {
+                 return Optional.of(new BlockPosTracker(position.pos().above()));
+             }
+diff --git a/net/minecraft/world/entity/animal/sniffer/Sniffer.java b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
+index c947f26f57de71ac0eafc0f56a96fec12ce5dba5..b27d30c59452c163f409bd0ac73a87499e56ace9 100644
+--- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
++++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
+@@ -278,8 +278,18 @@ public class Sniffer extends Animal {
+ 
+     private boolean canDig(final BlockPos position) {
+         return this.level().getBlockState(position).is(BlockTags.SNIFFER_DIGGABLE_BLOCK)
+-            && this.getExploredPositions().noneMatch(explored -> GlobalPos.of(this.level().dimension(), position).equals(explored))
+-            && Optional.ofNullable(this.getNavigation().createPath(position, 1)).map(Path::canReach).orElse(false);
++            && this.getExploredPositions().noneMatch(explored -> { // Arbor start - Do not pathfind out of tickregion
++            // thread checks
++            final Level targetLevel = net.minecraft.server.MinecraftServer.getServer().getLevel(explored.dimension());
++            final BlockPos targetPos = explored.pos();
++
++            if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(targetLevel, targetPos)) {
++                return false;
++            }
++
++            return GlobalPos.of(this.level().dimension(), position).equals(explored); // Original logic
++        }) // Arbor end)
++        && Optional.ofNullable(this.getNavigation().createPath(position, 1)).map(Path::canReach).orElse(false);
+     }
+ 
+     private void dropSeed() {

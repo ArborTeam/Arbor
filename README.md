@@ -30,6 +30,9 @@
 
 > 感谢 EarthMe 及 Luminol 全体贡献者的工作。Arbor 在其成果之上继续开发，所有原始版权与署名均予保留。
 
+> [!CAUTION]
+> 特别说明！</br>上游项目Luminol与CanvasMC组织存在侵权许可证事件，现已无法访问（404状态），具体原因请查看：</br>https://www.nexusmc.cn/forum/post/luminolmc-canvasmc-gpl-3-0</br>https://www.nexusmc.cn/forum/post/luminolmc-canvasmc-earthme
+
 ---
 
 ## ✨ 核心特性

@@ -7,7 +7,7 @@ As part of: Leaf
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/GPL-3.0.txt)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index e0ecc487098d78447d0959ac27a1c1e8efaec199..5b823deead69ae2188adf61d66ed75291dd890ac 100644
+index e0ecc487098d78447d0959ac27a1c1e8efaec199..66cbcd17753d622419e862a7381faac80d735c5f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 @@ -193,7 +193,12 @@ public class CraftChunk implements Chunk {
@@ -25,7 +25,7 @@ index e0ecc487098d78447d0959ac27a1c1e8efaec199..5b823deead69ae2188adf61d66ed7529
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 17ebd4707f947b5b61cd0a68d3f4454475499192..9f6ffd7c15ad2a1e14765c7cef1f27919c89f86e 100644
+index 69b15db760a1011c95065af5a60af3dc6ed8eaae..e904ba370437e724afb3da179b2a52611f7f98be 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1266,7 +1266,11 @@ public final class CraftServer implements Server {

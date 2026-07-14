@@ -8,7 +8,7 @@ As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18
 Licensed under: MIT (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/LICENSE)
 
 diff --git a/net/minecraft/world/entity/npc/villager/Villager.java b/net/minecraft/world/entity/npc/villager/Villager.java
-index 07677108d5f11057f6bd5a02bda4e49d3b802869..12e108fc0da9b93cc29f3a651e7b66e5c9a66df6 100644
+index 07677108d5f11057f6bd5a02bda4e49d3b802869..55ccf8fe1f943c52b71d65f007f840721f26ef22 100644
 --- a/net/minecraft/world/entity/npc/villager/Villager.java
 +++ b/net/minecraft/world/entity/npc/villager/Villager.java
 @@ -199,6 +199,53 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re

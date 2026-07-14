@@ -5,7 +5,7 @@ Subject: [PATCH] Arbor: Add secure seed V2 with Blake3
 
 
 diff --git a/net/minecraft/world/level/levelgen/RandomState.java b/net/minecraft/world/level/levelgen/RandomState.java
-index 64e115805d9d685c521641893cac5b33d591d327..4c0e33a4794a425f62829024a4339e085b7f6f5f 100644
+index 64e115805d9d685c521641893cac5b33d591d327..dd023ae9e7b786707bdb1cc4a3eaf14f7c5f5064 100644
 --- a/net/minecraft/world/level/levelgen/RandomState.java
 +++ b/net/minecraft/world/level/levelgen/RandomState.java
 @@ -34,10 +34,28 @@ public final class RandomState {

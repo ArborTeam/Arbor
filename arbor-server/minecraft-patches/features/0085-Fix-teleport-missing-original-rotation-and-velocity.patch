@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LittleOvO <littleovo@example.com>
+Date: Tue, 14 Jul 2026 21:07:12 +0800
+Subject: [PATCH] Fix teleport missing original rotation and velocity
+
+
+diff --git a/io/papermc/paper/threadedregions/TeleportUtils.java b/io/papermc/paper/threadedregions/TeleportUtils.java
+index 2a64a5b2cf049661fe3f5a22ddfa39979624f5ec..8f7c514693e0fe360b0a5a1ca93c1a9f161c8826 100644
+--- a/io/papermc/paper/threadedregions/TeleportUtils.java
++++ b/io/papermc/paper/threadedregions/TeleportUtils.java
+@@ -41,7 +41,7 @@ public final class TeleportUtils {
+                             return;
+                         }
+                         (useFromRootVehicle ? realFrom.getRootVehicle() : realFrom).teleportAsync(
+-                            ((CraftWorld)loc.getWorld()).getHandle(), pos, null, null, null,
++                            ((CraftWorld)loc.getWorld()).getHandle(), pos, yaw, pitch, null,
+                             cause, teleportFlags, onComplete
+                         );
+                     },
+diff --git a/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEnderpearl.java b/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEnderpearl.java
+index d4c3e334e1d6829fef56afa2f22b5d66a5dc7854..3cd14bc1cc53706050640a766a81e475b5b62ea0 100644
+--- a/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEnderpearl.java
++++ b/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEnderpearl.java
+@@ -97,7 +97,7 @@ public class ThrownEnderpearl extends ThrowableItemProjectile {
+                 }
+ 
+                 entity.teleportAsync(
+-                    checkWorld, to, null, null, null,
++                    checkWorld, to, null, null, entity.getDeltaMovement(),
+                     org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.ENDER_PEARL,
+                     // chunk could have been unloaded
+                     Entity.TELEPORT_FLAG_TELEPORT_PASSENGERS | Entity.TELEPORT_FLAG_LOAD_CHUNK,

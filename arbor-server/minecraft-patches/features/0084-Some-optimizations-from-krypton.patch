@@ -10,7 +10,7 @@ https://github.com/astei/krypton/blob/master/src/main/java/me/steinborn/krypton/
 Original project license: https://github.com/astei/krypton/blob/master/LICENSE
 
 diff --git a/net/minecraft/network/Utf8String.java b/net/minecraft/network/Utf8String.java
-index 0dc473eacd6d3cf3ee5180a19b985e8c3706fe33..7938e832086eb047c30a5507209235ee8f28f277 100644
+index 0dc473eacd6d3cf3ee5180a19b985e8c3706fe33..d902bb287a1b9ad9236430c8096759d12ee18713 100644
 --- a/net/minecraft/network/Utf8String.java
 +++ b/net/minecraft/network/Utf8String.java
 @@ -33,6 +33,22 @@ public class Utf8String {
@@ -37,7 +37,7 @@ index 0dc473eacd6d3cf3ee5180a19b985e8c3706fe33..7938e832086eb047c30a5507209235ee
              throw new EncoderException("String too big (was " + value.length() + " characters, max " + maxLength + ")");
          } else {
 diff --git a/net/minecraft/network/VarInt.java b/net/minecraft/network/VarInt.java
-index 1428ce80e8316a24cfca7b6aafdea8588a5a790e..73b01c4ac8c69f6a984c8f3947cdd2688cd70c14 100644
+index 1428ce80e8316a24cfca7b6aafdea8588a5a790e..df13a5e1478b991f49cd9f6e5c046626f98bb39f 100644
 --- a/net/minecraft/network/VarInt.java
 +++ b/net/minecraft/network/VarInt.java
 @@ -60,7 +60,8 @@ public class VarInt {

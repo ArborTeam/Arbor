@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="./public/image/Arbor_5.png" alt="Arbor Logo" width="300">
   
   # Arbor
   
@@ -14,7 +13,6 @@
   ![GitHub all releases](https://img.shields.io/github/downloads/LuminolMC/Luminol/total?style=for-the-badge&color=red)
   
   ![Repo contributors](https://img.shields.io/github/contributors/LittleOvO233/Arbor?style=for-the-badge&color=brightgreen)
-  [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/LuminolMC/Luminol)
   
   [English](./README_EN.md) | **中文**
 </div>

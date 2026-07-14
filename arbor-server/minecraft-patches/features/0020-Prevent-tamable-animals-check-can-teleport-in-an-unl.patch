@@ -9,7 +9,7 @@ Based on the implementation of Canvas(https://github.com/CraftCanvasMC/Canvas/co
 We need to check canTeleport for TamableAnimal but this logic could do the check in another tick region itself, so we need to prevent that. But it needs to push off this check to schedule to the correct tickregion, which needs costly rewriting of this logic, so we could simply allow the read when the owner's position is loaded
 
 diff --git a/net/minecraft/world/entity/TamableAnimal.java b/net/minecraft/world/entity/TamableAnimal.java
-index 2fbdf75fc9dc00d3611b9f993fa67e604415fed7..481e78a9782d6307b2b08146a165b651e3a3dccf 100644
+index 2fbdf75fc9dc00d3611b9f993fa67e604415fed7..2fcb401ed3f9f649dd83cbdfd968feedafc39201 100644
 --- a/net/minecraft/world/entity/TamableAnimal.java
 +++ b/net/minecraft/world/entity/TamableAnimal.java
 @@ -318,7 +318,8 @@ public abstract class TamableAnimal extends Animal implements OwnableEntity {

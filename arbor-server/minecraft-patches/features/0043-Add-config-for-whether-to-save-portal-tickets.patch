@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for whether to save portal tickets
 
 
 diff --git a/net/minecraft/server/level/TicketType.java b/net/minecraft/server/level/TicketType.java
-index af80a4c81211048d078388aa1063ddcb99686f24..ed98e26475e1eae6f9be46084a9d055f7169b9d2 100644
+index af80a4c81211048d078388aa1063ddcb99686f24..f203eef04d81e542d5a4a5d0ac46d9c28a6dfd7a 100644
 --- a/net/minecraft/server/level/TicketType.java
 +++ b/net/minecraft/server/level/TicketType.java
 @@ -60,7 +60,7 @@ public final class TicketType<T> implements ca.spottedleaf.moonrise.patches.chun

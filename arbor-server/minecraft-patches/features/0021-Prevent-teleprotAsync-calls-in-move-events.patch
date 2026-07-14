@@ -5,7 +5,7 @@ Subject: [PATCH] Prevent teleprotAsync calls in move events
 
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 4924915ec3adf4d68ca537518fdffa52ec926bf7..6b90695716aa95a8ff66d5d43aee5ceb9e8616c6 100644
+index 4924915ec3adf4d68ca537518fdffa52ec926bf7..160779c2300abe57af9bdd592cf745dbda409ee4 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -727,7 +727,9 @@ public class ServerGamePacketListenerImpl
@@ -29,7 +29,7 @@ index 4924915ec3adf4d68ca537518fdffa52ec926bf7..6b90695716aa95a8ff66d5d43aee5ceb
                                          // If the event is cancelled we move the player back to their old location.
                                          if (event.isCancelled()) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ff7e282eda93e07184c7fc59c92ff735abd16bd3..10721cd22a10266e50f78c0d0f4c59a7f1c097c6 100644
+index ccd01b703985a56261776ebf357dbd9852e7fc85..4cbb495772c6b2ab95633b1b9830192acce132b5 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4401,12 +4401,25 @@ public abstract class Entity
@@ -59,7 +59,7 @@ index ff7e282eda93e07184c7fc59c92ff735abd16bd3..10721cd22a10266e50f78c0d0f4c59a7
              return false;
          }
 diff --git a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
-index 619776a20aeac1ddef1991f8a32a88c8aac250ee..05176458264b110ef3280342866ace22ec5a3333 100644
+index 619776a20aeac1ddef1991f8a32a88c8aac250ee..f7021add5bb1287a6f09be7b2fc7ea481e7fae98 100644
 --- a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 +++ b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 @@ -282,7 +282,9 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
@@ -73,7 +73,7 @@ index 619776a20aeac1ddef1991f8a32a88c8aac250ee..05176458264b110ef3280342866ace22
          this.lastLocation = vehicle.getLocation();
          // CraftBukkit end
 diff --git a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
-index 7ba197b9bda1f98e24882be40d78fabb0db9d36b..c203964667f18b5b50dfe52ea83f0c6396b96a1a 100644
+index 7ba197b9bda1f98e24882be40d78fabb0db9d36b..038bee197e3f120f71051dffe75942d5d95b79a9 100644
 --- a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
 @@ -318,7 +318,9 @@ public abstract class AbstractMinecart extends VehicleEntity {

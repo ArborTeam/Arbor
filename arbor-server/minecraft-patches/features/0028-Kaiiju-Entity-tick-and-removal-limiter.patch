@@ -8,7 +8,7 @@ As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2e
 Licensed under: GPL-3.0 (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/LICENSE)
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index df53efb5fb3bbb15cc4659324292094d5bf549d7..091a257c3089ff746b215c8400fd6a57764e1f18 100644
+index a20d22fa5013bcd39578e6ebc1c1eaffc33df86e..287fe12c92afe1b157e30506ad8a83f471a85a30 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -351,6 +351,7 @@ public final class RegionizedWorldData {
@@ -20,7 +20,7 @@ index df53efb5fb3bbb15cc4659324292094d5bf549d7..091a257c3089ff746b215c8400fd6a57
      // block ticking
      private final ObjectLinkedOpenHashSet<BlockEventData> blockEvents = new ObjectLinkedOpenHashSet<>();
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index c7cdf8a2d6856e7cac1d0809bc9bc5e9c45ba84f..0e323ab55346f4790ca936f227917e5809e5e05c 100644
+index 87de10a49bb7fb939ada90f54c8a06f506cd2644..a8a80663ae178fbb142d5a589ab3f8f0a3719548 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -927,6 +927,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet

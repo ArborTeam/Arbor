@@ -19,6 +19,15 @@ carrying notices that state the work has been modified, with the relevant dates 
 
 ### 2026-07-14 — Modified by Little
 
+Applied two patches provided by the original author EarthMe:
+
+- **0085**: Fix teleport missing original rotation and velocity.
+- **0086**: Replace the packet processing queue with mt-queue.
+
+Released the first Arbor build based on Luminol 26.1.2.
+
+### 2026-07-14 — Modified by Little
+
 Forked from Luminol 26.1.2 as Arbor, with the following changes:
 
 - **Rename**: Renamed the `luminol-api` / `luminol-server` modules and related patches
@@ -27,4 +36,5 @@ Forked from Luminol 26.1.2 as Arbor, with the following changes:
 - **Documentation**: Updated `README.md` / `README_EN.md` / `LICENSE.md` with fork and
   attribution notices.
 - **Repo config**: Updated `.gitignore`.
+- **Icons**: Removed icon files inherited from Luminol (Arbor-specific icons to come later).
 ---

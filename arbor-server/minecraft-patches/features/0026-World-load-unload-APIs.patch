@@ -13,7 +13,7 @@ Content-Transfer-Encoding: 8bit
 由于世界卸载可能发生在玩家登录或者传送的过程中,所以我使用了引用计数器来避免这个竟态条件的发生
 
 diff --git a/io/papermc/paper/threadedregions/RegionShutdownThread.java b/io/papermc/paper/threadedregions/RegionShutdownThread.java
-index f2208bcd5ccf3bd5a428e8ea3bf3ff26b3c9483b..d5c4e9b82f2ebc135b6747d19678b1a15e808ec8 100644
+index f2208bcd5ccf3bd5a428e8ea3bf3ff26b3c9483b..fdae732fbe50d121d0ac2f47dffcea9d01bae84d 100644
 --- a/io/papermc/paper/threadedregions/RegionShutdownThread.java
 +++ b/io/papermc/paper/threadedregions/RegionShutdownThread.java
 @@ -14,11 +14,11 @@ import java.util.ArrayList;
@@ -86,7 +86,7 @@ index f2208bcd5ccf3bd5a428e8ea3bf3ff26b3c9483b..d5c4e9b82f2ebc135b6747d19678b1a1
          LOGGER.info("Awaiting scheduler termination for 60s...");
          if (TickRegions.getScheduler().halt(true, TimeUnit.SECONDS.toNanos(60L))) {
 diff --git a/io/papermc/paper/threadedregions/RegionizedServer.java b/io/papermc/paper/threadedregions/RegionizedServer.java
-index d5ff949f4f459c4358b0130cd20f8ed9cf24b42d..3416445888860746c15a978f401c87245609b64a 100644
+index d5ff949f4f459c4358b0130cd20f8ed9cf24b42d..c23ddf3a52ca0c91c39ac2d6c899925c6c119f97 100644
 --- a/io/papermc/paper/threadedregions/RegionizedServer.java
 +++ b/io/papermc/paper/threadedregions/RegionizedServer.java
 @@ -62,6 +62,12 @@ public final class RegionizedServer {
@@ -103,7 +103,7 @@ index d5ff949f4f459c4358b0130cd20f8ed9cf24b42d..3416445888860746c15a978f401c8724
          // call init event _before_ scheduling anything
          new RegionizedServerInitEvent().callEvent();
 diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..8b204d5b5fa0356b248c5236709d98da03972a05 100644
+index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..61a57629e84d861581653422981d8c32fb49bb7d 100644
 --- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
 +++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
 @@ -49,7 +49,7 @@ public final class TickRegionScheduler {
@@ -228,7 +228,7 @@ index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..8b204d5b5fa0356b248c5236709d98da
  
      private void uncaughtException(final Thread thread, final Throwable thr) {
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 515414a63b95fb7318e136533aa6d8193ef3d4c5..becdb28efdd4402aa28dc1d6c29a57c0274b7982 100644
+index 4e8aa5750ec619d7363d6631d54c0485b19698dd..fc1551291d9a5072df98e93d26e6b183ba035c64 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -237,7 +237,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -258,7 +258,7 @@ index 515414a63b95fb7318e136533aa6d8193ef3d4c5..becdb28efdd4402aa28dc1d6c29a57c0
          Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
          newLevels.remove(level.dimension());
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index fbcbaf1840a1ee4f354da0245e9cf5708ef5f84e..c7cdf8a2d6856e7cac1d0809bc9bc5e9c45ba84f 100644
+index 25b36f038a4028de6d1a1a5bb09a6e4d4b154f2e..87de10a49bb7fb939ada90f54c8a06f506cd2644 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -220,6 +220,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -275,7 +275,7 @@ index fbcbaf1840a1ee4f354da0245e9cf5708ef5f84e..c7cdf8a2d6856e7cac1d0809bc9bc5e9
      // CraftBukkit start
      private final ResourceKey<LevelStem> typeKey;
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 6d425480157a0141100244afb32eaa843aff68f8..38add520ad63946c9c753870017334380547924e 100644
+index 395d0fe4a535088bcaf45824fee78bdb120acb2f..b356a6dc6c1c683e659be85e0d269cd237d3ffb6 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1720,7 +1720,30 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -322,7 +322,7 @@ index 6d425480157a0141100244afb32eaa843aff68f8..38add520ad63946c9c75387001733438
                  }
              );
 diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index a9f82554738bc0dc6eb946a7650e8e0b445a8241..bad89e319fb44ae90eb3cb5a93e956b97a08730e 100644
+index 6cb683ebf78fd897e9abd7ccae3341f907348303..715536d384b4b313ae7c5c36cd996d1d323adfcb 100644
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 @@ -210,8 +210,23 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
@@ -367,7 +367,7 @@ index a9f82554738bc0dc6eb946a7650e8e0b445a8241..bad89e319fb44ae90eb3cb5a93e956b9
                          );
                      }
 diff --git a/net/minecraft/server/network/config/PrepareSpawnTask.java b/net/minecraft/server/network/config/PrepareSpawnTask.java
-index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..643086a4e0ad68517bb1e1e33b2474bd437e56f8 100644
+index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..064935bb6eecfdeb8f08575d53e3bf0f8180833c 100644
 --- a/net/minecraft/server/network/config/PrepareSpawnTask.java
 +++ b/net/minecraft/server/network/config/PrepareSpawnTask.java
 @@ -105,6 +105,16 @@ public class PrepareSpawnTask implements ConfigurationTask {
@@ -429,7 +429,7 @@ index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..643086a4e0ad68517bb1e1e33b2474bd
          private final Vec2 spawnAngle;
  
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a62229803ad77e2f257c09b51a553b983d2b3026..c6f2cdd541f6f827195882536e6c6f6aeafad29f 100644
+index 0d86a54ffb15f41d42f3a453e1e82f5220963834..6f723a69a6ff3038e707b6e2efffd026dc312638 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -392,6 +392,9 @@ public abstract class Entity

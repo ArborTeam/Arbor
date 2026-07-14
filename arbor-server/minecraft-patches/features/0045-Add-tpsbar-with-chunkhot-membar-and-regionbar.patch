@@ -17,7 +17,7 @@ index 52dcbcf64c3a510d4a4524b7d0ee226d9a73511d..051d601e7e809518e8d82ae4ae325905
      }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 053b41328a09e241f30e0523d3b864279dcb159c..c55a137f8ca22038d740f83b6e558db7992cfb57 100644
+index d494bd4f6902a7d52923b1c2c001e89021bb040b..edf07a46695b7f8a6e6099a0c391f5d357416295 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1767,7 +1767,46 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -68,7 +68,7 @@ index 053b41328a09e241f30e0523d3b864279dcb159c..c55a137f8ca22038d740f83b6e558db7
              this.lastServerStatus = nano;
              this.status = this.buildServerStatus();
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 0e323ab55346f4790ca936f227917e5809e5e05c..47aafbc88a5d4fb6fc4b9dad45b46e5b00d2ef4b 100644
+index a8a80663ae178fbb142d5a589ab3f8f0a3719548..cb91e7f7a18b55a8e14e50224ecb8f9066911b5c 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1502,6 +1502,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -106,7 +106,7 @@ index 0e323ab55346f4790ca936f227917e5809e5e05c..47aafbc88a5d4fb6fc4b9dad45b46e5b
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 38add520ad63946c9c753870017334380547924e..451974ccf2dea148d5465d7fbb0f702e5260fd07 100644
+index b356a6dc6c1c683e659be85e0d269cd237d3ffb6..c1dffa504a1451bf335fd322d3bcd1ca1c23d056 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -454,7 +454,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -183,7 +183,7 @@ index 1a502cbd8acea9420fa6dd8d716018b5ede4ba6a..a4fc24bc636e17981a981c031d866531
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 90e33b0651e6889175abdadc1c9fab233def8a38..7c4f9a600183462f4e9bd31f9a4086bb0d653deb 100644
+index d1bed90f0a3c8382b03b01aaa04236f9aa808f03..139c987bc9fc4838616d00d31bea819a42cc9f10 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -6321,4 +6321,6 @@ public abstract class Entity
@@ -210,7 +210,7 @@ index 4ef848ddbf8cf84b1dfc3e6edb4218c639d9f2fa..bd8cac25917a117c4c8c7ef338f68c93
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 3beabbe07058c096615b3a037a54d2f42a89c6e9..e68d15119ab137236739e72ed11beac6564340c7 100644
+index 3b7cc7b204eea78a7dc694b195ab1e45860878b6..d7d7a5b42697f55c52b014d5ddcb729c9f179aed 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -1716,4 +1716,11 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
@@ -258,7 +258,7 @@ index 4c7fad3444dd8718e31bda8a8ab2efdaf0a736a1..e9d7d950cc2621ec9ad82f1db56bc772
 +    // KioCG end
  }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 4b57e9024f66810510886f8115d42007e374ee27..840bbd8625fd34f6dafe8778eed3f137d41e4245 100644
+index 4b57e9024f66810510886f8115d42007e374ee27..79dfbb6be6cc90d53e84cd430c408dc9abdc4368 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -170,6 +170,7 @@ public abstract class Player extends Avatar implements ContainerUser {

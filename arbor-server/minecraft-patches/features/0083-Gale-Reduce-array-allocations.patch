@@ -137,7 +137,7 @@ index 468a70d396e228d84f6bbae4e11f871ba6690e02..91d6aef1e028c46ca49d7fc7aa1eb574
                  if (!itemStack.isEmpty()) {
                      slots.add(Pair.of(slot, itemStack.copy()));
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index e5ee5f9c7392575b84a53b858712320efe09c47c..ad50feba5cbc5fe904850e6da06a866eeb23b519 100644
+index f6866848dc3c3fb22134c2b981c4ba80a891e929..904876414cc8f486578006bf4deff5613298d363 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1443,7 +1443,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -150,7 +150,7 @@ index e5ee5f9c7392575b84a53b858712320efe09c47c..ad50feba5cbc5fe904850e6da06a866e
                      this.getInventory().equipment.set(value, net.minecraft.world.item.ItemStack.EMPTY);
                  }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index b2dc29f75259eca66f5dfe4456845b6dd70b0baf..e12927623e8de82a6105b0cb0e6b58a6c45cff7e 100644
+index 480d9f842992ff24dcac66e13a0cb9ebe8cfe468..c9ea91367c88674aad4106a1672e85ef3b5d822a 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -3025,7 +3025,7 @@ public class ServerGamePacketListenerImpl
@@ -287,7 +287,7 @@ index fc4fce0b1d57a62c1e5c80a5b91c2b1a77d4bace..d6927b8f6393c1cedf50ba8daff82774
              if (!itemStack.isEmpty() && !EnchantmentHelper.has(itemStack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
                  this.drops.add(new DefaultDrop(itemStack, stack -> Block.popResource(this.level(), this.blockPosition().above(), stack))); // CraftBukkit - add to drops // Paper - Restore vanilla drops behavior; mirror so we can destroy it later - though this call site was safe & spawn drops correctly}
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 840bbd8625fd34f6dafe8778eed3f137d41e4245..592ce8beb28ebe8aaac2ed167abb24148afb0bc3 100644
+index 79dfbb6be6cc90d53e84cd430c408dc9abdc4368..ab255fb7d1d10420e0e2fda3432001d7d470132a 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -342,7 +342,7 @@ public abstract class Player extends Avatar implements ContainerUser {
@@ -300,7 +300,7 @@ index 840bbd8625fd34f6dafe8778eed3f137d41e4245..592ce8beb28ebe8aaac2ed167abb2414
              Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
              if (itemStack.is(item) && equippable != null && equippable.slot() == slot) {
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index 718a7786d73852368b6e911716fb494cc4770ef1..65d5c766eb9bfade4d8259bda418a7f0e413edbe 100644
+index 18ded2278f76b79ff452dfcd9b7fe6a9ffc659dc..b032e06c3e083284bfa2fa7af910586ceaf8e651 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
 @@ -1201,7 +1201,7 @@ public final class ItemStack implements DataComponentHolder, ItemInstance, Chang
@@ -361,7 +361,7 @@ index d5f749fd0745555fa91e184abea0c40ab873c182..146bc477f2f55db97373a995dcd3f85f
              if (predicate.test(item)) {
                  ItemEnchantments enchantments = item.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index d4d166e991c6faf53395b6b2d36a23bf3ee55c74..8c051d7322d8efc1ae2e151964fd0124740fd04d 100644
+index 63f1dd49d94cb34c93dae9511b0f4f6c0bc62756..c79984c677040fc82d67312be4c2f730e23b9505 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1962,7 +1962,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -383,7 +383,7 @@ index d4d166e991c6faf53395b6b2d36a23bf3ee55c74..8c051d7322d8efc1ae2e151964fd0124
      // Paper end - rewrite chunk system
  
 diff --git a/net/minecraft/world/level/block/ComposterBlock.java b/net/minecraft/world/level/block/ComposterBlock.java
-index e8f16b5a1089a7446a5472958de6a519fc0141ad..8f464e184d45590a43cc2eb22e8ed990911b6b76 100644
+index c2cd767188f3028ed4677d493efc54d00af5099c..356f98657a643ae2639a9cb3f6a675930f124289 100644
 --- a/net/minecraft/world/level/block/ComposterBlock.java
 +++ b/net/minecraft/world/level/block/ComposterBlock.java
 @@ -434,7 +434,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
@@ -414,7 +414,7 @@ index e8f16b5a1089a7446a5472958de6a519fc0141ad..8f464e184d45590a43cc2eb22e8ed990
  
          @Override
 diff --git a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-index 72a258f046c67c8970c91b8da31c0e745ec1e7ae..06d55281bb782cc064255c7b56acd6cd332b9085 100644
+index 1be16487593ea41ab7b53dec638c67eb2c6dcf86..4ead7005f3f98c2e707b5248913827bdba1de4b8 100644
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 @@ -45,7 +45,7 @@ public abstract class AbstractFurnaceBlockEntity extends BaseContainerBlockEntit

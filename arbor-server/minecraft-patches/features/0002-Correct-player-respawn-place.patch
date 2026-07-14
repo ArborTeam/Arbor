@@ -5,7 +5,7 @@ Subject: [PATCH] Correct player respawn place
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 5d4310dab55cc960ccfce279e656e7b740f3d5c0..bb352d11150b85976601920bba7b1636986cb0b0 100644
+index 5d4310dab55cc960ccfce279e656e7b740f3d5c0..679d60e304f9dc3f0b5bb881d5cdaef168585af1 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -524,8 +524,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc

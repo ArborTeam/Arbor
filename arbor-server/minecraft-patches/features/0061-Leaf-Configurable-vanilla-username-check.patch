@@ -8,7 +8,7 @@ A part of Leaf(https://github.com/Winds-Studio/Leaf/blob/edb0504069139beaa6f39ef
 License: https://github.com/Winds-Studio/Leaf/blob/edb0504069139beaa6f39efa4702370c2576b3fc/LICENSE.md
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 82f4680c4b12a09ce91216be9a0b598b387d9fd8..8a4939e801cf80ec676d276f4c949775b1528d26 100644
+index b54a97efd45d3c5d39c163a973618ad1f9e655c1..339622e34fcb0cf82381b895a8db9ad317892e24 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -167,11 +167,20 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -73,7 +73,7 @@ index aecbdddf4cf3ab627477156cd314f2872e7a5dbb..d2da9f3c5e53ceaeb85c6d3d7443e124
          } else {
              final boolean shouldLookup = !org.apache.commons.lang3.StringUtils.isBlank(name) // Paper - Don't lookup a profile with a blank name
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 63b81f30b8d813a7986ae72842fdc2d3097fa103..c9d3b000a328fe3583a7053a94c72dc003c1e10c 100644
+index b3327f65319f1717e40a3704ab000e6cfeaf9750..92adb5521250a9b6211b08b01269683aa0e194bf 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -135,6 +135,7 @@ public abstract class PlayerList {
@@ -93,7 +93,7 @@ index 63b81f30b8d813a7986ae72842fdc2d3097fa103..c9d3b000a328fe3583a7053a94c72dc0
          UUID uuid = player.getUUID();
          ServerPlayer serverPlayer = this.playersByUUID.get(uuid);
 diff --git a/net/minecraft/util/StringUtil.java b/net/minecraft/util/StringUtil.java
-index 74f9da2d42cc4339ae28f344acaa80185b946f4d..9e35b266f77f31b4e5c3329c7476fc6312bc4679 100644
+index 74f9da2d42cc4339ae28f344acaa80185b946f4d..0656818a8cfc43b6e5d174d9a709af4e93570b35 100644
 --- a/net/minecraft/util/StringUtil.java
 +++ b/net/minecraft/util/StringUtil.java
 @@ -64,6 +64,15 @@ public class StringUtil {
@@ -126,7 +126,7 @@ index 74f9da2d42cc4339ae28f344acaa80185b946f4d..9e35b266f77f31b4e5c3329c7476fc63
              return false;
          }
 diff --git a/net/minecraft/world/item/component/ResolvableProfile.java b/net/minecraft/world/item/component/ResolvableProfile.java
-index 8b554b35c5670daf594d91cb276f93735242eb21..f259cf714cd089ff9a717a072d73b2f4667b5d45 100644
+index 8b554b35c5670daf594d91cb276f93735242eb21..84b12a357d637259cc36cc4e085ba68933d816ce 100644
 --- a/net/minecraft/world/item/component/ResolvableProfile.java
 +++ b/net/minecraft/world/item/component/ResolvableProfile.java
 @@ -68,6 +68,30 @@ public abstract sealed class ResolvableProfile implements TooltipProvider permit

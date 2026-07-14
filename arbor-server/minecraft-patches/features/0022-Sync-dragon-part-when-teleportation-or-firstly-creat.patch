@@ -6,7 +6,7 @@ Subject: [PATCH] Sync dragon part when teleportation or firstly created
 A simple fix of https://github.com/PaperMC/Folia/issues/371
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
-index b31b55f00e2ce1bd6c1011fe852bd1dbb37de524..75c36cbf86e56d4993169688a13f22ccef555d92 100644
+index b31b55f00e2ce1bd6c1011fe852bd1dbb37de524..f609bac4415c858e548f121c0199518a0f44c4ea 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
 @@ -97,6 +97,7 @@ public final class ServerEntityLookup extends EntityLookup {
@@ -18,7 +18,7 @@ index b31b55f00e2ce1bd6c1011fe852bd1dbb37de524..75c36cbf86e56d4993169688a13f22cc
      }
  
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 10721cd22a10266e50f78c0d0f4c59a7f1c097c6..57861c747c0ab3989d1694874b4618d2d5a65eb1 100644
+index 4cbb495772c6b2ab95633b1b9830192acce132b5..81ca8b30a06236ebfbb15f04633e13545b4589d0 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4385,6 +4385,7 @@ public abstract class Entity
@@ -30,7 +30,7 @@ index 10721cd22a10266e50f78c0d0f4c59a7f1c097c6..57861c747c0ab3989d1694874b4618d2
          // for example, clearing of inventory after switching dimensions
          this.postRemoveAfterChangingDimensions();
 diff --git a/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java b/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-index 3ffb48f19c8b58a31d8641f398a705b578fada0d..794e586beeb99f516ac2b9705299fe08d63961ec 100644
+index 3ffb48f19c8b58a31d8641f398a705b578fada0d..b5c6e55578dfbd23db55e0e418ac4c59621c451f 100644
 --- a/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 @@ -1001,4 +1001,12 @@ public class EnderDragon extends Mob implements Enemy {

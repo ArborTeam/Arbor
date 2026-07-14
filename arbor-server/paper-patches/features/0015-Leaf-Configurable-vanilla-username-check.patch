@@ -8,7 +8,7 @@ A part of Leaf(https://github.com/Winds-Studio/Leaf/blob/edb0504069139beaa6f39ef
 License: https://github.com/Winds-Studio/Leaf/blob/edb0504069139beaa6f39efa4702370c2576b3fc/LICENSE.md
 
 diff --git a/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java b/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
-index 6d986b9f3b8b3bae5f0e3d9f5d72fa8caaf4bc28..c45de44f45ea653a41534867b97ee7cbc2da32bc 100644
+index 6d986b9f3b8b3bae5f0e3d9f5d72fa8caaf4bc28..84dce6aeacf4ce11633f0f290fdf7f35a19380a4 100644
 --- a/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
 +++ b/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
 @@ -67,6 +67,14 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {

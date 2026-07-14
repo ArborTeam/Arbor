@@ -5,7 +5,7 @@ Subject: [PATCH] Improved Server Health Report
 
 
 diff --git a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
-index 7826c50b7c7c59e148905337ddc0dc8085f3f7c1..3b3e86a7594fc9e5ea2411ef5d15a4404fee9e0d 100644
+index 7826c50b7c7c59e148905337ddc0dc8085f3f7c1..5e2ef469405007cfb50ece7b9d9fccd90756319e 100644
 --- a/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
 +++ b/io/papermc/paper/threadedregions/commands/CommandServerHealth.java
 @@ -28,6 +28,14 @@ import java.util.ArrayList;

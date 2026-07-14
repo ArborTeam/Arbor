@@ -5,7 +5,7 @@ Subject: [PATCH] Add back BlockPos transform to Position support
 
 
 diff --git a/src/main/java/io/papermc/paper/util/MCUtil.java b/src/main/java/io/papermc/paper/util/MCUtil.java
-index 08367eaa9f93d6213502d76be2acfe95c723c556..d2cfdae7f32d29cddf4dda242749a7d7142ec1c1 100644
+index 08367eaa9f93d6213502d76be2acfe95c723c556..b7199828c58b5c784f157a5ba27340203ed1b600 100644
 --- a/src/main/java/io/papermc/paper/util/MCUtil.java
 +++ b/src/main/java/io/papermc/paper/util/MCUtil.java
 @@ -168,6 +168,12 @@ public final class MCUtil {

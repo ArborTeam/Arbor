@@ -8,7 +8,7 @@ This is in dangerous zone, we won't support it if you find any plugin bug if you
 Co-authored-by: Helvetica Volubi <88063803+suisuroru@users.noreply.github.com>
 
 diff --git a/src/main/java/io/papermc/paper/plugin/provider/type/paper/PaperPluginProviderFactory.java b/src/main/java/io/papermc/paper/plugin/provider/type/paper/PaperPluginProviderFactory.java
-index 6369b13e1fcdbdb25dd9d6e4d3bffdedbee4f739..c20c04938b2f62b9e75831c5fdfabbd6ec51538a 100644
+index 6369b13e1fcdbdb25dd9d6e4d3bffdedbee4f739..9c88f1c48c9f6a1668572a810290e565e5c7ba57 100644
 --- a/src/main/java/io/papermc/paper/plugin/provider/type/paper/PaperPluginProviderFactory.java
 +++ b/src/main/java/io/papermc/paper/plugin/provider/type/paper/PaperPluginProviderFactory.java
 @@ -25,7 +25,7 @@ class PaperPluginProviderFactory implements PluginTypeFactory<PaperPluginParent,
@@ -21,7 +21,7 @@ index 6369b13e1fcdbdb25dd9d6e4d3bffdedbee4f739..c20c04938b2f62b9e75831c5fdfabbd6
          }
          // Folia end - block plugins not marked as supported
 diff --git a/src/main/java/io/papermc/paper/plugin/provider/type/spigot/SpigotPluginProviderFactory.java b/src/main/java/io/papermc/paper/plugin/provider/type/spigot/SpigotPluginProviderFactory.java
-index 6ef0042a355c65262bdb89dcf151bd644653216d..8f0b7b2985d3aadaacd5313d52d48ac916d871c9 100644
+index 6ef0042a355c65262bdb89dcf151bd644653216d..0f1d5c66450cd69d9c481cd1287ba35c24309e8b 100644
 --- a/src/main/java/io/papermc/paper/plugin/provider/type/spigot/SpigotPluginProviderFactory.java
 +++ b/src/main/java/io/papermc/paper/plugin/provider/type/spigot/SpigotPluginProviderFactory.java
 @@ -27,7 +27,7 @@ class SpigotPluginProviderFactory implements PluginTypeFactory<SpigotPluginProvi
@@ -34,7 +34,7 @@ index 6ef0042a355c65262bdb89dcf151bd644653216d..8f0b7b2985d3aadaacd5313d52d48ac9
          }
          // Folia end - block plugins not marked as supported
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index c414da018d73baa0a2612772f45899b642ea3a5d..fa3e2bf2b31ca5173d71082e93eb7eaa4faa2816 100644
+index c414da018d73baa0a2612772f45899b642ea3a5d..a6cbb8d75e377d47e40a44a293437b295e058ca4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 @@ -376,7 +376,7 @@ public final class CraftMagicNumbers implements UnsafeValues {

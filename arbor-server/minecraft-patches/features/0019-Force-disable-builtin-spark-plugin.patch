@@ -6,7 +6,7 @@ Subject: [PATCH] Force disable builtin spark plugin
 The spark passed down from paper has some memory leaking issue, so we fully removed it from the code to prevent that memory leaking issue.
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 30bc88482af3e79bedd85f6ebca046041da12743..515414a63b95fb7318e136533aa6d8193ef3d4c5 100644
+index edf06a0ae7af116d3a21379d31987e861029d398..4e8aa5750ec619d7363d6631d54c0485b19698dd 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -704,8 +704,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -75,7 +75,7 @@ index 30bc88482af3e79bedd85f6ebca046041da12743..515414a63b95fb7318e136533aa6d819
      }
  
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 77fe0b3db3b48899cb1bafdbe177893760a6b9f8..e4d634c562b247a8eff6f0e383e72603629e1584 100644
+index 1bd27debfc031d9cdf391f6b079cf26c3802dac5..5c24cd966a264d3f7e633f83fc6019ef23cad100 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -283,7 +283,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface

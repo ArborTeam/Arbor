@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for watchdog timeout
 
 
 diff --git a/io/papermc/paper/threadedregions/FoliaWatchdogThread.java b/io/papermc/paper/threadedregions/FoliaWatchdogThread.java
-index e9ca1a15049b0211d10401cb78e953b93afaf6c7..fe1560579f9c9572082d52cf910f5916957f5601 100644
+index e9ca1a15049b0211d10401cb78e953b93afaf6c7..c6e337a10ce2cf06d7ca0a4488164988813bbf96 100644
 --- a/io/papermc/paper/threadedregions/FoliaWatchdogThread.java
 +++ b/io/papermc/paper/threadedregions/FoliaWatchdogThread.java
 @@ -65,7 +65,7 @@ public final class FoliaWatchdogThread extends Thread {

@@ -5,7 +5,7 @@ Subject: [PATCH] Temporarily fix teleport yam and pitch
 
 
 diff --git a/net/minecraft/server/commands/TeleportCommand.java b/net/minecraft/server/commands/TeleportCommand.java
-index bfc012df8bf64cc9d2be36b2a4e97973468aed8f..f3b697eda0f47a2d1c64d7978ccdfb77fa226929 100644
+index bfc012df8bf64cc9d2be36b2a4e97973468aed8f..ff978c61829fbeddf6340f08b65f92873a2d3a4f 100644
 --- a/net/minecraft/server/commands/TeleportCommand.java
 +++ b/net/minecraft/server/commands/TeleportCommand.java
 @@ -247,8 +247,10 @@ public class TeleportCommand {

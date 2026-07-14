@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for unsafe teleportation
 
 
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index dffcc532e456e9576557ca08f468b8ba721628f6..c3f1f875b1adc75f9e9747e148f214e4623a0b4f 100644
+index dffcc532e456e9576557ca08f468b8ba721628f6..a52288631fc09ae7cf04d05d789ad516041c5899 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -69,7 +69,7 @@ public class FallingBlockEntity extends Entity {
@@ -27,7 +27,7 @@ index dffcc532e456e9576557ca08f468b8ba721628f6..c3f1f875b1adc75f9e9747e148f214e4
      }
  }
 diff --git a/net/minecraft/world/level/block/EndPortalBlock.java b/net/minecraft/world/level/block/EndPortalBlock.java
-index aab09feaa3c3c90e33701072e24ed144226e6d53..c1a9be0ee16871b52eda20c555ec415413af68db 100644
+index aab09feaa3c3c90e33701072e24ed144226e6d53..984f28e2da049014c43ad83c2fe79668e65a6152 100644
 --- a/net/minecraft/world/level/block/EndPortalBlock.java
 +++ b/net/minecraft/world/level/block/EndPortalBlock.java
 @@ -76,6 +76,12 @@ public class EndPortalBlock extends BaseEntityBlock implements Portal {

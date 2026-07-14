@@ -5,7 +5,7 @@ Subject: [PATCH] Add Portal rate limiter
 
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 091a257c3089ff746b215c8400fd6a57764e1f18..adef1ec5c5011cb343c2626e4d7057481e9c9057 100644
+index 287fe12c92afe1b157e30506ad8a83f471a85a30..dabedb25493d1db966abbb56643a1330d6e5ebc3 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -154,6 +154,10 @@ public final class RegionizedWorldData {
@@ -69,7 +69,7 @@ index 091a257c3089ff746b215c8400fd6a57764e1f18..adef1ec5c5011cb343c2626e4d705748
      // this is copy on write to allow packet processing to iterate safely
      private final CopyOnWriteArrayList<ServerPlayer> localPlayers = new CopyOnWriteArrayList<>();
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index c55a137f8ca22038d740f83b6e558db7992cfb57..7d06f012af05478e4a5ee3e0969417df6445d8b5 100644
+index edf07a46695b7f8a6e6099a0c391f5d357416295..ae08d4c53cc04ee59b3b696ed954f7a0c8d7be71 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1997,6 +1997,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -93,7 +93,7 @@ index c55a137f8ca22038d740f83b6e558db7992cfb57..7d06f012af05478e4a5ee3e0969417df
          //this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked // Folia - region threading
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 47aafbc88a5d4fb6fc4b9dad45b46e5b00d2ef4b..14907258f9f47086767fa0f2c0dbcccb8bc80f89 100644
+index cb91e7f7a18b55a8e14e50224ecb8f9066911b5c..9015ead0639d74af11fd3838fb0480077748cd77 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1547,8 +1547,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet

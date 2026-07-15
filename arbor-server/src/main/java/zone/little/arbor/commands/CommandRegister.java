@@ -1,6 +1,7 @@
 package zone.little.arbor.commands;
 
 import zone.little.arbor.commands.bar.BarCommand;
+import zone.little.arbor.commands.memoryleak.MemoryLeakCommand;
 
 public class CommandRegister {
     /**
@@ -10,5 +11,6 @@ public class CommandRegister {
      */
     public static void register() {
         new BarCommand().register();
+        new MemoryLeakCommand().register();
     }
 }

@@ -1,0 +1,768 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Little <2b2t@2b2t.zone>
+Date: Thu, 16 Jul 2026 00:35:13 +0800
+Subject: Add memory leak monitor
+
+---
+ .../arbor/commands/CommandRegister.java       |   2 +
+ .../memoryleak/MemoryLeakCommand.java         |  25 ++
+ .../memoryleak/MemoryLeakSubcommand.java      |  21 ++
+ .../commands/memoryleak/sub/DumpCommand.java  |  33 ++
+ .../memoryleak/sub/ReportCommand.java         |  51 +++
+ .../memoryleak/sub/StatusCommand.java         |  45 +++
+ .../config/modules/misc/MemoryLeakConfig.java |  52 +++
+ .../arbor/functions/memory/ClassGrowth.java   |   4 +
+ .../functions/memory/ClassHistogram.java      |  60 ++++
+ .../arbor/functions/memory/HeapDumper.java    |  36 ++
+ .../arbor/functions/memory/LeakReport.java    |   7 +
+ .../functions/memory/MemoryLeakMonitor.java   | 315 ++++++++++++++++++
+ 12 files changed, 651 insertions(+)
+ create mode 100644 arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/MemoryLeakCommand.java
+ create mode 100644 arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/MemoryLeakSubcommand.java
+ create mode 100644 arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/DumpCommand.java
+ create mode 100644 arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/ReportCommand.java
+ create mode 100644 arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/StatusCommand.java
+ create mode 100644 arbor-server/src/main/java/zone/little/arbor/config/modules/misc/MemoryLeakConfig.java
+ create mode 100644 arbor-server/src/main/java/zone/little/arbor/functions/memory/ClassGrowth.java
+ create mode 100644 arbor-server/src/main/java/zone/little/arbor/functions/memory/ClassHistogram.java
+ create mode 100644 arbor-server/src/main/java/zone/little/arbor/functions/memory/HeapDumper.java
+ create mode 100644 arbor-server/src/main/java/zone/little/arbor/functions/memory/LeakReport.java
+ create mode 100644 arbor-server/src/main/java/zone/little/arbor/functions/memory/MemoryLeakMonitor.java
+
+diff --git a/arbor-server/src/main/java/zone/little/arbor/commands/CommandRegister.java b/arbor-server/src/main/java/zone/little/arbor/commands/CommandRegister.java
+index 41c3be4..d298abe 100644
+--- a/arbor-server/src/main/java/zone/little/arbor/commands/CommandRegister.java
++++ b/arbor-server/src/main/java/zone/little/arbor/commands/CommandRegister.java
+@@ -1,6 +1,7 @@
+ package zone.little.arbor.commands;
+ 
+ import zone.little.arbor.commands.bar.BarCommand;
++import zone.little.arbor.commands.memoryleak.MemoryLeakCommand;
+ 
+ public class CommandRegister {
+     /**
+@@ -10,5 +11,6 @@ public class CommandRegister {
+      */
+     public static void register() {
+         new BarCommand().register();
++        new MemoryLeakCommand().register();
+     }
+ }
+diff --git a/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/MemoryLeakCommand.java b/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/MemoryLeakCommand.java
+new file mode 100644
+index 0000000..4121f92
+--- /dev/null
++++ b/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/MemoryLeakCommand.java
+@@ -0,0 +1,25 @@
++package zone.little.arbor.commands.memoryleak;
++
++import zone.little.arbor.commands.memoryleak.sub.DumpCommand;
++import zone.little.arbor.commands.memoryleak.sub.ReportCommand;
++import zone.little.arbor.commands.memoryleak.sub.StatusCommand;
++import org.bukkit.command.CommandSender;
++import org.jetbrains.annotations.NotNull;
++import org.leavesmc.leaves.command.RootNode;
++
++public class MemoryLeakCommand extends RootNode {
++    private static final String PERM_BASE = "arbor.commands.memoryleak";
++
++    public MemoryLeakCommand() {
++        super("memoryleak", PERM_BASE);
++        children(
++                new StatusCommand(),
++                new ReportCommand(),
++                new DumpCommand()
++        );
++    }
++
++    public static boolean hasPermission(@NotNull CommandSender sender, String... subcommand) {
++        return hasPermission(PERM_BASE, sender, subcommand);
++    }
++}
+diff --git a/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/MemoryLeakSubcommand.java b/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/MemoryLeakSubcommand.java
+new file mode 100644
+index 0000000..9cfb661
+--- /dev/null
++++ b/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/MemoryLeakSubcommand.java
+@@ -0,0 +1,21 @@
++package zone.little.arbor.commands.memoryleak;
++
++import io.papermc.paper.command.brigadier.CommandSourceStack;
++import org.bukkit.command.CommandSender;
++import org.jetbrains.annotations.NotNull;
++import org.leavesmc.leaves.command.LiteralNode;
++
++public abstract class MemoryLeakSubcommand extends LiteralNode {
++    protected MemoryLeakSubcommand(String name) {
++        super(name);
++    }
++
++    @Override
++    public boolean requires(@NotNull CommandSourceStack source) {
++        return hasPermission(source.getSender());
++    }
++
++    protected boolean hasPermission(CommandSender sender) {
++        return MemoryLeakCommand.hasPermission(sender, this.name);
++    }
++}
+diff --git a/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/DumpCommand.java b/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/DumpCommand.java
+new file mode 100644
+index 0000000..2c19bfb
+--- /dev/null
++++ b/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/DumpCommand.java
+@@ -0,0 +1,33 @@
++package zone.little.arbor.commands.memoryleak.sub;
++
++import com.mojang.brigadier.exceptions.CommandSyntaxException;
++import zone.little.arbor.commands.memoryleak.MemoryLeakSubcommand;
++import zone.little.arbor.functions.memory.MemoryLeakMonitor;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.format.NamedTextColor;
++import org.jetbrains.annotations.NotNull;
++import org.leavesmc.leaves.command.CommandContext;
++
++import java.io.File;
++
++public class DumpCommand extends MemoryLeakSubcommand {
++    public DumpCommand() {
++        super("dump");
++    }
++
++    @Override
++    protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
++        context.getSender().sendMessage(Component.text("Writing heap dump, this may freeze the server briefly...", NamedTextColor.YELLOW));
++        try {
++            File file = MemoryLeakMonitor.get().dumpHeap();
++            if (file == null) {
++                context.getSender().sendMessage(Component.text("Heap dump failed, see server log for details.", NamedTextColor.RED));
++            } else {
++                context.getSender().sendMessage(Component.text("Heap dump written to " + file.getPath(), NamedTextColor.GREEN));
++            }
++        } catch (Throwable throwable) {
++            context.getSender().sendMessage(Component.text("Heap dump failed: " + throwable.getMessage(), NamedTextColor.RED));
++        }
++        return true;
++    }
++}
+diff --git a/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/ReportCommand.java b/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/ReportCommand.java
+new file mode 100644
+index 0000000..0960d4e
+--- /dev/null
++++ b/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/ReportCommand.java
+@@ -0,0 +1,51 @@
++package zone.little.arbor.commands.memoryleak.sub;
++
++import com.mojang.brigadier.exceptions.CommandSyntaxException;
++import zone.little.arbor.commands.memoryleak.MemoryLeakSubcommand;
++import zone.little.arbor.config.modules.misc.MemoryLeakConfig;
++import zone.little.arbor.functions.memory.ClassGrowth;
++import zone.little.arbor.functions.memory.LeakReport;
++import zone.little.arbor.functions.memory.MemoryLeakMonitor;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.format.NamedTextColor;
++import org.jetbrains.annotations.NotNull;
++import org.leavesmc.leaves.command.CommandContext;
++
++public class ReportCommand extends MemoryLeakSubcommand {
++    public ReportCommand() {
++        super("report");
++    }
++
++    @Override
++    protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
++        if (!MemoryLeakConfig.enabled) {
++            context.getSender().sendMessage(Component.text("Memory leak detector is disabled in config.", NamedTextColor.RED));
++            return true;
++        }
++
++        LeakReport report = MemoryLeakMonitor.get().captureReport();
++        if (report == null) {
++            context.getSender().sendMessage(Component.text("Not enough samples collected yet.", NamedTextColor.YELLOW));
++            return true;
++        }
++
++        context.getSender().sendMessage(Component.text("Memory diagnostic report", NamedTextColor.GOLD));
++        context.getSender().sendMessage(Component.text("  Tenured usage: " + MemoryLeakMonitor.humanBytes(report.usedBytes())
++                + " / " + MemoryLeakMonitor.humanBytes(report.maxBytes()), NamedTextColor.GRAY));
++        context.getSender().sendMessage(Component.text("  Growth rate: " + MemoryLeakMonitor.humanBytes((long) report.slopeBytesPerSecond()) + "/s", NamedTextColor.GRAY));
++        context.getSender().sendMessage(Component.text("  Full GC count: " + report.fullGcCount(), NamedTextColor.GRAY));
++
++        if (report.topGrowth().isEmpty()) {
++            context.getSender().sendMessage(Component.text("  No class histogram diff available yet.", NamedTextColor.GRAY));
++            return true;
++        }
++
++        context.getSender().sendMessage(Component.text("  Fastest growing classes:", NamedTextColor.YELLOW));
++        for (ClassGrowth entry : report.topGrowth()) {
++            context.getSender().sendMessage(Component.text("   " + entry.className()
++                    + "  +" + MemoryLeakMonitor.humanBytes(entry.byteDelta())
++                    + " (" + entry.instanceDelta() + " inst)", NamedTextColor.GRAY));
++        }
++        return true;
++    }
++}
+diff --git a/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/StatusCommand.java b/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/StatusCommand.java
+new file mode 100644
+index 0000000..0910eb8
+--- /dev/null
++++ b/arbor-server/src/main/java/zone/little/arbor/commands/memoryleak/sub/StatusCommand.java
+@@ -0,0 +1,45 @@
++package zone.little.arbor.commands.memoryleak.sub;
++
++import com.mojang.brigadier.exceptions.CommandSyntaxException;
++import zone.little.arbor.commands.memoryleak.MemoryLeakSubcommand;
++import zone.little.arbor.config.modules.misc.MemoryLeakConfig;
++import zone.little.arbor.functions.memory.LeakReport;
++import zone.little.arbor.functions.memory.MemoryLeakMonitor;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.format.NamedTextColor;
++import org.jetbrains.annotations.NotNull;
++import org.leavesmc.leaves.command.CommandContext;
++
++import java.util.Locale;
++
++public class StatusCommand extends MemoryLeakSubcommand {
++    public StatusCommand() {
++        super("status");
++    }
++
++    @Override
++    protected boolean execute(@NotNull CommandContext context) throws CommandSyntaxException {
++        MemoryLeakMonitor monitor = MemoryLeakMonitor.get();
++        if (!MemoryLeakConfig.enabled) {
++            context.getSender().sendMessage(Component.text("Memory leak detector is disabled in config.", NamedTextColor.RED));
++            return true;
++        }
++
++        LeakReport report = monitor.lastReport();
++        context.getSender().sendMessage(Component.text("Memory leak detector", NamedTextColor.GOLD));
++        context.getSender().sendMessage(Component.text("  Running: " + monitor.isRunning(), NamedTextColor.GRAY));
++        if (report == null) {
++            context.getSender().sendMessage(Component.text("  Collecting samples, no data yet.", NamedTextColor.GRAY));
++            return true;
++        }
++
++        context.getSender().sendMessage(Component.text("  Samples: " + report.sampleCount(), NamedTextColor.GRAY));
++        context.getSender().sendMessage(Component.text("  Tenured usage: " + MemoryLeakMonitor.humanBytes(report.usedBytes())
++                + " (" + String.format(Locale.ROOT, "%.1f", report.usedRatio() * 100.0D) + "%)", NamedTextColor.GRAY));
++        context.getSender().sendMessage(Component.text("  Growth: " + MemoryLeakMonitor.humanBytes((long) report.slopeBytesPerSecond()) + "/s", NamedTextColor.GRAY));
++        context.getSender().sendMessage(report.suspected()
++                ? Component.text("  Leak suspected!", NamedTextColor.RED)
++                : Component.text("  No leak detected.", NamedTextColor.GREEN));
++        return true;
++    }
++}
+diff --git a/arbor-server/src/main/java/zone/little/arbor/config/modules/misc/MemoryLeakConfig.java b/arbor-server/src/main/java/zone/little/arbor/config/modules/misc/MemoryLeakConfig.java
+new file mode 100644
+index 0000000..1fa1a67
+--- /dev/null
++++ b/arbor-server/src/main/java/zone/little/arbor/config/modules/misc/MemoryLeakConfig.java
+@@ -0,0 +1,52 @@
++package zone.little.arbor.config.modules.misc;
++
++import com.electronwill.nightconfig.core.file.CommentedFileConfig;
++import zone.little.arbor.config.IConfigModule;
++import zone.little.arbor.config.flags.ConfigClassInfo;
++import zone.little.arbor.config.flags.ConfigInfo;
++import zone.little.arbor.enums.EnumConfigCategory;
++import zone.little.arbor.functions.memory.MemoryLeakMonitor;
++import org.jetbrains.annotations.Nullable;
++
++import java.util.Set;
++
++@ConfigClassInfo(category = EnumConfigCategory.MISC, name = "memory_leak_detector")
++public class MemoryLeakConfig implements IConfigModule {
++
++    @ConfigInfo(name = "enabled", comments = "启用后台内存泄漏监测，通过采样老年代堆用量的增长趋势进行判断\n" + "非专业人士请勿改动默认配置！！！")
++    public static boolean enabled = false;
++
++    @ConfigInfo(name = "sample_interval_seconds", comments = "两次堆采样之间的间隔（秒）")
++    public static int sampleIntervalSeconds = 30;
++
++    @ConfigInfo(name = "trend_window_seconds", comments = "用于计算增长趋势的滑动窗口长度（秒），越长越不容易被短时波动误判")
++    public static int trendWindowSeconds = 1800;
++
++    @ConfigInfo(name = "min_samples_for_trend", comments = "计算趋势所需的最少样本数")
++    public static int minSamplesForTrend = 10;
++
++    @ConfigInfo(name = "growth_threshold_bytes_per_second", comments = "老年代增长速率超过该值（字节/秒）视为可疑")
++    public static long growthThresholdBytesPerSecond = 262144L;
++
++    @ConfigInfo(name = "min_heap_usage_ratio_percent", comments = "当老年代占用比例达到该百分比时才判定内存泄漏，避免堆很空时误报")
++    public static int minHeapUsageRatioPercent = 70;
++
++    @ConfigInfo(name = "trends_before_warn", comments = "连续多少次采样判定为可疑才输出警告与诊断")
++    public static int trendsBeforeWarn = 3;
++
++    @ConfigInfo(name = "top_class_count", comments = "诊断报告中列出的增长最多的类的数量")
++    public static int topClassCount = 15;
++
++    @ConfigInfo(name = "auto_heap_dump", comments = "确认可疑泄漏时是否自动写出堆转储（.hprof）文件")
++    public static boolean autoHeapDump = false;
++
++    @Override
++    public void onLoaded(CommentedFileConfig configInstance, @Nullable Set<Exception> e) {
++        MemoryLeakMonitor.get().reload();
++    }
++
++    @Override
++    public void onUnloaded(CommentedFileConfig configInstance) {
++        MemoryLeakMonitor.get().stop();
++    }
++}
+diff --git a/arbor-server/src/main/java/zone/little/arbor/functions/memory/ClassGrowth.java b/arbor-server/src/main/java/zone/little/arbor/functions/memory/ClassGrowth.java
+new file mode 100644
+index 0000000..180a773
+--- /dev/null
++++ b/arbor-server/src/main/java/zone/little/arbor/functions/memory/ClassGrowth.java
+@@ -0,0 +1,4 @@
++package zone.little.arbor.functions.memory;
++
++public record ClassGrowth(String className, long instanceDelta, long byteDelta, long currentInstances, long currentBytes) {
++}
+diff --git a/arbor-server/src/main/java/zone/little/arbor/functions/memory/ClassHistogram.java b/arbor-server/src/main/java/zone/little/arbor/functions/memory/ClassHistogram.java
+new file mode 100644
+index 0000000..d3db4bd
+--- /dev/null
++++ b/arbor-server/src/main/java/zone/little/arbor/functions/memory/ClassHistogram.java
+@@ -0,0 +1,60 @@
++package zone.little.arbor.functions.memory;
++
++import com.mojang.logging.LogUtils;
++import org.slf4j.Logger;
++
++import javax.management.MBeanServer;
++import javax.management.ObjectName;
++import java.lang.management.ManagementFactory;
++import java.util.HashMap;
++import java.util.Map;
++
++public final class ClassHistogram {
++
++    private static final Logger LOGGER = LogUtils.getLogger();
++    private static final String DIAGNOSTIC_BEAN = "com.sun.management:type=DiagnosticCommand";
++    private static final String OPERATION = "gcClassHistogram";
++
++    private ClassHistogram() {
++    }
++
++    public record Entry(long instances, long bytes) {
++    }
++
++    public static Map<String, Entry> capture() {
++        Map<String, Entry> result = new HashMap<>();
++        String raw = invoke();
++        if (raw == null) {
++            return result;
++        }
++        for (String line : raw.split("\n")) {
++            String trimmed = line.trim();
++            if (trimmed.isEmpty() || trimmed.startsWith("num") || trimmed.startsWith("-") || trimmed.startsWith("Total")) {
++                continue;
++            }
++            String[] parts = trimmed.split("\\s+");
++            if (parts.length < 4) {
++                continue;
++            }
++            try {
++                long instances = Long.parseLong(parts[1]);
++                long bytes = Long.parseLong(parts[2]);
++                String className = parts[3];
++                result.merge(className, new Entry(instances, bytes), (a, b) -> new Entry(a.instances + b.instances, a.bytes + b.bytes));
++            } catch (NumberFormatException ignored) {
++            }
++        }
++        return result;
++    }
++
++    private static String invoke() {
++        try {
++            MBeanServer server = ManagementFactory.getPlatformMBeanServer();
++            ObjectName name = new ObjectName(DIAGNOSTIC_BEAN);
++            return (String) server.invoke(name, OPERATION, new Object[]{new String[0]}, new String[]{String[].class.getName()});
++        } catch (Exception e) {
++            LOGGER.debug("Unable to capture class histogram", e);
++            return null;
++        }
++    }
++}
+diff --git a/arbor-server/src/main/java/zone/little/arbor/functions/memory/HeapDumper.java b/arbor-server/src/main/java/zone/little/arbor/functions/memory/HeapDumper.java
+new file mode 100644
+index 0000000..31b2b27
+--- /dev/null
++++ b/arbor-server/src/main/java/zone/little/arbor/functions/memory/HeapDumper.java
+@@ -0,0 +1,36 @@
++package zone.little.arbor.functions.memory;
++
++import com.mojang.logging.LogUtils;
++import com.sun.management.HotSpotDiagnosticMXBean;
++import org.slf4j.Logger;
++
++import java.io.File;
++import java.lang.management.ManagementFactory;
++import java.time.LocalDateTime;
++import java.time.format.DateTimeFormatter;
++
++public final class HeapDumper {
++
++    private static final Logger LOGGER = LogUtils.getLogger();
++    private static final DateTimeFormatter STAMP = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
++
++    private HeapDumper() {
++    }
++
++    public static File dump(File directory, boolean liveOnly) {
++        try {
++            if (!directory.exists() && !directory.mkdirs()) {
++                LOGGER.warn("Unable to create heap dump directory {}", directory.getAbsolutePath());
++                return null;
++            }
++            File target = new File(directory, "arbor-heap-" + LocalDateTime.now().format(STAMP) + ".hprof");
++            HotSpotDiagnosticMXBean bean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
++            bean.dumpHeap(target.getAbsolutePath(), liveOnly);
++            LOGGER.info("Wrote heap dump to {}", target.getAbsolutePath());
++            return target;
++        } catch (Exception e) {
++            LOGGER.warn("Failed to write heap dump", e);
++            return null;
++        }
++    }
++}
+diff --git a/arbor-server/src/main/java/zone/little/arbor/functions/memory/LeakReport.java b/arbor-server/src/main/java/zone/little/arbor/functions/memory/LeakReport.java
+new file mode 100644
+index 0000000..54027a0
+--- /dev/null
++++ b/arbor-server/src/main/java/zone/little/arbor/functions/memory/LeakReport.java
+@@ -0,0 +1,7 @@
++package zone.little.arbor.functions.memory;
++
++import java.util.List;
++
++public record LeakReport(boolean suspected, double slopeBytesPerSecond, long usedBytes, long maxBytes, double usedRatio,
++                         int fullGcCount, long sampleCount, List<ClassGrowth> topGrowth) {
++}
+diff --git a/arbor-server/src/main/java/zone/little/arbor/functions/memory/MemoryLeakMonitor.java b/arbor-server/src/main/java/zone/little/arbor/functions/memory/MemoryLeakMonitor.java
+new file mode 100644
+index 0000000..f83ce72
+--- /dev/null
++++ b/arbor-server/src/main/java/zone/little/arbor/functions/memory/MemoryLeakMonitor.java
+@@ -0,0 +1,315 @@
++package zone.little.arbor.functions.memory;
++
++import com.mojang.logging.LogUtils;
++import zone.little.arbor.config.modules.misc.MemoryLeakConfig;
++import org.slf4j.Logger;
++
++import java.io.File;
++import java.lang.management.GarbageCollectorMXBean;
++import java.lang.management.ManagementFactory;
++import java.lang.management.MemoryMXBean;
++import java.lang.management.MemoryPoolMXBean;
++import java.lang.management.MemoryType;
++import java.lang.management.MemoryUsage;
++import java.util.ArrayList;
++import java.util.LinkedList;
++import java.util.List;
++import java.util.Locale;
++import java.util.Map;
++
++public class MemoryLeakMonitor {
++    private static final Logger LOGGER = LogUtils.getLogger();
++    private static final MemoryLeakMonitor INSTANCE = new MemoryLeakMonitor();
++    private static final File DUMP_DIR = new File("arbor-heap-dumps");
++
++    private final MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
++    private final LinkedList<long[]> samples = new LinkedList<>();
++
++    private Worker worker;
++    private volatile boolean running;
++    private volatile LeakReport lastReport;
++    private Map<String, ClassHistogram.Entry> baseline;
++    private int suspiciousStreak;
++
++    public static MemoryLeakMonitor get() {
++        return INSTANCE;
++    }
++
++    public void reload() {
++        this.stop();
++
++        if (MemoryLeakConfig.enabled) {
++            this.start();
++        }
++    }
++
++    public void start() {
++        if (this.running) {
++            return;
++        }
++
++        this.running = true;
++        this.worker = new Worker();
++        this.worker.start();
++
++        LOGGER.info("Memory leak monitor started, sampling every {}s", MemoryLeakConfig.sampleIntervalSeconds);
++    }
++
++    public void stop() {
++        this.running = false;
++
++        if (this.worker != null) {
++            this.worker.interrupt();
++            this.worker = null;
++        }
++
++        synchronized (this.samples) {
++            this.samples.clear();
++        }
++
++        this.baseline = null;
++        this.suspiciousStreak = 0;
++    }
++
++    public boolean isRunning() {
++        return this.running;
++    }
++
++    public LeakReport lastReport() {
++        return this.lastReport;
++    }
++
++    public LeakReport captureReport() {
++        final LeakReport report = this.buildReport(this.tenured());
++        this.lastReport = report;
++        return report;
++    }
++
++    public File dumpHeap() {
++        return HeapDumper.dump(DUMP_DIR, true);
++    }
++
++    private void tick() {
++        final long now = System.currentTimeMillis();
++        final MemoryUsage tenured = this.tenured();
++        final long window = MemoryLeakConfig.trendWindowSeconds * 1000L;
++
++        synchronized (this.samples) {
++            this.samples.addLast(new long[]{now, tenured.getUsed()});
++
++            while (this.samples.size() > 2 && now - this.samples.getFirst()[0] > window) {
++                this.samples.removeFirst();
++            }
++        }
++
++        final LeakReport report = this.buildReport(tenured);
++        this.lastReport = report;
++
++        if (!report.suspected()) {
++            this.suspiciousStreak = 0;
++            return;
++        }
++
++        this.suspiciousStreak++;
++        if (this.suspiciousStreak < MemoryLeakConfig.trendsBeforeWarn) {
++            return;
++        }
++
++        this.printWarning(report);
++        if (MemoryLeakConfig.autoHeapDump) {
++            HeapDumper.dump(DUMP_DIR, true);
++        }
++
++        this.suspiciousStreak = 0;
++    }
++
++    private LeakReport buildReport(MemoryUsage tenured) {
++        final long used = tenured.getUsed();
++        final long max = tenured.getMax();
++        final double ratio = max > 0L ? (double) used / max : 0.0D;
++        final double slope = this.growthPerSecond();
++
++        final int count;
++        synchronized (this.samples) {
++            count = this.samples.size();
++        }
++
++        final boolean suspected = count >= MemoryLeakConfig.minSamplesForTrend
++                && ratio * 100.0D >= MemoryLeakConfig.minHeapUsageRatioPercent
++                && slope >= MemoryLeakConfig.growthThresholdBytesPerSecond;
++
++        final List<ClassGrowth> growth = suspected ? this.diffHistogram() : List.of();
++        return new LeakReport(suspected, slope, used, max, ratio, this.fullGcCount(), count, growth);
++    }
++
++    private double growthPerSecond() {
++        synchronized (this.samples) {
++            final int n = this.samples.size();
++            if (n < 2) {
++                return 0.0D;
++            }
++
++            final long base = this.samples.getFirst()[0];
++            double sumX = 0.0D;
++            double sumY = 0.0D;
++            double sumXY = 0.0D;
++            double sumXX = 0.0D;
++
++            for (long[] point : this.samples) {
++                final double x = (point[0] - base) / 1000.0D;
++                final double y = point[1];
++                sumX += x;
++                sumY += y;
++                sumXY += x * y;
++                sumXX += x * x;
++            }
++
++            final double denom = n * sumXX - sumX * sumX;
++            if (denom == 0.0D) {
++                return 0.0D;
++            }
++
++            return (n * sumXY - sumX * sumY) / denom;
++        }
++    }
++
++    private List<ClassGrowth> diffHistogram() {
++        final Map<String, ClassHistogram.Entry> current = ClassHistogram.capture();
++        if (current.isEmpty()) {
++            return List.of();
++        }
++
++        if (this.baseline == null) {
++            this.baseline = current;
++            return List.of();
++        }
++
++        final List<ClassGrowth> result = new ArrayList<>();
++        for (Map.Entry<String, ClassHistogram.Entry> entry : current.entrySet()) {
++            final ClassHistogram.Entry old = this.baseline.get(entry.getKey());
++            final long instances = entry.getValue().instances() - (old == null ? 0L : old.instances());
++            final long bytes = entry.getValue().bytes() - (old == null ? 0L : old.bytes());
++
++            if (bytes > 0L) {
++                result.add(new ClassGrowth(entry.getKey(), instances, bytes, entry.getValue().instances(), entry.getValue().bytes()));
++            }
++        }
++
++        result.sort((a, b) -> Long.compare(b.byteDelta(), a.byteDelta()));
++
++        final int limit = Math.min(MemoryLeakConfig.topClassCount, result.size());
++        return new ArrayList<>(result.subList(0, limit));
++    }
++
++    private void printWarning(LeakReport report) {
++        LOGGER.warn("Suspected memory leak: tenured heap growing at {}/s, usage {} ({}), full GC count {}",
++                humanBytes((long) report.slopeBytesPerSecond()), humanBytes(report.usedBytes()),
++                percent(report.usedRatio()), report.fullGcCount());
++
++        for (ClassGrowth growth : report.topGrowth()) {
++            LOGGER.warn("  {} +{} ({} instances), now {}",
++                    growth.className(), humanBytes(growth.byteDelta()), growth.instanceDelta(), humanBytes(growth.currentBytes()));
++        }
++    }
++
++    private MemoryUsage tenured() {
++        long used = 0L;
++        long committed = 0L;
++        long max = 0L;
++        boolean found = false;
++
++        for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
++            if (pool.getType() != MemoryType.HEAP || !pool.isValid()) {
++                continue;
++            }
++
++            final String name = pool.getName().toLowerCase(Locale.ROOT);
++            if (!name.contains("old") && !name.contains("tenured")) {
++                continue;
++            }
++
++            final MemoryUsage usage = pool.getUsage();
++            if (usage == null) {
++                continue;
++            }
++
++            used += usage.getUsed();
++            committed += usage.getCommitted();
++            if (usage.getMax() > 0L) {
++                max += usage.getMax();
++            }
++            found = true;
++        }
++
++        if (!found) {
++            return this.memoryBean.getHeapMemoryUsage();
++        }
++
++        return new MemoryUsage(-1L, used, committed, max > 0L ? max : -1L);
++    }
++
++    private int fullGcCount() {
++        int count = 0;
++
++        for (GarbageCollectorMXBean gc : ManagementFactory.getGarbageCollectorMXBeans()) {
++            final String name = gc.getName().toLowerCase(Locale.ROOT);
++            if (name.contains("old") || name.contains("marksweep") || name.contains("g1 old") || name.contains("global")) {
++                final long value = gc.getCollectionCount();
++                if (value > 0L) {
++                    count += (int) value;
++                }
++            }
++        }
++
++        return count;
++    }
++
++    private static String percent(double ratio) {
++        return String.format(Locale.ROOT, "%.1f%%", ratio * 100.0D);
++    }
++
++    public static String humanBytes(long bytes) {
++        if (bytes < 1024L) {
++            return bytes + " B";
++        }
++
++        final String[] units = {"KB", "MB", "GB", "TB"};
++        double value = bytes;
++        int index = -1;
++
++        do {
++            value /= 1024.0D;
++            index++;
++        } while (value >= 1024.0D && index < units.length - 1);
++
++        return String.format(Locale.ROOT, "%.2f %s", value, units[index]);
++    }
++
++    private final class Worker extends Thread {
++        private Worker() {
++            super("Arbor Memory Leak Monitor");
++            this.setDaemon(true);
++        }
++
++        @Override
++        public void run() {
++            while (MemoryLeakMonitor.this.running) {
++                try {
++                    Thread.sleep(MemoryLeakConfig.sampleIntervalSeconds * 1000L);
++                } catch (InterruptedException e) {
++                    return;
++                }
++
++                if (!MemoryLeakMonitor.this.running) {
++                    return;
++                }
++
++                try {
++                    MemoryLeakMonitor.this.tick();
++                } catch (Exception e) {
++                    LOGGER.warn("Memory leak monitor sampling failed", e);
++                }
++            }
++        }
++    }
++}
+-- 
+2.54.0.windows.1
+

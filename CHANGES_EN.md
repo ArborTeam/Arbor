@@ -17,6 +17,12 @@ carrying notices that state the work has been modified, with the relevant dates 
 
 ## Modification Log
 
+### 2026-07-16 — Modified by Little
+
+Added the /memoryleak command for monitoring memory leaks.
+See arbor_global_config.toml for details.
+Heap dump (.hprof) files are written to the arbor-heap-dumps directory by default.
+
 ### 2026-07-14 — Modified by Little
 
 Applied two patches provided by the original author EarthMe:

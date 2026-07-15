@@ -17,6 +17,12 @@
 
 ## 修改记录
 
+### 2026-07-16 — 修改者：Little
+
+本次更新了/memoryleak指令 用于监测内存泄漏
+详情见arbor_global_config.toml
+写出的堆转储 .hprof文件默认目录为arbor-heap-dumps下
+
 ### 2026-07-14 — 修改者：Little
 
 应用两个由原作者 EarthMe 提供的补丁：

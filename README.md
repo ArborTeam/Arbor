@@ -71,7 +71,7 @@ chmod 755 ./scripts/setup_and_build.sh && ./scripts/setup_and_build.sh
 ```kotlin
 repositories {
     maven {
-        url = "https://repo.bacteriawa.com/repository/maven-public/"
+        url = "https://repo.littleovo.cn/releases"
     }
 }
 
@@ -86,7 +86,7 @@ dependencies {
 <repositories>
     <repository>
         <id>repository</id>
-        <url>https://repo.bacteriawa.com/repository/maven-public/</url>
+        <url>https://repo.littleovo.cn/releases</url>
     </repository>
 </repositories>
 

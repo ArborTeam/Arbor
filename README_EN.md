@@ -69,7 +69,7 @@ After building, you can find the generated JAR file in the `build/libs` director
 ```kotlin
 repositories {
     maven {
-        url = "https://repo.bacteriawa.com/repository/maven-public/"
+        url = "https://repo.littleovo.cn/releases"
     }
 }
 
@@ -84,7 +84,7 @@ dependencies {
 <repositories>
     <repository>
         <id>repository</id>
-        <url>https://repo.bacteriawa.com/repository/maven-public/</url>
+        <url>https://repo.littleovo.cn/releases</url>
     </repository>
 </repositories>
 

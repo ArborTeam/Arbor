@@ -9,8 +9,7 @@
   [![Issues](https://img.shields.io/github/issues/LittleOvO233/Arbor?style=for-the-badge&color=orange)](https://github.com/LittleOvO233/Arbor/issues)
   
   ![Commit Activity](https://img.shields.io/github/commit-activity/w/LittleOvO233/Arbor?style=for-the-badge&color=purple)
-  ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/LittleOvO233/Arbor?style=for-the-badge&color=yellow)
-  ![GitHub all releases](https://img.shields.io/github/downloads/LuminolMC/Luminol/total?style=for-the-badge&color=red)
+  ![GitHub all releases](https://img.shields.io/github/downloads/LittleOvO233/Arbor/total?style=for-the-badge&color=red)
   
   ![Repo contributors](https://img.shields.io/github/contributors/LittleOvO233/Arbor?style=for-the-badge&color=brightgreen)
   

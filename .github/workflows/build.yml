@@ -46,7 +46,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Configure Git User Details
-        run: git config --global user.email "ci@luminolmc.com" && git config --global user.name "Arbor CI"
+        run: git config --global user.email "ci@littleovo.cn" && git config --global user.name "Arbor CI"
 
       - name: Build All
         run: chmod 755 ./scripts/setup_and_build.sh && ./scripts/setup_and_build.sh
@@ -120,7 +120,7 @@ jobs:
           tag: ${{ env.tag }}
           name: ${{ env.project_id_b }} ${{ env.mcversion }} - ${{ env.commit_id }}${{ env.release_count }}
           body: |
-            📦Version: `${{ env.mcversion }}` | Commit ${{ env.commit_id }} [![download](https://img.shields.io/github/downloads/LuminolMC/${{ env.project_id }}/${{ env.tag }}/total?color=red&style=flat-square)](https://github.com/LuminolMC/${{ env.project_id }}/releases/download/${{ env.tag }}/${{ env.jar }})
+            📦Version: `${{ env.mcversion }}` | Commit ${{ env.commit_id }} [![download](https://img.shields.io/github/downloads/LittleOvO233/${{ env.project_id }}/${{ env.tag }}/total?color=red&style=flat-square)](https://github.com/LittleOvO233/${{ env.project_id }}/releases/download/${{ env.tag }}/${{ env.jar }})
             This release is automatically compiled by GitHub Actions
             ### Branch Info
             > ${{ github.ref_name }}
@@ -139,7 +139,7 @@ jobs:
           tag: ${{ env.tag }}
           name: ${{ env.project_id_b }} ${{ env.mcversion }} - ${{ env.commit_id }}${{ env.release_count }}
           body: |
-            📦Version: `${{ env.mcversion }}` | Commit ${{ env.commit_id }} [![download](https://img.shields.io/github/downloads/LuminolMC/${{ env.project_id }}/${{ env.tag }}/total?color=red&style=flat-square)](https://github.com/LuminolMC/${{ env.project_id }}/releases/download/${{ env.tag }}/${{ env.jar }})
+            📦Version: `${{ env.mcversion }}` | Commit ${{ env.commit_id }} [![download](https://img.shields.io/github/downloads/LittleOvO233/${{ env.project_id }}/${{ env.tag }}/total?color=red&style=flat-square)](https://github.com/LittleOvO233/${{ env.project_id }}/releases/download/${{ env.tag }}/${{ env.jar }})
             This release is automatically compiled by GitHub Actions
             ### Comments
             > ${{ inputs.comments }}

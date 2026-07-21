@@ -17,6 +17,14 @@
 
 ## 修改记录
 
+### 2026-07-21 — 修改者：Little
+
+将 Arbor 从 Folia 26.1.2 适配到 26.2：
+
+- 版本：mcVersion / apiVersion 升到 26.2，foliaRef 指向 Folia ver/26.2.x。
+- 构建：arbor-server 构建补丁中 mache 升到 26.2、fill 插件升到 1.0.12，依赖 concurrentutil 替换为 leafpile；仓库顺序调整为镜像优先。
+- 补丁：重解全部服务端与 API 补丁在 26.2 上的冲突，并适配上游 API 变动。
+
 ### 2026-07-16 — 修改者：Little
 
 本次更新了/memoryleak指令 用于监测内存泄漏

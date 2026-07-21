@@ -3,7 +3,7 @@ package zone.little.arbor.api;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A mirror of folia's ThreadedRegion</br>

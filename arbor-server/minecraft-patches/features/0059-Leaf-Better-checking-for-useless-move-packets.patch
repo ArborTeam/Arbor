@@ -8,10 +8,10 @@ A part of leaf(https://github.com/Winds-Studio/Leaf/blob/b794fca6080c47ff305b6d0
 Original license: https://github.com/Winds-Studio/Leaf/blob/b794fca6080c47ff305b6d065a579171b1fe1e98/LICENSE.md
 
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index 19bb751d3e9c347fe2446412f85c9f28ec8212e6..468a70d396e228d84f6bbae4e11f871ba6690e02 100644
+index 60af82925d2f7e605bf7340cf01f1a5668f4d725..2e71a1cbabf3405e3e4fd5349a1784d895e7e60c 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -181,18 +181,35 @@ public class ServerEntity {
+@@ -186,18 +186,35 @@ public class ServerEntity {
                      packet = ClientboundEntityPositionSyncPacket.of(this.entity);
                      sentPosition = true;
                      sentRotation = true;
@@ -50,4 +50,4 @@ index 19bb751d3e9c347fe2446412f85c9f28ec8212e6..468a70d396e228d84f6bbae4e11f871b
 +                    // Gale end - Airplane - better checking for useless move packets
                  }
  
-                 if (this.entity.needsSync || this.trackDelta || this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isFallFlying()) {
+                 if (this.entity.needsSync || this.trackDelta || this.entity instanceof LivingEntity livingEntity && livingEntity.isFallFlying()) {

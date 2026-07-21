@@ -5,10 +5,10 @@ Subject: [PATCH] Prevent teleprotAsync calls in move events
 
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 4924915ec3adf4d68ca537518fdffa52ec926bf7..160779c2300abe57af9bdd592cf745dbda409ee4 100644
+index eda7e765c7c2ffee305edc81e0c7a6b1e5bfa18d..06ed8d614d8f00174d5bf305a407b422aaa881a0 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -727,7 +727,9 @@ public class ServerGamePacketListenerImpl
+@@ -730,7 +730,9 @@ public class ServerGamePacketListenerImpl
  
                      Location oldTo = to.clone();
                      PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
@@ -18,7 +18,7 @@ index 4924915ec3adf4d68ca537518fdffa52ec926bf7..160779c2300abe57af9bdd592cf745db
  
                      // If the event is cancelled we move the player back to their old location.
                      if (event.isCancelled()) {
-@@ -1750,7 +1752,9 @@ public class ServerGamePacketListenerImpl
+@@ -1727,7 +1729,9 @@ public class ServerGamePacketListenerImpl
  
                                          Location oldTo = to.clone();
                                          PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
@@ -29,10 +29,10 @@ index 4924915ec3adf4d68ca537518fdffa52ec926bf7..160779c2300abe57af9bdd592cf745db
                                          // If the event is cancelled we move the player back to their old location.
                                          if (event.isCancelled()) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ccd01b703985a56261776ebf357dbd9852e7fc85..4cbb495772c6b2ab95633b1b9830192acce132b5 100644
+index 59bbd34104644a2b00189e12f26c059bd020f4a5..a9bdef23881ce3d8acf09fa08975a28c4bb35195 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4401,12 +4401,25 @@ public abstract class Entity
+@@ -4476,12 +4476,25 @@ public abstract class Entity
              teleportTarget.cause(), teleportFlags, teleportComplete
          );
      }
@@ -59,7 +59,7 @@ index ccd01b703985a56261776ebf357dbd9852e7fc85..4cbb495772c6b2ab95633b1b9830192a
              return false;
          }
 diff --git a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
-index 619776a20aeac1ddef1991f8a32a88c8aac250ee..f7021add5bb1287a6f09be7b2fc7ea481e7fae98 100644
+index 3fcd534cee1f605a710ffc43eff4b5106c7dd40c..5205ad2ad5848c8c2217aebd09f23ce6a2bd63ca 100644
 --- a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 +++ b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 @@ -282,7 +282,9 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
@@ -73,7 +73,7 @@ index 619776a20aeac1ddef1991f8a32a88c8aac250ee..f7021add5bb1287a6f09be7b2fc7ea48
          this.lastLocation = vehicle.getLocation();
          // CraftBukkit end
 diff --git a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
-index 7ba197b9bda1f98e24882be40d78fabb0db9d36b..038bee197e3f120f71051dffe75942d5d95b79a9 100644
+index 5ad77636d0681d1f0341cff4482ba6ad52f3583b..247c874b531d3272c5de14dc4520c18170450d02 100644
 --- a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
 @@ -318,7 +318,9 @@ public abstract class AbstractMinecart extends VehicleEntity {

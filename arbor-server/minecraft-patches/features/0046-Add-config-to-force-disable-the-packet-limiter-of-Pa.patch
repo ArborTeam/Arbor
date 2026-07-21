@@ -8,25 +8,89 @@ Some of changes from: Leaves (https://github.com/LeavesMC/Leaves/blob/6a2b9ee6b3
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index f0c6cea11a15a0fdbf7b9b9f44fc838f71bf225e..78aef0fe825d47576e07e6f7750ca4934cca2737 100644
+index da98f733a4008c524e12b98d8b8f2afb9ed811ee..b7c950b7d95febbde599deb337e854a9631d5c3a 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -258,8 +258,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-                 if (this.stopReadingPackets) {
-                     return;
+             if (this.stopReadingPackets) {
+                 return;
+             }
+-            if (this.allPacketCounts != null ||
+-                io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.containsKey(packet.getClass())) {
++            if (!zone.little.arbor.config.modules.misc.PaperPacketLimiterConfig.forceDisable && (this.allPacketCounts != null || // Arbor - Add config to force disable the packet limiter of Paper
++                io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.containsKey(packet.getClass()))) { // Arbor - Add config to force disable the packet limiter of Paper
+                 long time = System.nanoTime();
+                 synchronized (PACKET_LIMIT_LOCK) {
+                     if (this.allPacketCounts != null) {
+@@ -269,35 +269,35 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+                             return;
+                         }
+                     }
++                }
+ 
+-                    for (Class<?> check = packet.getClass(); check != Object.class; check = check.getSuperclass()) {
+-                        io.papermc.paper.configuration.GlobalConfiguration.PacketLimiter.PacketLimit packetSpecificLimit =
+-                            io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.get(check);
+-                        if (packetSpecificLimit == null || !packetSpecificLimit.isEnabled()) {
+-                            continue;
+-                        }
+-                        io.papermc.paper.util.IntervalledCounter counter = this.packetSpecificLimits.computeIfAbsent((Class)check, (clazz) -> {
+-                            return new io.papermc.paper.util.IntervalledCounter((long)(packetSpecificLimit.interval() * 1.0e9));
+-                        });
+-                        counter.updateAndAdd(1, time);
+-                        if (counter.getRate() >= packetSpecificLimit.maxPacketRate()) {
+-                            switch (packetSpecificLimit.action()) {
+-                                case DROP:
+-                                    return;
+-                                case KICK:
+-                                    String deobfedPacketName = check.getName();
+-
+-                                    String playerName;
+-                                    if (this.packetListener instanceof net.minecraft.server.network.ServerCommonPacketListenerImpl impl) {
+-                                        playerName = impl.getOwner().name();
+-                                    } else {
+-                                        playerName = this.getLoggableAddress(net.minecraft.server.MinecraftServer.getServer().logIPs());
+-                                    }
+-
+-                                    Connection.LOGGER.warn("{} kicked for packet spamming: {}", playerName, deobfedPacketName.substring(deobfedPacketName.lastIndexOf(".") + 1));
+-                                    this.killForPacketSpam();
+-                                    return;
+-                            }
++                for (Class<?> check = packet.getClass(); check != Object.class; check = check.getSuperclass()) {
++                    io.papermc.paper.configuration.GlobalConfiguration.PacketLimiter.PacketLimit packetSpecificLimit =
++                        io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.get(check);
++                    if (packetSpecificLimit == null || !packetSpecificLimit.isEnabled()) {
++                        continue;
++                    }
++                    io.papermc.paper.util.IntervalledCounter counter = this.packetSpecificLimits.computeIfAbsent((Class)check, (clazz) -> {
++                        return new io.papermc.paper.util.IntervalledCounter((long)(packetSpecificLimit.interval() * 1.0e9));
++                    });
++                    counter.updateAndAdd(1, time);
++                    if (counter.getRate() >= packetSpecificLimit.maxPacketRate()) {
++                        switch (packetSpecificLimit.action()) {
++                            case DROP:
++                                return;
++                            case KICK:
++                                String deobfedPacketName = check.getName();
++
++                                String playerName;
++                                if (this.packetListener instanceof net.minecraft.server.network.ServerCommonPacketListenerImpl impl) {
++                                    playerName = impl.getOwner().name();
++                                } else {
++                                    playerName = this.getLoggableAddress(net.minecraft.server.MinecraftServer.getServer().logIPs());
++                                }
++
++                                Connection.LOGGER.warn("{} kicked for packet spamming: {}", playerName, deobfedPacketName.substring(deobfedPacketName.lastIndexOf(".") + 1));
++                                this.killForPacketSpam();
++                                return;
+                         }
+                     }
                  }
--                if (this.allPacketCounts != null ||
--                    io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.containsKey(packet.getClass())) {
-+                if (!zone.little.arbor.config.modules.misc.PaperPacketLimiterConfig.forceDisable && (this.allPacketCounts != null || // Arbor - Add config to force disable the packet limiter of Paper
-+                    io.papermc.paper.configuration.GlobalConfiguration.get().packetLimiter.overrides.containsKey(packet.getClass()))) { // Arbor - Add config to force disable the packet limiter of Paper
-                     long time = System.nanoTime();
-                     synchronized (PACKET_LIMIT_LOCK) {
-                         if (this.allPacketCounts != null) {
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 47329c6caa20fde60a8602c17f3ef3c7f6e39561..a2e5a575f9b96bf7ac5a9c91310fbbb248cf8700 100644
+index d1fd7d5d4de9c0a57f23755b8140f80816dde233..b769ae934f292de0b0eb8cad586f1e94d7aca9a0 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -876,7 +876,7 @@ public class ServerGamePacketListenerImpl
+@@ -879,7 +879,7 @@ public class ServerGamePacketListenerImpl
      public void handleCustomCommandSuggestions(final ServerboundCommandSuggestionPacket packet) {
          // PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level()); // Paper - AsyncTabCompleteEvent; run this async
          // CraftBukkit start
@@ -35,7 +99,7 @@ index 47329c6caa20fde60a8602c17f3ef3c7f6e39561..a2e5a575f9b96bf7ac5a9c91310fbbb2
              this.disconnectAsync(Component.translatable("disconnect.spam"), org.bukkit.event.player.PlayerKickEvent.Cause.SPAM); // Paper - Kick event cause // Paper - add proper async disconnect
              return;
          }
-@@ -2136,6 +2136,7 @@ public class ServerGamePacketListenerImpl
+@@ -2115,6 +2115,7 @@ public class ServerGamePacketListenerImpl
      private long lastLimitedPacket = -1;
  
      private boolean checkLimit(long timestamp) {
@@ -43,15 +107,15 @@ index 47329c6caa20fde60a8602c17f3ef3c7f6e39561..a2e5a575f9b96bf7ac5a9c91310fbbb2
          if (!io.papermc.paper.configuration.GlobalConfiguration.get().spamLimiter.incomingPacketThreshold.enabled()) {
              return true;
          }
-@@ -2696,6 +2697,7 @@ public class ServerGamePacketListenerImpl
+@@ -2675,6 +2676,7 @@ public class ServerGamePacketListenerImpl
  
      // Spigot start - spam exclusions
-     private void detectRateSpam(String message) {
+     private void detectRateSpam(final TickThrottler throttler, final String message) {
 +        if (zone.little.arbor.config.modules.misc.PaperPacketLimiterConfig.forceDisable) return; // Leaves - disable
-         // CraftBukkit start - replaced with thread safe throttle
          if (org.spigotmc.SpigotConfig.enableSpamExclusions) {
              for (String exclude : org.spigotmc.SpigotConfig.spamExclusions) {
-@@ -3484,7 +3486,7 @@ public class ServerGamePacketListenerImpl
+                 if (exclude != null && message.startsWith(exclude)) {
+@@ -3473,7 +3475,7 @@ public class ServerGamePacketListenerImpl
      @Override
      public void handlePlaceRecipe(final ServerboundPlaceRecipePacket packet) {
          // Paper start - auto recipe limit

@@ -5,7 +5,7 @@ Subject: [PATCH] Add config gui support
 
 
 diff --git a/net/minecraft/server/dialog/action/ParsedTemplate.java b/net/minecraft/server/dialog/action/ParsedTemplate.java
-index 3d60e3e50297f4f657e01fbc5b1d144596b29b33..5fa60d8900d105f5fd037db1d3bf3b37530c78f6 100644
+index 8a720ef5cd10bf04e97fb34c1ca0f0b265e98468..1468a9164c3592e78af7fb0f6b45eb7be9ada1e7 100644
 --- a/net/minecraft/server/dialog/action/ParsedTemplate.java
 +++ b/net/minecraft/server/dialog/action/ParsedTemplate.java
 @@ -13,7 +13,7 @@ public class ParsedTemplate {

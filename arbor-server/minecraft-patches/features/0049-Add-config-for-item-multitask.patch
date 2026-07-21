@@ -8,10 +8,10 @@ is for Anarchy servers or Crystal PVP servers this allows them to pvp
 without stopping the item mid animation.
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a2e5a575f9b96bf7ac5a9c91310fbbb248cf8700..912adc1dad058c7723810c38de73e1ef344abc66 100644
+index b769ae934f292de0b0eb8cad586f1e94d7aca9a0..dc095e76c8a65a77383947ff59da2d9396f16e9f 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2195,7 +2195,9 @@ public class ServerGamePacketListenerImpl
+@@ -2174,7 +2174,9 @@ public class ServerGamePacketListenerImpl
                                  this.player.sendSpawnProtectionMessage(pos);
                              } else if (this.awaitingPositionFromClient == null && (level.mayInteract(this.player, pos) || passthroughSignInteraction)) {
                                  // Paper end - Allow using signs inside spawn protection
@@ -21,7 +21,7 @@ index a2e5a575f9b96bf7ac5a9c91310fbbb248cf8700..912adc1dad058c7723810c38de73e1ef
                                  InteractionResult interactionResult = this.player.gameMode.useItemOn(this.player, level, itemStack, hand, blockHit);
                                  if (interactionResult.consumesAction()) {
                                      CriteriaTriggers.ANY_BLOCK_USE.trigger(this.player, blockHit.getBlockPos(), itemStack);
-@@ -2394,9 +2396,13 @@ public class ServerGamePacketListenerImpl
+@@ -2373,9 +2375,13 @@ public class ServerGamePacketListenerImpl
                  return;
              }
              // CraftBukkit end

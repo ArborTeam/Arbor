@@ -6,24 +6,24 @@ Subject: [PATCH] Add config to modify tripwire behavior
 Co-authored-by: Helvetica Volubi <88063803+suisuroru@users.noreply.github.com>
 
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index 82713a22a7c9c54c64616cbd96aac9dfb10cf4e3..ac735a1f6617e111e006f8f65b76504df64d65fb 100644
+index 8bcc8b6f83ab4d5a472741185511b5d84f4974be..a83acb07c40c0e50a987c683c99fc8da5e6945da 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -201,10 +201,17 @@ public class TripWireHookBlock extends Block {
-                     BlockPos testPosx = pos.relative(direction, i);
+                     BlockPos testPos = pos.relative(direction, i);
                      BlockState wireData = wireStates[i];
                      if (wireData != null) {
--                        BlockState testPosState = level.getBlockState(testPosx);
+-                        BlockState testPosState = level.getBlockState(testPos);
 -                        if (testPosState.is(Blocks.TRIPWIRE) || testPosState.is(Blocks.TRIPWIRE_HOOK)) {
--                            if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !testPosState.is(Blocks.TRIPWIRE)) level.setBlock(testPosx, wireData.trySetValue(ATTACHED, attached), Block.UPDATE_ALL); // Paper - prevent tripwire from updating
+-                            if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !testPosState.is(Blocks.TRIPWIRE)) level.setBlock(testPos, wireData.trySetValue(ATTACHED, attached), Block.UPDATE_ALL); // Paper - prevent tripwire from updating
 +                        // Arbor start - tripwire and tripwireHook dupe
 +                        if (zone.little.arbor.config.modules.function.TripwireBehaviorConfig.enabled) {
-+                            level.setBlock(testPosx, wireData.trySetValue(ATTACHED, attached), 3);
-+                            level.getBlockState(testPosx);
++                            level.setBlock(testPos, wireData.trySetValue(ATTACHED, attached), 3);
++                            level.getBlockState(testPos);
 +                        } else {
-+                            BlockState testPosState = level.getBlockState(testPosx);
++                            BlockState testPosState = level.getBlockState(testPos);
 +                            if (testPosState.is(Blocks.TRIPWIRE) || testPosState.is(Blocks.TRIPWIRE_HOOK)) {
-+                                if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !testPosState.is(Blocks.TRIPWIRE)) level.setBlock(testPosx, wireData.trySetValue(ATTACHED, attached), Block.UPDATE_ALL); // Paper - prevent tripwire from updating
++                                if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !testPosState.is(Blocks.TRIPWIRE)) level.setBlock(testPos, wireData.trySetValue(ATTACHED, attached), Block.UPDATE_ALL); // Paper - prevent tripwire from updating
 +                            }
                          }
 +                        // Arbor end - tripwire and tripwireHook dupe

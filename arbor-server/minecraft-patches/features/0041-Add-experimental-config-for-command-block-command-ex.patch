@@ -5,7 +5,7 @@ Subject: [PATCH] Add experimental config for command block command execution
 
 
 diff --git a/net/minecraft/world/level/BaseCommandBlock.java b/net/minecraft/world/level/BaseCommandBlock.java
-index a4ee52e05041c310482fe5bb23155cac5b06c9c0..2038cc4c2b27bd99eb0799faa912d97c872bacbc 100644
+index 31f1583f29eebe5e13b5a7ac5116fdafc3592e5c..5493f42f03cd8c78355afe73f8b21fd85bbc6b16 100644
 --- a/net/minecraft/world/level/BaseCommandBlock.java
 +++ b/net/minecraft/world/level/BaseCommandBlock.java
 @@ -91,7 +91,7 @@ public abstract class BaseCommandBlock {
@@ -16,4 +16,4 @@ index a4ee52e05041c310482fe5bb23155cac5b06c9c0..2038cc4c2b27bd99eb0799faa912d97c
 +        if (!zone.little.arbor.config.modules.experiment.CommandConfig.commandBlock) return false; // Folia - region threading // Arbor - Add experimental config for command block command execution
          if (level.getGameTime() == this.lastExecution) {
              return false;
-         } else if ("Searge".equalsIgnoreCase(this.command)) {
+         }

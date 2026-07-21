@@ -8,10 +8,10 @@ As part of: Gale (https://github.com/GaleMC/Gale/blob/276e903b2688f23b19bdc8d493
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index 36aabbd42cd89f8894c400bf6d26e18172508241..bed6a476b051fef2642af37731bbb29cd4cedb05 100644
+index b4f9f41a56bbc40e90217c0344c070ebdd08c119..357a9982f0e4b7ac82eeb0c60e39dc7b6ef35f67 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
-@@ -60,27 +60,39 @@ public final class ActivationRange {
+@@ -61,27 +61,39 @@ public final class ActivationRange {
          if (entity.activationType == ActivationType.VILLAGER) {
              if (inactiveFor > config.wakeUpInactiveVillagersEvery && worldData.wakeupInactiveRemainingVillagers > 0) { // Folia - threaded regions
                  worldData.wakeupInactiveRemainingVillagers--; // Folia - threaded regions

@@ -5,19 +5,19 @@ Subject: [PATCH] Temporarily fix teleport yam and pitch
 
 
 diff --git a/net/minecraft/server/commands/TeleportCommand.java b/net/minecraft/server/commands/TeleportCommand.java
-index bfc012df8bf64cc9d2be36b2a4e97973468aed8f..ff978c61829fbeddf6340f08b65f92873a2d3a4f 100644
+index 13d7965fd4f99f0848b080349df41f8b1c31a19b..e80796024f938bff6b486fbffa74c77c8f97e277 100644
 --- a/net/minecraft/server/commands/TeleportCommand.java
 +++ b/net/minecraft/server/commands/TeleportCommand.java
-@@ -247,8 +247,10 @@ public class TeleportCommand {
-             // Folia start - region threading
-             if (true) {
-                 Vec3 posFinal = new Vec3(x, y, z);
--                Float yawFinal = Float.valueOf(newYRot);
--                Float pitchFinal = Float.valueOf(newXRot);
+@@ -248,8 +248,10 @@ public class TeleportCommand {
+         // Folia start - region threading
+         if (true) {
+             Vec3 posFinal = new Vec3(x, y, z);
+-            Float yawFinal = Float.valueOf(newYRot);
+-            Float pitchFinal = Float.valueOf(newXRot);
 +                //Float yawFinal = Float.valueOf(newYRot); // Arbor - fix teleport yaw issue
 +                //Float pitchFinal = Float.valueOf(newXRot); // Arbor - fix teleport yaw issue
 +                Float yawFinal = Float.valueOf(newYRot + victim.getYRot()); // Arbor - fix teleport yaw issue
 +                Float pitchFinal = Float.valueOf(newXRot + victim.getXRot()); // Arbor - fix teleport pitch issue
-                 victim.getBukkitEntity().taskScheduler.schedule((Entity nmsEntity) -> {
-                     nmsEntity.stopRiding();
-                     nmsEntity.teleportAsync(
+             victim.getBukkitEntity().taskScheduler.schedule((Entity nmsEntity) -> {
+                 nmsEntity.stopRiding();
+                 nmsEntity.teleportAsync(

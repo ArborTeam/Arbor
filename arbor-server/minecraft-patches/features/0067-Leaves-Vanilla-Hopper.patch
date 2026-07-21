@@ -9,7 +9,7 @@ Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index e9d16a31e50b7ea546d62796828584363a5ade19..496ac4b66e1fc68b25c8cb1fa563b81c9e279f9e 100644
+index b87ddefa7da4d63a908c6d45beaa0ab1b7a4b567..49d204309c9171bb9ded5a8f0bb2fbc44dd9cff1 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -322,36 +322,55 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen

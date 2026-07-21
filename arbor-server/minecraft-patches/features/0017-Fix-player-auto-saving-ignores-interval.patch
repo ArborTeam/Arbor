@@ -5,10 +5,10 @@ Subject: [PATCH] Fix player auto saving ignores interval
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 08bb015eb2db6736bbfc6a852b326e42ea15684b..395d0fe4a535088bcaf45824fee78bdb120acb2f 100644
+index 502a1f4827bf6183aa77f5f481d1a18499f43e73..54f94821860ab0cfb075bf192cfff6e31b9126a4 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -205,7 +205,7 @@ import org.slf4j.Logger;
+@@ -208,7 +208,7 @@ import org.slf4j.Logger;
  
  public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patches.chunk_system.player.ChunkSystemServerPlayer { // Paper - rewrite chunk system
      private static final Logger LOGGER = LogUtils.getLogger();

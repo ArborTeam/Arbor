@@ -86,10 +86,10 @@ index f2208bcd5ccf3bd5a428e8ea3bf3ff26b3c9483b..fdae732fbe50d121d0ac2f47dffcea9d
          LOGGER.info("Awaiting scheduler termination for 60s...");
          if (TickRegions.getScheduler().halt(true, TimeUnit.SECONDS.toNanos(60L))) {
 diff --git a/io/papermc/paper/threadedregions/RegionizedServer.java b/io/papermc/paper/threadedregions/RegionizedServer.java
-index d5ff949f4f459c4358b0130cd20f8ed9cf24b42d..c23ddf3a52ca0c91c39ac2d6c899925c6c119f97 100644
+index aa575f3b76ef70ffb9f0410e7e5cfe7af384bfbd..6bfaa1f05e55dd6d9a508edaec0c3485d8f0b0fa 100644
 --- a/io/papermc/paper/threadedregions/RegionizedServer.java
 +++ b/io/papermc/paper/threadedregions/RegionizedServer.java
-@@ -62,6 +62,12 @@ public final class RegionizedServer {
+@@ -63,6 +63,12 @@ public final class RegionizedServer {
          this.worlds.add(world);
      }
  
@@ -103,7 +103,7 @@ index d5ff949f4f459c4358b0130cd20f8ed9cf24b42d..c23ddf3a52ca0c91c39ac2d6c899925c
          // call init event _before_ scheduling anything
          new RegionizedServerInitEvent().callEvent();
 diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..61a57629e84d861581653422981d8c32fb49bb7d 100644
+index 5a72fa0d72bfdb927293abe921c57f6ae964a6ec..836c334610e0060936a3936b81f0c09bf90fa9a9 100644
 --- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
 +++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
 @@ -49,7 +49,7 @@ public final class TickRegionScheduler {
@@ -228,10 +228,10 @@ index 439c5a222fcf51c9dc5bfef9cdb23f419fffc28c..61a57629e84d861581653422981d8c32
  
      private void uncaughtException(final Thread thread, final Throwable thr) {
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 4e8aa5750ec619d7363d6631d54c0485b19698dd..fc1551291d9a5072df98e93d26e6b183ba035c64 100644
+index 7117ad68ea1ae9f2e879186ca26edb5eeb0693ad..74e058288ac0aa883400ae9e823d85fa9687cb9a 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -237,7 +237,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -236,7 +236,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      private String localIp;
      private int port = -1;
      private final LayeredRegistryAccess<RegistryLayer> registries;
@@ -240,7 +240,7 @@ index 4e8aa5750ec619d7363d6631d54c0485b19698dd..fc1551291d9a5072df98e93d26e6b183
      private PlayerList playerList;
      private volatile boolean running = true;
      private volatile boolean isRestarting = false; // Paper - flag to signify we're attempting to restart
-@@ -2058,14 +2058,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2024,14 +2024,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      // CraftBukkit start
@@ -258,10 +258,10 @@ index 4e8aa5750ec619d7363d6631d54c0485b19698dd..fc1551291d9a5072df98e93d26e6b183
          Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
          newLevels.remove(level.dimension());
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 25b36f038a4028de6d1a1a5bb09a6e4d4b154f2e..87de10a49bb7fb939ada90f54c8a06f506cd2644 100644
+index cc6453d3c98ae4b70275d49b8c00d168c353684c..ffb255a1c0835f2e00de6c17c653f89cb9d9459b 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -220,6 +220,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -221,6 +221,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
      private final StructureCheck structureCheck;
      public final boolean tickTime; // Folia - region threading
      private final LevelDebugSynchronizers debugSynchronizers = new LevelDebugSynchronizers(this);
@@ -275,10 +275,10 @@ index 25b36f038a4028de6d1a1a5bb09a6e4d4b154f2e..87de10a49bb7fb939ada90f54c8a06f5
      // CraftBukkit start
      private final ResourceKey<LevelStem> typeKey;
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 395d0fe4a535088bcaf45824fee78bdb120acb2f..b356a6dc6c1c683e659be85e0d269cd237d3ffb6 100644
+index 54f94821860ab0cfb075bf192cfff6e31b9126a4..ee87abf937ae97bf926b437f0748d911b7d71ea5 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1720,7 +1720,30 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1706,7 +1706,30 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
          ServerLevel origin = this.level();
          ServerPlayer.RespawnConfig respawnConfig = this.getRespawnConfig();
@@ -310,7 +310,7 @@ index 395d0fe4a535088bcaf45824fee78bdb120acb2f..b356a6dc6c1c683e659be85e0d269cd2
  
          // modified based off PlayerList#respawn
  
-@@ -1771,8 +1794,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1757,8 +1780,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      // now the respawn logic is complete
  
                      // last, call the function callback
@@ -322,7 +322,7 @@ index 395d0fe4a535088bcaf45824fee78bdb120acb2f..b356a6dc6c1c683e659be85e0d269cd2
                  }
              );
 diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index 6cb683ebf78fd897e9abd7ccae3341f907348303..715536d384b4b313ae7c5c36cd996d1d323adfcb 100644
+index 70d45b124f15db39c829dc7f40b82f668a4ee5d5..c26421cf5899e37eb05f97f526e6a372505ea738 100644
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 @@ -210,8 +210,23 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
@@ -367,10 +367,10 @@ index 6cb683ebf78fd897e9abd7ccae3341f907348303..715536d384b4b313ae7c5c36cd996d1d
                          );
                      }
 diff --git a/net/minecraft/server/network/config/PrepareSpawnTask.java b/net/minecraft/server/network/config/PrepareSpawnTask.java
-index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..064935bb6eecfdeb8f08575d53e3bf0f8180833c 100644
+index 48f51b0f94df3e59c9410129489c63a4287bc0bc..b9691bfc305ec1cc51395d658348d386401a0a63 100644
 --- a/net/minecraft/server/network/config/PrepareSpawnTask.java
 +++ b/net/minecraft/server/network/config/PrepareSpawnTask.java
-@@ -105,6 +105,16 @@ public class PrepareSpawnTask implements ConfigurationTask {
+@@ -104,6 +104,16 @@ public class PrepareSpawnTask implements ConfigurationTask {
                      spawnLevel = spawnDataLevel;
                  }
              }
@@ -387,7 +387,7 @@ index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..064935bb6eecfdeb8f08575d53e3bf0f
              // Folia start - region threading
              CompletableFuture<Vec3> spawnPosition = new java.util.concurrent.CompletableFuture<>();
              if (loadedPosition.position().isPresent()) {
-@@ -124,6 +134,10 @@ public class PrepareSpawnTask implements ConfigurationTask {
+@@ -123,6 +133,10 @@ public class PrepareSpawnTask implements ConfigurationTask {
              }
              // Folia end - region threading
              // Paper end - move logic in Entity to here, to use bukkit supplied world UUID & reset to main world spawn if no valid world is found
@@ -398,10 +398,10 @@ index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..064935bb6eecfdeb8f08575d53e3bf0f
              Vec2 spawnAngle = loadedPosition.rotation().orElse(new Vec2(respawnData.yaw(), respawnData.pitch()));
              this.state = new PrepareSpawnTask.Preparing(spawnLevel, spawnPosition, spawnAngle);
          }
-@@ -275,9 +289,20 @@ public class PrepareSpawnTask implements ConfigurationTask {
-                         this.spawnPosition = CompletableFuture.completedFuture(spawnPosition);
-                         this.spawnAngle = new Vec2(location.getYaw(), location.getPitch());
-                     }
+@@ -272,9 +286,20 @@ public class PrepareSpawnTask implements ConfigurationTask {
+                     this.spawnPosition = CompletableFuture.completedFuture(spawnPosition);
+                     this.spawnAngle = new Vec2(location.getYaw(), location.getPitch());
+                 }
 +                    // Arbor start - Level hot unload apis
 +                    if (!this.spawnLevel.levelUnloadStateLock.acquireRead()) {
 +                        LOGGER.warn("Could not fetch read reference lock for level {}! Falling back to overworld!", this.spawnLevel);
@@ -412,14 +412,14 @@ index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..064935bb6eecfdeb8f08575d53e3bf0f
 +                        }
 +                    }
 +                    // Arbor end
-                     // Paper end - PlayerSpawnLocationEvent
-                     ChunkPos spawnChunk = ChunkPos.containing(BlockPos.containing(spawnPosition));
-                     this.chunkLoadFuture = ((ca.spottedleaf.moonrise.patches.chunk_system.MoonriseChunkLoadCounter)this.chunkLoadCounter).trackLoadWithRadius(this.spawnLevel, spawnChunk, 3, net.minecraft.world.level.chunk.status.ChunkStatus.FULL, ca.spottedleaf.concurrentutil.util.Priority.HIGH, () -> { Preparing.this.spawnLevel.getChunkSource().addTicketWithRadius(TicketType.PLAYER_SPAWN, spawnChunk, 3); }); // Paper - rewrite chunk system
+                 // Paper end - PlayerSpawnLocationEvent
+                 ChunkPos spawnChunk = ChunkPos.containing(BlockPos.containing(spawnPosition));
+                 this.chunkLoadFuture = ((ca.spottedleaf.moonrise.patches.chunk_system.MoonriseChunkLoadCounter)this.chunkLoadCounter).trackLoadWithRadius(this.spawnLevel, spawnChunk, 3, net.minecraft.world.level.chunk.status.ChunkStatus.FULL, ca.spottedleaf.concurrentutil.util.Priority.HIGH, () -> { Preparing.this.spawnLevel.getChunkSource().addTicketWithRadius(TicketType.PLAYER_SPAWN, spawnChunk, 3); }); // Paper - rewrite chunk system
 +                    this.chunkLoadFuture.whenComplete((_,_) -> this.spawnLevel.levelUnloadStateLock.releaseRead()); // Arbor - Level hot unload apis
-                     PrepareSpawnTask.this.loadListener.start(LevelLoadListener.Stage.LOAD_PLAYER_CHUNKS, this.chunkLoadCounter.totalChunks());
-                     PrepareSpawnTask.this.loadListener.updateFocus(this.spawnLevel.dimension(), spawnChunk);
-                 }
-@@ -295,7 +320,7 @@ public class PrepareSpawnTask implements ConfigurationTask {
+                 PrepareSpawnTask.this.loadListener.start(LevelLoadListener.Stage.LOAD_PLAYER_CHUNKS, this.chunkLoadCounter.totalChunks());
+                 PrepareSpawnTask.this.loadListener.updateFocus(this.spawnLevel.dimension(), spawnChunk);
+             }
+@@ -291,7 +316,7 @@ public class PrepareSpawnTask implements ConfigurationTask {
      }
  
      private final class Ready implements PrepareSpawnTask.State {
@@ -429,7 +429,7 @@ index 475751ccb4dfcd1f2022b9883ce5cb7a30841f88..064935bb6eecfdeb8f08575d53e3bf0f
          private final Vec2 spawnAngle;
  
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 0d86a54ffb15f41d42f3a453e1e82f5220963834..6f723a69a6ff3038e707b6e2efffd026dc312638 100644
+index 772d401467b37d840703e27f4f04feb4e30313ee..24ab67a06f1467f7e7579902a50fbe85b157dabf 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -392,6 +392,9 @@ public abstract class Entity
@@ -442,7 +442,7 @@ index 0d86a54ffb15f41d42f3a453e1e82f5220963834..6f723a69a6ff3038e707b6e2efffd026
      // CraftBukkit end
  
      // Paper start
-@@ -4463,6 +4466,17 @@ public abstract class Entity
+@@ -4538,6 +4541,17 @@ public abstract class Entity
              }
          }
  
@@ -460,7 +460,7 @@ index 0d86a54ffb15f41d42f3a453e1e82f5220963834..6f723a69a6ff3038e707b6e2efffd026
          // TODO any events that can modify go HERE
  
          // check for same region
-@@ -4481,6 +4495,14 @@ public abstract class Entity
+@@ -4556,6 +4570,14 @@ public abstract class Entity
              }
  
              for (EntityTreeNode entity : passengerTree.getFullTree()) {
@@ -475,7 +475,7 @@ index 0d86a54ffb15f41d42f3a453e1e82f5220963834..6f723a69a6ff3038e707b6e2efffd026
                  entity.root.teleportSyncSameRegion(pos, yaw, pitch, velocity);
              }
  
-@@ -4496,8 +4518,8 @@ public abstract class Entity
+@@ -4571,8 +4593,8 @@ public abstract class Entity
                  // performs add/remove from world logic which will also perform add/remove tracker logic
              }
  
@@ -486,7 +486,7 @@ index 0d86a54ffb15f41d42f3a453e1e82f5220963834..6f723a69a6ff3038e707b6e2efffd026
              }
              return true;
          }
-@@ -4514,7 +4536,7 @@ public abstract class Entity
+@@ -4589,7 +4611,7 @@ public abstract class Entity
              node.root = node.root.transformForAsyncTeleport(destination, pos, yaw, pitch, velocity);
          }
  
@@ -495,7 +495,7 @@ index 0d86a54ffb15f41d42f3a453e1e82f5220963834..6f723a69a6ff3038e707b6e2efffd026
  
          return true;
      }
-@@ -4789,6 +4811,13 @@ public abstract class Entity
+@@ -4864,6 +4886,13 @@ public abstract class Entity
              ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkX(initialPosition),
              ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkZ(initialPosition)
          );
@@ -509,7 +509,7 @@ index 0d86a54ffb15f41d42f3a453e1e82f5220963834..6f723a69a6ff3038e707b6e2efffd026
  
          // first, remove entity/passengers from world
          EntityTreeNode passengerTree = this.detachPassengers();
-@@ -4846,6 +4875,10 @@ public abstract class Entity
+@@ -4921,6 +4950,10 @@ public abstract class Entity
                      if (info.postTeleportTransition() != null) {
                          info.postTeleportTransition().onTransition(teleported);
                      }

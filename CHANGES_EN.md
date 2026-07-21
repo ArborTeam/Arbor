@@ -17,6 +17,14 @@ carrying notices that state the work has been modified, with the relevant dates 
 
 ## Modification Log
 
+### 2026-07-21 — Modified by Little
+
+Adapted Arbor from Folia 26.1.2 to 26.2:
+
+- Version: bumped mcVersion / apiVersion to 26.2, pointed foliaRef at Folia ver/26.2.x.
+- Build: in the arbor-server build patch, bumped mache to 26.2 and the fill plugin to 1.0.12, replaced the concurrentutil dependency with leafpile, and reordered repositories to prefer mirrors.
+- Patches: re-resolved all server and API patch conflicts against 26.2 and adapted to upstream API changes.
+
 ### 2026-07-16 — Modified by Little
 
 Added the /memoryleak command for monitoring memory leaks.

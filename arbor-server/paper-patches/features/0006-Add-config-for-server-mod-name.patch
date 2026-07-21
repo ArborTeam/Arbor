@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for server mod name
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/network/PaperServerListPingEventImpl.java b/src/main/java/com/destroystokyo/paper/network/PaperServerListPingEventImpl.java
-index 6ed2114f577ce12d2d493985e798609c7d83f15e..e18dbda9aff39a73bedc67c91484d28b6ec5760d 100644
+index 13b03dab807c5d83e086993af705e1d9a2676b4d..0c2b73b7928b5f950ffe81268ff36cee48141fd6 100644
 --- a/src/main/java/com/destroystokyo/paper/network/PaperServerListPingEventImpl.java
 +++ b/src/main/java/com/destroystokyo/paper/network/PaperServerListPingEventImpl.java
 @@ -14,7 +14,7 @@ class PaperServerListPingEventImpl extends PaperServerListPingEvent {

@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for cpu affinity
 
 
 diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-index 61a57629e84d861581653422981d8c32fb49bb7d..9158246c76e51df742ee9ffafc98a9244aaf5a9c 100644
+index 836c334610e0060936a3936b81f0c09bf90fa9a9..416ad4ddd289a01aa7d8989f594ae84fe5ccf5cf 100644
 --- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
 +++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
 @@ -66,7 +66,7 @@ public final class TickRegionScheduler {

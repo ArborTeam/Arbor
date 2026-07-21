@@ -10,10 +10,10 @@ VMP (https://github.com/RelativityMC/VMP-fabric)
 Licensed under: MIT (https://opensource.org/licenses/MIT)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a8666332db25ac3cf3aceccaf1ed2d12a7be7c6b..47eddd31f20d61279e0b1771e000162720b36d01 100644
+index 0e5ff9a63f48ba2370b810d2ea1d806ae3cc36db..c3ec7b3c6c5b00bd88b634d7079335b59fe67ee4 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1150,8 +1150,14 @@ public abstract class Entity
+@@ -1155,8 +1155,14 @@ public abstract class Entity
      private double moveStartY;
      private double moveStartZ;
      // Paper end - detailed watchdog information
@@ -28,7 +28,7 @@ index a8666332db25ac3cf3aceccaf1ed2d12a7be7c6b..47eddd31f20d61279e0b1771e0001627
          final Vec3 originalMovement = delta; // Paper - Expose pre-collision velocity
          // Paper start - detailed watchdog information
          ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread("Cannot move an entity off-main");
-@@ -5483,6 +5489,11 @@ public abstract class Entity
+@@ -5560,6 +5566,11 @@ public abstract class Entity
      }
  
      public final void setBoundingBox(final AABB bb) {

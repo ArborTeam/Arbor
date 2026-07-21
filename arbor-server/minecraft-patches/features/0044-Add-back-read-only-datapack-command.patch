@@ -5,7 +5,7 @@ Subject: [PATCH] Add back read-only datapack command
 
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index 2301852e0f520adae2ae0597bd61c2c4787d9d63..f8cefdd83c00b6eca103737d64d1bffeba92305a 100644
+index 94174473041338d15ec3523d4d827e97ac6c8638..d81bb421a79287385db9bedb23220245958a2ce5 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -205,7 +205,7 @@ public class Commands {
@@ -18,10 +18,10 @@ index 2301852e0f520adae2ae0597bd61c2c4787d9d63..f8cefdd83c00b6eca103737d64d1bffe
          DefaultGameModeCommands.register(this.dispatcher);
          //DialogCommand.register(this.dispatcher, context); // Folia - region threading - TODO
 diff --git a/net/minecraft/server/commands/DataPackCommand.java b/net/minecraft/server/commands/DataPackCommand.java
-index c49da4f2d8714523dfb1e59ef11b1e9e9992d4ad..a9dedeedcf72c9945b1fbb039926b3e55cd63aa1 100644
+index 0da1e4ada8616af825ddd4678e61246c672f9c4f..aaf2a8c5c28497d3d23ae49232d0a21023c45085 100644
 --- a/net/minecraft/server/commands/DataPackCommand.java
 +++ b/net/minecraft/server/commands/DataPackCommand.java
-@@ -98,7 +98,7 @@ public class DataPackCommand {
+@@ -99,7 +99,7 @@ public class DataPackCommand {
          dispatcher.register(
              Commands.literal("datapack")
                  .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
@@ -30,7 +30,7 @@ index c49da4f2d8714523dfb1e59ef11b1e9e9992d4ad..a9dedeedcf72c9945b1fbb039926b3e5
                      Commands.literal("enable")
                          .then(
                              Commands.argument("name", StringArgumentType.string())
-@@ -145,11 +145,11 @@ public class DataPackCommand {
+@@ -146,11 +146,11 @@ public class DataPackCommand {
                                  .suggests(SELECTED_PACKS)
                                  .executes(c -> disablePack(c.getSource(), getPack(c, "name", false)))
                          )
@@ -44,7 +44,7 @@ index c49da4f2d8714523dfb1e59ef11b1e9e9992d4ad..a9dedeedcf72c9945b1fbb039926b3e5
                          .then(Commands.literal("enabled").executes(c -> listEnabledPacks(c.getSource())))
                  )
                  .then(
-@@ -235,12 +235,12 @@ public class DataPackCommand {
+@@ -238,12 +238,12 @@ public class DataPackCommand {
      }
  
      private static int listPacks(final CommandSourceStack source) {

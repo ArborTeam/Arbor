@@ -5,7 +5,7 @@ Subject: [PATCH] Correct thread unsafe random sources
 
 
 diff --git a/net/minecraft/world/entity/npc/wanderingtrader/WanderingTraderSpawner.java b/net/minecraft/world/entity/npc/wanderingtrader/WanderingTraderSpawner.java
-index 1525deaabaf7f8cbe5566f014ca4be6a85313f43..8965315a1cbd272ea6c9bcb6cf935cec4ec3fb7f 100644
+index 01b3cda3da79abd30860eb33491ac00f9e958767..578d0affe652d9b06770c0c8ef5861b5dbc2bf7c 100644
 --- a/net/minecraft/world/entity/npc/wanderingtrader/WanderingTraderSpawner.java
 +++ b/net/minecraft/world/entity/npc/wanderingtrader/WanderingTraderSpawner.java
 @@ -30,7 +30,7 @@ public class WanderingTraderSpawner implements CustomSpawner {
@@ -18,7 +18,7 @@ index 1525deaabaf7f8cbe5566f014ca4be6a85313f43..8965315a1cbd272ea6c9bcb6cf935cec
      // Folia - moved to global data
  
 diff --git a/net/minecraft/world/level/block/entity/EnchantingTableBlockEntity.java b/net/minecraft/world/level/block/entity/EnchantingTableBlockEntity.java
-index 30bffd50594ff758d341c172cd5f656e8fa9d429..084106b157144c9ea12e7be7d2213c910e8e700f 100644
+index 22b9f70f76ff8f592359e958fa439e9806a29fcc..54021f0900896be06b560d280542c8fb60904f33 100644
 --- a/net/minecraft/world/level/block/entity/EnchantingTableBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/EnchantingTableBlockEntity.java
 @@ -28,7 +28,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable

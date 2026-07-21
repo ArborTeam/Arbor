@@ -5,10 +5,10 @@ Subject: [PATCH] Async protocol switching optimization
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index d43be966a04456ba1a85c20f8b12f91de62a873d..f0c6cea11a15a0fdbf7b9b9f44fc838f71bf225e 100644
+index 40f54536422fa38bd84017fc634808016b4de58b..da98f733a4008c524e12b98d8b8f2afb9ed811ee 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -1057,4 +1057,127 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -1067,4 +1067,127 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          }
      }
      // Paper end - Optimize network
@@ -137,7 +137,7 @@ index d43be966a04456ba1a85c20f8b12f91de62a873d..f0c6cea11a15a0fdbf7b9b9f44fc838f
 +
  }
 diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index 715536d384b4b313ae7c5c36cd996d1d323adfcb..105baf3107f91237ab5cf8e480db2fc5990c69ed 100644
+index c26421cf5899e37eb05f97f526e6a372505ea738..8405a9fb6a68a9794535b034e7b73118a603868a 100644
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 @@ -188,8 +188,9 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
@@ -152,7 +152,7 @@ index 715536d384b4b313ae7c5c36cd996d1d323adfcb..105baf3107f91237ab5cf8e480db2fc5
              PlayerList playerList = this.server.getPlayerList();
              if (playerList.getPlayer(this.gameProfile.id()) != null) {
 @@ -256,6 +257,18 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
-             LOGGER.error("Couldn't place player in world", (Throwable)var4);
+             LOGGER.error("Couldn't place player in world", e);
              this.disconnect(DISCONNECT_REASON_INVALID_DATA);
          }
 +        // Arbor start - Async protocol switch
@@ -171,10 +171,10 @@ index 715536d384b4b313ae7c5c36cd996d1d323adfcb..105baf3107f91237ab5cf8e480db2fc5
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 160779c2300abe57af9bdd592cf745dbda409ee4..47329c6caa20fde60a8602c17f3ef3c7f6e39561 100644
+index 06ed8d614d8f00174d5bf305a407b422aaa881a0..d1fd7d5d4de9c0a57f23755b8140f80816dde233 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2900,7 +2900,13 @@ public class ServerGamePacketListenerImpl
+@@ -2888,7 +2888,13 @@ public class ServerGamePacketListenerImpl
          } // Folia end - rewrite login process - move connection ownership to global region
          this.waitingForSwitchToConfig = true; // Folia - rewrite login process - fix bad ordering of this field write - moved down
          this.send(ClientboundStartConfigurationPacket.INSTANCE);
@@ -188,38 +188,42 @@ index 160779c2300abe57af9bdd592cf745dbda409ee4..47329c6caa20fde60a8602c17f3ef3c7
      }
  
      @Override
-@@ -3783,12 +3789,25 @@ public class ServerGamePacketListenerImpl
-             throw new IllegalStateException("Client acknowledged config, but none was requested");
-         } else {
-             final ServerConfigurationPacketListenerImpl listener = new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())); // Paper
-+            if (!zone.little.arbor.config.modules.optimizations.AsyncProtocolChangeConfig.enabled){ // Arbor - Async protocol switch
-             this.connection
-                 .setupInboundProtocol(
-                     ConfigurationProtocols.SERVERBOUND,
-                     listener // Paper
-                 );
--            new io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent(listener.paperConnection).callEvent(); // Paper
-+            new io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent(listener.paperConnection).callEvent(); }// Paper // Arbor - Async protocol switch - add "{"
-+            // Arbor start - Async protocol switch - move up
-+            else
-+                this.connection.setupInboundProtocolAsync(
-+                        ConfigurationProtocols.SERVERBOUND,
-+                        listener,
-+                        () -> {
-+                            new io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent(listener.paperConnection).callEvent(); // Paper
-+                        },
-+                        true
-+                );
-+            // Arbor end
-+            // new io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent(listener.paperConnection).callEvent(); // Paper // Arbor - Async protocol switch - move up
+@@ -3773,12 +3779,25 @@ public class ServerGamePacketListenerImpl
          }
+ 
+         final ServerConfigurationPacketListenerImpl listener = new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())); // Paper
+-        this.connection
+-            .setupInboundProtocol(
+-                ConfigurationProtocols.SERVERBOUND,
+-                listener // Paper
++        if (!zone.little.arbor.config.modules.optimizations.AsyncProtocolChangeConfig.enabled) { // Arbor - Async protocol switch
++            this.connection
++                .setupInboundProtocol(
++                    ConfigurationProtocols.SERVERBOUND,
++                    listener // Paper
++                );
++            new io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent(listener.paperConnection).callEvent(); // Paper
++        } else {
++            // Arbor start - Async protocol switch
++            this.connection.setupInboundProtocolAsync(
++                    ConfigurationProtocols.SERVERBOUND,
++                    listener,
++                    () -> {
++                        new io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent(listener.paperConnection).callEvent(); // Paper
++                    },
++                    true
+             );
+-        new io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent(listener.paperConnection).callEvent(); // Paper
++            // Arbor end
++        }
      }
  
+     @Override
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index d924369285878ff73811b8186cdb16e76f5dda90..b54a97efd45d3c5d39c163a973618ad1f9e655c1 100644
+index f2329d1a9d9d4bf4c9d771e25e54f2f9ef65a76c..4bb1ee014038db2b1cb5e44c51d6ced978e68b57 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -437,12 +437,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -435,12 +435,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      public void handleLoginAcknowledgement(final ServerboundLoginAcknowledgedPacket packet) {
          net.minecraft.network.protocol.PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor()); // CraftBukkit
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.PROTOCOL_SWITCHING, "Unexpected login acknowledgement packet");
@@ -253,10 +257,10 @@ index d924369285878ff73811b8186cdb16e76f5dda90..b54a97efd45d3c5d39c163a973618ad1
  
      @Override
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 2088a409b60a1dc160e523e8920b2b0b39dab23b..551354f4f5258b2aa323b30167d413e894779f05 100644
+index e7579a9873362317dd82b63306cf650af9472574..aff5688e01856ae2e414a6c530a6151a1f9985bd 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -238,9 +238,11 @@ public abstract class PlayerList {
+@@ -237,9 +237,11 @@ public abstract class PlayerList {
          // only after setting the connection listener to game type, add the connection to this regions list
          level.getCurrentWorldData().connections.add(connection);
          // Folia end - rewrite login process

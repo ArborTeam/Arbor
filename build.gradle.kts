@@ -53,10 +53,10 @@ subprojects {
     }
 
     repositories {
-        mavenCentral()
         maven(paperMavenPublicUrl)
         maven(bacteriawaMavenPublicUrl)
         maven(littleovoMavenPublicUrl)
+        mavenCentral()
     }
 
     dependencies {

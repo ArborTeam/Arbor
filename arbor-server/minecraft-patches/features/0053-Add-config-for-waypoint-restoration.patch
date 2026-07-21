@@ -5,7 +5,7 @@ Subject: [PATCH] Add config for waypoint restoration
 
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index 9bccfbee7771f764c0b6be1a44dea52c8c998e16..2b4dae8639141a1cf0bee36061237d44b0669c10 100644
+index 61b65cdb60d410157846032cb73f770a924b48e4..3b78013a31d2994cc566f28c8ccbc69ed199ab1c 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -267,7 +267,7 @@ public class Commands {
@@ -18,10 +18,10 @@ index 9bccfbee7771f764c0b6be1a44dea52c8c998e16..2b4dae8639141a1cf0bee36061237d44
          WorldBorderCommand.register(this.dispatcher);
          if (JvmProfiler.INSTANCE.isAvailable()) {
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index ae08d4c53cc04ee59b3b696ed954f7a0c8d7be71..0b9a4b4a48026c7145cecf259664c1c4be1ddcc6 100644
+index 88c7fecc85234abea56373ced3dac83c6b9b90e3..38509de01537d9ab1b48b56c92e189cf26b71e2e 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -3137,8 +3137,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -3107,8 +3107,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              level.players().forEach(playerx -> playerx.connection.send(packet)); // Paper - per-world game rules
          } else if (rule == GameRules.LOCATOR_BAR) {
              // this.getAllLevels().forEach(level -> { // Paper - per-world game rules
@@ -33,10 +33,10 @@ index ae08d4c53cc04ee59b3b696ed954f7a0c8d7be71..0b9a4b4a48026c7145cecf259664c1c4
                      level.players().forEach(waypointManager::updatePlayer);
                  } else {
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 9015ead0639d74af11fd3838fb0480077748cd77..5cce2dfa9cbde4aa89a20ce5aa5cef8edeffa4e7 100644
+index e0139dba5192ec58f3c95b6484d7a97da09d061a..6c5fdca1dae04b1484aceeedb1d8bbb1f79810bc 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -686,7 +686,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -689,7 +689,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
  
          this.sleepStatus = new SleepStatus();
          this.gameEventDispatcher = new GameEventDispatcher(this);
@@ -47,7 +47,7 @@ index 9015ead0639d74af11fd3838fb0480077748cd77..5cce2dfa9cbde4aa89a20ce5aa5cef8e
          //this.updateSkyBrightness(); // Folia - region threading - delay until first tick
          // Paper start - rewrite chunk system
 diff --git a/net/minecraft/world/waypoints/WaypointTransmitter.java b/net/minecraft/world/waypoints/WaypointTransmitter.java
-index d6f842cbd2060eb56a1e4384b3ea97feea3e73ba..9081fdaccf523887e5aea182b82221cb2a9bee8d 100644
+index 2866b750a28cc32c2913d3c1afee95f05956982c..c5bb8ac551aa087bc1c29ad6951e6b7a1c2733e3 100644
 --- a/net/minecraft/world/waypoints/WaypointTransmitter.java
 +++ b/net/minecraft/world/waypoints/WaypointTransmitter.java
 @@ -76,7 +76,8 @@ public interface WaypointTransmitter extends Waypoint {

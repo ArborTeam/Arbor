@@ -5,10 +5,10 @@ Subject: [PATCH] Add tpsbar with chunkhot membar and region bar
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index c8d179d936d57e8222d87b7fd943dbddfa8446a0..e0ecc487098d78447d0959ac27a1c1e8efaec199 100644
+index f020f310c4bca49a23de91bea72ccd9941c0b03c..10b351d8bd6b0e117ecbe961ae2f101686a38fe4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-@@ -408,4 +408,12 @@ public class CraftChunk implements Chunk {
+@@ -406,4 +406,12 @@ public class CraftChunk implements Chunk {
      static {
          Arrays.fill(FULL_LIGHT, (byte) 0xFF);
      }
@@ -22,10 +22,10 @@ index c8d179d936d57e8222d87b7fd943dbddfa8446a0..e0ecc487098d78447d0959ac27a1c1e8
 +    // KioCG end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index fbf31420cb83287c080c1832bccc167c81526563..59e3a15cce0ed34aa3b75b92db9e349c9fe481fa 100644
+index 3d7def71d03d3ec3b3c3565ec07b46a3c1263aab..e655c6b817b1ef2b3186c4b16a1039081139e97f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3399,4 +3399,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -3396,4 +3396,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          super.knockback(strength, directionX, directionZ);
          this.entity.hurtMarked = true;
      }

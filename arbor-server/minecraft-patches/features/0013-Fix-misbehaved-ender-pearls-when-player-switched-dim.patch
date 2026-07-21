@@ -9,10 +9,10 @@ Almost the same bug as:
 https://github.com/PaperMC/Folia/pull/418 and https://github.com/PaperMC/Folia/issues/393
 
 diff --git a/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEnderpearl.java b/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEnderpearl.java
-index 8dc8c6cfc01be3787142a117ef2b98f5294a8cef..d4c3e334e1d6829fef56afa2f22b5d66a5dc7854 100644
+index 501a0e89cc7bcfce6793f059b080b38666e0fb64..e618ee0be8d09428fda6aaca5d67b39c8789ba8d 100644
 --- a/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEnderpearl.java
 +++ b/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEnderpearl.java
-@@ -262,7 +262,8 @@ public class ThrownEnderpearl extends ThrowableItemProjectile {
+@@ -264,7 +264,8 @@ public class ThrownEnderpearl extends ThrowableItemProjectile {
              int previousChunkZ = SectionPos.blockToSectionCoord(this.position().z());
              Entity owner = this.owner != null ? findOwnerIncludingDeadPlayer(serverLevel, this.owner.getUUID()) : null;
              if (owner instanceof ServerPlayer serverPlayer

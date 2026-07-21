@@ -32,7 +32,7 @@ index 08745a35b1ce8cc56d970472088de3cd17b9e43a..581f28dc289b52c0aff847ef03a9aa2f
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index 4d2936f6818c38e2844cba78ffad339e93ff29ab..f0379a32b2d2f62f7c6a2e9a981954eda83c3654 100644
+index 30815c8970b1f1c88a3c7bb5fd36efd915f1687d..36b3ba4ad6aa5b7101d1a6987a02271724cc8345 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -40,8 +40,8 @@ public class PaperVersionFetcher implements VersionFetcher {
@@ -55,7 +55,7 @@ index 4d2936f6818c38e2844cba78ffad339e93ff29ab..f0379a32b2d2f62f7c6a2e9a981954ed
                  distance = fetchDistanceFromSiteApi(buildNumber.getAsInt());
              } else {
                  final Optional<String> gitBranch = BUILD_INFO.gitBranch();
-@@ -110,7 +110,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -111,7 +111,7 @@ public class PaperVersionFetcher implements VersionFetcher {
          int distance = DISTANCE_ERROR;
  
          final OptionalInt buildNumber = PaperVersionFetcher.BUILD_INFO.buildNumber();
@@ -98,7 +98,7 @@ index 10a0be7a4db1a51579d113d279af7a9effe7f438..4bdb532220a8806d5c925db5a78be5a1
  
      @Override
 diff --git a/src/main/java/org/spigotmc/WatchdogThread.java b/src/main/java/org/spigotmc/WatchdogThread.java
-index 1ae6be6da9834168ac93c56007d63ec096f11762..c80ee942856783acdda24691e960d9c479a8288c 100644
+index 5607f4cc8ca2f620461eb5e97d01d9db0d6b2303..69e2aaddd18a2dadde663b2ac735aa5edc2bccd7 100644
 --- a/src/main/java/org/spigotmc/WatchdogThread.java
 +++ b/src/main/java/org/spigotmc/WatchdogThread.java
 @@ -80,9 +80,10 @@ public class WatchdogThread extends ca.spottedleaf.moonrise.common.util.TickThre

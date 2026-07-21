@@ -5,10 +5,10 @@ Subject: [PATCH] Add config for unsafe teleportation
 
 
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index dffcc532e456e9576557ca08f468b8ba721628f6..a52288631fc09ae7cf04d05d789ad516041c5899 100644
+index 480b6b2405706fd4d7158d0e160adafd84099887..bb5ed18c2b5d268688ccbd136d5878276d91ce75 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -69,7 +69,7 @@ public class FallingBlockEntity extends Entity {
+@@ -70,7 +70,7 @@ public class FallingBlockEntity extends Entity {
      public int fallDamageMax = 40;
      public float fallDamagePerDistance = 0.0F;
      public @Nullable CompoundTag blockData;
@@ -17,7 +17,7 @@ index dffcc532e456e9576557ca08f468b8ba721628f6..a52288631fc09ae7cf04d05d789ad516
      protected static final EntityDataAccessor<BlockPos> DATA_START_POS = SynchedEntityData.defineId(FallingBlockEntity.class, EntityDataSerializers.BLOCK_POS);
      public boolean autoExpire = true; // Paper - Expand FallingBlock API
  
-@@ -383,7 +383,7 @@ public class FallingBlockEntity extends Entity {
+@@ -384,7 +384,7 @@ public class FallingBlockEntity extends Entity {
          ResourceKey<Level> oldDimension = this.level().dimension();
          boolean fromOrToEnd = (oldDimension == Level.END || newDimension == Level.END) && oldDimension != newDimension;
          Entity newEntity = super.teleport(transition);
@@ -27,7 +27,7 @@ index dffcc532e456e9576557ca08f468b8ba721628f6..a52288631fc09ae7cf04d05d789ad516
      }
  }
 diff --git a/net/minecraft/world/level/block/EndPortalBlock.java b/net/minecraft/world/level/block/EndPortalBlock.java
-index aab09feaa3c3c90e33701072e24ed144226e6d53..984f28e2da049014c43ad83c2fe79668e65a6152 100644
+index d42bb2a1721e4ab8c9956e18c3ca418b8d648c59..2752256abd3ac375687d54b00faffd194ea28f1a 100644
 --- a/net/minecraft/world/level/block/EndPortalBlock.java
 +++ b/net/minecraft/world/level/block/EndPortalBlock.java
 @@ -76,6 +76,12 @@ public class EndPortalBlock extends BaseEntityBlock implements Portal {

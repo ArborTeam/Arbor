@@ -6,12 +6,12 @@ Subject: [PATCH] Add config to enable tick command
 only freeze/unfreeze/step/query can run when enabled
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedServer.java b/io/papermc/paper/threadedregions/RegionizedServer.java
-index c23ddf3a52ca0c91c39ac2d6c899925c6c119f97..a8000c2e7c44cc6af30ce738c5e373fafb819020 100644
+index 6bfaa1f05e55dd6d9a508edaec0c3485d8f0b0fa..eb37d5a37c7538eed20683ec923426800ca35706 100644
 --- a/io/papermc/paper/threadedregions/RegionizedServer.java
 +++ b/io/papermc/paper/threadedregions/RegionizedServer.java
-@@ -338,6 +338,11 @@ public final class RegionizedServer {
-         this.randomWalk();
-          */
+@@ -239,6 +239,11 @@ public final class RegionizedServer {
+ 
+     private void globalTick(final long tickCount) {
          ++this.tickCount;
 +        // Arbor start - Add a config to enable tick command
 +        if (zone.little.arbor.config.modules.experiment.CommandConfig.tick) {
@@ -21,7 +21,7 @@ index c23ddf3a52ca0c91c39ac2d6c899925c6c119f97..a8000c2e7c44cc6af30ce738c5e373fa
          // expire invalid click command callbacks
          io.papermc.paper.adventure.providers.ClickCallbackProviderImpl.ADVENTURE_CLICK_MANAGER.handleQueue((int)this.tickCount); // Paper // Folia - region threading - moved to global tick
          io.papermc.paper.adventure.providers.ClickCallbackProviderImpl.DIALOG_CLICK_MANAGER.handleQueue((int)this.tickCount); // Paper // Folia - region threading - moved to global tick
-@@ -511,7 +516,7 @@ public final class RegionizedServer {
+@@ -415,7 +420,7 @@ public final class RegionizedServer {
      }
  
      private void tickTime(final ServerLevel world, final long tickCount) {
@@ -31,7 +31,7 @@ index c23ddf3a52ca0c91c39ac2d6c899925c6c119f97..a8000c2e7c44cc6af30ce738c5e373fa
          }
      }
 diff --git a/io/papermc/paper/threadedregions/TickRegionScheduler.java b/io/papermc/paper/threadedregions/TickRegionScheduler.java
-index 9158246c76e51df742ee9ffafc98a9244aaf5a9c..b17df77cd21b4cc93bbbda55ef8f0fc8d75aaf3a 100644
+index 416ad4ddd289a01aa7d8989f594ae84fe5ccf5cf..83877d3d58823f6724d84f897904a4110afe9a76 100644
 --- a/io/papermc/paper/threadedregions/TickRegionScheduler.java
 +++ b/io/papermc/paper/threadedregions/TickRegionScheduler.java
 @@ -559,6 +559,11 @@ public final class TickRegionScheduler {
@@ -47,7 +47,7 @@ index 9158246c76e51df742ee9ffafc98a9244aaf5a9c..b17df77cd21b4cc93bbbda55ef8f0fc8
                  this.scheduler.regionFailed(this, false, thr);
                  // regionFailed will schedule a shutdown, so we should avoid letting this region tick further
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index f8cefdd83c00b6eca103737d64d1bffeba92305a..9bccfbee7771f764c0b6be1a44dea52c8c998e16 100644
+index d81bb421a79287385db9bedb23220245958a2ce5..61b65cdb60d410157846032cb73f770a924b48e4 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -259,7 +259,11 @@ public class Commands {
@@ -64,10 +64,10 @@ index f8cefdd83c00b6eca103737d64d1bffeba92305a..9bccfbee7771f764c0b6be1a44dea52c
          TitleCommand.register(this.dispatcher, context);
          //TriggerCommand.register(this.dispatcher); // Folia - region threading - TODO later
 diff --git a/net/minecraft/server/commands/TickCommand.java b/net/minecraft/server/commands/TickCommand.java
-index 2dd0a8f2399a83b90356fcf0777bd1aec8eef5a9..cae943bae4701f74b46a49d68da83ae797841590 100644
+index e8d6a67143f3f0b4813e51bb273498bc404899b9..64b685b219b930a1bb7f85db9947f4d1ca9df093 100644
 --- a/net/minecraft/server/commands/TickCommand.java
 +++ b/net/minecraft/server/commands/TickCommand.java
-@@ -22,14 +22,14 @@ public class TickCommand {
+@@ -23,14 +23,14 @@ public class TickCommand {
              Commands.literal("tick")
                  .requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
                  .then(Commands.literal("query").executes(c -> tickQuery(c.getSource())))
@@ -84,7 +84,7 @@ index 2dd0a8f2399a83b90356fcf0777bd1aec8eef5a9..cae943bae4701f74b46a49d68da83ae7
                  .then(
                      Commands.literal("step")
                          .executes(c -> step(c.getSource(), 1))
-@@ -40,7 +40,7 @@ public class TickCommand {
+@@ -41,7 +41,7 @@ public class TickCommand {
                                  .executes(c -> step(c.getSource(), IntegerArgumentType.getInteger(c, "time")))
                          )
                  )
@@ -93,7 +93,7 @@ index 2dd0a8f2399a83b90356fcf0777bd1aec8eef5a9..cae943bae4701f74b46a49d68da83ae7
                      Commands.literal("sprint")
                          .then(Commands.literal("stop").executes(c -> stopSprinting(c.getSource())))
                          .then(
-@@ -48,7 +48,7 @@ public class TickCommand {
+@@ -49,7 +49,7 @@ public class TickCommand {
                                  .suggests((c, b) -> SharedSuggestionProvider.suggest(new String[]{"60s", "1d", "3d"}, b))
                                  .executes(c -> sprint(c.getSource(), IntegerArgumentType.getInteger(c, "time")))
                          )

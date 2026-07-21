@@ -8,7 +8,7 @@ As part of: Kaiiju (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2e
 Licensed under: GPL-3.0 (https://github.com/KaiijuMC/Kaiiju/blob/c2b7aec8f7b418a39a2ec408e6411e6f752379da/LICENSE)
 
 diff --git a/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java b/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
-index 194813475271364831cdd1bb5ae244967341f9da..6a7e2c9473bf8cfe09b4c1f659d72b42baff9fa4 100644
+index b40da004b5281a041ee896ae176bfb9c4660f353..ffb8a725c41d49a0f0e023ab37bb77062d67eccc 100644
 --- a/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
 +++ b/net/minecraft/world/entity/ai/behavior/MoveToTargetSink.java
 @@ -117,7 +117,9 @@ public class MoveToTargetSink extends Behavior<Mob> {

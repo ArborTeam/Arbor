@@ -5,7 +5,7 @@ Subject: [PATCH] Replace packet processing queue with mt-queue
 
 
 diff --git a/net/minecraft/network/PacketProcessor.java b/net/minecraft/network/PacketProcessor.java
-index 24f5b890b0126fc817863f99b676da1a548f7608..13ce2ae43b7b583bdad35d7a60eefbb65ba140f9 100644
+index 10fa576838c726d026df078eef6c693d14c2cbda..276baa92e5b67a8f0b41e854654c7b03a9842629 100644
 --- a/net/minecraft/network/PacketProcessor.java
 +++ b/net/minecraft/network/PacketProcessor.java
 @@ -11,7 +11,7 @@ import org.slf4j.Logger;

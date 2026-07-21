@@ -10,10 +10,10 @@ Original author: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Original license: https://github.com/Winds-Studio/Leaf/blob/db41340915c7768d726342fb29d16bc428081074/LICENSE.md
 
 diff --git a/net/minecraft/core/component/PatchedDataComponentMap.java b/net/minecraft/core/component/PatchedDataComponentMap.java
-index e91a0159d3b41f40db188c2ada99683c18c73928..299cf8825f50b17b82808a39f7937efdc69352e3 100644
+index 08ea8107fc8cbec3742278ab5cf03ef9048720f9..217e4fb33d2707c5e50c7ec2dd2aaee410154254 100644
 --- a/net/minecraft/core/component/PatchedDataComponentMap.java
 +++ b/net/minecraft/core/component/PatchedDataComponentMap.java
-@@ -225,7 +225,19 @@ public final class PatchedDataComponentMap implements DataComponentMap {
+@@ -221,7 +221,19 @@ public final class PatchedDataComponentMap implements DataComponentMap {
  
      @Override
      public boolean equals(final Object obj) {

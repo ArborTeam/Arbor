@@ -5,10 +5,10 @@ Subject: [PATCH] Fixes around entity brain and memories
 
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index c9554552b194060135951a036c589be6fb27151c..3b7cc7b204eea78a7dc694b195ab1e45860878b6 100644
+index 3b1c3e84ab24b6e3a0e4d129b3617b393b6d6651..58bd6208cfb37246e6d45738620766d67f16a4e1 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -295,6 +295,11 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
+@@ -299,6 +299,11 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
          if (Objects.equals(currentTarget, target)) {
              return false;
          }
@@ -21,10 +21,10 @@ index c9554552b194060135951a036c589be6fb27151c..3b7cc7b204eea78a7dc694b195ab1e45
          target = asValidTarget(target);
          if (reason != null) {
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index 8bf489874cd4d2b7e3779a6565f13511938754ed..a3c47afe2ca19e2d024f194126e45c30846a87eb 100644
+index e097bc1268b4050e3948413c52dea69950858458..0373feed3be4c361b4aa09508dd51a517ba17736 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
-@@ -387,7 +387,7 @@ public class Brain<E extends LivingEntity> {
+@@ -383,7 +383,7 @@ public class Brain<E extends LivingEntity> {
      }
  
      public void tick(final ServerLevel level, final E body) {
@@ -33,7 +33,7 @@ index 8bf489874cd4d2b7e3779a6565f13511938754ed..a3c47afe2ca19e2d024f194126e45c30
          this.tickSensors(level, body);
          this.startEachNonRunningBehavior(level, body);
          this.tickEachRunningBehavior(level, body);
-@@ -399,8 +399,8 @@ public class Brain<E extends LivingEntity> {
+@@ -395,8 +395,8 @@ public class Brain<E extends LivingEntity> {
          }
      }
  
@@ -45,7 +45,7 @@ index 8bf489874cd4d2b7e3779a6565f13511938754ed..a3c47afe2ca19e2d024f194126e45c30
  
      public void stopAll(final ServerLevel level, final E body) {
 diff --git a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
-index 7172721045c7b40f49c714260c31c72073ea9cc4..50ad86d5b56edd440ca215da2e4237608a14b767 100644
+index f744ecd20dc70786311a7162b52aa4ceca0717db..523c6c0b85043090c96e1deeefff55a706ffff2e 100644
 --- a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 +++ b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 @@ -81,6 +81,11 @@ public class BehaviorUtils {
@@ -77,7 +77,7 @@ index 68251875edfa47ac34c64f99510998ad4bbb14b4..8c325f6fe211bb1ed0f5bd963a9f0c2f
 +    // Arbor end
  }
 diff --git a/net/minecraft/world/entity/ai/behavior/EntityTracker.java b/net/minecraft/world/entity/ai/behavior/EntityTracker.java
-index 97fdbe40be1fb924e186936404edda7e9810f70a..a3e36865d9e9707b3d53fe8e169e628915c1d897 100644
+index 3ac52b025ac3e1a3f9135b8e593a385a847afe0f..67fa72887e765eea0b1f5c2e3a14fd936d19302e 100644
 --- a/net/minecraft/world/entity/ai/behavior/EntityTracker.java
 +++ b/net/minecraft/world/entity/ai/behavior/EntityTracker.java
 @@ -55,4 +55,11 @@ public class EntityTracker implements PositionTracker {
@@ -105,21 +105,21 @@ index ce6cf5ecfb190428e3ef9b7dd39c98e3d27a7b9d..fdf1fd84bb7144a2fb811adffc71e033
 +    boolean checkThread(net.minecraft.world.level.Level currOwnedByLevel); // Arbor - Fix a series issue around entity memory typed GlobalPos and WalkTarget
  }
 diff --git a/net/minecraft/world/entity/ai/behavior/SleepInBed.java b/net/minecraft/world/entity/ai/behavior/SleepInBed.java
-index 112572f5a6813abd3cf3bd26e2b087b7edb48f41..8bab4dfb5b0349d5bf3ae3786734f47fa0a8dbad 100644
+index 16017d819c28b077f732e2ef571eac179d24e323..29e251640869aee20e4eff07a0c8e3f19b6edfb2 100644
 --- a/net/minecraft/world/entity/ai/behavior/SleepInBed.java
 +++ b/net/minecraft/world/entity/ai/behavior/SleepInBed.java
-@@ -55,6 +55,11 @@ public class SleepInBed extends Behavior<LivingEntity> {
-                     }
-                 }
+@@ -57,6 +57,11 @@ public class SleepInBed extends Behavior<LivingEntity> {
+             }
+         }
  
-+                // Arbor - Prevent off-tick-region chunk operations
-+                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(level, target.pos())) {
-+                    return false;
-+                }
-+                // Arbor -end
-                 BlockState blockState = level.getBlockStateIfLoaded(target.pos()); // Paper - Prevent sync chunk loads when villagers try to find beds
-                 if (blockState == null) { return false; } // Paper - Prevent sync chunk loads when villagers try to find beds
-                 return target.pos().closerToCenterThan(body.position(), 2.0) && blockState.is(BlockTags.BEDS) && !blockState.getValue(BedBlock.OCCUPIED);
++        // Arbor - Prevent off-tick-region chunk operations
++        if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(level, target.pos())) {
++            return false;
++        }
++        // Arbor -end
+         BlockState blockState = level.getBlockStateIfLoaded(target.pos()); // Paper - Prevent sync chunk loads when villagers try to find beds
+         if (blockState == null) return false; // Paper - Prevent sync chunk loads when villagers try to find beds
+         return target.pos().closerToCenterThan(body.position(), 2.0) && blockState.is(BlockTags.BEDS) && !blockState.getValue(BedBlock.OCCUPIED);
 diff --git a/net/minecraft/world/entity/ai/memory/MemorySlot.java b/net/minecraft/world/entity/ai/memory/MemorySlot.java
 index 88a89b4c72cc99dc89d3f3cc928b2dfda4125759..255cb7382b24687b6ad98e8ba28f7b6ff4011f89 100644
 --- a/net/minecraft/world/entity/ai/memory/MemorySlot.java
@@ -198,29 +198,29 @@ index e44814cfb6afb594456b8215bd13a92e93de2c85..94a08bebea84aea772121ff78c0d8b6b
              }
          }
 diff --git a/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-index 21ead01c326b187dc1117b549dbdf706730a2147..0b70c2790b3636e073831f95e43ad451f7674ecd 100644
+index 2ea1ec39a37899ae1510d0036aa670e758077537..fcc997363535e2ea8a368bb86d7a6c4edf03cc33 100644
 --- a/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-@@ -181,6 +181,18 @@ public abstract class PathNavigation {
+@@ -187,6 +187,18 @@ public abstract class PathNavigation {
                  }
              }
-             // Paper end - EntityPathfindEvent
-+            // Arbor - Do not path find for targets out of current region
-+            if (zone.little.arbor.config.modules.fixes.PathfindingFixesConfig.doNotPathfindToNotOwnedTargets) {
-+                // filter the targets not owned by current region
-+                targets = new java.util.HashSet<>(targets); // well no idea about how to determine if this should be copied to a modifiable one
-+                targets.removeIf(pos -> !ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.mob.level(), pos));
+         }
++        // Arbor - Do not path find for targets out of current region
++        if (zone.little.arbor.config.modules.fixes.PathfindingFixesConfig.doNotPathfindToNotOwnedTargets) {
++            // filter the targets not owned by current region
++            targets = new java.util.HashSet<>(targets); // well no idea about how to determine if this should be copied to a modifiable one
++            targets.removeIf(pos -> !ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(this.mob.level(), pos));
 +
-+                // return if no available (observe the logic in the first if block)
-+                if (targets.isEmpty()) {
-+                    return null;
-+                }
++            // return if no available (observe the logic in the first if block)
++            if (targets.isEmpty()) {
++                return null;
 +            }
-+            // Arbor end
-             ProfilerFiller profiler = Profiler.get();
-             profiler.push("pathfind");
-             BlockPos fromPos = above ? this.mob.blockPosition().above() : this.mob.blockPosition();
-@@ -282,6 +294,17 @@ public abstract class PathNavigation {
++        }
++        // Arbor end
+         // Paper end - EntityPathfindEvent
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("pathfind");
+@@ -286,6 +298,17 @@ public abstract class PathNavigation {
  
              if (!this.isDone()) {
                  Vec3 target = this.path.getNextEntityPos(this.mob);
@@ -239,7 +239,7 @@ index 21ead01c326b187dc1117b549dbdf706730a2147..0b70c2790b3636e073831f95e43ad451
              }
          }
 diff --git a/net/minecraft/world/entity/animal/allay/AllayAi.java b/net/minecraft/world/entity/animal/allay/AllayAi.java
-index 05436572581d369fe392566ec9c0afa8d8f03c6e..0f790f3ae9fabaaf54aa77fd7f0779fd7e6b637a 100644
+index c3667e7997551e0f5ce63bc6ee890082d1431400..e3c03ad9ab2c68603e7f717ce0264be4f71a8792 100644
 --- a/net/minecraft/world/entity/animal/allay/AllayAi.java
 +++ b/net/minecraft/world/entity/animal/allay/AllayAi.java
 @@ -112,6 +112,17 @@ public class AllayAi {
@@ -261,10 +261,10 @@ index 05436572581d369fe392566ec9c0afa8d8f03c6e..0f790f3ae9fabaaf54aa77fd7f0779fd
                  return Optional.of(new BlockPosTracker(position.pos().above()));
              }
 diff --git a/net/minecraft/world/entity/animal/sniffer/Sniffer.java b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
-index c947f26f57de71ac0eafc0f56a96fec12ce5dba5..0a3585244006cf0875992199a3616b643bb41b79 100644
+index d5394ae7ce56555ad21aeafb2d78c291c62e2988..37aaf70589aa649f17573a81708f3d55cbad4e68 100644
 --- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 +++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
-@@ -278,8 +278,18 @@ public class Sniffer extends Animal {
+@@ -279,8 +279,18 @@ public class Sniffer extends Animal {
  
      private boolean canDig(final BlockPos position) {
          return this.level().getBlockState(position).is(BlockTags.SNIFFER_DIGGABLE_BLOCK)

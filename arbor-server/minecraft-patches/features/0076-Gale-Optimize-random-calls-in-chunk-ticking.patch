@@ -57,10 +57,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 2a70450a316316b6037272ebcb7c661fbeea0d63..0e25f93891dff7111b2a45073a9acf88ede61ba4 100644
+index 003de43e3af070a715542a2c144f2cd9262def7c..af912923f2b4eaa3af253a8b444ee0306fb8faa8 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1070,7 +1070,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1058,7 +1058,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
      }
  
      // Paper start - optimise random ticking
@@ -69,7 +69,7 @@ index 2a70450a316316b6037272ebcb7c661fbeea0d63..0e25f93891dff7111b2a45073a9acf88
  
      private void optimiseRandomTick(final LevelChunk chunk, final int tickSpeed) {
          final LevelChunkSection[] sections = chunk.getSections();
-@@ -1152,7 +1152,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1140,7 +1140,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          int minZ = chunkPos.getMinBlockZ();
          ProfilerFiller profiler = Profiler.get();
          profiler.push("thunder");
@@ -79,10 +79,10 @@ index 2a70450a316316b6037272ebcb7c661fbeea0d63..0e25f93891dff7111b2a45073a9acf88
              if (this.isRainingAt(pos)) {
                  DifficultyInstance difficulty = this.getCurrentDifficultyAt(pos);
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 1e915ca5ea8b031c7010a2537686bd1402855ad2..4e2673736532adb52465e1c03beabdf8b65d81b3 100644
+index 86a84a6076908219b54c7d5bd9e51ca7c148cf64..63913b83226c2cfb0f9a3b8a124093235f5b99ba 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -145,6 +145,19 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -144,6 +144,19 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
      }
      // Paper end - get block chunk optimisation
  
@@ -102,7 +102,7 @@ index 1e915ca5ea8b031c7010a2537686bd1402855ad2..4e2673736532adb52465e1c03beabdf8
      public LevelChunk(final Level level, final ChunkPos pos) {
          this(level, pos, UpgradeData.EMPTY, new LevelChunkTicks<>(), new LevelChunkTicks<>(), 0L, null, null, null);
      }
-@@ -181,6 +194,8 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -180,6 +193,8 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
          this.debug = !empty && this.level.isDebug();
          this.defaultBlockState = empty ? VOID_AIR_BLOCKSTATE : AIR_BLOCKSTATE;
          // Paper end - get block chunk optimisation

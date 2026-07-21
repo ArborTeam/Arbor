@@ -8,11 +8,11 @@ As part of: Purpur (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18
 Licensed under: MIT (https://github.com/PurpurMC/Purpur/blob/09f547de09fc5d886f18f6d99ff389289766ec9d/LICENSE)
 
 diff --git a/net/minecraft/world/entity/npc/villager/Villager.java b/net/minecraft/world/entity/npc/villager/Villager.java
-index 07677108d5f11057f6bd5a02bda4e49d3b802869..55ccf8fe1f943c52b71d65f007f840721f26ef22 100644
+index f649c46cc9a34e646f8da3244866c6e011d30aa3..2281d7dcb85e9ae54c1d711a8d58693ca7e2504d 100644
 --- a/net/minecraft/world/entity/npc/villager/Villager.java
 +++ b/net/minecraft/world/entity/npc/villager/Villager.java
-@@ -199,6 +199,53 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
-         this.setVillagerData(this.getVillagerData().withType(type).withProfession(level.registryAccess(), VillagerProfession.NONE));
+@@ -190,6 +190,53 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
+         this.setCanPickUpLoot(true);
      }
  
 +    // Purpur start
@@ -64,8 +64,8 @@ index 07677108d5f11057f6bd5a02bda4e49d3b802869..55ccf8fe1f943c52b71d65f007f84072
 +
      @Override
      public Brain<Villager> getBrain() {
-         return (Brain<Villager>) super.getBrain();
-@@ -268,11 +315,20 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
+         return (Brain<Villager>)super.getBrain();
+@@ -259,11 +306,20 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
          // Paper start - EAR 2
          this.customServerAiStep(level, false);
      }

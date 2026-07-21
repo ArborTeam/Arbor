@@ -5,15 +5,14 @@ Subject: [PATCH] Add config to disable entity tick catchers
 
 
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 9e5d49f9d0fd0143ec453e2dd0bf9fad40ae00cb..c543c5446b1edf99702c651883930b6387697aa3 100644
+index 03ff570db45e431e68952b151c579e1a9f34a2f7..ed77c69239537d6420549290a954bf88130a4e3c 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1586,6 +1586,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
-                     null
+@@ -1591,6 +1591,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
              ), null, 1L);
              // Arbor end
-+        } catch (Throwable var6) {
-+        if (zone.little.arbor.config.modules.experiment.DisableEntityCatchConfig.enabled) throw var6; // Arbor
+         } catch (Throwable t) {
++            if (zone.little.arbor.config.modules.experiment.DisableEntityCatchConfig.enabled) throw t; // Arbor - Add config to disable entity tick catchers
              // Paper start - Prevent block entity and entity crashes
              final String msg = String.format("Entity threw exception at %s:%s,%s,%s", io.papermc.paper.util.MCUtil.getLevelName(entity.level()), entity.getX(), entity.getY(), entity.getZ());
-             MinecraftServer.LOGGER.error(msg, var6);
+             MinecraftServer.LOGGER.error(msg, t);

@@ -10,7 +10,7 @@ https://github.com/astei/krypton/blob/master/src/main/java/me/steinborn/krypton/
 Original project license: https://github.com/astei/krypton/blob/master/LICENSE
 
 diff --git a/net/minecraft/network/Utf8String.java b/net/minecraft/network/Utf8String.java
-index 0dc473eacd6d3cf3ee5180a19b985e8c3706fe33..d902bb287a1b9ad9236430c8096759d12ee18713 100644
+index 8b778744a5f01943976f180ad340a1cbce7db506..ec12397c8276387a79358734598a48abd15eb5ec 100644
 --- a/net/minecraft/network/Utf8String.java
 +++ b/net/minecraft/network/Utf8String.java
 @@ -33,6 +33,22 @@ public class Utf8String {
@@ -35,7 +35,7 @@ index 0dc473eacd6d3cf3ee5180a19b985e8c3706fe33..d902bb287a1b9ad9236430c8096759d1
 +        // Arbor end
          if (value.length() > maxLength) {
              throw new EncoderException("String too big (was " + value.length() + " characters, max " + maxLength + ")");
-         } else {
+         }
 diff --git a/net/minecraft/network/VarInt.java b/net/minecraft/network/VarInt.java
 index 1428ce80e8316a24cfca7b6aafdea8588a5a790e..df13a5e1478b991f49cd9f6e5c046626f98bb39f 100644
 --- a/net/minecraft/network/VarInt.java

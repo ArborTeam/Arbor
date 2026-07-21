@@ -8,18 +8,16 @@ PS: My friend reported me this bug and I still need to check the details of how 
 XD
 
 diff --git a/net/minecraft/world/entity/Leashable.java b/net/minecraft/world/entity/Leashable.java
-index ff401fa35aab040b319789acb245ac300660399c..853b8ecbf8fccce9dbffcfcd21d7a1fec97ad177 100644
+index 98034a4c96bf2972316078d3b3a49140921aab50..6ce9870addb158bdfe78940615a8653bd27634bb 100644
 --- a/net/minecraft/world/entity/Leashable.java
 +++ b/net/minecraft/world/entity/Leashable.java
-@@ -95,10 +95,28 @@ public interface Leashable {
+@@ -95,10 +95,24 @@ public interface Leashable {
              if (leashUuid.isPresent()) {
                  Entity leasher = serverLevel.getEntity(leashUuid.get());
                  if (leasher != null) {
 +                    // Arbor start - Fix off region leashing
 +                    if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(leasher)) {
-+                        entity.forceDrops = true;
 +                        entity.spawnAtLocation(serverLevel, Items.LEAD);
-+                        entity.forceDrops = false;
 +                        entity.setLeashData(null);
 +                        return;
 +                    }
@@ -30,9 +28,7 @@ index ff401fa35aab040b319789acb245ac300660399c..853b8ecbf8fccce9dbffcfcd21d7a1fe
              } else if (pos.isPresent()) {
 +                // Arbor start - Fix off region leashing
 +                if (!ca.spottedleaf.moonrise.common.util.TickThread.isTickThreadFor(serverLevel, pos.get())) {
-+                    entity.forceDrops = true;
 +                    entity.spawnAtLocation(serverLevel, Items.LEAD);
-+                    entity.forceDrops = false;
 +                    entity.setLeashData(null);
 +                    return;
 +                }

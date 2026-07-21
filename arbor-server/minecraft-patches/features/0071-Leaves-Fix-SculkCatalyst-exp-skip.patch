@@ -7,11 +7,57 @@ Co-authored by: violetc <58360096+s-yh-china@users.noreply.github.com>
 As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/a04cb9530e6eb291390bc32aa650f64825bd4d73/leaves-server/minecraft-patches/features/0110-Fix-SculkCatalyst-exp-skip.patch)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
+diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
+index 8920056e60cf01900f36e98c70bbb06a105cf96f..fbb7eac12b4c3a90125c098b31730e2887edb412 100644
+--- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
++++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
+@@ -555,16 +555,13 @@ public final class RegionizedWorldData {
+     // Redstone
+     public final alternate.current.wire.WireHandler wireHandler;
+     public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;
+-<<<<<<< HEAD
+     // Environment attribute system
+     public Reference2ObjectOpenHashMap<EnvironmentAttribute<?>, EnvironmentAttributeSystem.ValueSampler<?>> attributeSamplers;
+-=======
+     // Arbor start - Lithium sleeping block entity
+     // Lithium
+     public final Map<Long, ChunkSectionInventoryEntityTracker> containerEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();
+     public final Map<Long, ChunkSectionItemEntityMovementTracker> itemEntityMovementTrackerMap = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();
+     // Arbor end
+->>>>>>> Leaves Lithium Sleeping Block Entity
+ 
+     public final TickRegions.TickRegionData regionData;
+ 
+diff --git a/net/minecraft/server/commands/data/EntityDataAccessor.java b/net/minecraft/server/commands/data/EntityDataAccessor.java
+index 9f08e4a2713fd01ec3f9d7d5f0f46cefdbc621b5..480ce4c9b1d9e4b6aa971c18da9f5ef253ffc6b2 100644
+--- a/net/minecraft/server/commands/data/EntityDataAccessor.java
++++ b/net/minecraft/server/commands/data/EntityDataAccessor.java
+@@ -52,19 +52,12 @@ public class EntityDataAccessor implements DataAccessor {
+             throw ERROR_NO_PLAYERS.create();
+         }
+ 
+-<<<<<<< HEAD
+         UUID uuid = this.entity.getUUID();
+ 
+         try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(this.entity.problemPath(), LOGGER)) {
+             this.entity.load(TagValueInput.create(reporter, this.entity.registryAccess(), tag));
+             this.entity.setUUID(uuid);
+-=======
+-            try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(this.entity.problemPath(), LOGGER)) {
+-                this.entity.load(TagValueInput.create(reporter, this.entity.registryAccess(), tag));
+-                this.entity.setUUID(uuid);
+-                if (zone.little.arbor.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled && this.entity instanceof net.minecraft.world.entity.item.ItemEntity itemEntity) itemEntity.levelCallback.onMove(); // Leaves - Lithium Sleeping Block Entity
+-            }
+->>>>>>> Leaves Lithium Sleeping Block Entity
++            if (zone.little.arbor.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled && this.entity instanceof net.minecraft.world.entity.item.ItemEntity itemEntity) itemEntity.levelCallback.onMove(); // Leaves - Lithium Sleeping Block Entity
+         }
+     }
+ 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 660897a88d6f173445aab88905734f9044c8d154..f6866848dc3c3fb22134c2b981c4ba80a891e929 100644
+index 3ad2c2972b2cc3b57e03aaa1fc04041015dcb33f..50e9add02ca58785bc34aa144e301ae69f311d7f 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1434,7 +1434,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1416,7 +1416,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          }
  
          // SPIGOT-5478 must be called manually now
@@ -20,7 +66,7 @@ index 660897a88d6f173445aab88905734f9044c8d154..f6866848dc3c3fb22134c2b981c4ba80
          // we clean the player's inventory after the EntityDeathEvent is called so plugins can get the exact state of the inventory.
          if (!event.getKeepInventory()) {
              // Paper start - PlayerDeathEvent#getItemsToKeep
-@@ -1481,6 +1481,15 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1463,6 +1463,15 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.connection.markClientUnloadedAfterDeath();
      }
  
@@ -37,35 +83,18 @@ index 660897a88d6f173445aab88905734f9044c8d154..f6866848dc3c3fb22134c2b981c4ba80
          AABB aabb = new AABB(this.blockPosition()).inflate(32.0, 10.0, 32.0);
          this.level()
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 201bcd06b965e2e92758a1066f1c4a0cf187b26a..0ba789adda0c061253abf832d4c78ae68a846f1d 100644
+index 1cb8265c1313ad4893d45c344b03007fc4e2de4b..c3137c5a73207694c33a77181330aaeb24793f82 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -282,6 +282,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
-     public @Nullable Entity currentExplosionCause;
+@@ -297,6 +297,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      // CraftBukkit start
      public int expToDrop;
+     public @Nullable List<DefaultDrop> deathDropItems = null;
 +    public int expToReward; // Leaves - exp fix
-     public List<DefaultDrop> drops = new java.util.ArrayList<>(); // Paper - Restore vanilla drops behavior
      public final org.bukkit.craftbukkit.attribute.CraftAttributeMap craftAttributes;
      public boolean collides = true;
-@@ -1889,6 +1890,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
-                         sourceEntity.killedEntity((ServerLevel)this.level(), this, source);
-                     }
-                     this.gameEvent(GameEvent.ENTITY_DIE);
-+                    if (!this.wasExperienceConsumed()) this.dropExperience((ServerLevel) this.level(), source.getEntity()); // Leaves - exp fix
-                 } else {
-                     this.dead = false;
-                     this.setHealth((float) deathEvent.getReviveHealth());
-@@ -1965,7 +1967,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
-         this.drops = new java.util.ArrayList<>();
-         // this.dropEquipment(level); // CraftBukkit - moved up
-         // CraftBukkit end
--        this.dropExperience(level, source.getEntity());
-+        // this.dropExperience(level, source.getEntity()); // Leaves - exp fix
-         return deathEvent; // Paper
-     }
- 
-@@ -1979,7 +1981,9 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+     public Set<UUID> collidableExemptions = new java.util.HashSet<>();
+@@ -1952,7 +1953,9 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
                  this.isAlwaysExperienceDropper()
                      || this.lastHurtByPlayerMemoryTime > 0 && this.shouldDropExperience() && level.getGameRules().get(GameRules.MOB_DROPS)
              )) {
@@ -76,8 +105,38 @@ index 201bcd06b965e2e92758a1066f1c4a0cf187b26a..0ba789adda0c061253abf832d4c78ae6
          }
          return 0; // CraftBukkit
      }
+diff --git a/net/minecraft/world/inventory/AbstractContainerMenu.java b/net/minecraft/world/inventory/AbstractContainerMenu.java
+index e026d398e3fdbd70a86b4d3a45febf546a48dc1e..a11c6664b09face0e6565866c6294778f526e599 100644
+--- a/net/minecraft/world/inventory/AbstractContainerMenu.java
++++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
+@@ -889,24 +889,9 @@ public abstract class AbstractContainerMenu {
+     public static int getRedstoneSignalFromContainer(final @Nullable Container container) {
+         if (container == null) {
+             return Redstone.SIGNAL_MIN;
+-<<<<<<< HEAD
+-=======
+-        } else {
+-            float totalPercent = 0.0F;
+-
+-            if (zone.little.arbor.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled && container instanceof org.leavesmc.leaves.lithium.api.inventory.LithiumInventory optimizedInventory) return org.leavesmc.leaves.lithium.common.hopper.InventoryHelper.getLithiumStackList(optimizedInventory).getSignalStrength(container); // Leaves - Lithium Sleeping Block Entity
+-            for (int i = 0; i < container.getContainerSize(); i++) {
+-                ItemStack itemStack = container.getItem(i);
+-                if (!itemStack.isEmpty()) {
+-                    totalPercent += (float)itemStack.getCount() / container.getMaxStackSize(itemStack);
+-                }
+-            }
+-
+-            totalPercent /= container.getContainerSize();
+-            return Mth.lerpDiscrete(totalPercent, 0, 15);
+->>>>>>> Leaves Lithium Sleeping Block Entity
+         }
+ 
++        if (zone.little.arbor.config.modules.optimizations.LeavesSleepingBlockEntityConfig.enabled && container instanceof org.leavesmc.leaves.lithium.api.inventory.LithiumInventory optimizedInventory) return org.leavesmc.leaves.lithium.common.hopper.InventoryHelper.getLithiumStackList(optimizedInventory).getSignalStrength(container); // Leaves - Lithium Sleeping Block Entity
+         float totalPercent = 0.0F;
+ 
+         for (int i = 0; i < container.getContainerSize(); i++) {
 diff --git a/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java b/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
-index d4055bb4f9269ae699e4afb0bfbd37ac67320417..5564444fe7df1ad6683e2ba80e08b988df51b4c4 100644
+index c29cded839be3fc58a22390c8682bef9885f12b1..3676d13e42ccc35f21099e7212ae7a0d88b44bae 100644
 --- a/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
 @@ -97,8 +97,7 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi

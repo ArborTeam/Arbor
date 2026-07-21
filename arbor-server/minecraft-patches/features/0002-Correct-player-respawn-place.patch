@@ -5,10 +5,10 @@ Subject: [PATCH] Correct player respawn place
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 5d4310dab55cc960ccfce279e656e7b740f3d5c0..679d60e304f9dc3f0b5bb881d5cdaef168585af1 100644
+index fbe0ef19bfabfc42d9e0e08e17b08159321b3804..1c914e8239e0870f6e9d6c12b8c0dd71a1138ed5 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -524,8 +524,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -511,8 +511,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          double amountX = selectMaxX - selectMinX;
          double amountZ = selectMaxZ - selectMinZ;
  
@@ -21,13 +21,13 @@ index 5d4310dab55cc960ccfce279e656e7b740f3d5c0..679d60e304f9dc3f0b5bb881d5cdaef1
  
          return new BlockPos(selectX, 0, selectZ);
      }
-@@ -536,10 +538,21 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -523,10 +525,21 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
  
      private static BlockPos findSpawnAround(ServerLevel world, BlockPos selected) {
 +        // Arbor start - Correct player respawn place
 +        BlockPos inChunk;
-+        inChunk = PlayerSpawnFinder.getOverworldRespawnPos(world, selected.getX(), selected.getZ());
++        inChunk = PlayerSpawnFinder.getLevelRespawnPos(world, selected.getX(), selected.getZ());
 +        if (inChunk != null) {
 +            AABB checkVolume = PlayerSpawnFinder.PLAYER_DIMENSIONS.makeBoundingBox((double)inChunk.getX() + 0.5, (double)inChunk.getY(), (double)inChunk.getZ() + 0.5);
 +
@@ -39,8 +39,8 @@ index 5d4310dab55cc960ccfce279e656e7b740f3d5c0..679d60e304f9dc3f0b5bb881d5cdaef1
          // try hard to find, so that we don't attempt another chunk load
          for (int dz = -SPAWN_RADIUS_SELECTION_SEARCH; dz <= SPAWN_RADIUS_SELECTION_SEARCH; ++dz) {
              for (int dx = -SPAWN_RADIUS_SELECTION_SEARCH; dx <= SPAWN_RADIUS_SELECTION_SEARCH; ++dx) {
--                BlockPos inChunk = PlayerSpawnFinder.getOverworldRespawnPos(world, selected.getX() + dx, selected.getZ() + dz);
-+                inChunk = PlayerSpawnFinder.getOverworldRespawnPos(world, selected.getX() + dx, selected.getZ() + dz); // Arbor - Correct player respwan place
+-                BlockPos inChunk = PlayerSpawnFinder.getLevelRespawnPos(world, selected.getX() + dx, selected.getZ() + dz);
++                inChunk = PlayerSpawnFinder.getLevelRespawnPos(world, selected.getX() + dx, selected.getZ() + dz); // Arbor - Correct player respwan place
                  if (inChunk == null) {
                      continue;
                  }

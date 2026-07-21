@@ -5,10 +5,10 @@ Subject: [PATCH] Arbor: Add secure seed V2 with Blake3
 
 
 diff --git a/net/minecraft/world/level/levelgen/RandomState.java b/net/minecraft/world/level/levelgen/RandomState.java
-index 64e115805d9d685c521641893cac5b33d591d327..dd023ae9e7b786707bdb1cc4a3eaf14f7c5f5064 100644
+index 7b74440fbbe79c018ad59d24b99da0c6d4a9d007..b14159c0f7a672e5ebdf70a8d57becde1748f0b4 100644
 --- a/net/minecraft/world/level/levelgen/RandomState.java
 +++ b/net/minecraft/world/level/levelgen/RandomState.java
-@@ -34,10 +34,28 @@ public final class RandomState {
+@@ -33,10 +33,28 @@ public final class RandomState {
      }
  
      private RandomState(final NoiseGeneratorSettings settings, final HolderGetter<NormalNoise.NoiseParameters> noises, final long seed) {
@@ -40,8 +40,8 @@ index 64e115805d9d685c521641893cac5b33d591d327..dd023ae9e7b786707bdb1cc4a3eaf14f
          this.noiseIntances = new ConcurrentHashMap<>();
          this.positionalRandoms = new ConcurrentHashMap<>();
          this.surfaceSystem = new SurfaceSystem(this, settings.defaultBlock(), settings.seaLevel(), this.random);
-@@ -53,6 +71,12 @@ public final class RandomState {
-             }
+@@ -46,6 +64,12 @@ public final class RandomState {
+             private final Map<DensityFunction, DensityFunction> wrapped = new HashMap<>();
  
              private RandomSource newLegacyInstance(final long seedOffset) {
 +                // Arbor start - Add secure seed V2 with Blake3
@@ -53,17 +53,18 @@ index 64e115805d9d685c521641893cac5b33d591d327..dd023ae9e7b786707bdb1cc4a3eaf14f
                  return new LegacyRandomSource(seed + seedOffset);
              }
  
-@@ -79,7 +103,12 @@ public final class RandomState {
+@@ -71,7 +95,13 @@ public final class RandomState {
+                         : RandomState.this.random.fromHashOf(Identifier.withDefaultNamespace("terrain"));
                      return noise.withNewRandom(terrainRandom);
                  } else {
-                     return (DensityFunction)(function instanceof DensityFunctions.EndIslandDensityFunction
--                        ? new DensityFunctions.EndIslandDensityFunction(seed)
-+                        //? new DensityFunctions.EndIslandDensityFunction(seed) // Arbor - Add secure seed V2 with Blake3
+-                    return function instanceof DensityFunctions.EndIslandDensityFunction ? new DensityFunctions.EndIslandDensityFunction(seed) : function;
++                    return (DensityFunction)(function instanceof DensityFunctions.EndIslandDensityFunction
 +                        // Arbor start - Add secure seed V2 with Blake3
 +                        ? new DensityFunctions.EndIslandDensityFunction((zone.little.arbor.config.modules.function.SecureSeedConfig.enabled && zone.little.arbor.config.modules.function.SecureSeedConfig.version == 2)
 +                        ? su.plo.matter.HashingV2.getTerrainSeed(secureWorldSeed, su.plo.matter.HashingV2.TerrainType.SURFACE)
 +                        : seed)
 +                        // Arbor end
-                         : function);
++                        : function);
                  }
              }
+ 

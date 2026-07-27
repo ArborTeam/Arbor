@@ -54,8 +54,8 @@ subprojects {
 
     repositories {
         maven(paperMavenPublicUrl)
-        maven(bacteriawaMavenPublicUrl)
         maven(littleovoMavenPublicUrl)
+        maven(bacteriawaMavenPublicUrl)
         mavenCentral()
     }
 

@@ -19,7 +19,9 @@
 
 ### 2026-07-27 — 修改者：LittleOvO233
 
-修复珊瑚扇被移动中的活塞销毁的问题（对应 `arbor-server/arbor-patches/0002`）。
+修复珊瑚扇被移动中的活塞销毁的问题
+（对应 `arbor-server/minecraft-patches/features/0087`，
+改动记录副本见 `arbor-server/arbor-patches/0002`）。
 
 粘性活塞收回时，目标格会先被设为 `MOVING_PISTON`，此时其方块实体尚未挂载，
 碰撞形状为空，导致上方珊瑚扇的支撑检测失败而被销毁；随后重新读取源格只能拿到空气，

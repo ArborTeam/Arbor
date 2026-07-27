@@ -19,7 +19,9 @@ carrying notices that state the work has been modified, with the relevant dates 
 
 ### 2026-07-27 — Modified by LittleOvO233
 
-Fixed coral fans being destroyed by moving pistons (see `arbor-server/arbor-patches/0002`).
+Fixed coral fans being destroyed by moving pistons
+(see `arbor-server/minecraft-patches/features/0087`;
+a copy is kept at `arbor-server/arbor-patches/0002` as a modification record).
 
 When a sticky piston retracts, the destination position is set to `MOVING_PISTON` before its
 block entity is attached, leaving it with an empty collision shape. A coral fan above then fails

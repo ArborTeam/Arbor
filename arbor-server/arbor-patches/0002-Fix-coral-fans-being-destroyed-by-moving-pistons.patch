@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LittleOvO233 <122221955@qq.com>
+Date: Mon, 27 Jul 2026 20:34:52 +0800
+Subject: Fix coral fans being destroyed by moving pistons
+
+---
+ .../world/level/block/piston/PistonBaseBlock.java         | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/arbor-server/src/minecraft/java/net/minecraft/world/level/block/piston/PistonBaseBlock.java b/arbor-server/src/minecraft/java/net/minecraft/world/level/block/piston/PistonBaseBlock.java
+index 5ae07ec..7b5a0b6 100644
+--- a/arbor-server/src/minecraft/java/net/minecraft/world/level/block/piston/PistonBaseBlock.java
++++ b/arbor-server/src/minecraft/java/net/minecraft/world/level/block/piston/PistonBaseBlock.java
+@@ -387,19 +387,17 @@ public class PistonBaseBlock extends DirectionalBlock {
+                 pos = pos.relative(pushDirection);
+                 deleteAfterMove.remove(pos);
+                 BlockState actualState = Blocks.MOVING_PISTON.defaultBlockState().setValue(FACING, direction);
+-                level.setBlock(pos, actualState, Block.UPDATE_NONE | Block.UPDATE_MOVE_BY_PISTON);
+                 // Paper start - fix a variety of piston desync dupes
+                 if (!allowDesync) {
+                     blockState = level.getBlockState(oldPos);
+                     deleteAfterMove.replace(oldPos, blockState);
++                    level.setBlock(oldPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON | Block.UPDATE_SKIP_ON_PLACE); // set air to prevent later physics updates from seeing this block
+                 }
++                // Paper end - fix a variety of piston desync dupes
++                level.setBlock(pos, actualState, Block.UPDATE_NONE | Block.UPDATE_MOVE_BY_PISTON);
+                 level.setBlockEntity(
+                     MovingPistonBlock.newMovingBlockEntity(pos, actualState, allowDesync ? toPushShapes.get(i) : blockState, direction, extending, false)
+                 );
+-                if (!allowDesync) {
+-                    level.setBlock(oldPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON | Block.UPDATE_SKIP_ON_PLACE); // set air to prevent later physics updates from seeing this block
+-                }
+-                // Paper end - fix a variety of piston desync dupes
+                 toUpdate[updateIndex++] = blockState;
+             }
+ 

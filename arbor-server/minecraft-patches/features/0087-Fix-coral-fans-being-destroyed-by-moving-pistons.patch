@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LittleOvO233 <122221955@qq.com>
+Date: Mon, 27 Jul 2026 21:05:58 +0800
+Subject: [PATCH] Fix coral fans being destroyed by moving pistons
+
+
+diff --git a/net/minecraft/world/level/block/piston/PistonBaseBlock.java b/net/minecraft/world/level/block/piston/PistonBaseBlock.java
+index b4f5d462e4012451328210018c24de5a1d9e8c2e..45ad6e8145b59198804c7c24f3dfbddfae8c77c7 100644
+--- a/net/minecraft/world/level/block/piston/PistonBaseBlock.java
++++ b/net/minecraft/world/level/block/piston/PistonBaseBlock.java
+@@ -395,19 +395,17 @@ public class PistonBaseBlock extends DirectionalBlock {
+             pos = pos.relative(pushDirection);
+             deleteAfterMove.remove(pos);
+             BlockState actualState = Blocks.MOVING_PISTON.defaultBlockState().setValue(FACING, direction);
+-            level.setBlock(pos, actualState, Block.UPDATE_NONE | Block.UPDATE_MOVE_BY_PISTON);
+             // Paper start - fix a variety of piston desync dupes
+             if (!allowDesync) {
+                 blockState = level.getBlockState(oldPos);
+                 deleteAfterMove.replace(oldPos, blockState);
++                level.setBlock(oldPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON | Block.UPDATE_SKIP_ON_PLACE); // set air to prevent later physics updates from seeing this block
+             }
++            // Paper end - fix a variety of piston desync dupes
++            level.setBlock(pos, actualState, Block.UPDATE_NONE | Block.UPDATE_MOVE_BY_PISTON);
+             level.setBlockEntity(
+                 MovingPistonBlock.newMovingBlockEntity(pos, actualState, allowDesync ? toPushShapes.get(i) : blockState, direction, extending, false)
+             );
+-            if (!allowDesync) {
+-                level.setBlock(oldPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON | Block.UPDATE_SKIP_ON_PLACE); // set air to prevent later physics updates from seeing this block
+-            }
+-            // Paper end - fix a variety of piston desync dupes
+             toUpdate[updateIndex++] = blockState;
+         }
+ 

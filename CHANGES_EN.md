@@ -17,6 +17,11 @@ carrying notices that state the work has been modified, with the relevant dates 
 
 ## Modification Log
 
+### 2026-07-27 — Modified by Little
+
+Fixed coral fans being destroyed by moving pistons.
+The same issue affecting other blocks that require support below (sea pickles, amethyst clusters, etc.) is fixed as well.
+
 ### 2026-07-21 — Modified by Little
 
 Adapted Arbor from Folia 26.1.2 to 26.2:

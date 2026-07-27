@@ -17,20 +17,10 @@ carrying notices that state the work has been modified, with the relevant dates 
 
 ## Modification Log
 
-### 2026-07-27 — Modified by LittleOvO233
+### 2026-07-27 — Modified by Little
 
-Fixed coral fans being destroyed by moving pistons
-(see `arbor-server/minecraft-patches/features/0087`;
-a copy is kept at `arbor-server/arbor-patches/0002` as a modification record).
-
-When a sticky piston retracts, the destination position is set to `MOVING_PISTON` before its
-block entity is attached, leaving it with an empty collision shape. A coral fan above then fails
-its support check and is destroyed; the subsequent re-read of the source position only sees air,
-so the coral fan disappears entirely. The source position is now cleared before the destination
-is written, avoiding the false support check.
-
-The same issue affecting other blocks that require support below (sea pickles, amethyst clusters,
-etc.) is fixed as well.
+Fixed coral fans being destroyed by moving pistons.
+The same issue affecting other blocks that require support below (sea pickles, amethyst clusters, etc.) is fixed as well.
 
 ### 2026-07-16 — Modified by Little
 

@@ -43,7 +43,7 @@ jobs:
           java-version: 25
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v6.2.0
 
       - name: Configure Git User Details
         run: git config --global user.email "ci@littleovo.cn" && git config --global user.name "Arbor CI"

@@ -1,0 +1,76 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LittleOvO233 <122221955@qq.com>
+Date: Mon, 10 Aug 2026 20:05:00 +0800
+Subject: [PATCH] Fix region split NPE for orphaned connections
+
+
+diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
+index fbb7eac12b4c3a90125c098b31730e2887edb412..2ea01302ba8a1c9b3e41f0f97b32dae1a7e9079a 100644
+--- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
++++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
+@@ -76,6 +76,23 @@ public final class RegionizedWorldData {
+ 
+     private static final Entity[] EMPTY_ENTITY_ARRAY = new Entity[0];
+ 
++    private static RegionizedWorldData resolveConnectionSplitTarget(final ServerPlayer player, final int chunkToRegionShift,
++                                                                   final Long2ReferenceOpenHashMap<RegionizedWorldData> regionToData) {
++        final ChunkPos pos = player.chunkPosition();
++        final RegionizedWorldData byPosition = regionToData.get(CoordinateUtils.getChunkKey(pos.x() >> chunkToRegionShift, pos.z() >> chunkToRegionShift));
++        if (byPosition != null) {
++            return byPosition;
++        }
++
++        final ServerGamePacketListenerImpl connection = player.connection;
++        final ChunkPos disconnectPos = connection == null ? null : connection.disconnectPos;
++        if (disconnectPos == null) {
++            return null;
++        }
++
++        return regionToData.get(CoordinateUtils.getChunkKey(disconnectPos.x() >> chunkToRegionShift, disconnectPos.z() >> chunkToRegionShift));
++    }
++
+     public static final RegionizedData.RegioniserCallback<RegionizedWorldData> REGION_CALLBACK = new RegionizedData.RegioniserCallback<>() {
+         @Override
+         public void merge(final RegionizedWorldData from, final RegionizedWorldData into, final long fromTickOffset) {
+@@ -217,7 +234,12 @@ public final class RegionizedWorldData {
+                     continue;
+                 }
+ 
+-                regionToData.get(CoordinateUtils.getChunkKey(pos.x() >> chunkToRegionShift, pos.z() >> chunkToRegionShift)).containerEntityMovementTrackerMap.put(key, tracker);
++                var into = regionToData.get(CoordinateUtils.getChunkKey(pos.x() >> chunkToRegionShift, pos.z() >> chunkToRegionShift));
++                if (into == null) {
++                    continue;
++                }
++
++                into.containerEntityMovementTrackerMap.put(key, tracker);
+             }
+             for (var entry : from.itemEntityMovementTrackerMap.entrySet()) {
+                 final long key = entry.getKey();
+@@ -231,17 +253,21 @@ public final class RegionizedWorldData {
+                     continue;
+                 }
+ 
+-                regionToData.get(CoordinateUtils.getChunkKey(pos.x() >> chunkToRegionShift, pos.z() >> chunkToRegionShift)).itemEntityMovementTrackerMap.put(key, tracker);
++                var into = regionToData.get(CoordinateUtils.getChunkKey(pos.x() >> chunkToRegionShift, pos.z() >> chunkToRegionShift));
++                if (into == null) {
++                    continue;
++                }
++
++                into.itemEntityMovementTrackerMap.put(key, tracker);
+             }
+             // Arbor end
+             // connections
+             for (final Connection conn : from.connections) {
+                 final ServerPlayer player = conn.getPlayer();
+-                final ChunkPos pos = player.chunkPosition();
+-                // Note: It is impossible for an entity in the world to _not_ be in an entity chunk, which means
+-                // the chunk holder must _exist_, and so the region section exists.
+-                regionToData.get(CoordinateUtils.getChunkKey(pos.x() >> chunkToRegionShift, pos.z() >> chunkToRegionShift))
+-                    .connections.add(conn);
++                final RegionizedWorldData into = resolveConnectionSplitTarget(player, chunkToRegionShift, regionToData);
++                if (into != null) {
++                    into.connections.add(conn);
++                }
+             }
+             // entities
+             for (final ServerPlayer player : from.localPlayers) {

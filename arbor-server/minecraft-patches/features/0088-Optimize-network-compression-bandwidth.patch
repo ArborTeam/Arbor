@@ -1,0 +1,97 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LittleOvO233 <122221955@qq.com>
+Date: Sun, 2 Aug 2026 21:35:00 +0800
+Subject: [PATCH] Add experimental adaptive bandwidth optimization
+
+
+diff --git a/net/minecraft/network/CompressionEncoder.java b/net/minecraft/network/CompressionEncoder.java
+index 20b5cfe1ce36d74cd6b2f95566a1bc34fc0aaa7f..eb7d7651d292e3783cbd6d8ca3c4eb84c30648c4 100644
+--- a/net/minecraft/network/CompressionEncoder.java
++++ b/net/minecraft/network/CompressionEncoder.java
+@@ -37,31 +37,40 @@ public class CompressionEncoder extends MessageToByteEncoder<ByteBuf> {
+             if (uncompressedLength < this.threshold) {
+                 VarInt.write(out, 0);
+                 out.writeBytes(uncompressed);
+             } else {
+-                if (this.deflater != null) { // Paper - Use Velocity cipher
+-                byte[] input = new byte[uncompressedLength];
+-                uncompressed.readBytes(input);
+-                VarInt.write(out, input.length);
+-                this.deflater.setInput(input, 0, uncompressedLength);
+-                this.deflater.finish();
+-
+-                while (!this.deflater.finished()) {
+-                    int written = this.deflater.deflate(this.encodeBuf);
+-                    out.writeBytes(this.encodeBuf, 0, written);
+-                }
+-
+-                this.deflater.reset();
+-                    // Paper start - Use Velocity cipher
+-                    return;
+-                }
+-
+-                VarInt.write(out, uncompressedLength);
+-                final ByteBuf compatibleIn = com.velocitypowered.natives.util.MoreByteBufUtils.ensureCompatible(ctx.alloc(), this.compressor, uncompressed);
+-                try {
+-                    this.compressor.deflate(compatibleIn, out);
+-                } finally {
+-                    compatibleIn.release();
+-                }
++                int outputStart = out.writerIndex();
++                if (this.deflater != null) {
++                    byte[] input = new byte[uncompressedLength];
++                    uncompressed.getBytes(uncompressed.readerIndex(), input);
++                    VarInt.write(out, input.length);
++                    this.deflater.setInput(input, 0, uncompressedLength);
++                    this.deflater.finish();
++
++                    while (!this.deflater.finished()) {
++                        int written = this.deflater.deflate(this.encodeBuf);
++                        out.writeBytes(this.encodeBuf, 0, written);
++                    }
++
++                    this.deflater.reset();
++                } else {
++                    VarInt.write(out, uncompressedLength);
++                    final ByteBuf source = uncompressed.retainedDuplicate();
++                    final ByteBuf compatibleIn = com.velocitypowered.natives.util.MoreByteBufUtils.ensureCompatible(ctx.alloc(), this.compressor, source);
++                    try {
++                        this.compressor.deflate(compatibleIn, out);
++                    } finally {
++                        if (compatibleIn != source) {
++                            source.release();
++                        }
++                        compatibleIn.release();
++                    }
++                }
++
++                if (zone.little.arbor.config.modules.experiment.BandwidthOptimizationConfig.enabled && out.writerIndex() - outputStart + Math.max(1, zone.little.arbor.config.modules.experiment.BandwidthOptimizationConfig.minimumSaving) >= uncompressedLength + 1) {
++                    out.writerIndex(outputStart);
++                    VarInt.write(out, 0);
++                    out.writeBytes(uncompressed, uncompressed.readerIndex(), uncompressedLength);
++                }
+             }
+         }
+     }
+
+diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+index f1dff39e19d2ad40212aa6fc570f961ecab639e6..d50b2519e5adf4fc1889c1df9bf8c4017f3211b5 100644
+--- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -223,9 +223,14 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+             this.disconnectAsync(error); // Paper
+         } else {
+             if (this.server.getCompressionThreshold() >= 0 && !this.connection.isMemoryConnection()) {
++                int compressionThreshold = this.server.getCompressionThreshold();
++                if (zone.little.arbor.config.modules.experiment.BandwidthOptimizationConfig.enabled) {
++                    compressionThreshold = Math.min(compressionThreshold, Math.max(0, zone.little.arbor.config.modules.experiment.BandwidthOptimizationConfig.compressionThreshold));
++                }
++                final int negotiatedCompressionThreshold = compressionThreshold;
+                 this.connection
+                     .send(
+-                        new ClientboundLoginCompressionPacket(this.server.getCompressionThreshold()),
+-                        PacketSendListener.thenRun(() -> this.connection.setupCompression(this.server.getCompressionThreshold(), true))
++                        new ClientboundLoginCompressionPacket(negotiatedCompressionThreshold),
++                        PacketSendListener.thenRun(() -> this.connection.setupCompression(negotiatedCompressionThreshold, true))
+                     );
+             }

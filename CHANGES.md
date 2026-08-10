@@ -21,6 +21,7 @@
 
 修复区域拆分时孤立连接的空指针异常
 增加实验性功能 网络带宽优化 详情见arbor_global_config.toml
+应用了来自上游Paper、Folia的全部更新
 
 ### 2026-07-27 — 修改者：Little
 

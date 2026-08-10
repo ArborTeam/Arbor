@@ -9,10 +9,10 @@ Original patch: https://github.com/pufferfish-gg/Pufferfish/blob/ver/1.21/puffer
 Original license(GPL-3.0): https://github.com/pufferfish-gg/Pufferfish/blob/ver/1.21/PATCH-LICENSE
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 3067d0c272373201aaae69008542b1e04ccfa94e..fbc2f99519516486a210a2ee43b00d0e70ea0f07 100644
+index ea4493117181e7d500c15bcaf0f73d76399bbabf..a46dd8c711fad08a95c90ae4bb4595e522c4927e 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-@@ -339,6 +339,10 @@ public final class RegionizedWorldData {
+@@ -333,6 +333,10 @@ public final class RegionizedWorldData {
  
      private RegionizedServer.WorldLevelData tickData;
  
@@ -21,8 +21,8 @@ index 3067d0c272373201aaae69008542b1e04ccfa94e..fbc2f99519516486a210a2ee43b00d0e
 +    public long pufferfish$loadedTick = 0L;
 +    // Arbor end
      // connections
-     public final List<Connection> connections = new ArrayList<>();
- 
+     private static final Connection[] EMPTY_CONNECTION_ARRAY = new Connection[0];
+     private final ReferenceList<Connection> connections = new ReferenceList<>(EMPTY_CONNECTION_ARRAY);
 diff --git a/net/minecraft/world/entity/projectile/Projectile.java b/net/minecraft/world/entity/projectile/Projectile.java
 index 721e3b083846fd363a31311196bc4c681969215c..f131ca158c061d4aa6230e0bebccf3082423d989 100644
 --- a/net/minecraft/world/entity/projectile/Projectile.java

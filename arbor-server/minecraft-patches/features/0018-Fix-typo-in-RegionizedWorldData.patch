@@ -6,10 +6,10 @@ Subject: [PATCH] Fix typo in RegionizedWorldData
 A fix from Folia PR: https://github.com/PaperMC/Folia/pull/462
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index cb15cfbc684ae9e9d9634886f707c2df10063139..8263f71d0adcb7a2f718266aaf69237a7f267120 100644
+index c8f13da82c55cc5c1fe1c922a87e3eccb1117937..9c56b5f360ec1eff7e8bc3e1f876929acb687de4 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-@@ -706,7 +706,7 @@ public final class RegionizedWorldData {
+@@ -720,7 +720,7 @@ public final class RegionizedWorldData {
      }
  
      public void setTickingBlockEntities(final boolean to) {

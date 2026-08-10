@@ -51,7 +51,7 @@ index 639a5400499266f83cf8b7c1251483cd8fb699a4..f3e89f35c06b80f5b49c146b1e49475d
              this.get("generator-settings", s -> GsonHelper.parse(!s.isEmpty() ? s : "{}"), new JsonObject()),
              this.get("level-type", v -> v.toLowerCase(Locale.ROOT), WorldPresets.NORMAL.identifier().toString())
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index b71c16640b1a2495e61480e9eb752fafbada7c44..0011653c857ee82f86355cc49b170120d9f96cfd 100644
+index 7927769cf9bccb892745f4d1390eb83b2861d1bb..414c21345879f589fb61130180d0ca606e37a454 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -671,6 +671,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -63,7 +63,7 @@ index b71c16640b1a2495e61480e9eb752fafbada7c44..0011653c857ee82f86355cc49b170120
      }
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 6c5fdca1dae04b1484aceeedb1d8bbb1f79810bc..003de43e3af070a715542a2c144f2cd9262def7c 100644
+index 802bb488802e2c19d4a4ae178da0f01605ee9110..73e09f165c97c0776df8dcf338d8787469d1603e 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -639,6 +639,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet

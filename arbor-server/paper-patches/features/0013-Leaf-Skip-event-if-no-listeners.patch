@@ -7,7 +7,7 @@ As part of: Leaf
 Licensed under: GPL-3.0 (https://github.com/Winds-Studio/Leaf/blob/7f3e240bbe0970683c40279a7a65f0fde47503b6/licenses/GPL-3.0.txt)
 
 diff --git a/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java b/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
-index 7ce9ebba8ce304d1f3f21d4f15ee5f3560d7700b..9180f23529a31b6b0a5b38bb7cda3e32d487f691 100644
+index 2a298ec2c95e9cc913926324dbbf192caa38b05f..0db0598377283e36d59be336a2fcadf46cb4d365 100644
 --- a/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
 +++ b/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
 @@ -36,15 +36,17 @@ class PaperEventManager {

@@ -47,7 +47,7 @@ index 416ad4ddd289a01aa7d8989f594ae84fe5ccf5cf..83877d3d58823f6724d84f897904a411
                  this.scheduler.regionFailed(this, false, thr);
                  // regionFailed will schedule a shutdown, so we should avoid letting this region tick further
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index d81bb421a79287385db9bedb23220245958a2ce5..61b65cdb60d410157846032cb73f770a924b48e4 100644
+index 6b7af64979f8e367ea44c1e32144029def8ed279..6d081f6f26624f39a90799387e642e932f7f696a 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -259,7 +259,11 @@ public class Commands {

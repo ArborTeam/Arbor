@@ -8,10 +8,10 @@ This is a part of Leaf(https://github.com/Winds-Studio/Leaf/blob/d0ed97cf45dfa94
 Original license: https://github.com/Winds-Studio/Leaf/blob/d0ed97cf45dfa94f686ef32f0eea1ec7323f78d5/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 2043cdf96842ba56b61d08131c7c909dc3840031..3067d0c272373201aaae69008542b1e04ccfa94e 100644
+index 00af5e906fa2e2587c8f707c52ae0eaf6a783ab1..ea4493117181e7d500c15bcaf0f73d76399bbabf 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-@@ -457,6 +457,7 @@ public final class RegionizedWorldData {
+@@ -452,6 +452,7 @@ public final class RegionizedWorldData {
      public final PathTypeCache pathTypesByPosCache = new PathTypeCache();
      public final List<LevelChunk> temporaryChunkTickList = new java.util.ArrayList<>();
      public final Set<ChunkHolder> chunkHoldersToBroadcast = new ReferenceLinkedOpenHashSet<>();

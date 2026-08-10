@@ -8,10 +8,10 @@ As part of: Leaves (https://github.com/LeavesMC/Leaves/blob/a04cb9530e6eb291390b
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index 8920056e60cf01900f36e98c70bbb06a105cf96f..fbb7eac12b4c3a90125c098b31730e2887edb412 100644
+index 48aa30dfe37e7b19ec40400a1af07570f1e65bb0..c0b70c95ccc3463937d600328c3bad62ed7f2dc4 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-@@ -555,16 +555,13 @@ public final class RegionizedWorldData {
+@@ -550,16 +550,13 @@ public final class RegionizedWorldData {
      // Redstone
      public final alternate.current.wire.WireHandler wireHandler;
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;
@@ -54,7 +54,7 @@ index 9f08e4a2713fd01ec3f9d7d5f0f46cefdbc621b5..480ce4c9b1d9e4b6aa971c18da9f5ef2
      }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 3ad2c2972b2cc3b57e03aaa1fc04041015dcb33f..50e9add02ca58785bc34aa144e301ae69f311d7f 100644
+index 8350dda0d63dd26bd55c5272cd4e20b0cee301d0..4c2d702d67ef349ae278c1768887893512294daa 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1416,7 +1416,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc

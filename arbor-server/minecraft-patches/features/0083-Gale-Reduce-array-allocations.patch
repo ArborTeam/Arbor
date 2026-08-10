@@ -27,7 +27,7 @@ As part of: JettPack (https://gitlab.com/Titaniumtown/JettPack)
 Licensed under: GPL-3.0-only (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-index 8d9ce3d301d5f7e4106587ae00adb8dd5b8b6f88..dd8a4e445928d93667702dedbd35ab3e0f94f3be 100644
+index 5b7ed8e5067683143c99473a126e17baa531903c..ece13c12b793ede92ec67850ab6d5a88fddb8afa 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 @@ -400,7 +400,6 @@ public final class ChunkEntitySlices {
@@ -124,7 +124,7 @@ index b6973f9b48092676029ff58485ec8b8dece7387b..785f5c6f683ffdb73a70afabc42d6c09
      private static final Codec<Object> ARG_CODEC = Codec.either(PRIMITIVE_ARG_CODEC, ComponentSerialization.CODEC)
          .xmap(
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 50e9add02ca58785bc34aa144e301ae69f311d7f..46545785a2bc3aa2e2db923c2c885810f477a3ac 100644
+index 4c2d702d67ef349ae278c1768887893512294daa..25795898fe0e3b7718e5e25a84f731f91bcca60c 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1425,7 +1425,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -137,10 +137,10 @@ index 50e9add02ca58785bc34aa144e301ae69f311d7f..46545785a2bc3aa2e2db923c2c885810
                      this.getInventory().equipment.set(value, net.minecraft.world.item.ItemStack.EMPTY);
                  }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 00ba8a07ce9d1e1bbd7e5e40f749dee367bbae8c..678a17fc038b20e45da8278db13ce06bf28e7647 100644
+index 77e45d52cf9d3dd6f722e102dc216f2882814a2c..de3afaee051973a60c3751a158e8dd5659e3ba2a 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3013,7 +3013,7 @@ public class ServerGamePacketListenerImpl
+@@ -3027,7 +3027,7 @@ public class ServerGamePacketListenerImpl
                              // SPIGOT-7136 - Allays
                              if (target instanceof net.minecraft.world.entity.animal.allay.Allay || target instanceof net.minecraft.world.entity.animal.equine.AbstractHorse) { // Paper - Fix horse armor desync
                                  ServerGamePacketListenerImpl.this.send(new net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket(
@@ -252,7 +252,7 @@ index c3137c5a73207694c33a77181330aaeb24793f82..cd0ca9c1434f1e406800ee131c3a87b6
                      return true;
                  }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 6e95cb568473d2d595967ceee5e5c790e626b90b..c0a3eb4a031dab082670d2a473c57a5bee88d7ad 100644
+index 6d535da7eb968a3c1d8c5b2fe17638047ba9830b..e581a7d4cfb0536a87491b0445136e124eea8bab 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -346,7 +346,7 @@ public abstract class Player extends Avatar implements ContainerUser {

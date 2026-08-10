@@ -8,10 +8,10 @@ As part of: Leaves (https://github.com/HyacinthHaru/Leaves/blob/90080d238e2fcfc1
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 550c7eef69acde07c05b0cb75bf413186c09a26a..8e96326c55510642df01ef15e1a3edb1e81176cb 100644
+index 325d797766de527268eb18bcf9db594ca3a0c519..e922a0eefb03db5e33f3306aaea558b6ed61b42a 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -3042,4 +3042,10 @@ public final class Bukkit {
+@@ -3045,4 +3045,10 @@ public final class Bukkit {
      public static void restart() {
          server.restart();
      }
@@ -23,10 +23,10 @@ index 550c7eef69acde07c05b0cb75bf413186c09a26a..8e96326c55510642df01ef15e1a3edb1
 +    // Leaves end - Feature API
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 8f4136b2d63fdfb35bffbbee99fe961d18a38027..fc168b7a3a5973032bf9069d936e4eecfcd3411c 100644
+index fd15e3a6f48c87a8a080b2d3caeeca2a44a600a1..012f2bc6e9789f9c6272b9b9cf8629636233f62b 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2785,6 +2785,10 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2779,6 +2779,10 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
      zone.little.arbor.api.config.ArborConfigsInstance getArborConfigs(String name);
      // Arbor end - Arbor Config API
  

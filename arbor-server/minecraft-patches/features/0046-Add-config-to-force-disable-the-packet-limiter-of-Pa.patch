@@ -87,10 +87,10 @@ index da98f733a4008c524e12b98d8b8f2afb9ed811ee..b7c950b7d95febbde599deb337e854a9
                      }
                  }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index d1fd7d5d4de9c0a57f23755b8140f80816dde233..b769ae934f292de0b0eb8cad586f1e94d7aca9a0 100644
+index 2714ff266b168c22fe3dd034f97e44440558f8be..9cdf34cbfe637a2bba61058a4460b59542bd9c9b 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -879,7 +879,7 @@ public class ServerGamePacketListenerImpl
+@@ -892,7 +892,7 @@ public class ServerGamePacketListenerImpl
      public void handleCustomCommandSuggestions(final ServerboundCommandSuggestionPacket packet) {
          // PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level()); // Paper - AsyncTabCompleteEvent; run this async
          // CraftBukkit start
@@ -99,7 +99,7 @@ index d1fd7d5d4de9c0a57f23755b8140f80816dde233..b769ae934f292de0b0eb8cad586f1e94
              this.disconnectAsync(Component.translatable("disconnect.spam"), org.bukkit.event.player.PlayerKickEvent.Cause.SPAM); // Paper - Kick event cause // Paper - add proper async disconnect
              return;
          }
-@@ -2115,6 +2115,7 @@ public class ServerGamePacketListenerImpl
+@@ -2129,6 +2129,7 @@ public class ServerGamePacketListenerImpl
      private long lastLimitedPacket = -1;
  
      private boolean checkLimit(long timestamp) {
@@ -107,7 +107,7 @@ index d1fd7d5d4de9c0a57f23755b8140f80816dde233..b769ae934f292de0b0eb8cad586f1e94
          if (!io.papermc.paper.configuration.GlobalConfiguration.get().spamLimiter.incomingPacketThreshold.enabled()) {
              return true;
          }
-@@ -2675,6 +2676,7 @@ public class ServerGamePacketListenerImpl
+@@ -2689,6 +2690,7 @@ public class ServerGamePacketListenerImpl
  
      // Spigot start - spam exclusions
      private void detectRateSpam(final TickThrottler throttler, final String message) {
@@ -115,7 +115,7 @@ index d1fd7d5d4de9c0a57f23755b8140f80816dde233..b769ae934f292de0b0eb8cad586f1e94
          if (org.spigotmc.SpigotConfig.enableSpamExclusions) {
              for (String exclude : org.spigotmc.SpigotConfig.spamExclusions) {
                  if (exclude != null && message.startsWith(exclude)) {
-@@ -3473,7 +3475,7 @@ public class ServerGamePacketListenerImpl
+@@ -3487,7 +3489,7 @@ public class ServerGamePacketListenerImpl
      @Override
      public void handlePlaceRecipe(final ServerboundPlaceRecipePacket packet) {
          // Paper start - auto recipe limit

@@ -5,10 +5,10 @@ Subject: [PATCH] Arbor Config System
 
 
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index a4d608d64b7d3477c9144d93547fd3b4f39a1b02..c0e39f2b3832a4960b725e1efd545a983ef35b81 100644
+index 693ce1c23c7be6406eda22da57aa4a1b86a08f5f..cd8f269b875588af2488ebd7b843f4a03c329365 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -107,6 +107,7 @@ public class Main {
+@@ -110,6 +110,7 @@ public class Main {
                  JvmProfiler.INSTANCE.start(Environment.SERVER);
              }
  
@@ -17,10 +17,10 @@ index a4d608d64b7d3477c9144d93547fd3b4f39a1b02..c0e39f2b3832a4960b725e1efd545a98
              Bootstrap.bootStrap();
              Bootstrap.validate();
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index c6a4d52f76e10fcc57b2c49b07fbc2ef9bb90822..8bf9bdad2562ebe550d973c8370746ca055b4393 100644
+index be15a671e0b39b455cd5983f4b90f8f3022a2ebc..864e24e3247085ed8efc1ce8109680ffd5770e23 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1169,6 +1169,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1168,6 +1168,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              ca.spottedleaf.moonrise.common.util.MoonriseCommon.haltExecutors();
          }
          // Paper end - rewrite chunk system

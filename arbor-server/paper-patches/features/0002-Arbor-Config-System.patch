@@ -5,10 +5,10 @@ Subject: [PATCH] Arbor Config System
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 9d0dc8815842a0583b212891680bd0c6461c30b9..45c15e48d2fa43bc7ab851df28662429dc5fe544 100644
+index 3fac32b420ce4ae74166eac43d38c51c1fd513cf..bf068fae416af6e02d0318a43aa240bccb2b8899 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -3033,6 +3033,17 @@ public final class CraftServer implements Server {
+@@ -3032,6 +3032,17 @@ public final class CraftServer implements Server {
          this.console.addPluginAllowingSleep(plugin.getName(), value);
      }
  

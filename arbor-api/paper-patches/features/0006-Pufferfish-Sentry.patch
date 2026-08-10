@@ -7,10 +7,10 @@ As part of: Pufferfish
 Licensed under: GPL-3.0 (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/PATCH-LICENSE)
 
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index 34631bb3253d3120b6d4f8e86b5e0ddcbd69bdf2..4646130d6bbee99fca2e25b52c4884406980b27f 100644
+index b63c9f343e487870a749c6e075b40980f78ddefc..eef90b699ae7ab94bb74d5f41dc138c5a33e0ae7 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-@@ -597,7 +597,9 @@ public final class SimplePluginManager implements PluginManager {
+@@ -596,7 +596,9 @@ public final class SimplePluginManager implements PluginManager {
  
      // Paper start
      private void handlePluginException(String msg, Throwable ex, Plugin plugin) {
@@ -20,7 +20,7 @@ index 34631bb3253d3120b6d4f8e86b5e0ddcbd69bdf2..4646130d6bbee99fca2e25b52c488440
          callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerPluginEnableDisableException(msg, ex, plugin)));
      }
      // Paper end
-@@ -667,9 +669,11 @@ public final class SimplePluginManager implements PluginManager {
+@@ -666,9 +668,11 @@ public final class SimplePluginManager implements PluginManager {
                              ));
                  }
              } catch (Throwable ex) {
@@ -33,7 +33,7 @@ index 34631bb3253d3120b6d4f8e86b5e0ddcbd69bdf2..4646130d6bbee99fca2e25b52c488440
                      callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerEventException(msg, ex, registration.getPlugin(), registration.getListener(), event)));
                  }
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index 163e9a0e179dc88be93614ff66ee2be3eccc694f..78cdf669328fc1ec5e9943033a11d2200857a07e 100644
+index 9023a39c6481710478747482f0b16c21274afd15..0755065f86aba3ef5ecdf045620878eb045f4999 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 @@ -329,7 +329,13 @@ public final class JavaPluginLoader implements PluginLoader {

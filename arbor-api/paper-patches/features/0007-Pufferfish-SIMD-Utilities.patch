@@ -7,7 +7,7 @@ As part of: Pufferfish
 Licensed under: GPL-3.0 (https://github.com/pufferfish-gg/Pufferfish/blob/04bc249f9eee6157338b6884113b6fa3192bf59b/PATCH-LICENSE)
 
 diff --git a/src/main/java/org/bukkit/map/MapPalette.java b/src/main/java/org/bukkit/map/MapPalette.java
-index 76ae2750ff7b04a281d4b794dc1f48dd832db2b6..fc9cd106b1ed2e92aced783e9cb0bc8867828df3 100644
+index 76ae2750ff7b04a281d4b794dc1f48dd832db2b6..6f70d088aa8e099f78edfec61b57a360f33b2df2 100644
 --- a/src/main/java/org/bukkit/map/MapPalette.java
 +++ b/src/main/java/org/bukkit/map/MapPalette.java
 @@ -35,7 +35,7 @@ public final class MapPalette {

@@ -5,7 +5,7 @@ Subject: [PATCH] Fix region split NPE for orphaned connections
 
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index fbb7eac12b4c3a90125c098b31730e2887edb412..2ea01302ba8a1c9b3e41f0f97b32dae1a7e9079a 100644
+index c0b70c95ccc3463937d600328c3bad62ed7f2dc4..d60ecc0b3272565e902a22712cec33acd2c6fbf0 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -76,6 +76,23 @@ public final class RegionizedWorldData {
@@ -32,7 +32,7 @@ index fbb7eac12b4c3a90125c098b31730e2887edb412..2ea01302ba8a1c9b3e41f0f97b32dae1
      public static final RegionizedData.RegioniserCallback<RegionizedWorldData> REGION_CALLBACK = new RegionizedData.RegioniserCallback<>() {
          @Override
          public void merge(final RegionizedWorldData from, final RegionizedWorldData into, final long fromTickOffset) {
-@@ -217,7 +234,12 @@ public final class RegionizedWorldData {
+@@ -214,7 +231,12 @@ public final class RegionizedWorldData {
                      continue;
                  }
  
@@ -46,7 +46,7 @@ index fbb7eac12b4c3a90125c098b31730e2887edb412..2ea01302ba8a1c9b3e41f0f97b32dae1
              }
              for (var entry : from.itemEntityMovementTrackerMap.entrySet()) {
                  final long key = entry.getKey();
-@@ -231,17 +253,21 @@ public final class RegionizedWorldData {
+@@ -228,17 +250,21 @@ public final class RegionizedWorldData {
                      continue;
                  }
  

@@ -21,6 +21,7 @@ carrying notices that state the work has been modified, with the relevant dates 
 
 Fixed a NullPointerException for orphaned connections during region splits.
 Added an experimental network bandwidth optimization feature. See arbor_global_config.toml for details.
+Applied all updates from upstream Paper and Folia.
 
 ### 2026-07-27 — Modified by Little
 

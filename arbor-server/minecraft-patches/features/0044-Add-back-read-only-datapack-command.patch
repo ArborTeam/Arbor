@@ -5,7 +5,7 @@ Subject: [PATCH] Add back read-only datapack command
 
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index 94174473041338d15ec3523d4d827e97ac6c8638..d81bb421a79287385db9bedb23220245958a2ce5 100644
+index 988b05120d87984fa2c82dee1aef9327a6fa764b..6b7af64979f8e367ea44c1e32144029def8ed279 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -205,7 +205,7 @@ public class Commands {

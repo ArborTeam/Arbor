@@ -9,7 +9,7 @@ Origin patch link: https://github.com/LeavesMC/Leaves/blob/master/leaves-server/
 Origin license: https://github.com/LeavesMC/Leaves/blob/master/LICENSE.md
 
 diff --git a/io/papermc/paper/threadedregions/RegionizedWorldData.java b/io/papermc/paper/threadedregions/RegionizedWorldData.java
-index fbc2f99519516486a210a2ee43b00d0e70ea0f07..8920056e60cf01900f36e98c70bbb06a105cf96f 100644
+index a46dd8c711fad08a95c90ae4bb4595e522c4927e..48aa30dfe37e7b19ec40400a1af07570f1e65bb0 100644
 --- a/io/papermc/paper/threadedregions/RegionizedWorldData.java
 +++ b/io/papermc/paper/threadedregions/RegionizedWorldData.java
 @@ -65,6 +65,10 @@ import java.util.Set;
@@ -56,7 +56,7 @@ index fbc2f99519516486a210a2ee43b00d0e70ea0f07..8920056e60cf01900f36e98c70bbb06a
              // connections
              for (final Connection conn : from.connections) {
                  into.connections.add(conn);
-@@ -114,16 +144,22 @@ public final class RegionizedWorldData {
+@@ -111,16 +141,22 @@ public final class RegionizedWorldData {
              from.fluidLevelTicks.merge(into.fluidLevelTicks, fromRedstoneTimeOffset);
  
              // tile entity ticking
@@ -83,7 +83,7 @@ index fbc2f99519516486a210a2ee43b00d0e70ea0f07..8920056e60cf01900f36e98c70bbb06a
                  if (tileEntity != null) {
                      tileEntity.updateTicks(fromTickOffset, fromRedstoneTimeOffset);
                  }
-@@ -167,6 +203,37 @@ public final class RegionizedWorldData {
+@@ -164,6 +200,37 @@ public final class RegionizedWorldData {
          public void split(final RegionizedWorldData from, final int chunkToRegionShift,
                            final Long2ReferenceOpenHashMap<RegionizedWorldData> regionToData,
                            final ReferenceOpenHashSet<RegionizedWorldData> dataSet) {
@@ -121,7 +121,7 @@ index fbc2f99519516486a210a2ee43b00d0e70ea0f07..8920056e60cf01900f36e98c70bbb06a
              // connections
              for (final Connection conn : from.connections) {
                  final ServerPlayer player = conn.getPlayer();
-@@ -243,8 +310,9 @@ public final class RegionizedWorldData {
+@@ -237,8 +304,9 @@ public final class RegionizedWorldData {
              from.fluidLevelTicks.split(chunkToRegionShift, levelTicksFluidRegionData);
  
              // tile entity ticking
@@ -133,7 +133,7 @@ index fbc2f99519516486a210a2ee43b00d0e70ea0f07..8920056e60cf01900f36e98c70bbb06a
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -254,8 +322,9 @@ public final class RegionizedWorldData {
+@@ -248,8 +316,9 @@ public final class RegionizedWorldData {
                  } // else: when a chunk unloads, it does not actually _remove_ the tile entity from the list, it just gets
                    //       marked as removed. So if there is no section, it's probably removed!
              }
@@ -145,7 +145,7 @@ index fbc2f99519516486a210a2ee43b00d0e70ea0f07..8920056e60cf01900f36e98c70bbb06a
                  final int chunkX = pos.getX() >> 4;
                  final int chunkZ = pos.getZ() >> 4;
  
-@@ -486,8 +555,16 @@ public final class RegionizedWorldData {
+@@ -481,8 +550,16 @@ public final class RegionizedWorldData {
      // Redstone
      public final alternate.current.wire.WireHandler wireHandler;
      public final io.papermc.paper.redstone.RedstoneWireTurbo turbo;
@@ -257,7 +257,7 @@ index 6e08d50794c4af4405f3e164a3fd46f376b3f78f..dd2d0940eece3e85078e574f66f71a4c
  
      int getContainerSize();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 52b2dfe659c9773837552267fa089beed416e42c..0e5ff9a63f48ba2370b810d2ea1d806ae3cc36db 100644
+index 2efbc3e01d67608522cc30c7cb00fb428558d132..e5c7647c8831fb5e4d1fa6ada8f77b7bc93c7893 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -324,7 +324,7 @@ public abstract class Entity
@@ -269,7 +269,7 @@ index 52b2dfe659c9773837552267fa089beed416e42c..0e5ff9a63f48ba2370b810d2ea1d806a
      private final VecDeltaCodec packetPositionCodec = new VecDeltaCodec();
      public boolean needsSync;
      public boolean syncPosition;
-@@ -4471,11 +4471,13 @@ public abstract class Entity
+@@ -4467,11 +4467,13 @@ public abstract class Entity
      }
  
      protected Entity transformForAsyncTeleport(ServerLevel destination, Vec3 pos, Float yaw, Float pitch, Vec3 velocity) {
@@ -283,7 +283,7 @@ index 52b2dfe659c9773837552267fa089beed416e42c..0e5ff9a63f48ba2370b810d2ea1d806a
          if (copy instanceof net.minecraft.world.entity.boss.enderdragon.EnderDragon dragon) dragon.syncDragonPartsAfterTeleportTransform(); // Arbor - Sync dragon part when teleportation or firstly created
          // vanilla code used to call remove _after_ copying, and some stuff is required to be after copy - so add hook here
          // for example, clearing of inventory after switching dimensions
-@@ -6066,8 +6068,29 @@ public abstract class Entity
+@@ -6147,8 +6149,29 @@ public abstract class Entity
              this.setBoundingBox(this.makeBoundingBox());
          }
          // Paper end - Block invalid positions and bounding box

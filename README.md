@@ -1,8 +1,12 @@
 <div align="center">
   
+  <img src="./docs/arbor-icon.png" alt="Arbor" width="160">
+  
   # Arbor
   
   *专为生存和无政府服务器设计，提供优化、可配置的原版特性和丰富的 API 支持*
+  
+  Arbor 社区交流群：[881217223](https://qun.qq.com/universal-share/share?ac=1&authKey=DvHj9OFa9j88C5Nb3ttq0HXip8J%2F%2FLZqRLgQxSWT3ZxxkVprovvwrFpGUPDH0A8H&busi_data=eyJncm91cENvZGUiOiI4ODEyMTcyMjMiLCJ0b2tlbiI6InBsZDJobWRrQVR6ZExBR2h2ZWxETGdKU0ZjSUtWUmtWZkpXZVVaV2s2VjZvU1J0RXhYSUJIaWM1bjRIcXFGb2siLCJ1aW4iOiIxMjIyMjE5NTUifQ%3D%3D&data=5tqbb8NuVDi9Tez1u31lKO6HE3itb4jy7W1kZh7zBV656KoPog0q5eI9Wlxp-sgBGSK1pipJ4z7KjRfLlkfxCQ&svctype=4&tempid=h5_group_info)
   
   ![Created At](https://img.shields.io/github/created-at/LittleOvO233/Arbor?style=for-the-badge&color=blue)
   [![License](https://img.shields.io/github/license/LittleOvO233/Arbor?style=for-the-badge&color=green)](LICENSE.md)

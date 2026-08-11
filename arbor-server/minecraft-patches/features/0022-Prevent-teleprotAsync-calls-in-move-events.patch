@@ -29,10 +29,10 @@ index c86b1fd5e200c478d178be32791b6e8c960d47e2..8cdd8307ef6163d2fcf16bc5da79b739
                                          // If the event is cancelled we move the player back to their old location.
                                          if (event.isCancelled()) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index b2a9f393ab1188964436b336ee86f6d52769b97a..d01d5ef949eb8e704b4d00923b7bf30ea64a2c3f 100644
+index 4122823afdd54927aa79bbd597993ae3a54dc5c7..e6c32da959099672a7afa43ab518094a4d799e63 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4472,12 +4472,25 @@ public abstract class Entity
+@@ -4478,12 +4478,25 @@ public abstract class Entity
              teleportTarget.cause(), teleportFlags, teleportComplete
          );
      }
@@ -73,7 +73,7 @@ index 3fcd534cee1f605a710ffc43eff4b5106c7dd40c..5205ad2ad5848c8c2217aebd09f23ce6
          this.lastLocation = vehicle.getLocation();
          // CraftBukkit end
 diff --git a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
-index 5ad77636d0681d1f0341cff4482ba6ad52f3583b..247c874b531d3272c5de14dc4520c18170450d02 100644
+index 30b99d9d0944399e6f3a74c4310cbf8f15cc5adc..114c3f9e3eef9543199afc9719c68cddeca13b93 100644
 --- a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
 @@ -318,7 +318,9 @@ public abstract class AbstractMinecart extends VehicleEntity {

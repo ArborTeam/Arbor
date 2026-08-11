@@ -8,7 +8,7 @@ Some of changes from: Leaves (https://github.com/LeavesMC/Leaves/blob/6a2b9ee6b3
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index da98f733a4008c524e12b98d8b8f2afb9ed811ee..b7c950b7d95febbde599deb337e854a9631d5c3a 100644
+index 55a2d0fdb2c1321069dc04ae5114d3e565ecf7f9..d5af069f6edf04a54ec1bc84e0dd4781154a4ed4 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -258,8 +258,8 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {

@@ -46,10 +46,10 @@ index 35ab432bbd59aba80a6eaca1769e6aa82c8a7e46..a9209f285f6df5ab00899a7ec4895f5b
          } else {entity.inactiveTick();} // Paper - EAR 2
          profiler.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 41c2180c5388b9a1269601df2cf5ac8b1dcea16f..b2a9f393ab1188964436b336ee86f6d52769b97a 100644
+index b86381f0e7f14158b67f102dcbf23d5d3bfe063e..4122823afdd54927aa79bbd597993ae3a54dc5c7 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -387,6 +387,7 @@ public abstract class Entity
+@@ -388,6 +388,7 @@ public abstract class Entity
      public long activatedTick = Integer.MIN_VALUE;
      public boolean isTemporarilyActive;
      public long activatedImmunityTick = Integer.MIN_VALUE;
@@ -57,7 +57,7 @@ index 41c2180c5388b9a1269601df2cf5ac8b1dcea16f..b2a9f393ab1188964436b336ee86f6d5
  
      public void inactiveTick() {
      }
-@@ -3591,6 +3592,7 @@ public abstract class Entity
+@@ -3597,6 +3598,7 @@ public abstract class Entity
          } else {
              if (this.portalProcess == null || !this.portalProcess.isSamePortal(portal)) {
                  this.portalProcess = new PortalProcessor(portal, pos.immutable());

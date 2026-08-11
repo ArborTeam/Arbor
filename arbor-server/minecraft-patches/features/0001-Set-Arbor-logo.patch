@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Helvetica Volubi <suisuroru@blue-millennium.fun>
+Date: Wed, 12 Aug 2026 04:24:14 +0800
+Subject: [PATCH] Set Arbor logo
+
+
+diff --git a/net/minecraft/server/gui/MinecraftServerGui.java b/net/minecraft/server/gui/MinecraftServerGui.java
+index 79518cbca7760f710130509d93d27fb017d67159..46b08d0a138f37e5c1cb5c96d8b3b679f8c1fd2c 100644
+--- a/net/minecraft/server/gui/MinecraftServerGui.java
++++ b/net/minecraft/server/gui/MinecraftServerGui.java
+@@ -58,7 +58,7 @@ public class MinecraftServerGui extends JComponent {
+         // Paper start - Improve ServerGUI
+         frame.setName("Minecraft server");
+         try {
+-            frame.setIconImage(javax.imageio.ImageIO.read(java.util.Objects.requireNonNull(MinecraftServerGui.class.getClassLoader().getResourceAsStream("folia-logo.png"))));
++            frame.setIconImage(javax.imageio.ImageIO.read(java.util.Objects.requireNonNull(MinecraftServerGui.class.getClassLoader().getResourceAsStream("arbor-logo.png"))));
+         } catch (java.io.IOException ignore) {
+         }
+         // Paper end - Improve ServerGUI

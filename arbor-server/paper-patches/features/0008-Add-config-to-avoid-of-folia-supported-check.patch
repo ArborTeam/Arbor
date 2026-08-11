@@ -34,10 +34,10 @@ index 6ef0042a355c65262bdb89dcf151bd644653216d..0f1d5c66450cd69d9c481cd1287ba35c
          }
          // Folia end - block plugins not marked as supported
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index 804ea060fc5dc0d0ab89574a75604cdf911b4e6c..5a351502a8c562da7ec6509db01dbf30e8f73a28 100644
+index e526b322b7380ac92fea7d630370c2d802b190fe..deb3ee2b3138c183d4231a38c5b3d92bcf0e75e6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-@@ -393,7 +393,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
+@@ -395,7 +395,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
          }
  
          // Folia start - block plugins not marked as supported

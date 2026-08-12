@@ -124,3 +124,9 @@ We welcome community contributions! For detailed contribution guidelines, please
 
 - 📖 [Contributing Guide (English)](./docs/CONTRIBUTING_EN.md)
 - 📖 [贡献指南 (中文)](./docs/CONTRIBUTING.md)
+
+## 📊 Project Statistics
+
+### BStats Data
+
+![bStats](https://bstats.org/signatures/server-implementation/Arbor.svg "bStats")

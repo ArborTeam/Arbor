@@ -126,3 +126,9 @@ dependencies {
 
 - 📖 [贡献指南 (中文)](./docs/CONTRIBUTING.md)
 - 📖 [Contributing Guide (English)](./docs/CONTRIBUTING_EN.md) 
+
+## 📊 项目统计
+
+### BStats 数据
+
+![bStats](https://bstats.org/signatures/server-implementation/Arbor.svg "bStats")

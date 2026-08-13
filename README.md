@@ -132,3 +132,21 @@ dependencies {
 ### BStats 数据
 
 ![bStats](https://bstats.org/signatures/server-implementation/Arbor.svg "bStats")
+
+## 🔥 合作伙伴&赞助商
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <a href="https://www.rainyun.com/MjMxMjg=_">
+        <img src="docs/RainYun.png" alt="雨云" width="250">
+      </a>
+      <br>
+      <b>RainCloud | 雨云</b>
+      <p>Rain Cloud provides stable and high-speed game cloud VPS servers and panel servers, along with a one-click server setup solution optimized specifically for Minecraft servers. A comprehensive 7-day no-questions-asked refund policy<p>
+      <p>a powerful technical support team, and highly available customer service — with stability and cost-effectiveness, we help you go cloud-fast. Click to visit --> <a href="https://www.rainyun.com/MjMxMjg=_">Rain Cloud</a> <--</p>
+      <p>雨云提供稳定高速的游戏云VPS服务器、面板服务器，专为MC服务器优化的一键开服方案。完善的七天无理由退款机制<p>
+      <p>强大的技术支持团队和高在线率客服，用稳定和性价比，助力您快速上云。点击前往 --> <a href="https://www.rainyun.com/MjMxMjg=_"> 雨云</a> <--</p>
+    </td>
+  </tr>
+</table>

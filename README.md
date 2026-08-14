@@ -22,7 +22,7 @@
 
 ---
 
-## 📌 关于本分支
+## 📌 关于本分支 
 
 **Arbor** 是 [**Luminol**](https://github.com/LuminolMC/Luminol) 的一个社区分支（fork）。
 

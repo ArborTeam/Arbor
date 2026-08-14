@@ -22,6 +22,7 @@ carrying notices that state the work has been modified, with the relevant dates 
 To ensure the stability of archived data,  
 support for the Linear archive format has been removed.  
 Priority is now given to MCA and B_Linear.
+Fixed an issue where amethyst geodes caused problems when generating across chunk boundaries
 
 ### 2026-08-12 — Modified by Suisuroru
 

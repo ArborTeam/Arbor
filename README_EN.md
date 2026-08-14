@@ -40,7 +40,7 @@
 - 🔧 **Configurable Vanilla Features** - Flexibly adjust game mechanics to suit different server needs
 - 📊 **Tpsbar Support** - Real-time server performance monitoring
 - 🐛 **Folia Bug Fixes** - Targeted fixes for known Folia issues
-- 💾 **Multiple World Format Support** - Support for linear and b_linear (linear reimplementation) world formats
+- 💾 **Multiple World Format Support** - Support for b_linear (linear reimplementation) world formats
 - 🔌 **Extended API Support** - More API interfaces for plugin developers (ongoing development)
 - ⚡ **Performance Optimizations** - Optimized specifically for high-load survival and anarchy servers
 

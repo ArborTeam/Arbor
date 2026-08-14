@@ -17,6 +17,16 @@ carrying notices that state the work has been modified, with the relevant dates 
 
 ## Modification Log
 
+### 2026-08-14 — Modified by Little
+
+To ensure the stability of archived data,  
+support for the Linear archive format has been removed.  
+Priority is now given to MCA and B_Linear.
+
+### 2026-08-12 — Modified by Suisuroru
+
+Update Folia
+
 ### 2026-08-10 — Modified by Little
 
 Fixed a NullPointerException for orphaned connections during region splits.

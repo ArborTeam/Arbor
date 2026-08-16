@@ -326,7 +326,7 @@ index 4ad94af024d81b7dfe910dcee2a6ec7a9b200d56..7af9d8bc56fd41cd6d5a44d7636b7651
      public static OptionalLong parseSeed(String seedString) {
          seedString = seedString.trim();
 diff --git a/net/minecraft/world/level/levelgen/feature/GeodeFeature.java b/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
-index baed0479a4552676844989868ee4c37ffa344def..dcc2e97b3b82b8776d63f02fef9077b4c3a0ba39 100644
+index baed0479a4552676844989868ee4c37ffa344def..68caed1c02befee1e9fb8ef4ff088b54f0b06166 100644
 --- a/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/GeodeFeature.java
 @@ -43,7 +43,11 @@ public class GeodeFeature extends Feature<GeodeConfiguration> {
@@ -342,17 +342,6 @@ index baed0479a4552676844989868ee4c37ffa344def..dcc2e97b3b82b8776d63f02fef9077b4
          NormalNoise noise = NormalNoise.create(random1, -4, 1.0);
          List<BlockPos> crackPoints = Lists.newLinkedList();
          double crackSizeAdjustment = (double)numPoints / config.outerWallDistance().maxInclusive();
-@@ -104,6 +108,10 @@ public class GeodeFeature extends Feature<GeodeConfiguration> {
-         for (BlockPos pointInside : BlockPos.betweenClosed(
-             origin.offset(minGenOffset, minGenOffset, minGenOffset), origin.offset(maxGenOffset, maxGenOffset, maxGenOffset)
-         )) {
-+            if (!level.ensureCanWrite(pointInside)) {
-+                continue;
-+            }
-+
-             double noiseOffset = noise.getValue(pointInside.getX(), pointInside.getY(), pointInside.getZ()) * config.noiseMultiplier();
-             double distSumShell = 0.0;
-             double distSumCrack = 0.0;
 diff --git a/net/minecraft/world/level/levelgen/structure/Structure.java b/net/minecraft/world/level/levelgen/structure/Structure.java
 index f1e13ede1f7345089ece8d8ef391f7fd5e55c445..12167e649312dd22b45485d4907d71112a80627a 100644
 --- a/net/minecraft/world/level/levelgen/structure/Structure.java

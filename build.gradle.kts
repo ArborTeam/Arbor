@@ -39,7 +39,6 @@ paperweight {
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-val bacteriawaMavenPublicUrl = "https://repo.bacteriawa.com/repository/maven-public/";
 val littleovoMavenPublicUrl = "https://repo.littleovo.cn/public/"
 
 subprojects {
@@ -55,7 +54,6 @@ subprojects {
     repositories {
         maven(paperMavenPublicUrl)
         maven(littleovoMavenPublicUrl)
-        maven(bacteriawaMavenPublicUrl)
         mavenCentral()
     }
 

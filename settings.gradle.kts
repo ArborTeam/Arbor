@@ -5,12 +5,12 @@ pluginManagement {
         gradlePluginPortal()
         mavenLocal()
         maven("https://repo.papermc.io/repository/maven-public/")
-        maven("https://repo.littleovo.cn/public")
+        maven("https://repo.littleovo.cn/releases")
     }
 
     plugins {
-        id("moe.luminolmc.hyacinthusweight.patcher") version weightVersion
-        id("moe.luminolmc.hyacinthusweight.core") version weightVersion
+        id("moe.arborteam.arborweight.patcher") version weightVersion
+        id("moe.arborteam.arborweight.core") version weightVersion
     }
 }
 

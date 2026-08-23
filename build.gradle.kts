@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java // TODO java launcher tasks
-    id("moe.luminolmc.hyacinthusweight.patcher")
+    id("moe.arborteam.arborweight.patcher")
 }
 
 paperweight {
@@ -39,7 +39,8 @@ paperweight {
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-val littleovoMavenPublicUrl = "https://repo.littleovo.cn/public/"
+val arborteamMavenPublicUrl = "https://repo.littleovo.cn/snapshots";
+val littleovoMavenPublicUrl = "https://repo.littleovo.cn/releases"
 
 subprojects {
     apply(plugin = "java-library")
@@ -53,6 +54,7 @@ subprojects {
 
     repositories {
         maven(paperMavenPublicUrl)
+        maven(arborteamMavenPublicUrl)
         maven(littleovoMavenPublicUrl)
         mavenCentral()
     }

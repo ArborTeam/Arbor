@@ -1,3 +1,16 @@
+> [!WARNING]
+> **Maintenance Status: Uncertain / Inactive**
+>
+> This project has shown no observable maintenance activity for approximately three months. The maintainer is currently unreachable, and no official statement regarding the project's future maintenance has been provided.
+>
+> **Please note:**
+>
+> - Bug fixes and updates are not guaranteed.
+> - Compatibility with future Minecraft versions is uncertain.
+> - Users should evaluate the risks before deploying this project in production environments.
+>
+> This notice does **not** indicate that the project has been officially discontinued or abandoned. Its future maintenance status remains unknown.
+
 <div align="center">
   
   <img src="./docs/arbor-icon.png" alt="Arbor" width="160">
